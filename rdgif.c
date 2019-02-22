@@ -21,13 +21,13 @@
 
 #include "cdjpeg.h"		/* Common decls for cjpeg/djpeg applications */
 
-#ifdef GIF_SUPPORTED
+#ifdef LJPEG_GIF_SUPPORTED
 
 /*
  * The module selection routine for GIF format input.
  */
 
-GLOBAL(cjpeg_source_ptr)
+LJPEG_GLOBAL(cjpeg_source_ptr)
 jinit_read_gif (j_compress_ptr cinfo)
 {
   fprintf(stderr, "GIF input is unsupported for legal reasons.  Sorry.\n");
@@ -35,4 +35,4 @@ jinit_read_gif (j_compress_ptr cinfo)
   return NULL;			/* keep compiler happy */
 }
 
-#endif /* GIF_SUPPORTED */
+#endif /* LJPEG_GIF_SUPPORTED */

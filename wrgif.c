@@ -39,7 +39,7 @@
 
 #include "cdjpeg.h"		/* Common decls for cjpeg/djpeg applications */
 
-#ifdef GIF_SUPPORTED
+#ifdef LJPEG_GIF_SUPPORTED
 
 
 /* Private version of data destination object */
@@ -356,14 +356,14 @@ finish_output_gif (j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
  * The module selection routine for GIF format output.
  */
 
-GLOBAL(djpeg_dest_ptr)
+LJPEG_GLOBAL(djpeg_dest_ptr)
 jinit_write_gif (j_decompress_ptr cinfo)
 {
   gif_dest_ptr dest;
 
   /* Create module interface object, fill in method pointers */
   dest = (gif_dest_ptr)
-      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(gif_dest_struct));
   dest->cinfo = cinfo;		/* make back link for subroutines */
   dest->pub.start_output = start_output_gif;
@@ -390,10 +390,10 @@ jinit_write_gif (j_decompress_ptr cinfo)
 
   /* Create decompressor output buffer. */
   dest->pub.buffer = (*cinfo->mem->alloc_sarray)
-    ((j_common_ptr) cinfo, JPOOL_IMAGE, cinfo->output_width, (JDIMENSION) 1);
+    ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, cinfo->output_width, (JDIMENSION) 1);
   dest->pub.buffer_height = 1;
 
   return (djpeg_dest_ptr) dest;
 }
 
-#endif /* GIF_SUPPORTED */
+#endif /* LJPEG_GIF_SUPPORTED */

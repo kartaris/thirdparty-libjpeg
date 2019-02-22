@@ -369,11 +369,11 @@ int main (argc, argv)
     fprintf(outfile, "#define RIGHT_SHIFT_IS_UNSIGNED\n");
   fprintf(outfile, "\n#endif /* JPEG_INTERNALS */\n");
   fprintf(outfile, "\n#ifdef JPEG_CJPEG_DJPEG\n\n");
-  fprintf(outfile, "#define BMP_SUPPORTED		/* BMP image file format */\n");
-  fprintf(outfile, "#define GIF_SUPPORTED		/* GIF image file format */\n");
-  fprintf(outfile, "#define PPM_SUPPORTED		/* PBMPLUS PPM/PGM image file format */\n");
-  fprintf(outfile, "#undef RLE_SUPPORTED		/* Utah RLE image file format */\n");
-  fprintf(outfile, "#define TARGA_SUPPORTED		/* Targa image file format */\n\n");
+  fprintf(outfile, "#define LJPEG_BMP_SUPPORTED		/* BMP image file format */\n");
+  fprintf(outfile, "#define LJPEG_GIF_SUPPORTED		/* GIF image file format */\n");
+  fprintf(outfile, "#define LJPEG_PPM_SUPPORTED		/* PBMPLUS PPM/PGM image file format */\n");
+  fprintf(outfile, "#undef LJPEG_RLE_SUPPORTED		/* Utah RLE image file format */\n");
+  fprintf(outfile, "#define LJPEG_TARGA_SUPPORTED		/* Targa image file format */\n\n");
   fprintf(outfile, "#undef TWO_FILE_COMMANDLINE	/* You may need this on non-Unix systems */\n");
   fprintf(outfile, "#undef NEED_SIGNAL_CATCHER	/* Define this if you use jmemname.c */\n");
   fprintf(outfile, "#undef DONT_USE_B_MODE\n");

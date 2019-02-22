@@ -182,7 +182,7 @@ process_data_buffer_main (j_compress_ptr cinfo,
       for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
 	   ci++, compptr++) {
 	mainp->buffer[ci] = (*cinfo->mem->access_virt_sarray)
-	  ((j_common_ptr) cinfo, mainp->whole_image[ci], mainp->cur_iMCU_row *
+	  ((LJPEG_j_common_ptr) cinfo, mainp->whole_image[ci], mainp->cur_iMCU_row *
 	   ((JDIMENSION) (compptr->v_samp_factor * cinfo->min_DCT_v_scaled_size)),
 	   (JDIMENSION) (compptr->v_samp_factor * cinfo->min_DCT_v_scaled_size),
 	   writing);
@@ -244,7 +244,7 @@ process_data_buffer_main (j_compress_ptr cinfo,
  * Initialize main buffer controller.
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jinit_c_main_controller (j_compress_ptr cinfo, boolean need_full_buffer)
 {
   my_main_ptr mainp;
@@ -252,7 +252,7 @@ jinit_c_main_controller (j_compress_ptr cinfo, boolean need_full_buffer)
   jpeg_component_info *compptr;
 
   mainp = (my_main_ptr)
-    (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_main_controller));
   cinfo->main = &mainp->pub;
   mainp->pub.start_pass = start_pass_main;
@@ -271,7 +271,7 @@ jinit_c_main_controller (j_compress_ptr cinfo, boolean need_full_buffer)
     for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
 	 ci++, compptr++) {
       mainp->whole_image[ci] = (*cinfo->mem->request_virt_sarray)
-	((j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
+	((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
 	 compptr->width_in_blocks * ((JDIMENSION) compptr->DCT_h_scaled_size),
 	 ((JDIMENSION) jround_up((long) compptr->height_in_blocks,
 				 (long) compptr->v_samp_factor)) *
@@ -289,7 +289,7 @@ jinit_c_main_controller (j_compress_ptr cinfo, boolean need_full_buffer)
     for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
 	 ci++, compptr++) {
       mainp->buffer[ci] = (*cinfo->mem->alloc_sarray)
-	((j_common_ptr) cinfo, JPOOL_IMAGE,
+	((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 	 compptr->width_in_blocks * ((JDIMENSION) compptr->DCT_h_scaled_size),
 	 (JDIMENSION) (compptr->v_samp_factor * compptr->DCT_v_scaled_size));
     }

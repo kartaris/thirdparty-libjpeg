@@ -27,7 +27,7 @@
  * The error manager must already be set up (in case memory manager fails).
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_CreateCompress (j_compress_ptr cinfo, int version, size_t structsize)
 {
   int i;
@@ -56,7 +56,7 @@ jpeg_CreateCompress (j_compress_ptr cinfo, int version, size_t structsize)
   cinfo->is_decompressor = FALSE;
 
   /* Initialize a memory manager instance for this object */
-  jinit_memory_mgr((j_common_ptr) cinfo);
+  jinit_memory_mgr((LJPEG_j_common_ptr) cinfo);
 
   /* Zero out pointers to permanent structures. */
   cinfo->progress = NULL;
@@ -92,10 +92,10 @@ jpeg_CreateCompress (j_compress_ptr cinfo, int version, size_t structsize)
  * Destruction of a JPEG compression object
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_destroy_compress (j_compress_ptr cinfo)
 {
-  jpeg_destroy((j_common_ptr) cinfo); /* use common routine */
+  jpeg_destroy((LJPEG_j_common_ptr) cinfo); /* use common routine */
 }
 
 
@@ -104,10 +104,10 @@ jpeg_destroy_compress (j_compress_ptr cinfo)
  * but don't destroy the object itself.
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_abort_compress (j_compress_ptr cinfo)
 {
-  jpeg_abort((j_common_ptr) cinfo); /* use common routine */
+  jpeg_abort((LJPEG_j_common_ptr) cinfo); /* use common routine */
 }
 
 
@@ -123,7 +123,7 @@ jpeg_abort_compress (j_compress_ptr cinfo)
  * jcparam.o would be linked whether the application used it or not.
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_suppress_tables (j_compress_ptr cinfo, boolean suppress)
 {
   int i;
@@ -151,7 +151,7 @@ jpeg_suppress_tables (j_compress_ptr cinfo, boolean suppress)
  * work including most of the actual output.
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_finish_compress (j_compress_ptr cinfo)
 {
   JDIMENSION iMCU_row;
@@ -171,7 +171,7 @@ jpeg_finish_compress (j_compress_ptr cinfo)
       if (cinfo->progress != NULL) {
 	cinfo->progress->pass_counter = (long) iMCU_row;
 	cinfo->progress->pass_limit = (long) cinfo->total_iMCU_rows;
-	(*cinfo->progress->progress_monitor) ((j_common_ptr) cinfo);
+	(*cinfo->progress->progress_monitor) ((LJPEG_j_common_ptr) cinfo);
       }
       /* We bypass the main controller and invoke coef controller directly;
        * all work is being done from the coefficient buffer.
@@ -185,7 +185,7 @@ jpeg_finish_compress (j_compress_ptr cinfo)
   (*cinfo->marker->write_file_trailer) (cinfo);
   (*cinfo->dest->term_destination) (cinfo);
   /* We can use jpeg_abort to release memory and reset global_state */
-  jpeg_abort((j_common_ptr) cinfo);
+  jpeg_abort((LJPEG_j_common_ptr) cinfo);
 }
 
 
@@ -196,7 +196,7 @@ jpeg_finish_compress (j_compress_ptr cinfo)
  * first call to jpeg_write_scanlines() or jpeg_write_raw_data().
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_write_marker (j_compress_ptr cinfo, int marker,
 		   const JOCTET *dataptr, unsigned int datalen)
 {
@@ -218,7 +218,7 @@ jpeg_write_marker (j_compress_ptr cinfo, int marker,
 
 /* Same, but piecemeal. */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_write_m_header (j_compress_ptr cinfo, int marker, unsigned int datalen)
 {
   if (cinfo->next_scanline != 0 ||
@@ -230,7 +230,7 @@ jpeg_write_m_header (j_compress_ptr cinfo, int marker, unsigned int datalen)
   (*cinfo->marker->write_marker_header) (cinfo, marker, datalen);
 }
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_write_m_byte (j_compress_ptr cinfo, int val)
 {
   (*cinfo->marker->write_marker_byte) (cinfo, val);
@@ -258,14 +258,14 @@ jpeg_write_m_byte (j_compress_ptr cinfo, int val)
  * will not re-emit the tables unless it is passed write_all_tables=TRUE.
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_write_tables (j_compress_ptr cinfo)
 {
   if (cinfo->global_state != CSTATE_START)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
 
   /* (Re)initialize error mgr and destination modules */
-  (*cinfo->err->reset_error_mgr) ((j_common_ptr) cinfo);
+  (*cinfo->err->reset_error_mgr) ((LJPEG_j_common_ptr) cinfo);
   (*cinfo->dest->init_destination) (cinfo);
   /* Initialize the marker writer ... bit of a crock to do it here. */
   jinit_marker_writer(cinfo);

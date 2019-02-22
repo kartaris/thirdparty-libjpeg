@@ -274,7 +274,7 @@ struct jpeg_common_struct {
    */
 };
 
-typedef struct jpeg_common_struct * j_common_ptr;
+typedef struct jpeg_common_struct * LJPEG_j_common_ptr;
 typedef struct jpeg_compress_struct * j_compress_ptr;
 typedef struct jpeg_decompress_struct * j_decompress_ptr;
 
@@ -694,16 +694,16 @@ struct jpeg_decompress_struct {
 
 struct jpeg_error_mgr {
   /* Error exit handler: does not return to caller */
-  JMETHOD(noreturn_t, error_exit, (j_common_ptr cinfo));
+  JMETHOD(noreturn_t, error_exit, (LJPEG_j_common_ptr cinfo));
   /* Conditionally emit a trace or warning message */
-  JMETHOD(void, emit_message, (j_common_ptr cinfo, int msg_level));
+  JMETHOD(void, emit_message, (LJPEG_j_common_ptr cinfo, int msg_level));
   /* Routine that actually outputs a trace or error message */
-  JMETHOD(void, output_message, (j_common_ptr cinfo));
+  JMETHOD(void, output_message, (LJPEG_j_common_ptr cinfo));
   /* Format a message string for the most recent JPEG error or message */
-  JMETHOD(void, format_message, (j_common_ptr cinfo, char * buffer));
+  JMETHOD(void, format_message, (LJPEG_j_common_ptr cinfo, char * buffer));
 #define JMSG_LENGTH_MAX  200	/* recommended size of format_message buffer */
   /* Reset error state variables at start of a new image */
-  JMETHOD(void, reset_error_mgr, (j_common_ptr cinfo));
+  JMETHOD(void, reset_error_mgr, (LJPEG_j_common_ptr cinfo));
   
   /* The message ID code and any parameters are saved here.
    * A message can have one string parameter or up to 8 int parameters.
@@ -751,7 +751,7 @@ struct jpeg_error_mgr {
 /* Progress monitor object */
 
 struct jpeg_progress_mgr {
-  JMETHOD(void, progress_monitor, (j_common_ptr cinfo));
+  JMETHOD(void, progress_monitor, (LJPEG_j_common_ptr cinfo));
 
   long pass_counter;		/* work units completed in this pass */
   long pass_limit;		/* total number of work units in this pass */
@@ -807,41 +807,41 @@ typedef struct jvirt_barray_control * jvirt_barray_ptr;
 
 struct jpeg_memory_mgr {
   /* Method pointers */
-  JMETHOD(void *, alloc_small, (j_common_ptr cinfo, int pool_id,
+  JMETHOD(void *, alloc_small, (LJPEG_j_common_ptr cinfo, int pool_id,
 				size_t sizeofobject));
-  JMETHOD(void FAR *, alloc_large, (j_common_ptr cinfo, int pool_id,
+  JMETHOD(void FAR *, alloc_large, (LJPEG_j_common_ptr cinfo, int pool_id,
 				     size_t sizeofobject));
-  JMETHOD(JSAMPARRAY, alloc_sarray, (j_common_ptr cinfo, int pool_id,
+  JMETHOD(JSAMPARRAY, alloc_sarray, (LJPEG_j_common_ptr cinfo, int pool_id,
 				     JDIMENSION samplesperrow,
 				     JDIMENSION numrows));
-  JMETHOD(JBLOCKARRAY, alloc_barray, (j_common_ptr cinfo, int pool_id,
+  JMETHOD(JBLOCKARRAY, alloc_barray, (LJPEG_j_common_ptr cinfo, int pool_id,
 				      JDIMENSION blocksperrow,
 				      JDIMENSION numrows));
-  JMETHOD(jvirt_sarray_ptr, request_virt_sarray, (j_common_ptr cinfo,
+  JMETHOD(jvirt_sarray_ptr, request_virt_sarray, (LJPEG_j_common_ptr cinfo,
 						  int pool_id,
 						  boolean pre_zero,
 						  JDIMENSION samplesperrow,
 						  JDIMENSION numrows,
 						  JDIMENSION maxaccess));
-  JMETHOD(jvirt_barray_ptr, request_virt_barray, (j_common_ptr cinfo,
+  JMETHOD(jvirt_barray_ptr, request_virt_barray, (LJPEG_j_common_ptr cinfo,
 						  int pool_id,
 						  boolean pre_zero,
 						  JDIMENSION blocksperrow,
 						  JDIMENSION numrows,
 						  JDIMENSION maxaccess));
-  JMETHOD(void, realize_virt_arrays, (j_common_ptr cinfo));
-  JMETHOD(JSAMPARRAY, access_virt_sarray, (j_common_ptr cinfo,
+  JMETHOD(void, realize_virt_arrays, (LJPEG_j_common_ptr cinfo));
+  JMETHOD(JSAMPARRAY, access_virt_sarray, (LJPEG_j_common_ptr cinfo,
 					   jvirt_sarray_ptr ptr,
 					   JDIMENSION start_row,
 					   JDIMENSION num_rows,
 					   boolean writable));
-  JMETHOD(JBLOCKARRAY, access_virt_barray, (j_common_ptr cinfo,
+  JMETHOD(JBLOCKARRAY, access_virt_barray, (LJPEG_j_common_ptr cinfo,
 					    jvirt_barray_ptr ptr,
 					    JDIMENSION start_row,
 					    JDIMENSION num_rows,
 					    boolean writable));
-  JMETHOD(void, free_pool, (j_common_ptr cinfo, int pool_id));
-  JMETHOD(void, self_destruct, (j_common_ptr cinfo));
+  JMETHOD(void, free_pool, (LJPEG_j_common_ptr cinfo, int pool_id));
+  JMETHOD(void, self_destruct, (LJPEG_j_common_ptr cinfo));
 
   /* Limit on memory allocation for this JPEG object.  (Note that this is
    * merely advisory, not a guaranteed maximum; it only affects the space
@@ -996,8 +996,8 @@ EXTERN(int) jpeg_quality_scaling JPP((int quality));
 EXTERN(void) jpeg_simple_progression JPP((j_compress_ptr cinfo));
 EXTERN(void) jpeg_suppress_tables JPP((j_compress_ptr cinfo,
 				       boolean suppress));
-EXTERN(JQUANT_TBL *) jpeg_alloc_quant_table JPP((j_common_ptr cinfo));
-EXTERN(JHUFF_TBL *) jpeg_alloc_huff_table JPP((j_common_ptr cinfo));
+EXTERN(JQUANT_TBL *) jpeg_alloc_quant_table JPP((LJPEG_j_common_ptr cinfo));
+EXTERN(JHUFF_TBL *) jpeg_alloc_huff_table JPP((LJPEG_j_common_ptr cinfo));
 
 /* Main entry points for compression */
 EXTERN(void) jpeg_start_compress JPP((j_compress_ptr cinfo,
@@ -1101,8 +1101,8 @@ EXTERN(void) jpeg_abort_decompress JPP((j_decompress_ptr cinfo));
 /* Generic versions of jpeg_abort and jpeg_destroy that work on either
  * flavor of JPEG object.  These may be more convenient in some places.
  */
-EXTERN(void) jpeg_abort JPP((j_common_ptr cinfo));
-EXTERN(void) jpeg_destroy JPP((j_common_ptr cinfo));
+EXTERN(void) jpeg_abort JPP((LJPEG_j_common_ptr cinfo));
+EXTERN(void) jpeg_destroy JPP((LJPEG_j_common_ptr cinfo));
 
 /* Default restart-marker-resync procedure for use by data source modules */
 EXTERN(boolean) jpeg_resync_to_restart JPP((j_decompress_ptr cinfo,

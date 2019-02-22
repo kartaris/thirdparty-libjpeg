@@ -40,7 +40,7 @@
 
 /* Create the add-on message string table. */
 
-#define JMESSAGE(code,string)	string ,
+#define LJPEG_JMESSAGE(code,string)	string ,
 
 static const char * const cdjpeg_message_table[] = {
 #include "cderror.h"
@@ -83,7 +83,7 @@ select_file_type (j_compress_ptr cinfo, FILE * infile)
   int c;
 
   if (is_targa) {
-#ifdef TARGA_SUPPORTED
+#ifdef LJPEG_TARGA_SUPPORTED
     return jinit_read_targa(cinfo);
 #else
     ERREXIT(cinfo, JERR_TGA_NOTCOMP);
@@ -96,23 +96,23 @@ select_file_type (j_compress_ptr cinfo, FILE * infile)
     ERREXIT(cinfo, JERR_UNGETC_FAILED);
 
   switch (c) {
-#ifdef BMP_SUPPORTED
+#ifdef LJPEG_BMP_SUPPORTED
   case 'B':
     return jinit_read_bmp(cinfo);
 #endif
-#ifdef GIF_SUPPORTED
+#ifdef LJPEG_GIF_SUPPORTED
   case 'G':
     return jinit_read_gif(cinfo);
 #endif
-#ifdef PPM_SUPPORTED
+#ifdef LJPEG_PPM_SUPPORTED
   case 'P':
     return jinit_read_ppm(cinfo);
 #endif
-#ifdef RLE_SUPPORTED
+#ifdef LJPEG_RLE_SUPPORTED
   case 'R':
     return jinit_read_rle(cinfo);
 #endif
-#ifdef TARGA_SUPPORTED
+#ifdef LJPEG_TARGA_SUPPORTED
   case 0x00:
     return jinit_read_targa(cinfo);
 #endif
@@ -162,7 +162,7 @@ usage (void)
 #ifdef DCT_SCALING_SUPPORTED
   fprintf(stderr, "  -scale M/N     Scale image by fraction M/N, eg, 1/2\n");
 #endif
-#ifdef TARGA_SUPPORTED
+#ifdef LJPEG_TARGA_SUPPORTED
   fprintf(stderr, "  -targa         Input file is Targa format (usually not needed)\n");
 #endif
   fprintf(stderr, "Switches for advanced users:\n");
@@ -536,7 +536,7 @@ main (int argc, char **argv)
 
   /* Now safe to enable signal catcher. */
 #ifdef NEED_SIGNAL_CATCHER
-  enable_signal_catcher((j_common_ptr) &cinfo);
+  enable_signal_catcher((LJPEG_j_common_ptr) &cinfo);
 #endif
 
   /* Initialize JPEG parameters.
@@ -603,7 +603,7 @@ main (int argc, char **argv)
   }
 
 #ifdef PROGRESS_REPORT
-  start_progress_monitor((j_common_ptr) &cinfo, &progress);
+  start_progress_monitor((LJPEG_j_common_ptr) &cinfo, &progress);
 #endif
 
   /* Figure out the input file format, and set up to read it. */
@@ -643,7 +643,7 @@ main (int argc, char **argv)
     fclose(output_file);
 
 #ifdef PROGRESS_REPORT
-  end_progress_monitor((j_common_ptr) &cinfo);
+  end_progress_monitor((LJPEG_j_common_ptr) &cinfo);
 #endif
 
   /* All done. */

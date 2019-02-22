@@ -92,7 +92,7 @@ rgb_ycc_start (j_compress_ptr cinfo)
 
   /* Allocate and fill in the conversion tables. */
   cconvert->rgb_ycc_tab = rgb_ycc_tab = (INT32 *)
-    (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				(TABLE_SIZE * SIZEOF(INT32)));
 
   for (i = 0; i <= MAXJSAMPLE; i++) {
@@ -419,13 +419,13 @@ null_method (j_compress_ptr cinfo)
  * Module initialization routine for input colorspace conversion.
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jinit_color_converter (j_compress_ptr cinfo)
 {
   my_cconvert_ptr cconvert;
 
   cconvert = (my_cconvert_ptr)
-    (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_color_converter));
   cinfo->cconvert = &cconvert->pub;
   /* set start_pass to null method until we find out differently */

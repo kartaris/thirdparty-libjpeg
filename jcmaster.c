@@ -49,7 +49,7 @@ typedef my_comp_master * my_master_ptr;
  * Hence it mustn't do anything that can't be done twice.
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_calc_jpeg_dimensions (j_compress_ptr cinfo)
 /* Do computations that are needed before master selection phase */
 {
@@ -803,13 +803,13 @@ finish_pass_master (j_compress_ptr cinfo)
  * Initialize master compression control.
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jinit_c_master_control (j_compress_ptr cinfo, boolean transcode_only)
 {
   my_master_ptr master;
 
   master = (my_master_ptr)
-      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(my_comp_master));
   cinfo->master = (struct jpeg_comp_master *) master;
   master->pub.prepare_for_pass = prepare_for_pass;

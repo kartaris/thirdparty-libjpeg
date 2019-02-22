@@ -42,7 +42,7 @@
 
 /* Create the add-on message string table. */
 
-#define JMESSAGE(code,string)	string ,
+#define LJPEG_JMESSAGE(code,string)	string ,
 
 static const char * const cdjpeg_message_table[] = {
 #include "cderror.h"
@@ -54,7 +54,7 @@ static const char * const cdjpeg_message_table[] = {
  * This list defines the known output image formats
  * (not all of which need be supported by a given version).
  * You can change the default output format by defining DEFAULT_FMT;
- * indeed, you had better do so if you undefine PPM_SUPPORTED.
+ * indeed, you had better do so if you undefine LJPEG_PPM_SUPPORTED.
  */
 
 typedef enum {
@@ -105,27 +105,27 @@ usage (void)
 #ifdef IDCT_SCALING_SUPPORTED
   fprintf(stderr, "  -scale M/N     Scale output image by fraction M/N, eg, 1/8\n");
 #endif
-#ifdef BMP_SUPPORTED
+#ifdef LJPEG_BMP_SUPPORTED
   fprintf(stderr, "  -bmp           Select BMP output format (Windows style)%s\n",
 	  (DEFAULT_FMT == FMT_BMP ? " (default)" : ""));
 #endif
-#ifdef GIF_SUPPORTED
+#ifdef LJPEG_GIF_SUPPORTED
   fprintf(stderr, "  -gif           Select GIF output format%s\n",
 	  (DEFAULT_FMT == FMT_GIF ? " (default)" : ""));
 #endif
-#ifdef BMP_SUPPORTED
+#ifdef LJPEG_BMP_SUPPORTED
   fprintf(stderr, "  -os2           Select BMP output format (OS/2 style)%s\n",
 	  (DEFAULT_FMT == FMT_OS2 ? " (default)" : ""));
 #endif
-#ifdef PPM_SUPPORTED
+#ifdef LJPEG_PPM_SUPPORTED
   fprintf(stderr, "  -pnm           Select PBMPLUS (PPM/PGM) output format%s\n",
 	  (DEFAULT_FMT == FMT_PPM ? " (default)" : ""));
 #endif
-#ifdef RLE_SUPPORTED
+#ifdef LJPEG_RLE_SUPPORTED
   fprintf(stderr, "  -rle           Select Utah RLE output format%s\n",
 	  (DEFAULT_FMT == FMT_RLE ? " (default)" : ""));
 #endif
-#ifdef TARGA_SUPPORTED
+#ifdef LJPEG_TARGA_SUPPORTED
   fprintf(stderr, "  -targa         Select Targa output format%s\n",
 	  (DEFAULT_FMT == FMT_TARGA ? " (default)" : ""));
 #endif
@@ -463,7 +463,7 @@ main (int argc, char **argv)
 
   /* Now safe to enable signal catcher. */
 #ifdef NEED_SIGNAL_CATCHER
-  enable_signal_catcher((j_common_ptr) &cinfo);
+  enable_signal_catcher((LJPEG_j_common_ptr) &cinfo);
 #endif
 
   /* Scan command line to find file names. */
@@ -523,7 +523,7 @@ main (int argc, char **argv)
   }
 
 #ifdef PROGRESS_REPORT
-  start_progress_monitor((j_common_ptr) &cinfo, &progress);
+  start_progress_monitor((LJPEG_j_common_ptr) &cinfo, &progress);
 #endif
 
   /* Specify data source for decompression */
@@ -539,7 +539,7 @@ main (int argc, char **argv)
    * option settings (for instance, GIF wants to force color quantization).
    */
   switch (requested_fmt) {
-#ifdef BMP_SUPPORTED
+#ifdef LJPEG_BMP_SUPPORTED
   case FMT_BMP:
     dest_mgr = jinit_write_bmp(&cinfo, FALSE);
     break;
@@ -547,22 +547,22 @@ main (int argc, char **argv)
     dest_mgr = jinit_write_bmp(&cinfo, TRUE);
     break;
 #endif
-#ifdef GIF_SUPPORTED
+#ifdef LJPEG_GIF_SUPPORTED
   case FMT_GIF:
     dest_mgr = jinit_write_gif(&cinfo);
     break;
 #endif
-#ifdef PPM_SUPPORTED
+#ifdef LJPEG_PPM_SUPPORTED
   case FMT_PPM:
     dest_mgr = jinit_write_ppm(&cinfo);
     break;
 #endif
-#ifdef RLE_SUPPORTED
+#ifdef LJPEG_RLE_SUPPORTED
   case FMT_RLE:
     dest_mgr = jinit_write_rle(&cinfo);
     break;
 #endif
-#ifdef TARGA_SUPPORTED
+#ifdef LJPEG_TARGA_SUPPORTED
   case FMT_TARGA:
     dest_mgr = jinit_write_targa(&cinfo);
     break;
@@ -608,7 +608,7 @@ main (int argc, char **argv)
     fclose(output_file);
 
 #ifdef PROGRESS_REPORT
-  end_progress_monitor((j_common_ptr) &cinfo);
+  end_progress_monitor((LJPEG_j_common_ptr) &cinfo);
 #endif
 
   /* All done. */

@@ -878,7 +878,7 @@ start_pass (j_compress_ptr cinfo, boolean gather_statistics)
 	ERREXIT1(cinfo, JERR_NO_ARITH_TABLE, tbl);
       if (entropy->dc_stats[tbl] == NULL)
 	entropy->dc_stats[tbl] = (unsigned char *) (*cinfo->mem->alloc_small)
-	  ((j_common_ptr) cinfo, JPOOL_IMAGE, DC_STAT_BINS);
+	  ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, DC_STAT_BINS);
       MEMZERO(entropy->dc_stats[tbl], DC_STAT_BINS);
       /* Initialize DC predictions to 0 */
       entropy->last_dc_val[ci] = 0;
@@ -891,7 +891,7 @@ start_pass (j_compress_ptr cinfo, boolean gather_statistics)
 	ERREXIT1(cinfo, JERR_NO_ARITH_TABLE, tbl);
       if (entropy->ac_stats[tbl] == NULL)
 	entropy->ac_stats[tbl] = (unsigned char *) (*cinfo->mem->alloc_small)
-	  ((j_common_ptr) cinfo, JPOOL_IMAGE, AC_STAT_BINS);
+	  ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, AC_STAT_BINS);
       MEMZERO(entropy->ac_stats[tbl], AC_STAT_BINS);
 #ifdef CALCULATE_SPECTRAL_CONDITIONING
       if (cinfo->progressive_mode)
@@ -919,14 +919,14 @@ start_pass (j_compress_ptr cinfo, boolean gather_statistics)
  * Module initialization routine for arithmetic entropy encoding.
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jinit_arith_encoder (j_compress_ptr cinfo)
 {
   arith_entropy_ptr entropy;
   int i;
 
   entropy = (arith_entropy_ptr)
-    (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(arith_entropy_encoder));
   cinfo->entropy = &entropy->pub;
   entropy->pub.start_pass = start_pass;

@@ -83,8 +83,7 @@ use_merged_upsample (j_decompress_ptr cinfo)
  * Hence it mustn't do anything that can't be done twice.
  * Also note that it may be called before the master module is initialized!
  */
-
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_calc_output_dimensions (j_decompress_ptr cinfo)
 /* Do computations that are needed before master selection phase.
  * This function is used for full decompression.
@@ -233,7 +232,7 @@ prepare_range_limit_table (j_decompress_ptr cinfo)
   int i;
 
   table = (JSAMPLE *)
-    (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 		(5 * (MAXJSAMPLE+1) + CENTERJSAMPLE) * SIZEOF(JSAMPLE));
   table += (MAXJSAMPLE+1);	/* allow negative subscripts of simple table */
   cinfo->sample_range_limit = table;
@@ -367,7 +366,7 @@ master_selection (j_decompress_ptr cinfo)
     jinit_d_main_controller(cinfo, FALSE /* never need full buffer here */);
 
   /* We can now tell the memory manager to allocate virtual arrays. */
-  (*cinfo->mem->realize_virt_arrays) ((j_common_ptr) cinfo);
+  (*cinfo->mem->realize_virt_arrays) ((LJPEG_j_common_ptr) cinfo);
 
   /* Initialize input side of decompressor to consume first scan. */
   (*cinfo->inputctl->start_input_pass) (cinfo);
@@ -484,8 +483,7 @@ finish_output_pass (j_decompress_ptr cinfo)
 /*
  * Switch to a new external colormap between output passes.
  */
-
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_new_colormap (j_decompress_ptr cinfo)
 {
   my_master_ptr master = (my_master_ptr) cinfo->master;
@@ -512,14 +510,13 @@ jpeg_new_colormap (j_decompress_ptr cinfo)
  * Initialize master decompression control and select active modules.
  * This is performed at the start of jpeg_start_decompress.
  */
-
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jinit_master_decompress (j_decompress_ptr cinfo)
 {
   my_master_ptr master;
 
   master = (my_master_ptr)
-      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(my_decomp_master));
   cinfo->master = (struct jpeg_decomp_master *) master;
   master->pub.prepare_for_output_pass = prepare_for_output_pass;

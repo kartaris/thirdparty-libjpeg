@@ -19,7 +19,7 @@
 
 #include "cdjpeg.h"		/* Common decls for cjpeg/djpeg applications */
 
-#ifdef TARGA_SUPPORTED
+#ifdef LJPEG_TARGA_SUPPORTED
 
 
 /* Macros to deal with unsigned chars as efficiently as compiler allows */
@@ -282,7 +282,7 @@ get_memory_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 
   /* Fetch that row from virtual array */
   source->pub.buffer = (*cinfo->mem->access_virt_sarray)
-    ((j_common_ptr) cinfo, source->whole_image,
+    ((LJPEG_j_common_ptr) cinfo, source->whole_image,
      source_row, (JDIMENSION) 1, FALSE);
 
   source->current_row++;
@@ -308,10 +308,10 @@ preload_image (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
     if (progress != NULL) {
       progress->pub.pass_counter = (long) row;
       progress->pub.pass_limit = (long) cinfo->image_height;
-      (*progress->pub.progress_monitor) ((j_common_ptr) cinfo);
+      (*progress->pub.progress_monitor) ((LJPEG_j_common_ptr) cinfo);
     }
     source->pub.buffer = (*cinfo->mem->access_virt_sarray)
-      ((j_common_ptr) cinfo, source->whole_image, row, (JDIMENSION) 1, TRUE);
+      ((LJPEG_j_common_ptr) cinfo, source->whole_image, row, (JDIMENSION) 1, TRUE);
     (*source->get_pixel_rows) (cinfo, sinfo);
   }
   if (progress != NULL)
@@ -422,7 +422,7 @@ start_input_tga (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
   if (is_bottom_up) {
     /* Create a virtual array to buffer the upside-down image. */
     source->whole_image = (*cinfo->mem->request_virt_sarray)
-      ((j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
+      ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
        (JDIMENSION) width * components, (JDIMENSION) height, (JDIMENSION) 1);
     if (cinfo->progress != NULL) {
       cd_progress_ptr progress = (cd_progress_ptr) cinfo->progress;
@@ -435,7 +435,7 @@ start_input_tga (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
     /* Don't need a virtual array, but do need a one-row input buffer. */
     source->whole_image = NULL;
     source->pub.buffer = (*cinfo->mem->alloc_sarray)
-      ((j_common_ptr) cinfo, JPOOL_IMAGE,
+      ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
        (JDIMENSION) width * components, (JDIMENSION) 1);
     source->pub.buffer_height = 1;
     source->pub.get_pixel_rows = source->get_pixel_rows;
@@ -449,7 +449,7 @@ start_input_tga (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
       ERREXIT(cinfo, JERR_TGA_BADCMAP);
     /* Allocate space to store the colormap */
     source->colormap = (*cinfo->mem->alloc_sarray)
-      ((j_common_ptr) cinfo, JPOOL_IMAGE, (JDIMENSION) maplen, (JDIMENSION) 3);
+      ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, (JDIMENSION) maplen, (JDIMENSION) 3);
     /* and read it from the file */
     read_colormap(source, (int) maplen, UCH(targaheader[7]));
   } else {
@@ -480,14 +480,14 @@ finish_input_tga (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
  * The module selection routine for Targa format input.
  */
 
-GLOBAL(cjpeg_source_ptr)
+LJPEG_GLOBALcjpeg_source_ptr)
 jinit_read_targa (j_compress_ptr cinfo)
 {
   tga_source_ptr source;
 
   /* Create module interface object */
   source = (tga_source_ptr)
-      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(tga_source_struct));
   source->cinfo = cinfo;	/* make back link for subroutines */
   /* Fill in method ptrs, except get_pixel_rows which start_input sets */
@@ -497,4 +497,4 @@ jinit_read_targa (j_compress_ptr cinfo)
   return (cjpeg_source_ptr) source;
 }
 
-#endif /* TARGA_SUPPORTED */
+#endif /* LJPEG_TARGA_SUPPORTED */

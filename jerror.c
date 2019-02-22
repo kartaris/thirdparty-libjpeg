@@ -37,7 +37,7 @@
 /*
  * Create the message string table.
  * We do this from the master message list in jerror.h by re-reading
- * jerror.h with a suitable definition for macro JMESSAGE.
+ * jerror.h with a suitable definition for macro LJPEG_JMESSAGE.
  * The message table is made an external symbol just in case any applications
  * want to refer to it directly.
  */
@@ -46,7 +46,7 @@
 #define jpeg_std_message_table	jMsgTable
 #endif
 
-#define JMESSAGE(code,string)	string ,
+#define LJPEG_JMESSAGE(code,string)	string ,
 
 const char * const jpeg_std_message_table[] = {
 #include "jerror.h"
@@ -68,7 +68,7 @@ const char * const jpeg_std_message_table[] = {
  */
 
 METHODDEF(noreturn_t)
-error_exit (j_common_ptr cinfo)
+error_exit (LJPEG_j_common_ptr cinfo)
 {
   /* Always display the message */
   (*cinfo->err->output_message) (cinfo);
@@ -96,7 +96,7 @@ error_exit (j_common_ptr cinfo)
  */
 
 METHODDEF(void)
-output_message (j_common_ptr cinfo)
+output_message (LJPEG_j_common_ptr cinfo)
 {
   char buffer[JMSG_LENGTH_MAX];
 
@@ -126,7 +126,7 @@ output_message (j_common_ptr cinfo)
  */
 
 METHODDEF(void)
-emit_message (j_common_ptr cinfo, int msg_level)
+emit_message (LJPEG_j_common_ptr cinfo, int msg_level)
 {
   struct jpeg_error_mgr * err = cinfo->err;
 
@@ -155,7 +155,7 @@ emit_message (j_common_ptr cinfo, int msg_level)
  */
 
 METHODDEF(void)
-format_message (j_common_ptr cinfo, char * buffer)
+format_message (LJPEG_j_common_ptr cinfo, char * buffer)
 {
   struct jpeg_error_mgr * err = cinfo->err;
   int msg_code = err->msg_code;
@@ -210,7 +210,7 @@ format_message (j_common_ptr cinfo, char * buffer)
  */
 
 METHODDEF(void)
-reset_error_mgr (j_common_ptr cinfo)
+reset_error_mgr (LJPEG_j_common_ptr cinfo)
 {
   cinfo->err->num_warnings = 0;
   /* trace_level is not reset since it is an application-supplied parameter */
@@ -227,8 +227,7 @@ reset_error_mgr (j_common_ptr cinfo)
  *	cinfo.err = jpeg_std_error(&err);
  * after which the application may override some of the methods.
  */
-
-GLOBAL(struct jpeg_error_mgr *)
+LJPEG_GLOBAL(struct jpeg_error_mgr *)
 jpeg_std_error (struct jpeg_error_mgr * err)
 {
   err->error_exit = error_exit;

@@ -474,7 +474,7 @@ fullsize_smooth_downsample (j_compress_ptr cinfo, jpeg_component_info *compptr,
  * Note that we must select a routine for each component.
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jinit_downsampler (j_compress_ptr cinfo)
 {
   my_downsample_ptr downsample;
@@ -484,7 +484,7 @@ jinit_downsampler (j_compress_ptr cinfo)
   int h_in_group, v_in_group, h_out_group, v_out_group;
 
   downsample = (my_downsample_ptr)
-    (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_downsampler));
   cinfo->downsample = (struct jpeg_downsampler *) downsample;
   downsample->pub.start_pass = start_pass_downsample;

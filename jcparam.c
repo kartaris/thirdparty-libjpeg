@@ -19,8 +19,7 @@
 /*
  * Quantization table setup routines
  */
-
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_add_quant_table (j_compress_ptr cinfo, int which_tbl,
 		      const unsigned int *basic_table,
 		      int scale_factor, boolean force_baseline)
@@ -44,7 +43,7 @@ jpeg_add_quant_table (j_compress_ptr cinfo, int which_tbl,
   qtblptr = & cinfo->quant_tbl_ptrs[which_tbl];
 
   if (*qtblptr == NULL)
-    *qtblptr = jpeg_alloc_quant_table((j_common_ptr) cinfo);
+    *qtblptr = jpeg_alloc_quant_table((LJPEG_j_common_ptr) cinfo);
 
   for (i = 0; i < DCTSIZE2; i++) {
     temp = ((long) basic_table[i] * scale_factor + 50L) / 100L;
@@ -86,8 +85,7 @@ static const unsigned int std_chrominance_quant_tbl[DCTSIZE2] = {
   99,  99,  99,  99,  99,  99,  99,  99
 };
 
-
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_default_qtables (j_compress_ptr cinfo, boolean force_baseline)
 /* Set or change the 'quality' (quantization) setting, using default tables
  * and straight percentage-scaling quality scales.
@@ -101,8 +99,7 @@ jpeg_default_qtables (j_compress_ptr cinfo, boolean force_baseline)
 		       cinfo->q_scale_factor[1], force_baseline);
 }
 
-
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_set_linear_quality (j_compress_ptr cinfo, int scale_factor,
 			 boolean force_baseline)
 /* Set or change the 'quality' (quantization) setting, using default tables
@@ -118,8 +115,7 @@ jpeg_set_linear_quality (j_compress_ptr cinfo, int scale_factor,
 		       scale_factor, force_baseline);
 }
 
-
-GLOBAL(int)
+LJPEG_GLOBAL(int)
 jpeg_quality_scaling (int quality)
 /* Convert a user-specified quality rating to a percentage scaling factor
  * for an underlying quantization table, using our recommended scaling curve.
@@ -144,8 +140,7 @@ jpeg_quality_scaling (int quality)
   return quality;
 }
 
-
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_set_quality (j_compress_ptr cinfo, int quality, boolean force_baseline)
 /* Set or change the 'quality' (quantization) setting, using default tables.
  * This is the standard quality-adjusting entry point for typical user
@@ -173,7 +168,7 @@ add_huff_table (j_compress_ptr cinfo,
   int nsymbols, len;
 
   if (*htblptr == NULL)
-    *htblptr = jpeg_alloc_huff_table((j_common_ptr) cinfo);
+    *htblptr = jpeg_alloc_huff_table((LJPEG_j_common_ptr) cinfo);
 
   /* Copy the number-of-symbols-of-each-code-length counts */
   MEMCOPY((*htblptr)->bits, bits, SIZEOF((*htblptr)->bits));
@@ -280,8 +275,7 @@ std_huff_tables (j_compress_ptr cinfo)
  * is the recommended approach since, if we add any new parameters,
  * your code will still work (they'll be set to reasonable defaults).
  */
-
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_set_defaults (j_compress_ptr cinfo)
 {
   int i;
@@ -296,7 +290,7 @@ jpeg_set_defaults (j_compress_ptr cinfo)
    */
   if (cinfo->comp_info == NULL)
     cinfo->comp_info = (jpeg_component_info *)
-      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
+      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
 				  MAX_COMPONENTS * SIZEOF(jpeg_component_info));
 
   /* Initialize everything not dependent on the color space */
@@ -379,8 +373,7 @@ jpeg_set_defaults (j_compress_ptr cinfo)
 /*
  * Select an appropriate JPEG colorspace for in_color_space.
  */
-
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_default_colorspace (j_compress_ptr cinfo)
 {
   switch (cinfo->in_color_space) {
@@ -411,8 +404,7 @@ jpeg_default_colorspace (j_compress_ptr cinfo)
 /*
  * Set the JPEG colorspace, and choose colorspace-dependent default values.
  */
-
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_set_colorspace (j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
 {
   jpeg_component_info * compptr;
@@ -559,8 +551,7 @@ fill_dc_scans (jpeg_scan_info * scanptr, int ncomps, int Ah, int Al)
  * Create a recommended progressive-JPEG script.
  * cinfo->num_components and cinfo->jpeg_color_space must be correct.
  */
-
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_simple_progression (j_compress_ptr cinfo)
 {
   int ncomps = cinfo->num_components;
@@ -593,7 +584,7 @@ jpeg_simple_progression (j_compress_ptr cinfo)
   if (cinfo->script_space == NULL || cinfo->script_space_size < nscans) {
     cinfo->script_space_size = MAX(nscans, 10);
     cinfo->script_space = (jpeg_scan_info *)
-      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
+      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
 			cinfo->script_space_size * SIZEOF(jpeg_scan_info));
   }
   scanptr = cinfo->script_space;

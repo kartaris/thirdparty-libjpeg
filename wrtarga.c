@@ -16,7 +16,7 @@
 
 #include "cdjpeg.h"		/* Common decls for cjpeg/djpeg applications */
 
-#ifdef TARGA_SUPPORTED
+#ifdef LJPEG_TARGA_SUPPORTED
 
 
 /*
@@ -220,15 +220,14 @@ finish_output_tga (j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
 /*
  * The module selection routine for Targa format output.
  */
-
-GLOBAL(djpeg_dest_ptr)
+LJPEG_GLOBAL(djpeg_dest_ptr)
 jinit_write_targa (j_decompress_ptr cinfo)
 {
   tga_dest_ptr dest;
 
   /* Create module interface object, fill in method pointers */
   dest = (tga_dest_ptr)
-      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(tga_dest_struct));
   dest->pub.start_output = start_output_tga;
   dest->pub.finish_output = finish_output_tga;
@@ -239,15 +238,15 @@ jinit_write_targa (j_decompress_ptr cinfo)
   /* Create I/O buffer.  Note we make this near on a PC. */
   dest->buffer_width = cinfo->output_width * cinfo->output_components;
   dest->iobuffer = (char *)
-    (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				(size_t) (dest->buffer_width * SIZEOF(char)));
 
   /* Create decompressor output buffer. */
   dest->pub.buffer = (*cinfo->mem->alloc_sarray)
-    ((j_common_ptr) cinfo, JPOOL_IMAGE, dest->buffer_width, (JDIMENSION) 1);
+    ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, dest->buffer_width, (JDIMENSION) 1);
   dest->pub.buffer_height = 1;
 
   return (djpeg_dest_ptr) dest;
 }
 
-#endif /* TARGA_SUPPORTED */
+#endif /* LJPEG_TARGA_SUPPORTED */

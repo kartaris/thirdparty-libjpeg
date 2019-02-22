@@ -145,10 +145,10 @@ EXTERN(void) read_color_map JPP((j_decompress_ptr cinfo, FILE * infile));
 
 /* common support routines (in cdjpeg.c) */
 
-EXTERN(void) enable_signal_catcher JPP((j_common_ptr cinfo));
-EXTERN(void) start_progress_monitor JPP((j_common_ptr cinfo,
+EXTERN(void) enable_LJPEG_signal_catcher JPP((LJPEG_j_common_ptr cinfo));
+EXTERN(void) start_progress_monitor JPP((LJPEG_j_common_ptr cinfo,
 					 cd_progress_ptr progress));
-EXTERN(void) end_progress_monitor JPP((j_common_ptr cinfo));
+EXTERN(void) end_progress_monitor JPP((LJPEG_j_common_ptr cinfo));
 EXTERN(boolean) keymatch JPP((char * arg, const char * keyword, int minchars));
 EXTERN(FILE *) read_stdin JPP((void));
 EXTERN(FILE *) write_stdout JPP((void));

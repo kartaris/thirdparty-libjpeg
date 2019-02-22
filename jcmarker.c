@@ -696,14 +696,14 @@ write_tables_only (j_compress_ptr cinfo)
  * Initialize the marker writer module.
  */
 
-GLOBAL(void)
+LJPEG_GLOBALvoid)
 jinit_marker_writer (j_compress_ptr cinfo)
 {
   my_marker_ptr marker;
 
   /* Create the subobject */
   marker = (my_marker_ptr)
-    (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_marker_writer));
   cinfo->marker = &marker->pub;
   /* Initialize method pointers */

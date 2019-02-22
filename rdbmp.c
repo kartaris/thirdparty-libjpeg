@@ -24,7 +24,7 @@
 
 #include "cdjpeg.h"		/* Common decls for cjpeg/djpeg applications */
 
-#ifdef BMP_SUPPORTED
+#ifdef LJPEG_BMP_SUPPORTED
 
 
 /* Macros to deal with unsigned chars as efficiently as compiler allows */
@@ -130,7 +130,7 @@ get_8bit_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
   /* Fetch next row from virtual array */
   source->source_row--;
   image_ptr = (*cinfo->mem->access_virt_sarray)
-    ((j_common_ptr) cinfo, source->whole_image,
+    ((LJPEG_j_common_ptr) cinfo, source->whole_image,
      source->source_row, (JDIMENSION) 1, FALSE);
 
   /* Expand the colormap indexes to real data */
@@ -159,7 +159,7 @@ get_24bit_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
   /* Fetch next row from virtual array */
   source->source_row--;
   image_ptr = (*cinfo->mem->access_virt_sarray)
-    ((j_common_ptr) cinfo, source->whole_image,
+    ((LJPEG_j_common_ptr) cinfo, source->whole_image,
      source->source_row, (JDIMENSION) 1, FALSE);
 
   /* Transfer data.  Note source values are in BGR order
@@ -190,7 +190,7 @@ get_32bit_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
   /* Fetch next row from virtual array */
   source->source_row--;
   image_ptr = (*cinfo->mem->access_virt_sarray)
-    ((j_common_ptr) cinfo, source->whole_image,
+    ((LJPEG_j_common_ptr) cinfo, source->whole_image,
      source->source_row, (JDIMENSION) 1, FALSE);
   /* Transfer data.  Note source values are in BGR order
    * (even though Microsoft's own documents say the opposite).
@@ -231,10 +231,10 @@ preload_image (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
     if (progress != NULL) {
       progress->pub.pass_counter = (long) row;
       progress->pub.pass_limit = (long) cinfo->image_height;
-      (*progress->pub.progress_monitor) ((j_common_ptr) cinfo);
+      (*progress->pub.progress_monitor) ((LJPEG_j_common_ptr) cinfo);
     }
     image_ptr = (*cinfo->mem->access_virt_sarray)
-      ((j_common_ptr) cinfo, source->whole_image,
+      ((LJPEG_j_common_ptr) cinfo, source->whole_image,
        row, (JDIMENSION) 1, TRUE);
     out_ptr = image_ptr[0];
     for (col = source->row_width; col > 0; col--) {
@@ -396,7 +396,7 @@ start_input_bmp (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
       ERREXIT(cinfo, JERR_BMP_BADCMAP);
     /* Allocate space to store the colormap */
     source->colormap = (*cinfo->mem->alloc_sarray)
-      ((j_common_ptr) cinfo, JPOOL_IMAGE,
+      ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
        (JDIMENSION) biClrUsed, (JDIMENSION) 3);
     /* and read it from the file */
     read_colormap(source, (int) biClrUsed, mapentrysize);
@@ -423,7 +423,7 @@ start_input_bmp (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 
   /* Allocate space for inversion array, prepare for preload pass */
   source->whole_image = (*cinfo->mem->request_virt_sarray)
-    ((j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
+    ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
      row_width, (JDIMENSION) biHeight, (JDIMENSION) 1);
   source->pub.get_pixel_rows = preload_image;
   if (cinfo->progress != NULL) {
@@ -433,7 +433,7 @@ start_input_bmp (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 
   /* Allocate one-row buffer for returned data */
   source->pub.buffer = (*cinfo->mem->alloc_sarray)
-    ((j_common_ptr) cinfo, JPOOL_IMAGE,
+    ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
      (JDIMENSION) (biWidth * 3), (JDIMENSION) 1);
   source->pub.buffer_height = 1;
 
@@ -460,14 +460,14 @@ finish_input_bmp (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
  * The module selection routine for BMP format input.
  */
 
-GLOBAL(cjpeg_source_ptr)
+LJPEG_GLOBALcjpeg_source_ptr)
 jinit_read_bmp (j_compress_ptr cinfo)
 {
   bmp_source_ptr source;
 
   /* Create module interface object */
   source = (bmp_source_ptr)
-      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(bmp_source_struct));
   source->cinfo = cinfo;	/* make back link for subroutines */
   /* Fill in method ptrs, except get_pixel_rows which start_input sets */
@@ -477,4 +477,4 @@ jinit_read_bmp (j_compress_ptr cinfo)
   return (cjpeg_source_ptr) source;
 }
 
-#endif /* BMP_SUPPORTED */
+#endif /* LJPEG_BMP_SUPPORTED */

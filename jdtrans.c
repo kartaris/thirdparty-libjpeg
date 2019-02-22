@@ -41,8 +41,7 @@ LOCAL(void) transdecode_master_selection JPP((j_decompress_ptr cinfo));
  * Returns NULL if suspended.  This case need be checked only if
  * a suspending data source is used.
  */
-
-GLOBAL(jvirt_barray_ptr *)
+LJPEG_GLOBAL(jvirt_barray_ptr *)
 jpeg_read_coefficients (j_decompress_ptr cinfo)
 {
   if (cinfo->global_state == DSTATE_READY) {
@@ -56,7 +55,7 @@ jpeg_read_coefficients (j_decompress_ptr cinfo)
       int retcode;
       /* Call progress monitor hook if present */
       if (cinfo->progress != NULL)
-	(*cinfo->progress->progress_monitor) ((j_common_ptr) cinfo);
+	(*cinfo->progress->progress_monitor) ((LJPEG_j_common_ptr) cinfo);
       /* Absorb some more input */
       retcode = (*cinfo->inputctl->consume_input) (cinfo);
       if (retcode == JPEG_SUSPENDED)
@@ -114,7 +113,7 @@ transdecode_master_selection (j_decompress_ptr cinfo)
   jinit_d_coef_controller(cinfo, TRUE);
 
   /* We can now tell the memory manager to allocate virtual arrays. */
-  (*cinfo->mem->realize_virt_arrays) ((j_common_ptr) cinfo);
+  (*cinfo->mem->realize_virt_arrays) ((LJPEG_j_common_ptr) cinfo);
 
   /* Initialize input side of decompressor to consume first scan. */
   (*cinfo->inputctl->start_input_pass) (cinfo);

@@ -278,7 +278,7 @@ get_sof (j_decompress_ptr cinfo, boolean is_baseline, boolean is_prog,
 
   if (cinfo->comp_info == NULL)	/* do only once, even if suspend */
     cinfo->comp_info = (jpeg_component_info *) (*cinfo->mem->alloc_small)
-			((j_common_ptr) cinfo, JPOOL_IMAGE,
+			((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 			 cinfo->num_components * SIZEOF(jpeg_component_info));
 
   for (ci = 0; ci < cinfo->num_components; ci++) {
@@ -509,7 +509,7 @@ get_dht (j_decompress_ptr cinfo)
       ERREXIT1(cinfo, JERR_DHT_INDEX, index);
 
     if (*htblptr == NULL)
-      *htblptr = jpeg_alloc_huff_table((j_common_ptr) cinfo);
+      *htblptr = jpeg_alloc_huff_table((LJPEG_j_common_ptr) cinfo);
   
     MEMCOPY((*htblptr)->bits, bits, SIZEOF((*htblptr)->bits));
     MEMCOPY((*htblptr)->huffval, huffval, SIZEOF((*htblptr)->huffval));
@@ -549,7 +549,7 @@ get_dqt (j_decompress_ptr cinfo)
       ERREXIT1(cinfo, JERR_DQT_INDEX, n);
       
     if (cinfo->quant_tbl_ptrs[n] == NULL)
-      cinfo->quant_tbl_ptrs[n] = jpeg_alloc_quant_table((j_common_ptr) cinfo);
+      cinfo->quant_tbl_ptrs[n] = jpeg_alloc_quant_table((LJPEG_j_common_ptr) cinfo);
     quant_ptr = cinfo->quant_tbl_ptrs[n];
 
     if (prec) {
@@ -892,7 +892,7 @@ save_marker (j_decompress_ptr cinfo)
 	limit = (unsigned int) length;
       /* allocate and initialize the marker item */
       cur_marker = (jpeg_saved_marker_ptr)
-	(*cinfo->mem->alloc_large) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+	(*cinfo->mem->alloc_large) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				    SIZEOF(struct jpeg_marker_struct) + limit);
       cur_marker->next = NULL;
       cur_marker->marker = (UINT8) cinfo->unread_marker;
@@ -1333,7 +1333,7 @@ read_restart_marker (j_decompress_ptr cinfo)
  * any other marker would have to be bogus data in that case.
  */
 
-GLOBAL(boolean)
+LJPEG_GLOBAL(boolean)
 jpeg_resync_to_restart (j_decompress_ptr cinfo, int desired)
 {
   int marker = cinfo->unread_marker;
@@ -1403,7 +1403,7 @@ reset_marker_reader (j_decompress_ptr cinfo)
  * This is called only once, when the decompression object is created.
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jinit_marker_reader (j_decompress_ptr cinfo)
 {
   my_marker_ptr marker;
@@ -1411,7 +1411,7 @@ jinit_marker_reader (j_decompress_ptr cinfo)
 
   /* Create subobject in permanent pool */
   marker = (my_marker_ptr)
-    (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
+    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
 				SIZEOF(my_marker_reader));
   cinfo->marker = &marker->pub;
   /* Initialize public method pointers */
@@ -1441,7 +1441,7 @@ jinit_marker_reader (j_decompress_ptr cinfo)
 
 #ifdef SAVE_MARKERS_SUPPORTED
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_save_markers (j_decompress_ptr cinfo, int marker_code,
 		   unsigned int length_limit)
 {
@@ -1490,7 +1490,7 @@ jpeg_save_markers (j_decompress_ptr cinfo, int marker_code,
  * Install a special processing method for COM or APPn markers.
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_set_marker_processor (j_decompress_ptr cinfo, int marker_code,
 			   jpeg_marker_parser_method routine)
 {

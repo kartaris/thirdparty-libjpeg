@@ -294,7 +294,7 @@ create_colormap (j_decompress_ptr cinfo)
   /* i.e. rightmost (highest-indexed) color changes most rapidly. */
 
   colormap = (*cinfo->mem->alloc_sarray)
-    ((j_common_ptr) cinfo, JPOOL_IMAGE,
+    ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
      (JDIMENSION) total_colors, (JDIMENSION) cinfo->out_color_components);
 
   /* blksize is number of adjacent repeated entries for a component */
@@ -351,7 +351,7 @@ create_colorindex (j_decompress_ptr cinfo)
   }
 
   cquantize->colorindex = (*cinfo->mem->alloc_sarray)
-    ((j_common_ptr) cinfo, JPOOL_IMAGE,
+    ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
      (JDIMENSION) (MAXJSAMPLE+1 + pad),
      (JDIMENSION) cinfo->out_color_components);
 
@@ -401,7 +401,7 @@ make_odither_array (j_decompress_ptr cinfo, int ncolors)
   INT32 num,den;
 
   odither = (ODITHER_MATRIX_PTR)
-    (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(ODITHER_MATRIX));
   /* The inter-value distance for this color is MAXJSAMPLE/(ncolors-1).
    * Hence the dither value for the matrix cell with fill order f
@@ -729,7 +729,7 @@ alloc_fs_workspace (j_decompress_ptr cinfo)
   arraysize = (size_t) ((cinfo->output_width + 2) * SIZEOF(FSERROR));
   for (i = 0; i < cinfo->out_color_components; i++) {
     cquantize->fserrors[i] = (FSERRPTR)
-      (*cinfo->mem->alloc_large)((j_common_ptr) cinfo, JPOOL_IMAGE, arraysize);
+      (*cinfo->mem->alloc_large)((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, arraysize);
   }
 }
 
@@ -817,14 +817,13 @@ new_color_map_1_quant (j_decompress_ptr cinfo)
 /*
  * Module initialization routine for 1-pass color quantization.
  */
-
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jinit_1pass_quantizer (j_decompress_ptr cinfo)
 {
   my_cquantize_ptr cquantize;
 
   cquantize = (my_cquantize_ptr)
-    (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_cquantizer));
   cinfo->cquantize = (struct jpeg_color_quantizer *) cquantize;
   cquantize->pub.start_pass = start_pass_1_quant;

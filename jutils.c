@@ -120,7 +120,7 @@ const int jpeg_natural_order2[2*2+16] = {
  * Arithmetic utilities
  */
 
-GLOBAL(long)
+LJPEG_GLOBALlong)
 jdiv_round_up (long a, long b)
 /* Compute a/b rounded up to next integer, ie, ceil(a/b) */
 /* Assumes a >= 0, b > 0 */
@@ -129,7 +129,7 @@ jdiv_round_up (long a, long b)
 }
 
 
-GLOBAL(long)
+LJPEG_GLOBALlong)
 jround_up (long a, long b)
 /* Compute a rounded up to next multiple of b, ie, ceil(a/b)*b */
 /* Assumes a >= 0, b > 0 */
@@ -157,7 +157,7 @@ jround_up (long a, long b)
 /* This function is for use by the FMEMZERO macro defined in jpegint.h.
  * Do not call this function directly, use the FMEMZERO macro instead.
  */
-GLOBAL(void)
+LJPEG_GLOBALvoid)
 jzero_far (void FAR * target, size_t bytestozero)
 /* Zero out a chunk of FAR memory. */
 /* This might be sample-array data, block-array data, or alloc_large data. */
@@ -173,7 +173,7 @@ jzero_far (void FAR * target, size_t bytestozero)
 #endif
 
 
-GLOBAL(void)
+LJPEG_GLOBALvoid)
 jcopy_sample_rows (JSAMPARRAY input_array, int source_row,
 		   JSAMPARRAY output_array, int dest_row,
 		   int num_rows, JDIMENSION num_cols)
@@ -207,7 +207,7 @@ jcopy_sample_rows (JSAMPARRAY input_array, int source_row,
 }
 
 
-GLOBAL(void)
+LJPEG_GLOBALvoid)
 jcopy_block_row (JBLOCKROW input_row, JBLOCKROW output_row,
 		 JDIMENSION num_blocks)
 /* Copy a row of coefficient blocks from one place to another. */

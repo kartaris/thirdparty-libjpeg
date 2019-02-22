@@ -64,8 +64,7 @@
 /*
  * Perform dequantization and inverse DCT on one block of coefficients.
  */
-
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jpeg_idct_float (j_decompress_ptr cinfo, jpeg_component_info * compptr,
 		 JCOEFPTR coef_block,
 		 JSAMPARRAY output_buf, JDIMENSION output_col)

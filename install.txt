@@ -410,7 +410,7 @@ We distribute the software with support for RLE image files (Utah Raster
 Toolkit format) disabled, because the RLE support won't compile without the
 Utah library.  If you have URT version 3.1 or later, you can enable RLE
 support as follows:
-	1.  #define RLE_SUPPORTED in jconfig.h.
+	1.  #define LJPEG_RLE_SUPPORTED in jconfig.h.
 	2.  Add a -I option to CFLAGS in the Makefile for the directory
 	    containing the URT .h files (typically the "include"
 	    subdirectory of the URT distribution).
@@ -425,7 +425,7 @@ this means 8 or 12 bits per channel, of course.)  If you need to work with
 deeper than 8-bit data, you can compile the IJG code for 12-bit operation.
 To do so:
   1. In jmorecfg.h, define BITS_IN_JSAMPLE as 12 rather than 8.
-  2. In jconfig.h, undefine BMP_SUPPORTED, RLE_SUPPORTED, and TARGA_SUPPORTED,
+  2. In jconfig.h, undefine LJPEG_BMP_SUPPORTED, LJPEG_RLE_SUPPORTED, and LJPEG_TARGA_SUPPORTED,
      because the code for those formats doesn't handle 12-bit data and won't
      even compile.  (The PPM code does work, as explained below.  The GIF
      code works too; it scales 8-bit GIF data to and from 12-bit depth

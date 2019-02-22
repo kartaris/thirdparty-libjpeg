@@ -26,7 +26,7 @@
  * which modules will be used and give them appropriate initialization calls.
  */
 
-GLOBAL(void)
+LJPEG_GLOBALvoid)
 jinit_compress_master (j_compress_ptr cinfo)
 {
   /* Initialize master control (includes parameter checking/processing) */
@@ -55,7 +55,7 @@ jinit_compress_master (j_compress_ptr cinfo)
   jinit_marker_writer(cinfo);
 
   /* We can now tell the memory manager to allocate virtual arrays. */
-  (*cinfo->mem->realize_virt_arrays) ((j_common_ptr) cinfo);
+  (*cinfo->mem->realize_virt_arrays) ((LJPEG_j_common_ptr) cinfo);
 
   /* Write the datastream header (SOI) immediately.
    * Frame and scan headers are postponed till later.

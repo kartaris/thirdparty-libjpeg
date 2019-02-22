@@ -19,7 +19,7 @@
 
 #include "cdjpeg.h"		/* Common decls for cjpeg/djpeg applications */
 
-#ifdef BMP_SUPPORTED
+#ifdef LJPEG_BMP_SUPPORTED
 
 
 /*
@@ -80,7 +80,7 @@ put_pixel_rows (j_decompress_ptr cinfo, djpeg_dest_ptr dinfo,
 
   /* Access next row in virtual array */
   image_ptr = (*cinfo->mem->access_virt_sarray)
-    ((j_common_ptr) cinfo, dest->whole_image,
+    ((LJPEG_j_common_ptr) cinfo, dest->whole_image,
      dest->cur_output_row, (JDIMENSION) 1, TRUE);
   dest->cur_output_row++;
 
@@ -115,7 +115,7 @@ put_gray_rows (j_decompress_ptr cinfo, djpeg_dest_ptr dinfo,
 
   /* Access next row in virtual array */
   image_ptr = (*cinfo->mem->access_virt_sarray)
-    ((j_common_ptr) cinfo, dest->whole_image,
+    ((LJPEG_j_common_ptr) cinfo, dest->whole_image,
      dest->cur_output_row, (JDIMENSION) 1, TRUE);
   dest->cur_output_row++;
 
@@ -362,10 +362,10 @@ finish_output_bmp (j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
     if (progress != NULL) {
       progress->pub.pass_counter = (long) (cinfo->output_height - row);
       progress->pub.pass_limit = (long) cinfo->output_height;
-      (*progress->pub.progress_monitor) ((j_common_ptr) cinfo);
+      (*progress->pub.progress_monitor) ((LJPEG_j_common_ptr) cinfo);
     }
     image_ptr = (*cinfo->mem->access_virt_sarray)
-      ((j_common_ptr) cinfo, dest->whole_image, row-1, (JDIMENSION) 1, FALSE);
+      ((LJPEG_j_common_ptr) cinfo, dest->whole_image, row-1, (JDIMENSION) 1, FALSE);
     data_ptr = image_ptr[0];
     for (col = dest->row_width; col > 0; col--) {
       putc(GETJSAMPLE(*data_ptr), outfile);
@@ -385,8 +385,7 @@ finish_output_bmp (j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
 /*
  * The module selection routine for BMP format output.
  */
-
-GLOBAL(djpeg_dest_ptr)
+LJPEG_GLOBAL(djpeg_dest_ptr)
 jinit_write_bmp (j_decompress_ptr cinfo, boolean is_os2)
 {
   bmp_dest_ptr dest;
@@ -394,7 +393,7 @@ jinit_write_bmp (j_decompress_ptr cinfo, boolean is_os2)
 
   /* Create module interface object, fill in method pointers */
   dest = (bmp_dest_ptr)
-      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(bmp_dest_struct));
   dest->pub.start_output = start_output_bmp;
   dest->pub.finish_output = finish_output_bmp;
@@ -423,7 +422,7 @@ jinit_write_bmp (j_decompress_ptr cinfo, boolean is_os2)
 
   /* Allocate space for inversion array, prepare for write pass */
   dest->whole_image = (*cinfo->mem->request_virt_sarray)
-    ((j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
+    ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
      row_width, cinfo->output_height, (JDIMENSION) 1);
   dest->cur_output_row = 0;
   if (cinfo->progress != NULL) {
@@ -433,10 +432,10 @@ jinit_write_bmp (j_decompress_ptr cinfo, boolean is_os2)
 
   /* Create decompressor output buffer. */
   dest->pub.buffer = (*cinfo->mem->alloc_sarray)
-    ((j_common_ptr) cinfo, JPOOL_IMAGE, row_width, (JDIMENSION) 1);
+    ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, row_width, (JDIMENSION) 1);
   dest->pub.buffer_height = 1;
 
   return (djpeg_dest_ptr) dest;
 }
 
-#endif /* BMP_SUPPORTED */
+#endif /* LJPEG_BMP_SUPPORTED */

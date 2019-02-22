@@ -278,7 +278,7 @@ create_context_buffer (j_compress_ptr cinfo)
    * we need five row groups' worth of pointers for each component.
    */
   fake_buffer = (JSAMPARRAY)
-    (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				(cinfo->num_components * 5 * rgroup_height) *
 				SIZEOF(JSAMPROW));
 
@@ -289,7 +289,7 @@ create_context_buffer (j_compress_ptr cinfo)
      * horizontally within the buffer, if it so chooses.
      */
     true_buffer = (*cinfo->mem->alloc_sarray)
-      ((j_common_ptr) cinfo, JPOOL_IMAGE,
+      ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
        (JDIMENSION) (((long) compptr->width_in_blocks *
 		      cinfo->min_DCT_h_scaled_size *
 		      cinfo->max_h_samp_factor) / compptr->h_samp_factor),
@@ -314,7 +314,7 @@ create_context_buffer (j_compress_ptr cinfo)
  * Initialize preprocessing controller.
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jinit_c_prep_controller (j_compress_ptr cinfo, boolean need_full_buffer)
 {
   my_prep_ptr prep;
@@ -325,7 +325,7 @@ jinit_c_prep_controller (j_compress_ptr cinfo, boolean need_full_buffer)
     ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
 
   prep = (my_prep_ptr)
-    (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_prep_controller));
   cinfo->prep = (struct jpeg_c_prep_controller *) prep;
   prep->pub.start_pass = start_pass_prep;
@@ -348,7 +348,7 @@ jinit_c_prep_controller (j_compress_ptr cinfo, boolean need_full_buffer)
     for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
 	 ci++, compptr++) {
       prep->color_buf[ci] = (*cinfo->mem->alloc_sarray)
-	((j_common_ptr) cinfo, JPOOL_IMAGE,
+	((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 	 (JDIMENSION) (((long) compptr->width_in_blocks *
 			cinfo->min_DCT_h_scaled_size *
 			cinfo->max_h_samp_factor) / compptr->h_samp_factor),

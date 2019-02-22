@@ -24,34 +24,33 @@
 /*
  * Signal catcher to ensure that temporary files are removed before aborting.
  * NB: for Amiga Manx C this is actually a global routine named _abort();
- * we put "#define signal_catcher _abort" in jconfig.h.  Talk about bogus...
+ * we put "#define LJPEG_signal_catcher _abort" in jconfig.h.  Talk about bogus...
  */
 
 #ifdef NEED_SIGNAL_CATCHER
 
-static j_common_ptr sig_cinfo;
+static LJPEG_j_common_ptr LJPEG_sig_cinfo;
 
 void				/* must be global for Manx C */
-signal_catcher (int signum)
+LJPEG_signal_catcher (int signum)
 {
-  if (sig_cinfo != NULL) {
-    if (sig_cinfo->err != NULL) /* turn off trace output */
-      sig_cinfo->err->trace_level = 0;
-    jpeg_destroy(sig_cinfo);	/* clean up memory allocation & temp files */
+  if (LJPEG_sig_cinfo != NULL) {
+    if (LJPEG_sig_cinfo->err != NULL) /* turn off trace output */
+      LJPEG_sig_cinfo->err->trace_level = 0;
+    jpeg_destroy(LJPEG_sig_cinfo);	/* clean up memory allocation & temp files */
   }
   exit(EXIT_FAILURE);
 }
 
-
-GLOBAL(void)
-enable_signal_catcher (j_common_ptr cinfo)
+LJPEG_GLOBAL(void)
+enable_signal_catcher (LJPEG_j_common_ptr cinfo)
 {
-  sig_cinfo = cinfo;
+  LJPEG_sig_cinfo = cinfo;
 #ifdef SIGINT			/* not all systems have SIGINT */
-  signal(SIGINT, signal_catcher);
+  signal(SIGINT, LJPEG_signal_catcher);
 #endif
 #ifdef SIGTERM			/* not all systems have SIGTERM */
-  signal(SIGTERM, signal_catcher);
+  signal(SIGTERM, LJPEG_signal_catcher);
 #endif
 }
 
@@ -65,7 +64,7 @@ enable_signal_catcher (j_common_ptr cinfo)
 #ifdef PROGRESS_REPORT
 
 METHODDEF(void)
-progress_monitor (j_common_ptr cinfo)
+progress_monitor (LJPEG_j_common_ptr cinfo)
 {
   cd_progress_ptr prog = (cd_progress_ptr) cinfo->progress;
   int total_passes = prog->pub.total_passes + prog->total_extra_passes;
@@ -84,9 +83,8 @@ progress_monitor (j_common_ptr cinfo)
   }
 }
 
-
-GLOBAL(void)
-start_progress_monitor (j_common_ptr cinfo, cd_progress_ptr progress)
+LJPEG_GLOBAL(void)
+start_progress_monitor (LJPEG_j_common_ptr cinfo, cd_progress_ptr progress)
 {
   /* Enable progress display, unless trace output is on */
   if (cinfo->err->trace_level == 0) {
@@ -98,9 +96,8 @@ start_progress_monitor (j_common_ptr cinfo, cd_progress_ptr progress)
   }
 }
 
-
-GLOBAL(void)
-end_progress_monitor (j_common_ptr cinfo)
+LJPEG_GLOBAL(void)
+end_progress_monitor (LJPEG_j_common_ptr cinfo)
 {
   /* Clear away progress display */
   if (cinfo->err->trace_level == 0) {
@@ -117,8 +114,7 @@ end_progress_monitor (j_common_ptr cinfo)
  * keyword is the constant keyword (must be lower case already),
  * minchars is length of minimum legal abbreviation.
  */
-
-GLOBAL(boolean)
+LJPEG_GLOBAL(boolean)
 keymatch (char * arg, const char * keyword, int minchars)
 {
   register int ca, ck;
@@ -144,8 +140,7 @@ keymatch (char * arg, const char * keyword, int minchars)
  * Routines to establish binary I/O mode for stdin and stdout.
  * Non-Unix systems often require some hacking to get out of text mode.
  */
-
-GLOBAL(FILE *)
+LJPEG_GLOBAL(FILE *)
 read_stdin (void)
 {
   FILE * input_file = stdin;
@@ -162,8 +157,7 @@ read_stdin (void)
   return input_file;
 }
 
-
-GLOBAL(FILE *)
+LJPEG_GLOBAL(FILE *)
 write_stdout (void)
 {
   FILE * output_file = stdout;

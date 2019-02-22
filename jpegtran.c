@@ -402,7 +402,7 @@ main (int argc, char **argv)
    * Note: we assume only the decompression object will have virtual arrays.
    */
 #ifdef NEED_SIGNAL_CATCHER
-  enable_signal_catcher((j_common_ptr) &srcinfo);
+  enable_signal_catcher((LJPEG_j_common_ptr) &srcinfo);
 #endif
 
   /* Scan command line to find file names.
@@ -453,7 +453,7 @@ main (int argc, char **argv)
   }
 
 #ifdef PROGRESS_REPORT
-  start_progress_monitor((j_common_ptr) &dstinfo, &progress);
+  start_progress_monitor((LJPEG_j_common_ptr) &dstinfo, &progress);
 #endif
 
   /* Specify data source for decompression */
@@ -551,7 +551,7 @@ main (int argc, char **argv)
     fclose(fp);
 
 #ifdef PROGRESS_REPORT
-  end_progress_monitor((j_common_ptr) &dstinfo);
+  end_progress_monitor((LJPEG_j_common_ptr) &dstinfo);
 #endif
 
   /* All done. */

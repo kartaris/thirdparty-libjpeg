@@ -21,7 +21,7 @@
 
 #include "cdjpeg.h"		/* Common decls for cjpeg/djpeg applications */
 
-#ifdef PPM_SUPPORTED
+#ifdef LJPEG_PPM_SUPPORTED
 
 
 /* Portions of this code are based on the PBMPLUS library, which is:
@@ -388,7 +388,7 @@ start_input_ppm (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
     source->buffer_width = (size_t) w * cinfo->input_components *
       ((maxval<=255) ? SIZEOF(U_CHAR) : (2*SIZEOF(U_CHAR)));
     source->iobuffer = (U_CHAR *)
-      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  source->buffer_width);
   }
 
@@ -403,7 +403,7 @@ start_input_ppm (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
   } else {
     /* Need to translate anyway, so make a separate sample buffer. */
     source->pub.buffer = (*cinfo->mem->alloc_sarray)
-      ((j_common_ptr) cinfo, JPOOL_IMAGE,
+      ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
        (JDIMENSION) w * cinfo->input_components, (JDIMENSION) 1);
     source->pub.buffer_height = 1;
   }
@@ -414,7 +414,7 @@ start_input_ppm (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 
     /* On 16-bit-int machines we have to be careful of maxval = 65535 */
     source->rescale = (JSAMPLE *)
-      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  (size_t) (((long) maxval + 1L) * SIZEOF(JSAMPLE)));
     half_maxval = maxval / 2;
     for (val = 0; val <= (INT32) maxval; val++) {
@@ -440,14 +440,14 @@ finish_input_ppm (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
  * The module selection routine for PPM format input.
  */
 
-GLOBAL(cjpeg_source_ptr)
+LJPEG_GLOBAL(cjpeg_source_ptr)
 jinit_read_ppm (j_compress_ptr cinfo)
 {
   ppm_source_ptr source;
 
   /* Create module interface object */
   source = (ppm_source_ptr)
-      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(ppm_source_struct));
   /* Fill in method ptrs, except get_pixel_rows which start_input sets */
   source->pub.start_input = start_input_ppm;
@@ -456,4 +456,4 @@ jinit_read_ppm (j_compress_ptr cinfo)
   return (cjpeg_source_ptr) source;
 }
 
-#endif /* PPM_SUPPORTED */
+#endif /* LJPEG_PPM_SUPPORTED */

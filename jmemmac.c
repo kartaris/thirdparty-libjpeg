@@ -78,14 +78,14 @@ static int next_file_num;	/* to distinguish among several temp files */
  * with relocatable storage.
  */
 
-GLOBAL(void *)
-jpeg_get_small (j_common_ptr cinfo, size_t sizeofobject)
+LJPEG_GLOBAL(void *)
+jpeg_get_small (LJPEG_j_common_ptr cinfo, size_t sizeofobject)
 {
   return (void *) NewPtr(sizeofobject);
 }
 
-GLOBAL(void)
-jpeg_free_small (j_common_ptr cinfo, void * object, size_t sizeofobject)
+LJPEG_GLOBAL(void)
+jpeg_free_small (LJPEG_j_common_ptr cinfo, void * object, size_t sizeofobject)
 {
   DisposePtr((Ptr) object);
 }
@@ -98,14 +98,14 @@ jpeg_free_small (j_common_ptr cinfo, void * object, size_t sizeofobject)
  * on rational architectures like the Mac.
  */
 
-GLOBAL(void FAR *)
-jpeg_get_large (j_common_ptr cinfo, size_t sizeofobject)
+LJPEG_GLOBAL(void FAR *)
+jpeg_get_large (LJPEG_j_common_ptr cinfo, size_t sizeofobject)
 {
   return (void FAR *) NewPtr(sizeofobject);
 }
 
-GLOBAL(void)
-jpeg_free_large (j_common_ptr cinfo, void FAR * object, size_t sizeofobject)
+LJPEG_GLOBAL(void)
+jpeg_free_large (LJPEG_j_common_ptr cinfo, void FAR * object, size_t sizeofobject)
 {
   DisposePtr((Ptr) object);
 }
@@ -115,8 +115,8 @@ jpeg_free_large (j_common_ptr cinfo, void FAR * object, size_t sizeofobject)
  * This routine computes the total memory space available for allocation.
  */
 
-GLOBAL(long)
-jpeg_mem_available (j_common_ptr cinfo, long min_bytes_needed,
+LJPEG_GLOBAL(long)
+jpeg_mem_available (LJPEG_j_common_ptr cinfo, long min_bytes_needed,
 		    long max_bytes_needed, long already_allocated)
 {
   long limit = cinfo->mem->max_memory_to_use - already_allocated;
@@ -151,7 +151,7 @@ jpeg_mem_available (j_common_ptr cinfo, long min_bytes_needed,
 
 
 METHODDEF(void)
-read_backing_store (j_common_ptr cinfo, backing_store_ptr info,
+read_backing_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 		    void FAR * buffer_address,
 		    long file_offset, long byte_count)
 {
@@ -169,7 +169,7 @@ read_backing_store (j_common_ptr cinfo, backing_store_ptr info,
 
 
 METHODDEF(void)
-write_backing_store (j_common_ptr cinfo, backing_store_ptr info,
+write_backing_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 		     void FAR * buffer_address,
 		     long file_offset, long byte_count)
 {
@@ -187,7 +187,7 @@ write_backing_store (j_common_ptr cinfo, backing_store_ptr info,
 
 
 METHODDEF(void)
-close_backing_store (j_common_ptr cinfo, backing_store_ptr info)
+close_backing_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info)
 {
   FSClose ( info->temp_file );
   FSpDelete ( &(info->tempSpec) );
@@ -201,8 +201,8 @@ close_backing_store (j_common_ptr cinfo, backing_store_ptr info)
  * and puts the temporary file in there.
  */
 
-GLOBAL(void)
-jpeg_open_backing_store (j_common_ptr cinfo, backing_store_ptr info,
+LJPEG_GLOBAL(void)
+jpeg_open_backing_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 			 long total_bytes_needed)
 {
   short         tmpRef, vRefNum;
@@ -268,8 +268,8 @@ jpeg_open_backing_store (j_common_ptr cinfo, backing_store_ptr info,
  * cleanup required.
  */
 
-GLOBAL(long)
-jpeg_mem_init (j_common_ptr cinfo)
+LJPEG_GLOBAL(long)
+jpeg_mem_init (LJPEG_j_common_ptr cinfo)
 {
   next_file_num = 0;
 
@@ -282,8 +282,8 @@ jpeg_mem_init (j_common_ptr cinfo)
   return FreeMem();
 }
 
-GLOBAL(void)
-jpeg_mem_term (j_common_ptr cinfo)
+LJPEG_GLOBAL(void)
+jpeg_mem_term (LJPEG_j_common_ptr cinfo)
 {
   /* no work */
 }

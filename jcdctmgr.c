@@ -362,7 +362,7 @@ start_pass_fdctmgr (j_compress_ptr cinfo)
        */
       if (fdct->divisors[qtblno] == NULL) {
 	fdct->divisors[qtblno] = (DCTELEM *)
-	  (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+	  (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				      DCTSIZE2 * SIZEOF(DCTELEM));
       }
       dtbl = fdct->divisors[qtblno];
@@ -397,7 +397,7 @@ start_pass_fdctmgr (j_compress_ptr cinfo)
 
 	if (fdct->divisors[qtblno] == NULL) {
 	  fdct->divisors[qtblno] = (DCTELEM *)
-	    (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+	    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 					DCTSIZE2 * SIZEOF(DCTELEM));
 	}
 	dtbl = fdct->divisors[qtblno];
@@ -431,7 +431,7 @@ start_pass_fdctmgr (j_compress_ptr cinfo)
 
 	if (fdct->float_divisors[qtblno] == NULL) {
 	  fdct->float_divisors[qtblno] = (FAST_FLOAT *)
-	    (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+	    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 					DCTSIZE2 * SIZEOF(FAST_FLOAT));
 	}
 	fdtbl = fdct->float_divisors[qtblno];
@@ -460,14 +460,14 @@ start_pass_fdctmgr (j_compress_ptr cinfo)
  * Initialize FDCT manager.
  */
 
-GLOBAL(void)
+LJPEG_GLOBAL(void)
 jinit_forward_dct (j_compress_ptr cinfo)
 {
   my_fdct_ptr fdct;
   int i;
 
   fdct = (my_fdct_ptr)
-    (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_fdct_controller));
   cinfo->fdct = (struct jpeg_forward_dct *) fdct;
   fdct->pub.start_pass = start_pass_fdctmgr;

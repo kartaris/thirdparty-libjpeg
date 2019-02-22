@@ -206,7 +206,7 @@ term_source (j_decompress_ptr cinfo)
  * for closing it after finishing decompression.
  */
 
-GLOBAL(void)
+LJPEG_GLOBALvoid)
 jpeg_stdio_src (j_decompress_ptr cinfo, FILE * infile)
 {
   my_src_ptr src;
@@ -220,11 +220,11 @@ jpeg_stdio_src (j_decompress_ptr cinfo, FILE * infile)
    */
   if (cinfo->src == NULL) {	/* first time for this JPEG object? */
     cinfo->src = (struct jpeg_source_mgr *)
-      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
+      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
 				  SIZEOF(my_source_mgr));
     src = (my_src_ptr) cinfo->src;
     src->buffer = (JOCTET *)
-      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
+      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
 				  INPUT_BUF_SIZE * SIZEOF(JOCTET));
   }
 
@@ -245,7 +245,7 @@ jpeg_stdio_src (j_decompress_ptr cinfo, FILE * infile)
  * The buffer must contain the whole JPEG data.
  */
 
-GLOBAL(void)
+LJPEG_GLOBALvoid)
 jpeg_mem_src (j_decompress_ptr cinfo,
 	      unsigned char * inbuffer, unsigned long insize)
 {
@@ -260,7 +260,7 @@ jpeg_mem_src (j_decompress_ptr cinfo,
    */
   if (cinfo->src == NULL) {	/* first time for this JPEG object? */
     cinfo->src = (struct jpeg_source_mgr *)
-      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
+      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
 				  SIZEOF(struct jpeg_source_mgr));
   }
 

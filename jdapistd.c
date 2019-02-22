@@ -33,8 +33,7 @@ LOCAL(boolean) output_pass_setup JPP((j_decompress_ptr cinfo));
  * Returns FALSE if suspended.  The return value need be inspected only if
  * a suspending data source is used.
  */
-
-GLOBAL(boolean)
+LJPEG_GLOBAL(boolean)
 jpeg_start_decompress (j_decompress_ptr cinfo)
 {
   if (cinfo->global_state == DSTATE_READY) {
@@ -55,7 +54,7 @@ jpeg_start_decompress (j_decompress_ptr cinfo)
 	int retcode;
 	/* Call progress monitor hook if present */
 	if (cinfo->progress != NULL)
-	  (*cinfo->progress->progress_monitor) ((j_common_ptr) cinfo);
+	  (*cinfo->progress->progress_monitor) ((LJPEG_j_common_ptr) cinfo);
 	/* Absorb some more input */
 	retcode = (*cinfo->inputctl->consume_input) (cinfo);
 	if (retcode == JPEG_SUSPENDED)
@@ -110,7 +109,7 @@ output_pass_setup (j_decompress_ptr cinfo)
       if (cinfo->progress != NULL) {
 	cinfo->progress->pass_counter = (long) cinfo->output_scanline;
 	cinfo->progress->pass_limit = (long) cinfo->output_height;
-	(*cinfo->progress->progress_monitor) ((j_common_ptr) cinfo);
+	(*cinfo->progress->progress_monitor) ((LJPEG_j_common_ptr) cinfo);
       }
       /* Process some data */
       last_scanline = cinfo->output_scanline;
@@ -147,8 +146,7 @@ output_pass_setup (j_decompress_ptr cinfo)
  * this likely signals an application programmer error.  However,
  * an oversize buffer (max_lines > scanlines remaining) is not an error.
  */
-
-GLOBAL(JDIMENSION)
+LJPEG_GLOBAL(JDIMENSION)
 jpeg_read_scanlines (j_decompress_ptr cinfo, JSAMPARRAY scanlines,
 		     JDIMENSION max_lines)
 {
@@ -165,7 +163,7 @@ jpeg_read_scanlines (j_decompress_ptr cinfo, JSAMPARRAY scanlines,
   if (cinfo->progress != NULL) {
     cinfo->progress->pass_counter = (long) cinfo->output_scanline;
     cinfo->progress->pass_limit = (long) cinfo->output_height;
-    (*cinfo->progress->progress_monitor) ((j_common_ptr) cinfo);
+    (*cinfo->progress->progress_monitor) ((LJPEG_j_common_ptr) cinfo);
   }
 
   /* Process some data */
@@ -180,8 +178,7 @@ jpeg_read_scanlines (j_decompress_ptr cinfo, JSAMPARRAY scanlines,
  * Alternate entry point to read raw data.
  * Processes exactly one iMCU row per call, unless suspended.
  */
-
-GLOBAL(JDIMENSION)
+LJPEG_GLOBAL(JDIMENSION)
 jpeg_read_raw_data (j_decompress_ptr cinfo, JSAMPIMAGE data,
 		    JDIMENSION max_lines)
 {
@@ -198,7 +195,7 @@ jpeg_read_raw_data (j_decompress_ptr cinfo, JSAMPIMAGE data,
   if (cinfo->progress != NULL) {
     cinfo->progress->pass_counter = (long) cinfo->output_scanline;
     cinfo->progress->pass_limit = (long) cinfo->output_height;
-    (*cinfo->progress->progress_monitor) ((j_common_ptr) cinfo);
+    (*cinfo->progress->progress_monitor) ((LJPEG_j_common_ptr) cinfo);
   }
 
   /* Verify that at least one iMCU row can be returned. */
@@ -223,8 +220,7 @@ jpeg_read_raw_data (j_decompress_ptr cinfo, JSAMPIMAGE data,
 /*
  * Initialize for an output pass in buffered-image mode.
  */
-
-GLOBAL(boolean)
+LJPEG_GLOBAL(boolean)
 jpeg_start_output (j_decompress_ptr cinfo, int scan_number)
 {
   if (cinfo->global_state != DSTATE_BUFIMAGE &&
@@ -248,8 +244,7 @@ jpeg_start_output (j_decompress_ptr cinfo, int scan_number)
  * Returns FALSE if suspended.  The return value need be inspected only if
  * a suspending data source is used.
  */
-
-GLOBAL(boolean)
+LJPEG_GLOBAL(boolean)
 jpeg_finish_output (j_decompress_ptr cinfo)
 {
   if ((cinfo->global_state == DSTATE_SCANNING ||
