@@ -206,7 +206,7 @@ LJPEG_term_source (LJPEG_j_decompress_ptr cinfo)
  * for closing it after finishing decompression.
  */
 
-LJPEG_GLOBALvoid)
+LJPEG_GLOBAL(void)
 LJPEG_jpeg_stdio_src (LJPEG_j_decompress_ptr cinfo, FILE * infile)
 {
   LJPEG_my_src_ptr src;
@@ -245,7 +245,7 @@ LJPEG_jpeg_stdio_src (LJPEG_j_decompress_ptr cinfo, FILE * infile)
  * The buffer must contain the whole JPEG data.
  */
 
-LJPEG_GLOBALvoid)
+LJPEG_GLOBAL(void)
 LJPEG_jpeg_mem_src (LJPEG_j_decompress_ptr cinfo,
 	      unsigned char * inbuffer, unsigned long insize)
 {

@@ -26,7 +26,7 @@
  * which modules will be used and give them appropriate initialization calls.
  */
 
-LJPEG_GLOBALvoid)
+LJPEG_GLOBAL(void)
 LJPEG_jinit_compress_master (LJPEG_j_compress_ptr cinfo)
 {
   /* Initialize master control (includes parameter checking/processing) */

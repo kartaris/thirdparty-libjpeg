@@ -96,7 +96,7 @@ write_header (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo, int num_
  */
 
 LJPEG_METHODDEF(void)
-put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
+LJPEG_put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 		LJPEG_JDIMENSION rows_supplied)
 /* used for unquantized full-color output */
 {
@@ -117,7 +117,7 @@ put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 }
 
 LJPEG_METHODDEF(void)
-put_gray_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
+LJPEG_put_gray_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 	       LJPEG_JDIMENSION rows_supplied)
 /* used for grayscale OR quantized color output */
 {
@@ -175,9 +175,9 @@ start_output_tga (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
     /* demap quantized gray output.  Never emit a colormap. */
     write_header(cinfo, dinfo, 0);
     if (cinfo->quantize_colors)
-      dest->pub.put_pixel_rows = put_demapped_gray;
+      dest->pub.LJPEG_put_pixel_rows = put_demapped_gray;
     else
-      dest->pub.put_pixel_rows = put_gray_rows;
+      dest->pub.LJPEG_put_pixel_rows = LJPEG_put_gray_rows;
   } else if (cinfo->out_color_space == LJPEG_JCS_RGB) {
     if (cinfo->quantize_colors) {
       /* We only support 8-bit colormap indexes, so only 256 colors */
@@ -192,10 +192,10 @@ start_output_tga (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 	putc(GETJSAMPLE(cinfo->colormap[1][i]), outfile);
 	putc(GETJSAMPLE(cinfo->colormap[0][i]), outfile);
       }
-      dest->pub.put_pixel_rows = put_gray_rows;
+      dest->pub.LJPEG_put_pixel_rows = LJPEG_put_gray_rows;
     } else {
       write_header(cinfo, dinfo, 0);
-      dest->pub.put_pixel_rows = put_pixel_rows;
+      dest->pub.LJPEG_put_pixel_rows = LJPEG_put_pixel_rows;
     }
   } else {
     ERREXIT(cinfo, JERR_TGA_COLORSPACE);

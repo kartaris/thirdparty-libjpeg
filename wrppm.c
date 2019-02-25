@@ -88,7 +88,7 @@ typedef ppm_dest_struct * ppm_dest_ptr;
  */
 
 LJPEG_METHODDEF(void)
-put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
+LJPEG_put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 		LJPEG_JDIMENSION rows_supplied)
 {
   ppm_dest_ptr dest = (ppm_dest_ptr) dinfo;
@@ -216,7 +216,7 @@ finish_output_ppm (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
  * The module selection routine for PPM format output.
  */
 
-LJPEG_GLOBALLJPEG_djpeg_dest_ptr)
+LJPEG_GLOBAL(LJPEG_djpeg_dest_ptr)
 LJPEG_jinit_write_ppm (LJPEG_j_decompress_ptr cinfo)
 {
   ppm_dest_ptr dest;
@@ -248,11 +248,11 @@ LJPEG_jinit_write_ppm (LJPEG_j_decompress_ptr cinfo)
        cinfo->output_width * cinfo->output_components, (LJPEG_JDIMENSION) 1);
     dest->pub.buffer_height = 1;
     if (! cinfo->quantize_colors)
-      dest->pub.put_pixel_rows = copy_pixel_rows;
+      dest->pub.LJPEG_put_pixel_rows = copy_pixel_rows;
     else if (cinfo->out_color_space == LJPEG_JCS_GRAYSCALE)
-      dest->pub.put_pixel_rows = put_demapped_gray;
+      dest->pub.LJPEG_put_pixel_rows = put_demapped_gray;
     else
-      dest->pub.put_pixel_rows = put_demapped_rgb;
+      dest->pub.LJPEG_put_pixel_rows = put_demapped_rgb;
   } else {
     /* We will fwrite() directly from decompressor output buffer. */
     /* Synthesize a LJPEG_JSAMPARRAY pointer structure */
@@ -260,7 +260,7 @@ LJPEG_jinit_write_ppm (LJPEG_j_decompress_ptr cinfo)
     dest->pixrow = (LJPEG_JSAMPROW) dest->iobuffer;
     dest->pub.buffer = & dest->pixrow;
     dest->pub.buffer_height = 1;
-    dest->pub.put_pixel_rows = put_pixel_rows;
+    dest->pub.LJPEG_put_pixel_rows = LJPEG_put_pixel_rows;
   }
 
   return (LJPEG_djpeg_dest_ptr) dest;

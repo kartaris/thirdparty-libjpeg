@@ -696,7 +696,7 @@ LJPEG_write_tables_only (LJPEG_j_compress_ptr cinfo)
  * Initialize the marker writer module.
  */
 
-LJPEG_GLOBALvoid)
+LJPEG_GLOBAL(void)
 LJPEG_jinit_marker_writer (LJPEG_j_compress_ptr cinfo)
 {
   LJPEG_my_marker_ptr marker;

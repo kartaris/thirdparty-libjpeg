@@ -133,7 +133,7 @@ start_output_rle (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
     ((LJPEG_j_common_ptr) cinfo, dest->image, (LJPEG_JDIMENSION) 0, (LJPEG_JDIMENSION) 1, TRUE);
   dest->pub.buffer_height = 1;
 
-  dest->pub.put_pixel_rows = rle_put_pixel_rows;
+  dest->pub.LJPEG_put_pixel_rows = rle_put_pixel_rows;
 
 #ifdef PROGRESS_REPORT
   if (progress != NULL) {

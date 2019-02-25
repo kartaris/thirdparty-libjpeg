@@ -38,8 +38,8 @@
 static const char * LJPEG_progname;	/* program name for error messages */
 static char * outfilename;	/* for -outfile switch */
 static char * scaleoption;	/* -scale switch */
-static JCOPY_OPTION copyoption;	/* -copy switch */
-static jpeg_transform_info transformoption; /* image transformation options */
+static LJPEG_JCOPY_OPTION copyoption;	/* -copy switch */
+static LJPEG_jpeg_transform_info transformoption; /* image transformation options */
 
 
 LOCAL(void)
@@ -94,7 +94,7 @@ usage (void)
 
 
 LOCAL(void)
-select_transform (JXFORM_CODE transform)
+select_transform (LJPEG_JXFORM_CODE transform)
 /* Silly little routine to detect multiple transform options,
  * which we can't handle.
  */
@@ -187,7 +187,7 @@ LJPEG_parse_switches (LJPEG_j_compress_ptr cinfo, int argc, char **argv,
 #if TRANSFORMS_SUPPORTED
       if (++argn >= argc)	/* advance to next argument */
 	usage();
-      if (! jtransform_parse_crop_spec(&transformoption, argv[argn])) {
+      if (! LJPEG_jtransform_parse_crop_spec(&transformoption, argv[argn])) {
 	fprintf(stderr, "%s: bogus -crop argument '%s'\n",
 		LJPEG_progname, argv[argn]);
 	exit(EXIT_FAILURE);
@@ -460,7 +460,7 @@ main (int argc, char **argv)
   LJPEG_jpeg_stdio_src(&srcinfo, fp);
 
   /* Enable saving of extra markers that we want to copy */
-  jcopy_markers_setup(&srcinfo, copyoption);
+  LJPEG_jcopy_markers_setup(&srcinfo, copyoption);
 
   /* Read file header */
   (void) LJPEG_jpeg_read_header(&srcinfo, TRUE);
@@ -477,7 +477,7 @@ main (int argc, char **argv)
 #if TRANSFORMS_SUPPORTED
   /* Fail right away if -perfect is given and transformation is not perfect.
    */
-  if (!jtransform_request_workspace(&srcinfo, &transformoption)) {
+  if (!LJPEG_jtransform_request_workspace(&srcinfo, &transformoption)) {
     fprintf(stderr, "%s: transformation is not perfect\n", LJPEG_progname);
     exit(EXIT_FAILURE);
   }
@@ -493,7 +493,7 @@ main (int argc, char **argv)
    * also find out which set of coefficient arrays will hold the output.
    */
 #if TRANSFORMS_SUPPORTED
-  dst_coef_arrays = jtransform_adjust_parameters(&srcinfo, &dstinfo,
+  dst_coef_arrays = LJPEG_jtransform_adjust_parameters(&srcinfo, &dstinfo,
 						 src_coef_arrays,
 						 &transformoption);
 #else
@@ -531,11 +531,11 @@ main (int argc, char **argv)
   LJPEG_jpeg_write_coefficients(&dstinfo, dst_coef_arrays);
 
   /* Copy to the output file any extra markers that we want to preserve */
-  jcopy_markers_execute(&srcinfo, &dstinfo, copyoption);
+  LJPEG_jcopy_markers_execute(&srcinfo, &dstinfo, copyoption);
 
   /* Execute image transformation, if any */
 #if TRANSFORMS_SUPPORTED
-  jtransform_execute_transformation(&srcinfo, &dstinfo,
+  LJPEG_jtransform_execute_transformation(&srcinfo, &dstinfo,
 				    src_coef_arrays,
 				    &transformoption);
 #endif

@@ -76,7 +76,7 @@
 
 
 LOCAL(void)
-do_crop (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
+LJPEG_do_crop (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	 LJPEG_JDIMENSION x_crop_offset, LJPEG_JDIMENSION y_crop_offset,
 	 LJPEG_jvirt_barray_ptr *src_coef_arrays,
 	 LJPEG_jvirt_barray_ptr *dst_coef_arrays)
@@ -114,7 +114,7 @@ do_crop (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 
 
 LOCAL(void)
-do_flip_h_no_crop (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
+LJPEG_do_flip_h_no_crop (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 		   LJPEG_JDIMENSION x_crop_offset,
 		   LJPEG_jvirt_barray_ptr *src_coef_arrays)
 /* Horizontal flip; done in-place, so no separate dest array is required.
@@ -181,7 +181,7 @@ do_flip_h_no_crop (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 
 
 LOCAL(void)
-do_flip_h (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
+LJPEG_do_flip_h (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	   LJPEG_JDIMENSION x_crop_offset, LJPEG_JDIMENSION y_crop_offset,
 	   LJPEG_jvirt_barray_ptr *src_coef_arrays,
 	   LJPEG_jvirt_barray_ptr *dst_coef_arrays)
@@ -243,7 +243,7 @@ do_flip_h (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 
 
 LOCAL(void)
-do_flip_v (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
+LJPEG_do_flip_v (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	   LJPEG_JDIMENSION x_crop_offset, LJPEG_JDIMENSION y_crop_offset,
 	   LJPEG_jvirt_barray_ptr *src_coef_arrays,
 	   LJPEG_jvirt_barray_ptr *dst_coef_arrays)
@@ -323,7 +323,7 @@ do_flip_v (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 
 
 LOCAL(void)
-do_transpose (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
+LJPEG_do_transpose (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	      LJPEG_JDIMENSION x_crop_offset, LJPEG_JDIMENSION y_crop_offset,
 	      LJPEG_jvirt_barray_ptr *src_coef_arrays,
 	      LJPEG_jvirt_barray_ptr *dst_coef_arrays)
@@ -371,7 +371,7 @@ do_transpose (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 
 
 LOCAL(void)
-do_rot_90 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
+LJPEG_do_rot_90 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	   LJPEG_JDIMENSION x_crop_offset, LJPEG_JDIMENSION y_crop_offset,
 	   LJPEG_jvirt_barray_ptr *src_coef_arrays,
 	   LJPEG_jvirt_barray_ptr *dst_coef_arrays)
@@ -452,7 +452,7 @@ do_rot_90 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 
 
 LOCAL(void)
-do_rot_270 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
+LJPEG_do_rot_270 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	    LJPEG_JDIMENSION x_crop_offset, LJPEG_JDIMENSION y_crop_offset,
 	    LJPEG_jvirt_barray_ptr *src_coef_arrays,
 	    LJPEG_jvirt_barray_ptr *dst_coef_arrays)
@@ -523,7 +523,7 @@ do_rot_270 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 
 
 LOCAL(void)
-do_rot_180 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
+LJPEG_do_rot_180 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	    LJPEG_JDIMENSION x_crop_offset, LJPEG_JDIMENSION y_crop_offset,
 	    LJPEG_jvirt_barray_ptr *src_coef_arrays,
 	    LJPEG_jvirt_barray_ptr *dst_coef_arrays)
@@ -631,7 +631,7 @@ do_rot_180 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 
 
 LOCAL(void)
-do_transverse (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
+LJPEG_do_transverse (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	       LJPEG_JDIMENSION x_crop_offset, LJPEG_JDIMENSION y_crop_offset,
 	       LJPEG_jvirt_barray_ptr *src_coef_arrays,
 	       LJPEG_jvirt_barray_ptr *dst_coef_arrays)
@@ -751,7 +751,7 @@ do_transverse (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
  */
 
 LOCAL(boolean)
-jt_read_integer (const char ** strptr, LJPEG_JDIMENSION * result)
+LJPEG_jt_read_integer (const char ** strptr, LJPEG_JDIMENSION * result)
 {
   const char * ptr = *strptr;
   LJPEG_JDIMENSION val = 0;
@@ -781,7 +781,7 @@ jt_read_integer (const char ** strptr, LJPEG_JDIMENSION * result)
  */
 
 LJPEG_GLOBAL(boolean)
-jtransform_parse_crop_spec (jpeg_transform_info *info, const char *spec)
+LJPEG_jtransform_parse_crop_spec (LJPEG_jpeg_transform_info *info, const char *spec)
 {
   info->crop = FALSE;
   info->crop_width_set = JCROP_UNSET;
@@ -791,7 +791,7 @@ jtransform_parse_crop_spec (jpeg_transform_info *info, const char *spec)
 
   if (isdigit(*spec)) {
     /* fetch width */
-    if (! jt_read_integer(&spec, &info->crop_width))
+    if (! LJPEG_jt_read_integer(&spec, &info->crop_width))
       return FALSE;
     if (*spec == 'f' || *spec == 'F') {
       spec++;
@@ -802,7 +802,7 @@ jtransform_parse_crop_spec (jpeg_transform_info *info, const char *spec)
   if (*spec == 'x' || *spec == 'X') {
     /* fetch height */
     spec++;
-    if (! jt_read_integer(&spec, &info->crop_height))
+    if (! LJPEG_jt_read_integer(&spec, &info->crop_height))
       return FALSE;
     if (*spec == 'f' || *spec == 'F') {
       spec++;
@@ -814,14 +814,14 @@ jtransform_parse_crop_spec (jpeg_transform_info *info, const char *spec)
     /* fetch xoffset */
     info->crop_xoffset_set = (*spec == '-') ? JCROP_NEG : JCROP_POS;
     spec++;
-    if (! jt_read_integer(&spec, &info->crop_xoffset))
+    if (! LJPEG_jt_read_integer(&spec, &info->crop_xoffset))
       return FALSE;
   }
   if (*spec == '+' || *spec == '-') {
     /* fetch yoffset */
     info->crop_yoffset_set = (*spec == '-') ? JCROP_NEG : JCROP_POS;
     spec++;
-    if (! jt_read_integer(&spec, &info->crop_yoffset))
+    if (! LJPEG_jt_read_integer(&spec, &info->crop_yoffset))
       return FALSE;
   }
   /* We had better have gotten to the end of the string. */
@@ -835,7 +835,7 @@ jtransform_parse_crop_spec (jpeg_transform_info *info, const char *spec)
 /* Trim off any partial iMCUs on the indicated destination edge */
 
 LOCAL(void)
-trim_right_edge (jpeg_transform_info *info, LJPEG_JDIMENSION full_width)
+LJPEG_trim_right_edge (LJPEG_jpeg_transform_info *info, LJPEG_JDIMENSION full_width)
 {
   LJPEG_JDIMENSION MCU_cols;
 
@@ -846,7 +846,7 @@ trim_right_edge (jpeg_transform_info *info, LJPEG_JDIMENSION full_width)
 }
 
 LOCAL(void)
-trim_bottom_edge (jpeg_transform_info *info, LJPEG_JDIMENSION full_height)
+LJPEG_trim_bottom_edge (LJPEG_jpeg_transform_info *info, LJPEG_JDIMENSION full_height)
 {
   LJPEG_JDIMENSION MCU_rows;
 
@@ -875,8 +875,8 @@ trim_bottom_edge (jpeg_transform_info *info, LJPEG_JDIMENSION full_height)
  */
 
 LJPEG_GLOBAL(boolean)
-jtransform_request_workspace (LJPEG_j_decompress_ptr srcinfo,
-			      jpeg_transform_info *info)
+LJPEG_jtransform_request_workspace (LJPEG_j_decompress_ptr srcinfo,
+			      LJPEG_jpeg_transform_info *info)
 {
   LJPEG_jvirt_barray_ptr *coef_arrays;
   boolean need_workspace, transpose_it;
@@ -903,14 +903,14 @@ jtransform_request_workspace (LJPEG_j_decompress_ptr srcinfo,
    */
   if (info->perfect) {
     if (info->num_components == 1) {
-      if (!jtransform_perfect_transform(srcinfo->output_width,
+      if (!LJPEG_jtransform_perfect_transform(srcinfo->output_width,
 	  srcinfo->output_height,
 	  srcinfo->min_DCT_h_scaled_size,
 	  srcinfo->min_DCT_v_scaled_size,
 	  info->transform))
 	return FALSE;
     } else {
-      if (!jtransform_perfect_transform(srcinfo->output_width,
+      if (!LJPEG_jtransform_perfect_transform(srcinfo->output_width,
 	  srcinfo->output_height,
 	  srcinfo->max_h_samp_factor * srcinfo->min_DCT_h_scaled_size,
 	  srcinfo->max_v_samp_factor * srcinfo->min_DCT_v_scaled_size,
@@ -1019,14 +1019,14 @@ jtransform_request_workspace (LJPEG_j_decompress_ptr srcinfo,
     break;
   case JXFORM_FLIP_H:
     if (info->trim)
-      trim_right_edge(info, srcinfo->output_width);
+      LJPEG_trim_right_edge(info, srcinfo->output_width);
     if (info->y_crop_offset != 0)
       need_workspace = TRUE;
     /* do_flip_h_no_crop doesn't need a workspace array */
     break;
   case JXFORM_FLIP_V:
     if (info->trim)
-      trim_bottom_edge(info, srcinfo->output_height);
+      LJPEG_trim_bottom_edge(info, srcinfo->output_height);
     /* Need workspace arrays having same dimensions as source image. */
     need_workspace = TRUE;
     break;
@@ -1038,8 +1038,8 @@ jtransform_request_workspace (LJPEG_j_decompress_ptr srcinfo,
     break;
   case JXFORM_TRANSVERSE:
     if (info->trim) {
-      trim_right_edge(info, srcinfo->output_height);
-      trim_bottom_edge(info, srcinfo->output_width);
+      LJPEG_trim_right_edge(info, srcinfo->output_height);
+      LJPEG_trim_bottom_edge(info, srcinfo->output_width);
     }
     /* Need workspace arrays having transposed dimensions. */
     need_workspace = TRUE;
@@ -1047,22 +1047,22 @@ jtransform_request_workspace (LJPEG_j_decompress_ptr srcinfo,
     break;
   case JXFORM_ROT_90:
     if (info->trim)
-      trim_right_edge(info, srcinfo->output_height);
+      LJPEG_trim_right_edge(info, srcinfo->output_height);
     /* Need workspace arrays having transposed dimensions. */
     need_workspace = TRUE;
     transpose_it = TRUE;
     break;
   case JXFORM_ROT_180:
     if (info->trim) {
-      trim_right_edge(info, srcinfo->output_width);
-      trim_bottom_edge(info, srcinfo->output_height);
+      LJPEG_trim_right_edge(info, srcinfo->output_width);
+      LJPEG_trim_bottom_edge(info, srcinfo->output_height);
     }
     /* Need workspace arrays having same dimensions as source image. */
     need_workspace = TRUE;
     break;
   case JXFORM_ROT_270:
     if (info->trim)
-      trim_bottom_edge(info, srcinfo->output_width);
+      LJPEG_trim_bottom_edge(info, srcinfo->output_width);
     /* Need workspace arrays having transposed dimensions. */
     need_workspace = TRUE;
     transpose_it = TRUE;
@@ -1112,7 +1112,7 @@ jtransform_request_workspace (LJPEG_j_decompress_ptr srcinfo,
 /* Transpose destination image parameters */
 
 LOCAL(void)
-transpose_critical_parameters (LJPEG_j_compress_ptr dstinfo)
+LJPEG_transpose_critical_parameters (LJPEG_j_compress_ptr dstinfo)
 {
   int tblno, i, j, ci, itemp;
   LJPEG_jpeg_component_info *compptr;
@@ -1158,7 +1158,7 @@ transpose_critical_parameters (LJPEG_j_compress_ptr dstinfo)
  */
 
 LOCAL(void)
-adjust_exif_parameters (JOCTET FAR * data, unsigned int length,
+LJPEG_adjust_exif_parameters (JOCTET FAR * data, unsigned int length,
 			LJPEG_JDIMENSION new_width, LJPEG_JDIMENSION new_height)
 {
   boolean is_motorola; /* Flag for byte order */
@@ -1319,11 +1319,11 @@ adjust_exif_parameters (JOCTET FAR * data, unsigned int length,
  * to LJPEG_jpeg_write_coefficients().
  */
 
-LJPEG_GLOBALLJPEG_jvirt_barray_ptr *)
-jtransform_adjust_parameters (LJPEG_j_decompress_ptr srcinfo,
+LJPEG_GLOBAL(LJPEG_jvirt_barray_ptr *)
+LJPEG_jtransform_adjust_parameters (LJPEG_j_decompress_ptr srcinfo,
 			      LJPEG_j_compress_ptr dstinfo,
 			      LJPEG_jvirt_barray_ptr *src_coef_arrays,
-			      jpeg_transform_info *info)
+			      LJPEG_jpeg_transform_info *info)
 {
   /* If force-to-grayscale is requested, adjust destination parameters */
   if (info->force_grayscale) {
@@ -1371,7 +1371,7 @@ jtransform_adjust_parameters (LJPEG_j_decompress_ptr srcinfo,
   case JXFORM_TRANSVERSE:
   case JXFORM_ROT_90:
   case JXFORM_ROT_270:
-    transpose_critical_parameters(dstinfo);
+    LJPEG_transpose_critical_parameters(dstinfo);
     break;
   default:
     break;
@@ -1393,7 +1393,7 @@ jtransform_adjust_parameters (LJPEG_j_decompress_ptr srcinfo,
     if (dstinfo->jpeg_width != srcinfo->image_width ||
 	dstinfo->jpeg_height != srcinfo->image_height)
       /* Align data segment to start of TIFF structure for parsing */
-      adjust_exif_parameters(srcinfo->marker_list->data + 6,
+      LJPEG_adjust_exif_parameters(srcinfo->marker_list->data + 6,
 	srcinfo->marker_list->data_length - 6,
 	dstinfo->jpeg_width, dstinfo->jpeg_height);
   }
@@ -1414,11 +1414,11 @@ jtransform_adjust_parameters (LJPEG_j_decompress_ptr srcinfo,
  * Note that some transformations will modify the source data arrays!
  */
 
-LJPEG_GLOBALvoid)
-jtransform_execute_transform (LJPEG_j_decompress_ptr srcinfo,
+LJPEG_GLOBAL(void)
+LJPEG_jtransform_execute_transform (LJPEG_j_decompress_ptr srcinfo,
 			      LJPEG_j_compress_ptr dstinfo,
 			      LJPEG_jvirt_barray_ptr *src_coef_arrays,
-			      jpeg_transform_info *info)
+			      LJPEG_jpeg_transform_info *info)
 {
   LJPEG_jvirt_barray_ptr *dst_coef_arrays = info->workspace_coef_arrays;
 
@@ -1428,39 +1428,39 @@ jtransform_execute_transform (LJPEG_j_decompress_ptr srcinfo,
   switch (info->transform) {
   case JXFORM_NONE:
     if (info->x_crop_offset != 0 || info->y_crop_offset != 0)
-      do_crop(srcinfo, dstinfo, info->x_crop_offset, info->y_crop_offset,
+      LJPEG_do_crop(srcinfo, dstinfo, info->x_crop_offset, info->y_crop_offset,
 	      src_coef_arrays, dst_coef_arrays);
     break;
   case JXFORM_FLIP_H:
     if (info->y_crop_offset != 0)
-      do_flip_h(srcinfo, dstinfo, info->x_crop_offset, info->y_crop_offset,
+      LJPEG_do_flip_h(srcinfo, dstinfo, info->x_crop_offset, info->y_crop_offset,
 		src_coef_arrays, dst_coef_arrays);
     else
-      do_flip_h_no_crop(srcinfo, dstinfo, info->x_crop_offset,
+      LJPEG_do_flip_h_no_crop(srcinfo, dstinfo, info->x_crop_offset,
 			src_coef_arrays);
     break;
   case JXFORM_FLIP_V:
-    do_flip_v(srcinfo, dstinfo, info->x_crop_offset, info->y_crop_offset,
+    LJPEG_do_flip_v(srcinfo, dstinfo, info->x_crop_offset, info->y_crop_offset,
 	      src_coef_arrays, dst_coef_arrays);
     break;
   case JXFORM_TRANSPOSE:
-    do_transpose(srcinfo, dstinfo, info->x_crop_offset, info->y_crop_offset,
+    LJPEG_do_transpose(srcinfo, dstinfo, info->x_crop_offset, info->y_crop_offset,
 		 src_coef_arrays, dst_coef_arrays);
     break;
   case JXFORM_TRANSVERSE:
-    do_transverse(srcinfo, dstinfo, info->x_crop_offset, info->y_crop_offset,
+    LJPEG_do_transverse(srcinfo, dstinfo, info->x_crop_offset, info->y_crop_offset,
 		  src_coef_arrays, dst_coef_arrays);
     break;
   case JXFORM_ROT_90:
-    do_rot_90(srcinfo, dstinfo, info->x_crop_offset, info->y_crop_offset,
+    LJPEG_do_rot_90(srcinfo, dstinfo, info->x_crop_offset, info->y_crop_offset,
 	      src_coef_arrays, dst_coef_arrays);
     break;
   case JXFORM_ROT_180:
-    do_rot_180(srcinfo, dstinfo, info->x_crop_offset, info->y_crop_offset,
+    LJPEG_do_rot_180(srcinfo, dstinfo, info->x_crop_offset, info->y_crop_offset,
 	       src_coef_arrays, dst_coef_arrays);
     break;
   case JXFORM_ROT_270:
-    do_rot_270(srcinfo, dstinfo, info->x_crop_offset, info->y_crop_offset,
+    LJPEG_do_rot_270(srcinfo, dstinfo, info->x_crop_offset, info->y_crop_offset,
 	       src_coef_arrays, dst_coef_arrays);
     break;
   }
@@ -1487,10 +1487,10 @@ jtransform_execute_transform (LJPEG_j_decompress_ptr srcinfo,
  *           (may use custom action then)
  */
 
-LJPEG_GLOBALboolean)
-jtransform_perfect_transform(LJPEG_JDIMENSION image_width, LJPEG_JDIMENSION image_height,
+LJPEG_GLOBAL(boolean)
+LJPEG_jtransform_perfect_transform(LJPEG_JDIMENSION image_width, LJPEG_JDIMENSION image_height,
 			     int MCU_width, int MCU_height,
-			     JXFORM_CODE transform)
+			     LJPEG_JXFORM_CODE transform)
 {
   boolean result = TRUE; /* initialize TRUE */
 
@@ -1526,8 +1526,8 @@ jtransform_perfect_transform(LJPEG_JDIMENSION image_width, LJPEG_JDIMENSION imag
  * This must be called before LJPEG_jpeg_read_header() to have the desired effect.
  */
 
-LJPEG_GLOBALvoid)
-jcopy_markers_setup (LJPEG_j_decompress_ptr srcinfo, JCOPY_OPTION option)
+LJPEG_GLOBAL(void)
+LJPEG_jcopy_markers_setup (LJPEG_j_decompress_ptr srcinfo, LJPEG_JCOPY_OPTION option)
 {
 #ifdef SAVE_MARKERS_SUPPORTED
   int m;
@@ -1551,9 +1551,9 @@ jcopy_markers_setup (LJPEG_j_decompress_ptr srcinfo, JCOPY_OPTION option)
  * JFIF APP0 or Adobe APP14 markers if selected.
  */
 
-LJPEG_GLOBALvoid)
-jcopy_markers_execute (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
-		       JCOPY_OPTION option)
+LJPEG_GLOBAL(void)
+LJPEG_jcopy_markers_execute (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
+		       LJPEG_JCOPY_OPTION option)
 {
   LJPEG_jpeg_saved_marker_ptr marker;
 

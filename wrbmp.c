@@ -51,14 +51,14 @@ typedef struct {
   LJPEG_JDIMENSION row_width;		/* physical width of one row in the BMP file */
   int pad_bytes;		/* number of padding bytes needed per row */
   LJPEG_JDIMENSION cur_output_row;	/* next row# to write to virtual array */
-} bmp_dest_struct;
+} LJPEG_bmp_dest_struct;
 
-typedef bmp_dest_struct * bmp_dest_ptr;
+typedef LJPEG_bmp_dest_struct * LJPEG_bmp_dest_ptr;
 
 
 /* Forward declarations */
-LOCAL(void) write_colormap
-	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, bmp_dest_ptr dest,
+LOCAL(void) LJPEG_write_colormap
+	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_bmp_dest_ptr dest,
 	     int map_colors, int map_entry_size));
 
 
@@ -68,11 +68,11 @@ LOCAL(void) write_colormap
  */
 
 LJPEG_METHODDEF(void)
-put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
+LJPEG_put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 		LJPEG_JDIMENSION rows_supplied)
 /* This version is for writing 24-bit pixels */
 {
-  bmp_dest_ptr dest = (bmp_dest_ptr) dinfo;
+  LJPEG_bmp_dest_ptr dest = (LJPEG_bmp_dest_ptr) dinfo;
   LJPEG_JSAMPARRAY image_ptr;
   register LJPEG_JSAMPROW inptr, outptr;
   register LJPEG_JDIMENSION col;
@@ -103,11 +103,11 @@ put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 }
 
 LJPEG_METHODDEF(void)
-put_gray_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
+LJPEG_put_gray_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 	       LJPEG_JDIMENSION rows_supplied)
 /* This version is for grayscale OR quantized color output */
 {
-  bmp_dest_ptr dest = (bmp_dest_ptr) dinfo;
+  LJPEG_bmp_dest_ptr dest = (LJPEG_bmp_dest_ptr) dinfo;
   LJPEG_JSAMPARRAY image_ptr;
   register LJPEG_JSAMPROW inptr, outptr;
   register LJPEG_JDIMENSION col;
@@ -139,7 +139,7 @@ put_gray_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
  */
 
 LJPEG_METHODDEF(void)
-start_output_bmp (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
+LJPEG_start_output_bmp (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 {
   /* no work here */
 }
@@ -154,7 +154,7 @@ start_output_bmp (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
  */
 
 LOCAL(void)
-write_bmp_header (LJPEG_j_decompress_ptr cinfo, bmp_dest_ptr dest)
+LJPEG_write_bmp_header (LJPEG_j_decompress_ptr cinfo, LJPEG_bmp_dest_ptr dest)
 /* Write a Windows-style BMP file header, including colormap if needed */
 {
   char bmpfileheader[14];
@@ -222,12 +222,12 @@ write_bmp_header (LJPEG_j_decompress_ptr cinfo, bmp_dest_ptr dest)
     ERREXIT(cinfo, JERR_FILE_WRITE);
 
   if (cmap_entries > 0)
-    write_colormap(cinfo, dest, cmap_entries, 4);
+    LJPEG_write_colormap(cinfo, dest, cmap_entries, 4);
 }
 
 
 LOCAL(void)
-write_os2_header (LJPEG_j_decompress_ptr cinfo, bmp_dest_ptr dest)
+LJPEG_write_os2_header (LJPEG_j_decompress_ptr cinfo, LJPEG_bmp_dest_ptr dest)
 /* Write an OS2-style BMP file header, including colormap if needed */
 {
   char bmpfileheader[14];
@@ -279,7 +279,7 @@ write_os2_header (LJPEG_j_decompress_ptr cinfo, bmp_dest_ptr dest)
     ERREXIT(cinfo, JERR_FILE_WRITE);
 
   if (cmap_entries > 0)
-    write_colormap(cinfo, dest, cmap_entries, 3);
+    LJPEG_write_colormap(cinfo, dest, cmap_entries, 3);
 }
 
 
@@ -289,7 +289,7 @@ write_os2_header (LJPEG_j_decompress_ptr cinfo, bmp_dest_ptr dest)
  */
 
 LOCAL(void)
-write_colormap (LJPEG_j_decompress_ptr cinfo, bmp_dest_ptr dest,
+LJPEG_write_colormap (LJPEG_j_decompress_ptr cinfo, LJPEG_bmp_dest_ptr dest,
 		int map_colors, int map_entry_size)
 {
   LJPEG_JSAMPARRAY colormap = cinfo->colormap;
@@ -341,9 +341,9 @@ write_colormap (LJPEG_j_decompress_ptr cinfo, bmp_dest_ptr dest,
 
 
 LJPEG_METHODDEF(void)
-finish_output_bmp (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
+LJPEG_finish_output_bmp (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 {
-  bmp_dest_ptr dest = (bmp_dest_ptr) dinfo;
+  LJPEG_bmp_dest_ptr dest = (LJPEG_bmp_dest_ptr) dinfo;
   register FILE * outfile = dest->pub.output_file;
   LJPEG_JSAMPARRAY image_ptr;
   register LJPEG_JSAMPROW data_ptr;
@@ -353,9 +353,9 @@ finish_output_bmp (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 
   /* Write the header and colormap */
   if (dest->is_os2)
-    write_os2_header(cinfo, dest);
+    LJPEG_write_os2_header(cinfo, dest);
   else
-    write_bmp_header(cinfo, dest);
+    LJPEG_write_bmp_header(cinfo, dest);
 
   /* Write the file body from our virtual array */
   for (row = cinfo->output_height; row > 0; row--) {
@@ -388,24 +388,24 @@ finish_output_bmp (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 LJPEG_GLOBAL(LJPEG_djpeg_dest_ptr)
 LJPEG_jinit_write_bmp (LJPEG_j_decompress_ptr cinfo, boolean is_os2)
 {
-  bmp_dest_ptr dest;
+  LJPEG_bmp_dest_ptr dest;
   LJPEG_JDIMENSION row_width;
 
   /* Create module interface object, fill in method pointers */
-  dest = (bmp_dest_ptr)
+  dest = (LJPEG_bmp_dest_ptr)
       (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				  SIZEOF(bmp_dest_struct));
-  dest->pub.start_output = start_output_bmp;
-  dest->pub.finish_output = finish_output_bmp;
+				  SIZEOF(LJPEG_bmp_dest_struct));
+  dest->pub.start_output = LJPEG_start_output_bmp;
+  dest->pub.finish_output = LJPEG_finish_output_bmp;
   dest->is_os2 = is_os2;
 
   if (cinfo->out_color_space == LJPEG_JCS_GRAYSCALE) {
-    dest->pub.put_pixel_rows = put_gray_rows;
+    dest->pub.LJPEG_put_pixel_rows = LJPEG_put_gray_rows;
   } else if (cinfo->out_color_space == LJPEG_JCS_RGB) {
     if (cinfo->quantize_colors)
-      dest->pub.put_pixel_rows = put_gray_rows;
+      dest->pub.LJPEG_put_pixel_rows = LJPEG_put_gray_rows;
     else
-      dest->pub.put_pixel_rows = put_pixel_rows;
+      dest->pub.LJPEG_put_pixel_rows = LJPEG_put_pixel_rows;
   } else {
     ERREXIT(cinfo, JERR_BMP_COLORSPACE);
   }

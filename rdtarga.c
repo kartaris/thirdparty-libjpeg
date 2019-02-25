@@ -43,9 +43,9 @@ typedef char U_CHAR;
 
 /* Private version of data source object */
 
-typedef struct _tga_source_struct * tga_source_ptr;
+typedef struct LJPEG__tga_source_struct * LJPEG_tga_source_ptr;
 
-typedef struct _tga_source_struct {
+typedef struct LJPEG__tga_source_struct {
   struct LJPEG_cjpeg_source_struct pub; /* public fields */
 
   LJPEG_j_compress_ptr cinfo;		/* back link saves passing separate parm */
@@ -56,7 +56,7 @@ typedef struct _tga_source_struct {
   LJPEG_JDIMENSION current_row;	/* Current logical row number to read */
 
   /* Pointer to routine to extract next Targa pixel from input file */
-  LJPEG_JMETHOD(void, read_pixel, (tga_source_ptr sinfo));
+  LJPEG_JMETHOD(void, read_pixel, (LJPEG_tga_source_ptr sinfo));
 
   /* Result of read_pixel is delivered here: */
   U_CHAR tga_pixel[4];
@@ -70,7 +70,7 @@ typedef struct _tga_source_struct {
   /* This saves the correct pixel-row-expansion method for preload_image */
   LJPEG_JMETHOD(LJPEG_JDIMENSION, get_pixel_rows, (LJPEG_j_compress_ptr cinfo,
 				       LJPEG_cjpeg_source_ptr sinfo));
-} tga_source_struct;
+} LJPEG_tga_source_struct;
 
 
 /* For expanding 5-bit pixel values to 8-bit with best rounding */
@@ -85,7 +85,7 @@ static const UINT8 c5to8bits[32] = {
 
 
 LOCAL(int)
-LJPEG_read_byte (tga_source_ptr sinfo)
+LJPEG_read_byte (LJPEG_tga_source_ptr sinfo)
 /* Read next byte from Targa file */
 {
   register FILE *infile = sinfo->pub.input_file;
@@ -98,7 +98,7 @@ LJPEG_read_byte (tga_source_ptr sinfo)
 
 
 LOCAL(void)
-LJPEG_read_colormap (tga_source_ptr sinfo, int cmaplen, int mapentrysize)
+LJPEG_read_colormap (LJPEG_tga_source_ptr sinfo, int cmaplen, int mapentrysize)
 /* Read the colormap from a Targa file */
 {
   int i;
@@ -120,7 +120,7 @@ LJPEG_read_colormap (tga_source_ptr sinfo, int cmaplen, int mapentrysize)
  */
 
 LJPEG_METHODDEF(void)
-read_non_rle_pixel (tga_source_ptr sinfo)
+LJPEG_read_non_rle_pixel (LJPEG_tga_source_ptr sinfo)
 /* Read one Targa pixel from the input file; no RLE expansion */
 {
   register FILE *infile = sinfo->pub.input_file;
@@ -133,7 +133,7 @@ read_non_rle_pixel (tga_source_ptr sinfo)
 
 
 LJPEG_METHODDEF(void)
-read_rle_pixel (tga_source_ptr sinfo)
+LJPEG_read_rle_pixel (LJPEG_tga_source_ptr sinfo)
 /* Read one Targa pixel from the input file, expanding RLE data as needed */
 {
   register FILE *infile = sinfo->pub.input_file;
@@ -171,10 +171,10 @@ read_rle_pixel (tga_source_ptr sinfo)
 
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-get_8bit_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_get_8bit_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading 8-bit grayscale pixels */
 {
-  tga_source_ptr source = (tga_source_ptr) sinfo;
+  LJPEG_tga_source_ptr source = (LJPEG_tga_source_ptr) sinfo;
   register LJPEG_JSAMPROW ptr;
   register LJPEG_JDIMENSION col;
   
@@ -190,7 +190,7 @@ LJPEG_METHODDEF(LJPEG_JDIMENSION)
 LJPEG_get_8bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading 8-bit colormap indexes */
 {
-  tga_source_ptr source = (tga_source_ptr) sinfo;
+  LJPEG_tga_source_ptr source = (LJPEG_tga_source_ptr) sinfo;
   register int t;
   register LJPEG_JSAMPROW ptr;
   register LJPEG_JDIMENSION col;
@@ -208,10 +208,10 @@ LJPEG_get_8bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 }
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-get_16bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_get_16bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading 16-bit pixels */
 {
-  tga_source_ptr source = (tga_source_ptr) sinfo;
+  LJPEG_tga_source_ptr source = (LJPEG_tga_source_ptr) sinfo;
   register int t;
   register LJPEG_JSAMPROW ptr;
   register LJPEG_JDIMENSION col;
@@ -239,7 +239,7 @@ LJPEG_METHODDEF(LJPEG_JDIMENSION)
 LJPEG_get_24bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading 24-bit pixels */
 {
-  tga_source_ptr source = (tga_source_ptr) sinfo;
+  LJPEG_tga_source_ptr source = (LJPEG_tga_source_ptr) sinfo;
   register LJPEG_JSAMPROW ptr;
   register LJPEG_JDIMENSION col;
   
@@ -270,9 +270,9 @@ LJPEG_get_24bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
  */
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-get_memory_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_get_memory_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
-  tga_source_ptr source = (tga_source_ptr) sinfo;
+  LJPEG_tga_source_ptr source = (LJPEG_tga_source_ptr) sinfo;
   LJPEG_JDIMENSION source_row;
 
   /* Compute row of source that maps to current_row of normal order */
@@ -299,7 +299,7 @@ get_memory_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
 LJPEG_preload_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
-  tga_source_ptr source = (tga_source_ptr) sinfo;
+  LJPEG_tga_source_ptr source = (LJPEG_tga_source_ptr) sinfo;
   LJPEG_JDIMENSION row;
   cd_progress_ptr progress = (cd_progress_ptr) cinfo->progress;
 
@@ -318,10 +318,10 @@ LJPEG_preload_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     progress->completed_extra_passes++;
 
   /* Set up to read from the virtual array in unscrambled order */
-  source->pub.get_pixel_rows = get_memory_row;
+  source->pub.get_pixel_rows = LJPEG_get_memory_row;
   source->current_row = 0;
   /* And read the first row */
-  return get_memory_row(cinfo, sinfo);
+  return LJPEG_get_memory_row(cinfo, sinfo);
 }
 
 
@@ -330,9 +330,9 @@ LJPEG_preload_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
  */
 
 LJPEG_METHODDEF(void)
-start_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_start_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
-  tga_source_ptr source = (tga_source_ptr) sinfo;
+  LJPEG_tga_source_ptr source = (LJPEG_tga_source_ptr) sinfo;
   U_CHAR targaheader[18];
   int idlen, cmaptype, subtype, flags, interlace_type, components;
   unsigned int width, height, maplen;
@@ -368,12 +368,12 @@ start_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   
   if (subtype > 8) {
     /* It's an RLE-coded file */
-    source->read_pixel = read_rle_pixel;
+    source->read_pixel = LJPEG_read_rle_pixel;
     source->block_count = source->dup_pixel_count = 0;
     subtype -= 8;
   } else {
     /* Non-RLE file */
-    source->read_pixel = read_non_rle_pixel;
+    source->read_pixel = LJPEG_read_non_rle_pixel;
   }
 
   /* Now should have subtype 1, 2, or 3 */
@@ -391,7 +391,7 @@ start_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   case 2:			/* RGB image */
     switch (source->pixel_size) {
     case 2:
-      source->get_pixel_rows = get_16bit_row;
+      source->get_pixel_rows = LJPEG_get_16bit_row;
       break;
     case 3:
       source->get_pixel_rows = LJPEG_get_24bit_row;
@@ -409,7 +409,7 @@ start_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     components = 1;
     cinfo->in_color_space = LJPEG_JCS_GRAYSCALE;
     if (source->pixel_size == 1)
-      source->get_pixel_rows = get_8bit_gray_row;
+      source->get_pixel_rows = LJPEG_get_8bit_gray_row;
     else
       ERREXIT(cinfo, JERR_TGA_BADPARMS);
     TRACEMS2(cinfo, 1, JTRC_TGA_GRAY, width, height);
@@ -470,7 +470,7 @@ start_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
  */
 
 LJPEG_METHODDEF(void)
-finish_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_finish_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   /* no work */
 }
@@ -480,19 +480,19 @@ finish_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
  * The module selection routine for Targa format input.
  */
 
-LJPEG_GLOBALLJPEG_cjpeg_source_ptr)
+LJPEG_GLOBAL(LJPEG_cjpeg_source_ptr)
 LJPEG_jinit_read_targa (LJPEG_j_compress_ptr cinfo)
 {
-  tga_source_ptr source;
+  LJPEG_tga_source_ptr source;
 
   /* Create module interface object */
-  source = (tga_source_ptr)
+  source = (LJPEG_tga_source_ptr)
       (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				  SIZEOF(tga_source_struct));
+				  SIZEOF(LJPEG_tga_source_struct));
   source->cinfo = cinfo;	/* make back link for subroutines */
   /* Fill in method ptrs, except get_pixel_rows which start_input sets */
-  source->pub.start_input = start_input_tga;
-  source->pub.finish_input = finish_input_tga;
+  source->pub.start_input = LJPEG_start_input_tga;
+  source->pub.finish_input = LJPEG_finish_input_tga;
 
   return (LJPEG_cjpeg_source_ptr) source;
 }

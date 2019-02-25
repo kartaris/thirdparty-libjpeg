@@ -583,7 +583,7 @@ main (int argc, char **argv)
   while (cinfo.output_scanline < cinfo.output_height) {
     num_scanlines = LJPEG_jpeg_read_scanlines(&cinfo, dest_mgr->buffer,
 					dest_mgr->buffer_height);
-    (*dest_mgr->put_pixel_rows) (&cinfo, dest_mgr, num_scanlines);
+    (*dest_mgr->LJPEG_put_pixel_rows) (&cinfo, dest_mgr, num_scanlines);
   }
 
 #ifdef PROGRESS_REPORT

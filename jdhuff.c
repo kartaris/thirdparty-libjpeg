@@ -1506,7 +1506,7 @@ LJPEG_start_pass_huff_decoder (LJPEG_j_decompress_ptr cinfo)
  * Module initialization routine for Huffman entropy decoding.
  */
 
-LJPEG_GLOBALvoid)
+LJPEG_GLOBAL(void)
 LJPEG_jinit_huff_decoder (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_huff_entropy_ptr entropy;

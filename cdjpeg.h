@@ -51,7 +51,7 @@ struct LJPEG_djpeg_dest_struct {
   LJPEG_JMETHOD(void, start_output, (LJPEG_j_decompress_ptr cinfo,
 			       LJPEG_djpeg_dest_ptr dinfo));
   /* Emit the specified number of pixel rows from the buffer. */
-  LJPEG_JMETHOD(void, put_pixel_rows, (LJPEG_j_decompress_ptr cinfo,
+  LJPEG_JMETHOD(void, LJPEG_put_pixel_rows, (LJPEG_j_decompress_ptr cinfo,
 				 LJPEG_djpeg_dest_ptr dinfo,
 				 LJPEG_JDIMENSION rows_supplied));
   /* Finish up at the end of the image. */

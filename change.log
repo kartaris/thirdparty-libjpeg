@@ -146,7 +146,7 @@ Removed files jidctred.c, jcphuff.c, jchuff.h, jdphuff.c, jdhuff.h.
 jpegtran has a new "lossless" cropping feature.
 
 Implement -perfect option in jpegtran, new API function
-jtransform_perfect_transform() in transupp. (DP 204_perfect.dpatch)
+LJPEG_jtransform_perfect_transform() in transupp. (DP 204_perfect.dpatch)
 
 Better error messages for jpegtran fopen failure.
 (DP 203_jpegtran_errmsg.dpatch)
