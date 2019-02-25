@@ -114,7 +114,7 @@ LJPEG_emit_byte (LJPEG_j_compress_ptr cinfo, int val)
 
   *(dest->next_output_byte)++ = (JOCTET) val;
   if (--dest->free_in_buffer == 0) {
-    if (! (*dest->empty_output_buffer) (cinfo))
+    if (! (*dest->LJPEG_empty_output_buffer) (cinfo))
       ERREXIT(cinfo, JERR_CANT_SUSPEND);
   }
 }

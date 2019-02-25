@@ -496,7 +496,7 @@ in either of two ways:
   LJPEG_jpeg_abort() is allowed at any time after successful object creation.
 
 Note that cleaning up the data destination, if required, is your
-responsibility; neither of these routines will call term_destination().
+responsibility; neither of these routines will call LJPEG_term_destination().
 (See "Compressed data handling", below, for more about that.)
 
 LJPEG_jpeg_destroy() and LJPEG_jpeg_abort() are the only safe calls to make on a JPEG
@@ -1491,19 +1491,19 @@ next byte to write in the work buffer and the remaining free space:
 	size_t free_in_buffer;      /* # of byte spaces remaining in buffer */
 
 The library increments the pointer and decrements the count until the buffer
-is filled.  The manager's empty_output_buffer method must reset the pointer
+is filled.  The manager's LJPEG_empty_output_buffer method must reset the pointer
 and count.  The manager is expected to remember the buffer's starting address
 and total size in private fields not visible to the library.
 
 A data destination manager provides three methods:
 
-init_destination (LJPEG_j_compress_ptr cinfo)
+LJPEG_init_destination (LJPEG_j_compress_ptr cinfo)
 	Initialize destination.  This is called by LJPEG_jpeg_start_compress()
 	before any data is actually written.  It must initialize
 	next_output_byte and free_in_buffer.  free_in_buffer must be
 	initialized to a positive value.
 
-empty_output_buffer (LJPEG_j_compress_ptr cinfo)
+LJPEG_empty_output_buffer (LJPEG_j_compress_ptr cinfo)
 	This is called whenever the buffer has filled (free_in_buffer
 	reaches zero).  In typical applications, it should write out the
 	*entire* buffer (use the saved start address and buffer length;
@@ -1514,13 +1514,13 @@ empty_output_buffer (LJPEG_j_compress_ptr cinfo)
 	returned.  A FALSE return should only be used when I/O suspension is
 	desired (this operating mode is discussed in the next section).
 
-term_destination (LJPEG_j_compress_ptr cinfo)
+LJPEG_term_destination (LJPEG_j_compress_ptr cinfo)
 	Terminate destination --- called by LJPEG_jpeg_finish_compress() after all
 	data has been written.  In most applications, this must flush any
 	data remaining in the buffer.  Use either next_output_byte or
 	free_in_buffer to determine how much data is in the buffer.
 
-term_destination() is NOT called by LJPEG_jpeg_abort() or LJPEG_jpeg_destroy().  If you
+LJPEG_term_destination() is NOT called by LJPEG_jpeg_abort() or LJPEG_jpeg_destroy().  If you
 want the destination manager to be cleaned up during an abort, you must do it
 yourself.
 
@@ -1528,7 +1528,7 @@ You will also need code to create a jpeg_destination_mgr struct, fill in its
 method pointers, and insert a pointer to the struct into the "dest" field of
 the JPEG compression object.  This can be done in-line in your setup code if
 you like, but it's probably cleaner to provide a separate routine similar to
-the LJPEG_jpeg_stdio_dest() or jpeg_mem_dest() routines of the supplied destination
+the LJPEG_jpeg_stdio_dest() or LJPEG_jpeg_mem_dest() routines of the supplied destination
 managers.
 
 Decompression source managers follow a parallel design, but with some
@@ -1540,19 +1540,19 @@ remaining:
 	size_t bytes_in_buffer;         /* # of bytes remaining in buffer */
 
 The library increments the pointer and decrements the count until the buffer
-is emptied.  The manager's fill_input_buffer method must reset the pointer and
+is emptied.  The manager's LJPEG_fill_input_buffer method must reset the pointer and
 count.  In most applications, the manager must remember the buffer's starting
 address and total size in private fields not visible to the library.
 
 A data source manager provides five methods:
 
-init_source (LJPEG_j_decompress_ptr cinfo)
+LJPEG_init_source (LJPEG_j_decompress_ptr cinfo)
 	Initialize source.  This is called by LJPEG_jpeg_read_header() before any
-	data is actually read.  Unlike init_destination(), it may leave
-	bytes_in_buffer set to 0 (in which case a fill_input_buffer() call
+	data is actually read.  Unlike LJPEG_init_destination(), it may leave
+	bytes_in_buffer set to 0 (in which case a LJPEG_fill_input_buffer() call
 	will occur immediately).
 
-fill_input_buffer (LJPEG_j_decompress_ptr cinfo)
+LJPEG_fill_input_buffer (LJPEG_j_decompress_ptr cinfo)
 	This is called whenever bytes_in_buffer has reached zero and more
 	data is wanted.  In typical applications, it should read fresh data
 	into the buffer (ignoring the current state of next_input_byte and
@@ -1563,7 +1563,7 @@ fill_input_buffer (LJPEG_j_decompress_ptr cinfo)
 	if TRUE is returned.  A FALSE return should only be used when I/O
 	suspension is desired (this mode is discussed in the next section).
 
-skip_input_data (LJPEG_j_decompress_ptr cinfo, long num_bytes)
+LJPEG_skip_input_data (LJPEG_j_decompress_ptr cinfo, long num_bytes)
 	Skip num_bytes worth of data.  The buffer pointer and count should
 	be advanced over num_bytes input bytes, refilling the buffer as
 	needed.  This is used to skip over a potentially large amount of
@@ -1585,11 +1585,11 @@ resync_to_restart (LJPEG_j_decompress_ptr cinfo, int desired)
 	in jdmarker.c if you think you'd like to implement your own resync
 	procedure.
 
-term_source (LJPEG_j_decompress_ptr cinfo)
+LJPEG_term_source (LJPEG_j_decompress_ptr cinfo)
 	Terminate source --- called by LJPEG_jpeg_finish_decompress() after all
 	data has been read.  Often a no-op.
 
-For both fill_input_buffer() and skip_input_data(), there is no such thing
+For both LJPEG_fill_input_buffer() and LJPEG_skip_input_data(), there is no such thing
 as an EOF return.  If the end of the file has been reached, the routine has
 a choice of exiting via ERREXIT() or inserting fake data into the buffer.
 In most cases, generating a warning message and inserting a fake EOI marker
@@ -1598,14 +1598,14 @@ however much of the image is there.  In pathological cases, the decompressor
 may swallow the EOI and again demand data ... just keep feeding it fake EOIs.
 jdatasrc.c illustrates the recommended error recovery behavior.
 
-term_source() is NOT called by LJPEG_jpeg_abort() or LJPEG_jpeg_destroy().  If you want
+LJPEG_term_source() is NOT called by LJPEG_jpeg_abort() or LJPEG_jpeg_destroy().  If you want
 the source manager to be cleaned up during an abort, you must do it yourself.
 
 You will also need code to create a jpeg_source_mgr struct, fill in its method
 pointers, and insert a pointer to the struct into the "src" field of the JPEG
 decompression object.  This can be done in-line in your setup code if you
 like, but it's probably cleaner to provide a separate routine similar to the
-LJPEG_jpeg_stdio_src() or jpeg_mem_src() routines of the supplied source managers.
+LJPEG_jpeg_stdio_src() or LJPEG_jpeg_mem_src() routines of the supplied source managers.
 
 For more information, consult the memory and stdio source and destination
 managers in jdatasrc.c and jdatadst.c.
@@ -1630,8 +1630,8 @@ a real multi-tasking capability.
 To use I/O suspension, cooperation is needed between the calling application
 and the data source or destination manager; you will always need a custom
 source/destination manager.  (Please read the previous section if you haven't
-already.)  The basic idea is that the empty_output_buffer() or
-fill_input_buffer() routine is a no-op, merely returning FALSE to indicate
+already.)  The basic idea is that the LJPEG_empty_output_buffer() or
+LJPEG_fill_input_buffer() routine is a no-op, merely returning FALSE to indicate
 that it has done nothing.  Upon seeing this, the JPEG library suspends
 operation and returns to its caller.  The surrounding application is
 responsible for emptying or refilling the work buffer before calling the
@@ -1639,7 +1639,7 @@ JPEG library again.
 
 Compression suspension:
 
-For compression suspension, use an empty_output_buffer() routine that returns
+For compression suspension, use an LJPEG_empty_output_buffer() routine that returns
 FALSE; typically it will not do anything else.  This will cause the
 compressor to return to the caller of LJPEG_jpeg_write_scanlines(), with the return
 value indicating that not all the supplied scanlines have been accepted.
@@ -1649,7 +1649,7 @@ again, pointing to the first unconsumed scanline.
 
 When forced to suspend, the compressor will backtrack to a convenient stopping
 point (usually the start of the current MCU); it will regenerate some output
-data when restarted.  Therefore, although empty_output_buffer() is only
+data when restarted.  Therefore, although LJPEG_empty_output_buffer() is only
 called when the buffer is filled, you should NOT write out the entire buffer
 after a suspension.  Write only the data up to the current position of
 next_output_byte/free_in_buffer.  The data beyond that point will be
@@ -1688,7 +1688,7 @@ operating modes.)
 
 Decompression suspension:
 
-For decompression suspension, use a fill_input_buffer() routine that simply
+For decompression suspension, use a LJPEG_fill_input_buffer() routine that simply
 returns FALSE (except perhaps during error recovery, as discussed below).
 This will cause the decompressor to return to its caller with an indication
 that suspension has occurred.  This can happen at four places:
@@ -1702,7 +1702,7 @@ the input buffer, and repeat the call.  In the case of LJPEG_jpeg_read_scanlines
 increment the passed pointers past any scanlines successfully read.
 
 Just as with compression, the decompressor will typically backtrack to a
-convenient restart point before suspending.  When fill_input_buffer() is
+convenient restart point before suspending.  When LJPEG_fill_input_buffer() is
 called, next_input_byte/bytes_in_buffer point to the current restart point,
 which is where the decompressor will backtrack to if FALSE is returned.
 The data beyond that position must NOT be discarded if you suspend; it needs
@@ -1713,13 +1713,13 @@ for decent performance; furthermore, you should load a reasonable amount of
 new data before resuming decompression.  (If you loaded, say, only one new
 byte each time around, you could waste a LOT of cycles.)
 
-The skip_input_data() source manager routine requires special care in a
+The LJPEG_skip_input_data() source manager routine requires special care in a
 suspension scenario.  This routine is NOT granted the ability to suspend the
 decompressor; it can decrement bytes_in_buffer to zero, but no more.  If the
 requested skip distance exceeds the amount of data currently in the input
-buffer, then skip_input_data() must set bytes_in_buffer to zero and record the
+buffer, then LJPEG_skip_input_data() must set bytes_in_buffer to zero and record the
 additional skip distance somewhere else.  The decompressor will immediately
-call fill_input_buffer(), which should return FALSE, which will cause a
+call LJPEG_fill_input_buffer(), which should return FALSE, which will cause a
 suspension return.  The surrounding application must then arrange to discard
 the recorded number of bytes before it resumes loading the input buffer.
 (Yes, this design is rather baroque, but it avoids complexity in the far more
@@ -1728,8 +1728,8 @@ common case where a non-suspending source manager is used.)
 If the input data has been exhausted, we recommend that you emit a warning
 and insert dummy EOI markers just as a non-suspending data source manager
 would do.  This can be handled either in the surrounding application logic or
-within fill_input_buffer(); the latter is probably more efficient.  If
-fill_input_buffer() knows that no more data is available, it can set the
+within LJPEG_fill_input_buffer(); the latter is probably more efficient.  If
+LJPEG_fill_input_buffer() knows that no more data is available, it can set the
 pointer/count to point to a dummy EOI marker and then return TRUE just as
 though it had read more data in a non-suspending situation.
 
@@ -1749,9 +1749,9 @@ even whether there is a fixed-size input buffer.)
 
 The input buffer would need to be 64K to allow for arbitrary COM or APPn
 markers, but these are handled specially: they are either saved into allocated
-memory, or skipped over by calling skip_input_data().  In the former case,
+memory, or skipped over by calling LJPEG_skip_input_data().  In the former case,
 suspension is handled correctly, and in the latter case, the problem of
-buffer overrun is placed on skip_input_data's shoulders, as explained above.
+buffer overrun is placed on LJPEG_skip_input_data's shoulders, as explained above.
 Note that if you provide your own marker handling routine for large markers,
 you should consider how to deal with buffer overflow.
 
@@ -1759,27 +1759,27 @@ Multiple-buffer management:
 
 In some applications it is desirable to store the compressed data in a linked
 list of buffer areas, so as to avoid data copying.  This can be handled by
-having empty_output_buffer() or fill_input_buffer() set the pointer and count
+having LJPEG_empty_output_buffer() or LJPEG_fill_input_buffer() set the pointer and count
 to reference the next available buffer; FALSE is returned only if no more
 buffers are available.  Although seemingly straightforward, there is a
 pitfall in this approach: the backtrack that occurs when FALSE is returned
-could back up into an earlier buffer.  For example, when fill_input_buffer()
+could back up into an earlier buffer.  For example, when LJPEG_fill_input_buffer()
 is called, the current pointer & count indicate the backtrack restart point.
-Since fill_input_buffer() will set the pointer and count to refer to a new
+Since LJPEG_fill_input_buffer() will set the pointer and count to refer to a new
 buffer, the restart position must be saved somewhere else.  Suppose a second
-call to fill_input_buffer() occurs in the same library call, and no
-additional input data is available, so fill_input_buffer must return FALSE.
+call to LJPEG_fill_input_buffer() occurs in the same library call, and no
+additional input data is available, so LJPEG_fill_input_buffer must return FALSE.
 If the JPEG library has not moved the pointer/count forward in the current
 buffer, then *the correct restart point is the saved position in the prior
 buffer*.  Prior buffers may be discarded only after the library establishes
 a restart point within a later buffer.  Similar remarks apply for output into
 a chain of buffers.
 
-The library will never attempt to backtrack over a skip_input_data() call,
+The library will never attempt to backtrack over a LJPEG_skip_input_data() call,
 so any skipped data can be permanently discarded.  You still have to deal
 with the case of skipping not-yet-received data, however.
 
-It's much simpler to use only a single buffer; when fill_input_buffer() is
+It's much simpler to use only a single buffer; when LJPEG_fill_input_buffer() is
 called, move any unconsumed data (beyond the current pointer/count) down to
 the beginning of this buffer and then load new data into the remaining buffer
 space.  This approach requires a little more data copying but is far easier
@@ -2392,7 +2392,7 @@ that depend on tables from earlier images.
 
 If you intend to write a series of images into a single destination file,
 you might want to make a specialized data destination module that doesn't
-flush the output buffer at term_destination() time.  This would speed things
+flush the output buffer at LJPEG_term_destination() time.  This would speed things
 up by some trifling amount.  Of course, you'd need to remember to flush the
 buffer after the last image.  You can make the later images be abbreviated
 ones by passing FALSE to LJPEG_jpeg_start_compress().

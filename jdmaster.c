@@ -344,7 +344,7 @@ master_selection (LJPEG_j_decompress_ptr cinfo)
       ERREXIT(cinfo, JERR_NOT_COMPILED);
 #endif
     } else {
-      jinit_color_deconverter(cinfo);
+      LJPEG_jinit_color_deconverter(cinfo);
       jinit_upsampler(cinfo);
     }
     jinit_d_post_controller(cinfo, cinfo->enable_2pass_quant);
@@ -360,7 +360,7 @@ master_selection (LJPEG_j_decompress_ptr cinfo)
 
   /* Initialize principal buffer controllers. */
   use_c_buffer = cinfo->inputctl->has_multiple_scans || cinfo->buffered_image;
-  jinit_d_coef_controller(cinfo, use_c_buffer);
+  LJPEG_jinit_d_coef_controller(cinfo, use_c_buffer);
 
   if (! cinfo->raw_data_out)
     jinit_d_main_controller(cinfo, FALSE /* never need full buffer here */);
@@ -369,7 +369,7 @@ master_selection (LJPEG_j_decompress_ptr cinfo)
   (*cinfo->mem->realize_virt_arrays) ((LJPEG_j_common_ptr) cinfo);
 
   /* Initialize input side of decompressor to consume first scan. */
-  (*cinfo->inputctl->start_input_pass) (cinfo);
+  (*cinfo->inputctl->LJPEG_start_input_pass) (cinfo);
 
 #ifdef D_MULTISCAN_FILES_SUPPORTED
   /* If LJPEG_jpeg_start_decompress will read the whole file, initialize
@@ -435,7 +435,7 @@ prepare_for_output_pass (LJPEG_j_decompress_ptr cinfo)
       }
     }
     (*cinfo->idct->LJPEG_start_pass) (cinfo);
-    (*cinfo->coef->start_output_pass) (cinfo);
+    (*cinfo->coef->LJPEG_start_output_pass) (cinfo);
     if (! cinfo->raw_data_out) {
       if (! master->using_merged_upsample)
 	(*cinfo->cconvert->LJPEG_start_pass) (cinfo);

@@ -134,12 +134,12 @@ typedef my_marker_reader * LJPEG_my_marker_ptr;
 	  bytes_in_buffer = datasrc->bytes_in_buffer )
 
 /* Internal macro for INPUT_BYTE and INPUT_2BYTES: make a byte available.
- * Note we do *not* do INPUT_SYNC before calling fill_input_buffer,
+ * Note we do *not* do INPUT_SYNC before calling LJPEG_fill_input_buffer,
  * but we must reload the local copies after a successful fill.
  */
 #define MAKE_BYTE_AVAIL(cinfo,action)  \
 	if (bytes_in_buffer == 0) {  \
-	  if (! (*datasrc->fill_input_buffer) (cinfo))  \
+	  if (! (*datasrc->LJPEG_fill_input_buffer) (cinfo))  \
 	    { action; }  \
 	  INPUT_RELOAD(cinfo);  \
 	}
@@ -180,7 +180,7 @@ typedef my_marker_reader * LJPEG_my_marker_ptr;
  * can fit into a single input bufferload.  This should hold for "normal"
  * markers.  Some COM/APPn markers might have large parameter segments
  * that might not fit.  If we are simply dropping such a marker, we use
- * skip_input_data to get past it, and thereby put the problem on the
+ * LJPEG_skip_input_data to get past it, and thereby put the problem on the
  * source manager's shoulders.  If we are saving the marker's contents
  * into memory, we use a slightly different convention: when forced to
  * suspend, the marker processor updates the restart point to the end of
@@ -858,7 +858,7 @@ get_interesting_appn (LJPEG_j_decompress_ptr cinfo)
   /* skip any remaining data -- could be lots */
   INPUT_SYNC(cinfo);
   if (length > 0)
-    (*cinfo->src->skip_input_data) (cinfo, (long) length);
+    (*cinfo->src->LJPEG_skip_input_data) (cinfo, (long) length);
 
   return TRUE;
 }
@@ -962,9 +962,9 @@ save_marker (LJPEG_j_decompress_ptr cinfo)
   }
 
   /* skip any remaining data -- could be lots */
-  INPUT_SYNC(cinfo);		/* do before skip_input_data */
+  INPUT_SYNC(cinfo);		/* do before LJPEG_skip_input_data */
   if (length > 0)
-    (*cinfo->src->skip_input_data) (cinfo, (long) length);
+    (*cinfo->src->LJPEG_skip_input_data) (cinfo, (long) length);
 
   return TRUE;
 }
@@ -984,9 +984,9 @@ skip_variable (LJPEG_j_decompress_ptr cinfo)
   
   TRACEMS2(cinfo, 1, JTRC_MISC_MARKER, cinfo->unread_marker, (int) length);
 
-  INPUT_SYNC(cinfo);		/* do before skip_input_data */
+  INPUT_SYNC(cinfo);		/* do before LJPEG_skip_input_data */
   if (length > 0)
-    (*cinfo->src->skip_input_data) (cinfo, (long) length);
+    (*cinfo->src->LJPEG_skip_input_data) (cinfo, (long) length);
 
   return TRUE;
 }

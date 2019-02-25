@@ -68,7 +68,7 @@ LJPEG_get_byte (LJPEG_j_decompress_ptr cinfo)
   struct jpeg_source_mgr * src = cinfo->src;
 
   if (src->bytes_in_buffer == 0)
-    if (! (*src->fill_input_buffer) (cinfo))
+    if (! (*src->LJPEG_fill_input_buffer) (cinfo))
       ERREXIT(cinfo, JERR_CANT_SUSPEND);
   src->bytes_in_buffer--;
   return GETJOCTET(*src->next_input_byte++);

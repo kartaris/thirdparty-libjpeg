@@ -358,7 +358,7 @@ LJPEG_jpeg_getc (LJPEG_j_decompress_ptr cinfo)
   struct jpeg_source_mgr * datasrc = cinfo->src;
 
   if (datasrc->bytes_in_buffer == 0) {
-    if (! (*datasrc->fill_input_buffer) (cinfo))
+    if (! (*datasrc->LJPEG_fill_input_buffer) (cinfo))
       ERREXIT(cinfo, JERR_CANT_SUSPEND);
   }
   datasrc->bytes_in_buffer--;

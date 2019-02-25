@@ -295,7 +295,7 @@ LJPEG_jpeg_consume_input (LJPEG_j_decompress_ptr cinfo)
     /* Start-of-datastream actions: reset appropriate modules */
     (*cinfo->inputctl->reset_input_controller) (cinfo);
     /* Initialize application's data source module */
-    (*cinfo->src->init_source) (cinfo);
+    (*cinfo->src->LJPEG_init_source) (cinfo);
     cinfo->global_state = DSTATE_INHEADER;
     /*FALLTHROUGH*/
   case DSTATE_INHEADER:
@@ -389,7 +389,7 @@ LJPEG_jpeg_finish_decompress (LJPEG_j_decompress_ptr cinfo)
       return FALSE;		/* Suspend, come back later */
   }
   /* Do final cleanup */
-  (*cinfo->src->term_source) (cinfo);
+  (*cinfo->src->LJPEG_term_source) (cinfo);
   /* We can use LJPEG_jpeg_abort to release memory and reset global_state */
   LJPEG_jpeg_abort((LJPEG_j_common_ptr) cinfo);
   return TRUE;

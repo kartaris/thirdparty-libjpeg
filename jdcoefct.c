@@ -63,15 +63,15 @@ typedef struct {
 typedef LJPEG_my_coef_controller * LJPEG_my_coef_ptr;
 
 /* Forward declarations */
-LJPEG_METHODDEF(int) decompress_onepass
+LJPEG_METHODDEF(int) LJPEG_decompress_onepass
 	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf));
 #ifdef D_MULTISCAN_FILES_SUPPORTED
-LJPEG_METHODDEF(int) decompress_data
+LJPEG_METHODDEF(int) LJPEG_decompress_data
 	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf));
 #endif
 #ifdef BLOCK_SMOOTHING_SUPPORTED
-LOCAL(boolean) smoothing_ok LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
-LJPEG_METHODDEF(int) decompress_smooth_data
+LOCAL(boolean) LJPEG_smoothing_ok LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+LJPEG_METHODDEF(int) LJPEG_decompress_smooth_data
 	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf));
 #endif
 
@@ -105,7 +105,7 @@ LJPEG_start_iMCU_row (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-start_input_pass (LJPEG_j_decompress_ptr cinfo)
+LJPEG_start_input_pass (LJPEG_j_decompress_ptr cinfo)
 {
   cinfo->input_iMCU_row = 0;
   LJPEG_start_iMCU_row(cinfo);
@@ -117,17 +117,17 @@ start_input_pass (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-start_output_pass (LJPEG_j_decompress_ptr cinfo)
+LJPEG_start_output_pass (LJPEG_j_decompress_ptr cinfo)
 {
 #ifdef BLOCK_SMOOTHING_SUPPORTED
   LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
 
   /* If multipass, check to see whether to use block smoothing on this pass */
   if (coef->pub.coef_arrays != NULL) {
-    if (cinfo->do_block_smoothing && smoothing_ok(cinfo))
-      coef->pub.decompress_data = decompress_smooth_data;
+    if (cinfo->do_block_smoothing && LJPEG_smoothing_ok(cinfo))
+      coef->pub.LJPEG_decompress_data = LJPEG_decompress_smooth_data;
     else
-      coef->pub.decompress_data = decompress_data;
+      coef->pub.LJPEG_decompress_data = LJPEG_decompress_data;
   }
 #endif
   cinfo->output_iMCU_row = 0;
@@ -145,7 +145,7 @@ start_output_pass (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(int)
-decompress_onepass (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf)
+LJPEG_decompress_onepass (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf)
 {
   LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
   LJPEG_JDIMENSION MCU_col_num;	/* index of current MCU within row */
@@ -227,7 +227,7 @@ decompress_onepass (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf)
  */
 
 LJPEG_METHODDEF(int)
-dummy_consume_data (LJPEG_j_decompress_ptr cinfo)
+LJPEG_dummy_consume_data (LJPEG_j_decompress_ptr cinfo)
 {
   return JPEG_SUSPENDED;	/* Always indicate nothing was done */
 }
@@ -243,7 +243,7 @@ dummy_consume_data (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(int)
-consume_data (LJPEG_j_decompress_ptr cinfo)
+LJPEG_consume_data (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
   LJPEG_JDIMENSION MCU_col_num;	/* index of current MCU within row */
@@ -314,7 +314,7 @@ consume_data (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(int)
-decompress_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf)
+LJPEG_decompress_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf)
 {
   LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
   LJPEG_JDIMENSION last_iMCU_row = cinfo->total_iMCU_rows - 1;
@@ -404,7 +404,7 @@ decompress_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf)
  */
 
 LOCAL(boolean)
-smoothing_ok (LJPEG_j_decompress_ptr cinfo)
+LJPEG_smoothing_ok (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
   boolean smoothing_useful = FALSE;
@@ -456,11 +456,11 @@ smoothing_ok (LJPEG_j_decompress_ptr cinfo)
 
 
 /*
- * Variant of decompress_data for use when doing block smoothing.
+ * Variant of LJPEG_decompress_data for use when doing block smoothing.
  */
 
 LJPEG_METHODDEF(int)
-decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf)
+LJPEG_decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf)
 {
   LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
   LJPEG_JDIMENSION last_iMCU_row = cinfo->total_iMCU_rows - 1;
@@ -675,7 +675,7 @@ decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_bu
  */
 
 LJPEG_GLOBAL(void)
-jinit_d_coef_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
+LJPEG_jinit_d_coef_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
 {
   LJPEG_my_coef_ptr coef;
 
@@ -683,8 +683,8 @@ jinit_d_coef_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_my_coef_controller));
   cinfo->coef = (struct jpeg_d_coef_controller *) coef;
-  coef->pub.start_input_pass = start_input_pass;
-  coef->pub.start_output_pass = start_output_pass;
+  coef->pub.LJPEG_start_input_pass = LJPEG_start_input_pass;
+  coef->pub.LJPEG_start_output_pass = LJPEG_start_output_pass;
 #ifdef BLOCK_SMOOTHING_SUPPORTED
   coef->coef_bits_latch = NULL;
 #endif
@@ -714,8 +714,8 @@ jinit_d_coef_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
 				(long) compptr->v_samp_factor),
 	 (LJPEG_JDIMENSION) access_rows);
     }
-    coef->pub.consume_data = consume_data;
-    coef->pub.decompress_data = decompress_data;
+    coef->pub.LJPEG_consume_data = LJPEG_consume_data;
+    coef->pub.LJPEG_decompress_data = LJPEG_decompress_data;
     coef->pub.coef_arrays = coef->whole_image; /* link to virtual arrays */
 #else
     ERREXIT(cinfo, JERR_NOT_COMPILED);
@@ -734,8 +734,8 @@ jinit_d_coef_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
     if (cinfo->lim_Se == 0)	/* DC only case: want to bypass later */
       FMEMZERO((void FAR *) buffer,
 	       (size_t) (D_MAX_BLOCKS_IN_MCU * SIZEOF(JBLOCK)));
-    coef->pub.consume_data = dummy_consume_data;
-    coef->pub.decompress_data = decompress_onepass;
+    coef->pub.LJPEG_consume_data = LJPEG_dummy_consume_data;
+    coef->pub.LJPEG_decompress_data = LJPEG_decompress_onepass;
     coef->pub.coef_arrays = NULL; /* flag for no virtual arrays */
   }
 }

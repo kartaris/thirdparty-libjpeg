@@ -18,7 +18,7 @@ other JPEG standards (e.g., JPEG-LS part 2).
 Remove the automatic de-ANSI-fication support (Automake 1.12).
 Thank also to Nitin A Kamble for suggestion.
 
-Add remark for jpeg_mem_dest() in jdatadst.c.
+Add remark for LJPEG_jpeg_mem_dest() in jdatadst.c.
 Thank to Elie-Gregoire Khoury for the hint.
 
 Support files with invalid component identifiers (created
@@ -109,7 +109,7 @@ Add sanity check in BMP reader module to avoid cjpeg crash for empty input
 image (thank to Isaev Ildar of ISP RAS, Moscow, RU for reporting this error).
 
 Add data source and destination managers for read from and write to
-memory buffers.  New API functions jpeg_mem_src and jpeg_mem_dest.
+memory buffers.  New API functions LJPEG_jpeg_mem_src and LJPEG_jpeg_mem_dest.
 Thank to Roberto Boni from Italy for the suggestion.
 
 

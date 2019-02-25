@@ -45,7 +45,7 @@ LJPEG_jpeg_start_compress (LJPEG_j_compress_ptr cinfo, boolean write_all_tables)
 
   /* (Re)initialize error mgr and destination modules */
   (*cinfo->err->reset_error_mgr) ((LJPEG_j_common_ptr) cinfo);
-  (*cinfo->dest->init_destination) (cinfo);
+  (*cinfo->dest->LJPEG_init_destination) (cinfo);
   /* Perform master selection of active modules */
   LJPEG_jinit_compress_master(cinfo);
   /* Set up for the first pass */

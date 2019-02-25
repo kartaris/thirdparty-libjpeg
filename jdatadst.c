@@ -33,9 +33,9 @@ typedef struct {
 
   FILE * outfile;		/* target stream */
   JOCTET * buffer;		/* start of buffer */
-} my_destination_mgr;
+} LJPEG_my_destination_mgr;
 
-typedef my_destination_mgr * my_dest_ptr;
+typedef LJPEG_my_destination_mgr * LJPEG_my_dest_ptr;
 
 #define OUTPUT_BUF_SIZE  4096	/* choose an efficiently fwrite'able size */
 
@@ -50,9 +50,9 @@ typedef struct {
   unsigned char * newbuffer;	/* newly allocated buffer */
   JOCTET * buffer;		/* start of buffer */
   size_t bufsize;
-} my_mem_destination_mgr;
+} LJPEG_my_mem_destination_mgr;
 
-typedef my_mem_destination_mgr * my_mem_dest_ptr;
+typedef LJPEG_my_mem_destination_mgr * LJPEG_my_mem_dest_ptr;
 
 
 /*
@@ -61,9 +61,9 @@ typedef my_mem_destination_mgr * my_mem_dest_ptr;
  */
 
 LJPEG_METHODDEF(void)
-init_destination (LJPEG_j_compress_ptr cinfo)
+LJPEG_init_destination (LJPEG_j_compress_ptr cinfo)
 {
-  my_dest_ptr dest = (my_dest_ptr) cinfo->dest;
+  LJPEG_my_dest_ptr dest = (LJPEG_my_dest_ptr) cinfo->dest;
 
   /* Allocate the output buffer --- it will be released when done with image */
   dest->buffer = (JOCTET *)
@@ -75,7 +75,7 @@ init_destination (LJPEG_j_compress_ptr cinfo)
 }
 
 LJPEG_METHODDEF(void)
-init_mem_destination (LJPEG_j_compress_ptr cinfo)
+LJPEG_init_mem_destination (LJPEG_j_compress_ptr cinfo)
 {
   /* no work necessary here */
 }
@@ -105,9 +105,9 @@ init_mem_destination (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(boolean)
-empty_output_buffer (LJPEG_j_compress_ptr cinfo)
+LJPEG_empty_output_buffer (LJPEG_j_compress_ptr cinfo)
 {
-  my_dest_ptr dest = (my_dest_ptr) cinfo->dest;
+  LJPEG_my_dest_ptr dest = (LJPEG_my_dest_ptr) cinfo->dest;
 
   if (JFWRITE(dest->outfile, dest->buffer, OUTPUT_BUF_SIZE) !=
       (size_t) OUTPUT_BUF_SIZE)
@@ -120,11 +120,11 @@ empty_output_buffer (LJPEG_j_compress_ptr cinfo)
 }
 
 LJPEG_METHODDEF(boolean)
-empty_mem_output_buffer (LJPEG_j_compress_ptr cinfo)
+LJPEG_empty_mem_output_buffer (LJPEG_j_compress_ptr cinfo)
 {
   size_t nextsize;
   JOCTET * nextbuffer;
-  my_mem_dest_ptr dest = (my_mem_dest_ptr) cinfo->dest;
+  LJPEG_my_mem_dest_ptr dest = (LJPEG_my_mem_dest_ptr) cinfo->dest;
 
   /* Try to allocate new buffer with double size */
   nextsize = dest->bufsize * 2;
@@ -160,9 +160,9 @@ empty_mem_output_buffer (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-term_destination (LJPEG_j_compress_ptr cinfo)
+LJPEG_term_destination (LJPEG_j_compress_ptr cinfo)
 {
-  my_dest_ptr dest = (my_dest_ptr) cinfo->dest;
+  LJPEG_my_dest_ptr dest = (LJPEG_my_dest_ptr) cinfo->dest;
   size_t datacount = OUTPUT_BUF_SIZE - dest->pub.free_in_buffer;
 
   /* Write any data remaining in the buffer */
@@ -177,9 +177,9 @@ term_destination (LJPEG_j_compress_ptr cinfo)
 }
 
 LJPEG_METHODDEF(void)
-term_mem_destination (LJPEG_j_compress_ptr cinfo)
+LJPEG_term_mem_destination (LJPEG_j_compress_ptr cinfo)
 {
-  my_mem_dest_ptr dest = (my_mem_dest_ptr) cinfo->dest;
+  LJPEG_my_mem_dest_ptr dest = (LJPEG_my_mem_dest_ptr) cinfo->dest;
 
   *dest->outbuffer = dest->buffer;
   *dest->outsize = dest->bufsize - dest->pub.free_in_buffer;
@@ -195,7 +195,7 @@ term_mem_destination (LJPEG_j_compress_ptr cinfo)
 LJPEG_GLOBALvoid)
 LJPEG_jpeg_stdio_dest (LJPEG_j_compress_ptr cinfo, FILE * outfile)
 {
-  my_dest_ptr dest;
+  LJPEG_my_dest_ptr dest;
 
   /* The destination object is made permanent so that multiple JPEG images
    * can be written to the same file without re-executing LJPEG_jpeg_stdio_dest.
@@ -206,13 +206,13 @@ LJPEG_jpeg_stdio_dest (LJPEG_j_compress_ptr cinfo, FILE * outfile)
   if (cinfo->dest == NULL) {	/* first time for this JPEG object? */
     cinfo->dest = (struct jpeg_destination_mgr *)
       (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
-				  SIZEOF(my_destination_mgr));
+				  SIZEOF(LJPEG_my_destination_mgr));
   }
 
-  dest = (my_dest_ptr) cinfo->dest;
-  dest->pub.init_destination = init_destination;
-  dest->pub.empty_output_buffer = empty_output_buffer;
-  dest->pub.term_destination = term_destination;
+  dest = (LJPEG_my_dest_ptr) cinfo->dest;
+  dest->pub.LJPEG_init_destination = LJPEG_init_destination;
+  dest->pub.LJPEG_empty_output_buffer = LJPEG_empty_output_buffer;
+  dest->pub.LJPEG_term_destination = LJPEG_term_destination;
   dest->outfile = outfile;
 }
 
@@ -231,28 +231,28 @@ LJPEG_jpeg_stdio_dest (LJPEG_j_compress_ptr cinfo, FILE * outfile)
  * when allocating a larger buffer.
  */
 
-LJPEG_GLOBALvoid)
-jpeg_mem_dest (LJPEG_j_compress_ptr cinfo,
+LJPEG_GLOBAL(void)
+LJPEG_jpeg_mem_dest (LJPEG_j_compress_ptr cinfo,
 	       unsigned char ** outbuffer, unsigned long * outsize)
 {
-  my_mem_dest_ptr dest;
+  LJPEG_my_mem_dest_ptr dest;
 
   if (outbuffer == NULL || outsize == NULL)	/* sanity check */
     ERREXIT(cinfo, JERR_BUFFER_SIZE);
 
   /* The destination object is made permanent so that multiple JPEG images
-   * can be written to the same buffer without re-executing jpeg_mem_dest.
+   * can be written to the same buffer without re-executing LJPEG_jpeg_mem_dest.
    */
   if (cinfo->dest == NULL) {	/* first time for this JPEG object? */
     cinfo->dest = (struct jpeg_destination_mgr *)
       (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
-				  SIZEOF(my_mem_destination_mgr));
+				  SIZEOF(LJPEG_my_mem_destination_mgr));
   }
 
-  dest = (my_mem_dest_ptr) cinfo->dest;
-  dest->pub.init_destination = init_mem_destination;
-  dest->pub.empty_output_buffer = empty_mem_output_buffer;
-  dest->pub.term_destination = term_mem_destination;
+  dest = (LJPEG_my_mem_dest_ptr) cinfo->dest;
+  dest->pub.LJPEG_init_destination = LJPEG_init_mem_destination;
+  dest->pub.LJPEG_empty_output_buffer = LJPEG_empty_mem_output_buffer;
+  dest->pub.LJPEG_term_destination = LJPEG_term_mem_destination;
   dest->outbuffer = outbuffer;
   dest->outsize = outsize;
   dest->newbuffer = NULL;

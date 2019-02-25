@@ -271,7 +271,7 @@ LJPEG_dump_buffer_s (LJPEG_working_state * state)
 {
   struct jpeg_destination_mgr * dest = state->cinfo->dest;
 
-  if (! (*dest->empty_output_buffer) (state->cinfo))
+  if (! (*dest->LJPEG_empty_output_buffer) (state->cinfo))
     return FALSE;
   /* After a successful buffer dump, must reset buffer pointers */
   state->next_output_byte = dest->next_output_byte;
@@ -286,7 +286,7 @@ LJPEG_dump_buffer_e (LJPEG_huff_entropy_ptr entropy)
 {
   struct jpeg_destination_mgr * dest = entropy->cinfo->dest;
 
-  if (! (*dest->empty_output_buffer) (entropy->cinfo))
+  if (! (*dest->LJPEG_empty_output_buffer) (entropy->cinfo))
     ERREXIT(entropy->cinfo, JERR_CANT_SUSPEND);
   /* After a successful buffer dump, must reset buffer pointers */
   entropy->next_output_byte = dest->next_output_byte;

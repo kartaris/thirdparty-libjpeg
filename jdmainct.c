@@ -352,7 +352,7 @@ LJPEG_process_data_simple_main (LJPEG_j_decompress_ptr cinfo,
 
   /* Read input data if we haven't filled the main buffer yet */
   if (! mainp->buffer_full) {
-    if (! (*cinfo->coef->decompress_data) (cinfo, mainp->buffer))
+    if (! (*cinfo->coef->LJPEG_decompress_data) (cinfo, mainp->buffer))
       return;			/* suspension forced, can do nothing more */
     mainp->buffer_full = TRUE;	/* OK, we have an iMCU row to work with */
   }
@@ -391,7 +391,7 @@ process_data_context_main (LJPEG_j_decompress_ptr cinfo,
 
   /* Read input data if we haven't filled the main buffer yet */
   if (! mainp->buffer_full) {
-    if (! (*cinfo->coef->decompress_data) (cinfo,
+    if (! (*cinfo->coef->LJPEG_decompress_data) (cinfo,
 					   mainp->xbuffer[mainp->whichptr]))
       return;			/* suspension forced, can do nothing more */
     mainp->buffer_full = TRUE;	/* OK, we have an iMCU row to work with */

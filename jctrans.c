@@ -43,7 +43,7 @@ LJPEG_jpeg_write_coefficients (LJPEG_j_compress_ptr cinfo, LJPEG_jvirt_barray_pt
   LJPEG_jpeg_suppress_tables(cinfo, FALSE);
   /* (Re)initialize error mgr and destination modules */
   (*cinfo->err->reset_error_mgr) ((LJPEG_j_common_ptr) cinfo);
-  (*cinfo->dest->init_destination) (cinfo);
+  (*cinfo->dest->LJPEG_init_destination) (cinfo);
   /* Perform master selection of active modules */
   LJPEG_transencode_master_selection(cinfo, coef_arrays);
   /* Wait for LJPEG_jpeg_finish_compress() call */

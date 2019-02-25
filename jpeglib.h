@@ -766,9 +766,9 @@ struct jpeg_destination_mgr {
   JOCTET * next_output_byte;	/* => next byte to write in buffer */
   size_t free_in_buffer;	/* # of byte spaces remaining in buffer */
 
-  LJPEG_JMETHOD(void, init_destination, (LJPEG_j_compress_ptr cinfo));
-  LJPEG_JMETHOD(boolean, empty_output_buffer, (LJPEG_j_compress_ptr cinfo));
-  LJPEG_JMETHOD(void, term_destination, (LJPEG_j_compress_ptr cinfo));
+  LJPEG_JMETHOD(void, LJPEG_init_destination, (LJPEG_j_compress_ptr cinfo));
+  LJPEG_JMETHOD(boolean, LJPEG_empty_output_buffer, (LJPEG_j_compress_ptr cinfo));
+  LJPEG_JMETHOD(void, LJPEG_term_destination, (LJPEG_j_compress_ptr cinfo));
 };
 
 
@@ -778,11 +778,11 @@ struct jpeg_source_mgr {
   const JOCTET * next_input_byte; /* => next byte to read from buffer */
   size_t bytes_in_buffer;	/* # of bytes remaining in buffer */
 
-  LJPEG_JMETHOD(void, init_source, (LJPEG_j_decompress_ptr cinfo));
-  LJPEG_JMETHOD(boolean, fill_input_buffer, (LJPEG_j_decompress_ptr cinfo));
-  LJPEG_JMETHOD(void, skip_input_data, (LJPEG_j_decompress_ptr cinfo, long num_bytes));
+  LJPEG_JMETHOD(void, LJPEG_init_source, (LJPEG_j_decompress_ptr cinfo));
+  LJPEG_JMETHOD(boolean, LJPEG_fill_input_buffer, (LJPEG_j_decompress_ptr cinfo));
+  LJPEG_JMETHOD(void, LJPEG_skip_input_data, (LJPEG_j_decompress_ptr cinfo, long num_bytes));
   LJPEG_JMETHOD(boolean, resync_to_restart, (LJPEG_j_decompress_ptr cinfo, int desired));
-  LJPEG_JMETHOD(void, term_source, (LJPEG_j_decompress_ptr cinfo));
+  LJPEG_JMETHOD(void, LJPEG_term_source, (LJPEG_j_decompress_ptr cinfo));
 };
 
 
@@ -888,8 +888,8 @@ typedef LJPEG_JMETHOD(boolean, jpeg_marker_parser_method, (LJPEG_j_decompress_pt
 #define LJPEG_jpeg_destroy_decompress	jDestDecompress
 #define LJPEG_jpeg_stdio_dest		jStdDest
 #define LJPEG_jpeg_stdio_src		jStdSrc
-#define jpeg_mem_dest		jMemDest
-#define jpeg_mem_src		jMemSrc
+#define LJPEG_jpeg_mem_dest		jMemDest
+#define LJPEG_jpeg_mem_src		jMemSrc
 #define LJPEG_jpeg_set_defaults	jSetDefaults
 #define LJPEG_jpeg_set_colorspace	jSetColorspace
 #define LJPEG_jpeg_default_colorspace	jDefColorspace
@@ -968,10 +968,10 @@ EXTERN(void) LJPEG_jpeg_stdio_dest LJPEG_JPP((LJPEG_j_compress_ptr cinfo, FILE *
 EXTERN(void) LJPEG_jpeg_stdio_src LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, FILE * infile));
 
 /* Data source and destination managers: memory buffers. */
-EXTERN(void) jpeg_mem_dest LJPEG_JPP((LJPEG_j_compress_ptr cinfo,
+EXTERN(void) LJPEG_jpeg_mem_dest LJPEG_JPP((LJPEG_j_compress_ptr cinfo,
 			       unsigned char ** outbuffer,
 			       unsigned long * outsize));
-EXTERN(void) jpeg_mem_src LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
+EXTERN(void) LJPEG_jpeg_mem_src LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
 			      unsigned char * inbuffer,
 			      unsigned long insize));
 

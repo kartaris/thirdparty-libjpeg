@@ -204,7 +204,7 @@ LJPEG_jpeg_read_raw_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE data,
     ERREXIT(cinfo, JERR_BUFFER_SIZE);
 
   /* Decompress directly into user's buffer. */
-  if (! (*cinfo->coef->decompress_data) (cinfo, data))
+  if (! (*cinfo->coef->LJPEG_decompress_data) (cinfo, data))
     return 0;			/* suspension forced, can do nothing more */
 
   /* OK, we processed one iMCU row. */

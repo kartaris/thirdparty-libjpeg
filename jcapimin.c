@@ -183,7 +183,7 @@ LJPEG_jpeg_finish_compress (LJPEG_j_compress_ptr cinfo)
   }
   /* Write EOI, do final cleanup */
   (*cinfo->marker->LJPEG_write_file_trailer) (cinfo);
-  (*cinfo->dest->term_destination) (cinfo);
+  (*cinfo->dest->LJPEG_term_destination) (cinfo);
   /* We can use LJPEG_jpeg_abort to release memory and reset global_state */
   LJPEG_jpeg_abort((LJPEG_j_common_ptr) cinfo);
 }
@@ -266,13 +266,13 @@ LJPEG_jpeg_write_tables (LJPEG_j_compress_ptr cinfo)
 
   /* (Re)initialize error mgr and destination modules */
   (*cinfo->err->reset_error_mgr) ((LJPEG_j_common_ptr) cinfo);
-  (*cinfo->dest->init_destination) (cinfo);
+  (*cinfo->dest->LJPEG_init_destination) (cinfo);
   /* Initialize the marker writer ... bit of a crock to do it here. */
   LJPEG_jinit_marker_writer(cinfo);
   /* Write them tables! */
   (*cinfo->marker->LJPEG_write_tables_only) (cinfo);
   /* And clean up. */
-  (*cinfo->dest->term_destination) (cinfo);
+  (*cinfo->dest->LJPEG_term_destination) (cinfo);
   /*
    * In library releases up through v6a, we called LJPEG_jpeg_abort() here to free
    * any working memory allocated by the destination manager and marker

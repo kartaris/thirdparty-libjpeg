@@ -165,7 +165,7 @@
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_ifast (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_ifast (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		 LJPEG_JCOEFPTR coef_block,
 		 LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {

@@ -149,7 +149,7 @@ struct jpeg_decomp_master {
 struct jpeg_input_controller {
   LJPEG_JMETHOD(int, consume_input, (LJPEG_j_decompress_ptr cinfo));
   LJPEG_JMETHOD(void, reset_input_controller, (LJPEG_j_decompress_ptr cinfo));
-  LJPEG_JMETHOD(void, start_input_pass, (LJPEG_j_decompress_ptr cinfo));
+  LJPEG_JMETHOD(void, LJPEG_start_input_pass, (LJPEG_j_decompress_ptr cinfo));
   LJPEG_JMETHOD(void, finish_input_pass, (LJPEG_j_decompress_ptr cinfo));
 
   /* State variables made visible to other modules */
@@ -167,10 +167,10 @@ struct jpeg_d_main_controller {
 
 /* Coefficient buffer control */
 struct jpeg_d_coef_controller {
-  LJPEG_JMETHOD(void, start_input_pass, (LJPEG_j_decompress_ptr cinfo));
-  LJPEG_JMETHOD(int, consume_data, (LJPEG_j_decompress_ptr cinfo));
-  LJPEG_JMETHOD(void, start_output_pass, (LJPEG_j_decompress_ptr cinfo));
-  LJPEG_JMETHOD(int, decompress_data, (LJPEG_j_decompress_ptr cinfo,
+  LJPEG_JMETHOD(void, LJPEG_start_input_pass, (LJPEG_j_decompress_ptr cinfo));
+  LJPEG_JMETHOD(int, LJPEG_consume_data, (LJPEG_j_decompress_ptr cinfo));
+  LJPEG_JMETHOD(void, LJPEG_start_output_pass, (LJPEG_j_decompress_ptr cinfo));
+  LJPEG_JMETHOD(int, LJPEG_decompress_data, (LJPEG_j_decompress_ptr cinfo,
 				 LJPEG_JSAMPIMAGE output_buf));
   /* Pointer to array of coefficient virtual arrays, or NULL if none */
   LJPEG_jvirt_barray_ptr *coef_arrays;
@@ -306,7 +306,7 @@ struct jpeg_color_quantizer {
 #define LJPEG_jinit_marker_writer	jIMWriter
 #define jinit_master_decompress	jIDMaster
 #define jinit_d_main_controller	jIDMainC
-#define jinit_d_coef_controller	jIDCoefC
+#define LJPEG_jinit_d_coef_controller	jIDCoefC
 #define jinit_d_post_controller	jIDPostC
 #define jinit_input_controller	jIInCtlr
 #define jinit_marker_reader	jIMReader
@@ -314,7 +314,7 @@ struct jpeg_color_quantizer {
 #define LJPEG_jinit_arith_decoder	jIADecoder
 #define jinit_inverse_dct	jIIDCT
 #define jinit_upsampler		jIUpsampler
-#define jinit_color_deconverter	jIDColor
+#define LJPEG_jinit_color_deconverter	jIDColor
 #define jinit_1pass_quantizer	jI1Quant
 #define jinit_2pass_quantizer	jI2Quant
 #define jinit_merged_upsampler	jIMUpsampler
@@ -376,7 +376,7 @@ EXTERN(void) LJPEG_jinit_marker_writer LJPEG_JPP((LJPEG_j_compress_ptr cinfo));
 EXTERN(void) jinit_master_decompress LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) jinit_d_main_controller LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
 					  boolean need_full_buffer));
-EXTERN(void) jinit_d_coef_controller LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
+EXTERN(void) LJPEG_jinit_d_coef_controller LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
 					  boolean need_full_buffer));
 EXTERN(void) jinit_d_post_controller LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
 					  boolean need_full_buffer));
@@ -386,7 +386,7 @@ EXTERN(void) jinit_huff_decoder LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) LJPEG_jinit_arith_decoder LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) jinit_inverse_dct LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) jinit_upsampler LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
-EXTERN(void) jinit_color_deconverter LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(void) LJPEG_jinit_color_deconverter LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) jinit_1pass_quantizer LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) jinit_2pass_quantizer LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) jinit_merged_upsampler LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));

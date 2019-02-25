@@ -177,7 +177,7 @@
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_islow (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_islow (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		 LJPEG_JCOEFPTR coef_block,
 		 LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -438,7 +438,7 @@ jpeg_idct_islow (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compp
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_7x7 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_7x7 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JCOEFPTR coef_block,
 	       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -589,7 +589,7 @@ jpeg_idct_7x7 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_6x6 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_6x6 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JCOEFPTR coef_block,
 	       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -712,7 +712,7 @@ jpeg_idct_6x6 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_5x5 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_5x5 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JCOEFPTR coef_block,
 	       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -829,7 +829,7 @@ jpeg_idct_5x5 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_4x4 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_4x4 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JCOEFPTR coef_block,
 	       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -936,7 +936,7 @@ jpeg_idct_4x4 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_3x3 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_3x3 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JCOEFPTR coef_block,
 	       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -1027,7 +1027,7 @@ jpeg_idct_3x3 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_2x2 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_2x2 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JCOEFPTR coef_block,
 	       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -1083,7 +1083,7 @@ jpeg_idct_2x2 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_1x1 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_1x1 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JCOEFPTR coef_block,
 	       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -1111,7 +1111,7 @@ jpeg_idct_1x1 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_9x9 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_9x9 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JCOEFPTR coef_block,
 	       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -1284,7 +1284,7 @@ jpeg_idct_9x9 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_10x10 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_10x10 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		 LJPEG_JCOEFPTR coef_block,
 		 LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -1481,7 +1481,7 @@ jpeg_idct_10x10 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compp
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_11x11 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_11x11 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		 LJPEG_JCOEFPTR coef_block,
 		 LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -1677,7 +1677,7 @@ jpeg_idct_11x11 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compp
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_12x12 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_12x12 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		 LJPEG_JCOEFPTR coef_block,
 		 LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -1895,7 +1895,7 @@ jpeg_idct_12x12 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compp
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_13x13 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_13x13 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		 LJPEG_JCOEFPTR coef_block,
 		 LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -2125,7 +2125,7 @@ jpeg_idct_13x13 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compp
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_14x14 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_14x14 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		 LJPEG_JCOEFPTR coef_block,
 		 LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -2353,7 +2353,7 @@ jpeg_idct_14x14 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compp
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_15x15 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_15x15 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		 LJPEG_JCOEFPTR coef_block,
 		 LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -2597,7 +2597,7 @@ jpeg_idct_15x15 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compp
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_16x16 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_16x16 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		 LJPEG_JCOEFPTR coef_block,
 		 LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -2860,7 +2860,7 @@ jpeg_idct_16x16 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compp
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_16x8 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_16x8 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		LJPEG_JCOEFPTR coef_block,
 		LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -3135,7 +3135,7 @@ jpeg_idct_16x8 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * comppt
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_14x7 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_14x7 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		LJPEG_JCOEFPTR coef_block,
 		LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -3332,7 +3332,7 @@ jpeg_idct_14x7 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * comppt
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_12x6 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_12x6 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		LJPEG_JCOEFPTR coef_block,
 		LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -3510,7 +3510,7 @@ jpeg_idct_12x6 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * comppt
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_10x5 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_10x5 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		LJPEG_JCOEFPTR coef_block,
 		LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -3673,7 +3673,7 @@ jpeg_idct_10x5 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * comppt
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_8x4 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_8x4 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JCOEFPTR coef_block,
 	       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -3828,7 +3828,7 @@ jpeg_idct_8x4 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_6x3 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_6x3 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JCOEFPTR coef_block,
 	       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -3940,7 +3940,7 @@ jpeg_idct_6x3 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_4x2 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_4x2 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JCOEFPTR coef_block,
 	       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -4032,7 +4032,7 @@ jpeg_idct_4x2 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_2x1 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_2x1 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JCOEFPTR coef_block,
 	       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -4075,7 +4075,7 @@ jpeg_idct_2x1 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_8x16 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_8x16 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		LJPEG_JCOEFPTR coef_block,
 		LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -4295,7 +4295,7 @@ jpeg_idct_8x16 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * comppt
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_7x14 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_7x14 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		LJPEG_JCOEFPTR coef_block,
 		LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -4480,7 +4480,7 @@ jpeg_idct_7x14 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * comppt
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_6x12 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_6x12 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		LJPEG_JCOEFPTR coef_block,
 		LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -4646,7 +4646,7 @@ jpeg_idct_6x12 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * comppt
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_5x10 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_5x10 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		LJPEG_JCOEFPTR coef_block,
 		LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -4800,7 +4800,7 @@ jpeg_idct_5x10 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * comppt
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_4x8 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_4x8 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JCOEFPTR coef_block,
 	       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -4984,7 +4984,7 @@ jpeg_idct_4x8 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_3x6 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_3x6 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JCOEFPTR coef_block,
 	       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -5090,7 +5090,7 @@ jpeg_idct_3x6 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_2x4 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_2x4 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JCOEFPTR coef_block,
 	       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
@@ -5176,7 +5176,7 @@ jpeg_idct_2x4 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_1x2 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_jpeg_idct_1x2 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JCOEFPTR coef_block,
 	       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {

@@ -29,9 +29,9 @@ typedef struct {
   FILE * infile;		/* source stream */
   JOCTET * buffer;		/* start of buffer */
   boolean start_of_file;	/* have we gotten any data yet? */
-} my_source_mgr;
+} LJPEG_my_source_mgr;
 
-typedef my_source_mgr * my_src_ptr;
+typedef LJPEG_my_source_mgr * LJPEG_my_src_ptr;
 
 #define INPUT_BUF_SIZE  4096	/* choose an efficiently fread'able size */
 
@@ -42,9 +42,9 @@ typedef my_source_mgr * my_src_ptr;
  */
 
 LJPEG_METHODDEF(void)
-init_source (LJPEG_j_decompress_ptr cinfo)
+LJPEG_init_source (LJPEG_j_decompress_ptr cinfo)
 {
-  my_src_ptr src = (my_src_ptr) cinfo->src;
+  LJPEG_my_src_ptr src = (LJPEG_my_src_ptr) cinfo->src;
 
   /* We reset the empty-input-file flag for each image,
    * but we don't clear the input buffer.
@@ -54,7 +54,7 @@ init_source (LJPEG_j_decompress_ptr cinfo)
 }
 
 LJPEG_METHODDEF(void)
-init_mem_source (LJPEG_j_decompress_ptr cinfo)
+LJPEG_init_mem_source (LJPEG_j_decompress_ptr cinfo)
 {
   /* no work necessary here */
 }
@@ -94,9 +94,9 @@ init_mem_source (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(boolean)
-fill_input_buffer (LJPEG_j_decompress_ptr cinfo)
+LJPEG_fill_input_buffer (LJPEG_j_decompress_ptr cinfo)
 {
-  my_src_ptr src = (my_src_ptr) cinfo->src;
+  LJPEG_my_src_ptr src = (LJPEG_my_src_ptr) cinfo->src;
   size_t nbytes;
 
   nbytes = JFREAD(src->infile, src->buffer, INPUT_BUF_SIZE);
@@ -119,7 +119,7 @@ fill_input_buffer (LJPEG_j_decompress_ptr cinfo)
 }
 
 LJPEG_METHODDEF(boolean)
-fill_mem_input_buffer (LJPEG_j_decompress_ptr cinfo)
+LJPEG_fill_mem_input_buffer (LJPEG_j_decompress_ptr cinfo)
 {
   static const JOCTET mybuffer[4] = {
     (JOCTET) 0xFF, (JOCTET) JPEG_EOI, 0, 0
@@ -144,16 +144,16 @@ fill_mem_input_buffer (LJPEG_j_decompress_ptr cinfo)
  * Skip data --- used to skip over a potentially large amount of
  * uninteresting data (such as an APPn marker).
  *
- * Writers of suspendable-input applications must note that skip_input_data
+ * Writers of suspendable-input applications must note that LJPEG_skip_input_data
  * is not granted the right to give a suspension return.  If the skip extends
  * beyond the data currently in the buffer, the buffer can be marked empty so
- * that the next read will cause a fill_input_buffer call that can suspend.
+ * that the next read will cause a LJPEG_fill_input_buffer call that can suspend.
  * Arranging for additional bytes to be discarded before reloading the input
  * buffer is the application writer's problem.
  */
 
 LJPEG_METHODDEF(void)
-skip_input_data (LJPEG_j_decompress_ptr cinfo, long num_bytes)
+LJPEG_skip_input_data (LJPEG_j_decompress_ptr cinfo, long num_bytes)
 {
   struct jpeg_source_mgr * src = cinfo->src;
 
@@ -164,8 +164,8 @@ skip_input_data (LJPEG_j_decompress_ptr cinfo, long num_bytes)
   if (num_bytes > 0) {
     while (num_bytes > (long) src->bytes_in_buffer) {
       num_bytes -= (long) src->bytes_in_buffer;
-      (void) (*src->fill_input_buffer) (cinfo);
-      /* note we assume that fill_input_buffer will never return FALSE,
+      (void) (*src->LJPEG_fill_input_buffer) (cinfo);
+      /* note we assume that LJPEG_fill_input_buffer will never return FALSE,
        * so suspension need not be handled.
        */
     }
@@ -194,7 +194,7 @@ skip_input_data (LJPEG_j_decompress_ptr cinfo, long num_bytes)
  */
 
 LJPEG_METHODDEF(void)
-term_source (LJPEG_j_decompress_ptr cinfo)
+LJPEG_term_source (LJPEG_j_decompress_ptr cinfo)
 {
   /* no work necessary here */
 }
@@ -209,7 +209,7 @@ term_source (LJPEG_j_decompress_ptr cinfo)
 LJPEG_GLOBALvoid)
 LJPEG_jpeg_stdio_src (LJPEG_j_decompress_ptr cinfo, FILE * infile)
 {
-  my_src_ptr src;
+  LJPEG_my_src_ptr src;
 
   /* The source object and input buffer are made permanent so that a series
    * of JPEG images can be read from the same file by calling LJPEG_jpeg_stdio_src
@@ -221,21 +221,21 @@ LJPEG_jpeg_stdio_src (LJPEG_j_decompress_ptr cinfo, FILE * infile)
   if (cinfo->src == NULL) {	/* first time for this JPEG object? */
     cinfo->src = (struct jpeg_source_mgr *)
       (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
-				  SIZEOF(my_source_mgr));
-    src = (my_src_ptr) cinfo->src;
+				  SIZEOF(LJPEG_my_source_mgr));
+    src = (LJPEG_my_src_ptr) cinfo->src;
     src->buffer = (JOCTET *)
       (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
 				  INPUT_BUF_SIZE * SIZEOF(JOCTET));
   }
 
-  src = (my_src_ptr) cinfo->src;
-  src->pub.init_source = init_source;
-  src->pub.fill_input_buffer = fill_input_buffer;
-  src->pub.skip_input_data = skip_input_data;
+  src = (LJPEG_my_src_ptr) cinfo->src;
+  src->pub.LJPEG_init_source = LJPEG_init_source;
+  src->pub.LJPEG_fill_input_buffer = LJPEG_fill_input_buffer;
+  src->pub.LJPEG_skip_input_data = LJPEG_skip_input_data;
   src->pub.resync_to_restart = jpeg_resync_to_restart; /* use default method */
-  src->pub.term_source = term_source;
+  src->pub.LJPEG_term_source = LJPEG_term_source;
   src->infile = infile;
-  src->pub.bytes_in_buffer = 0; /* forces fill_input_buffer on first read */
+  src->pub.bytes_in_buffer = 0; /* forces LJPEG_fill_input_buffer on first read */
   src->pub.next_input_byte = NULL; /* until buffer loaded */
 }
 
@@ -246,7 +246,7 @@ LJPEG_jpeg_stdio_src (LJPEG_j_decompress_ptr cinfo, FILE * infile)
  */
 
 LJPEG_GLOBALvoid)
-jpeg_mem_src (LJPEG_j_decompress_ptr cinfo,
+LJPEG_jpeg_mem_src (LJPEG_j_decompress_ptr cinfo,
 	      unsigned char * inbuffer, unsigned long insize)
 {
   struct jpeg_source_mgr * src;
@@ -255,7 +255,7 @@ jpeg_mem_src (LJPEG_j_decompress_ptr cinfo,
     ERREXIT(cinfo, JERR_INPUT_EMPTY);
 
   /* The source object is made permanent so that a series of JPEG images
-   * can be read from the same buffer by calling jpeg_mem_src only before
+   * can be read from the same buffer by calling LJPEG_jpeg_mem_src only before
    * the first one.
    */
   if (cinfo->src == NULL) {	/* first time for this JPEG object? */
@@ -265,11 +265,11 @@ jpeg_mem_src (LJPEG_j_decompress_ptr cinfo,
   }
 
   src = cinfo->src;
-  src->init_source = init_mem_source;
-  src->fill_input_buffer = fill_mem_input_buffer;
-  src->skip_input_data = skip_input_data;
+  src->LJPEG_init_source = LJPEG_init_mem_source;
+  src->LJPEG_fill_input_buffer = LJPEG_fill_mem_input_buffer;
+  src->LJPEG_skip_input_data = LJPEG_skip_input_data;
   src->resync_to_restart = jpeg_resync_to_restart; /* use default method */
-  src->term_source = term_source;
+  src->LJPEG_term_source = LJPEG_term_source;
   src->bytes_in_buffer = (size_t) insize;
   src->next_input_byte = (JOCTET *) inbuffer;
 }

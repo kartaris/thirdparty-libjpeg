@@ -80,7 +80,7 @@ typedef my_upsampler * my_upsample_ptr;
  */
 
 LOCAL(void)
-build_ycc_rgb_table (LJPEG_j_decompress_ptr cinfo)
+LJPEG_build_ycc_rgb_table (LJPEG_j_decompress_ptr cinfo)
 {
   my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
   int i;
@@ -394,7 +394,7 @@ jinit_merged_upsampler (LJPEG_j_decompress_ptr cinfo)
     upsample->spare_row = NULL;
   }
 
-  build_ycc_rgb_table(cinfo);
+  LJPEG_build_ycc_rgb_table(cinfo);
 }
 
 #endif /* UPSAMPLE_MERGING_SUPPORTED */

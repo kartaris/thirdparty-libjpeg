@@ -518,13 +518,13 @@ latch_quant_tables (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-start_input_pass (LJPEG_j_decompress_ptr cinfo)
+LJPEG_start_input_pass (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_per_scan_setup(cinfo);
   latch_quant_tables(cinfo);
   (*cinfo->entropy->LJPEG_start_pass) (cinfo);
-  (*cinfo->coef->start_input_pass) (cinfo);
-  cinfo->inputctl->consume_input = cinfo->coef->consume_data;
+  (*cinfo->coef->LJPEG_start_input_pass) (cinfo);
+  cinfo->inputctl->consume_input = cinfo->coef->LJPEG_consume_data;
 }
 
 
@@ -547,7 +547,7 @@ finish_input_pass (LJPEG_j_decompress_ptr cinfo)
  * Return value is JPEG_SUSPENDED, JPEG_REACHED_SOS, or JPEG_REACHED_EOI.
  *
  * The consume_input method pointer points either here or to the
- * coefficient controller's consume_data routine, depending on whether
+ * coefficient controller's LJPEG_consume_data routine, depending on whether
  * we are reading a compressed data segment or inter-segment markers.
  *
  * Note: This function should NOT return a pseudo SOS marker (with zero
@@ -577,7 +577,7 @@ consume_markers (LJPEG_j_decompress_ptr cinfo)
 	  break;
 	}
 	inputctl->inheaders = 0;
-	/* Note: start_input_pass must be called by jdmaster.c
+	/* Note: LJPEG_start_input_pass must be called by jdmaster.c
 	 * before any more input can be consumed.  jdapimin.c is
 	 * responsible for enforcing this sequencing.
 	 */
@@ -586,7 +586,7 @@ consume_markers (LJPEG_j_decompress_ptr cinfo)
 	  ERREXIT(cinfo, JERR_EOI_EXPECTED); /* Oops, I wasn't expecting this! */
 	if (cinfo->comps_in_scan == 0) /* unexpected pseudo SOS marker */
 	  break;
-	start_input_pass(cinfo);
+	LJPEG_start_input_pass(cinfo);
       }
       return val;
     case JPEG_REACHED_EOI:	/* Found EOI */
@@ -595,7 +595,7 @@ consume_markers (LJPEG_j_decompress_ptr cinfo)
 	if (cinfo->marker->saw_SOF)
 	  ERREXIT(cinfo, JERR_SOF_NO_SOS);
       } else {
-	/* Prevent infinite loop in coef ctlr's decompress_data routine
+	/* Prevent infinite loop in coef ctlr's LJPEG_decompress_data routine
 	 * if user set output_scan_number larger than number of scans.
 	 */
 	if (cinfo->output_scan_number > cinfo->input_scan_number)
@@ -650,7 +650,7 @@ jinit_input_controller (LJPEG_j_decompress_ptr cinfo)
   /* Initialize method pointers */
   inputctl->pub.consume_input = consume_markers;
   inputctl->pub.reset_input_controller = reset_input_controller;
-  inputctl->pub.start_input_pass = start_input_pass;
+  inputctl->pub.LJPEG_start_input_pass = LJPEG_start_input_pass;
   inputctl->pub.finish_input_pass = finish_input_pass;
   /* Initialize state: can't use reset_input_controller since we don't
    * want to try to reset other modules yet.
