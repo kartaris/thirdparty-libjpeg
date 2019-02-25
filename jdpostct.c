@@ -32,36 +32,36 @@ typedef struct {
    * for one-pass operation, a strip buffer is sufficient.
    */
   jvirt_sarray_ptr whole_image;	/* virtual array, or NULL if one-pass */
-  JSAMPARRAY buffer;		/* strip buffer, or current strip of virtual */
-  JDIMENSION strip_height;	/* buffer size in rows */
+  LJPEG_JSAMPARRAY buffer;		/* strip buffer, or current strip of virtual */
+  LJPEG_JDIMENSION strip_height;	/* buffer size in rows */
   /* for two-pass mode only: */
-  JDIMENSION starting_row;	/* row # of first row in current strip */
-  JDIMENSION next_row;		/* index of next row to fill/empty in strip */
+  LJPEG_JDIMENSION starting_row;	/* row # of first row in current strip */
+  LJPEG_JDIMENSION next_row;		/* index of next row to fill/empty in strip */
 } my_post_controller;
 
 typedef my_post_controller * my_post_ptr;
 
 
 /* Forward declarations */
-METHODDEF(void) post_process_1pass
-	JPP((j_decompress_ptr cinfo,
-	     JSAMPIMAGE input_buf, JDIMENSION *in_row_group_ctr,
-	     JDIMENSION in_row_groups_avail,
-	     JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
-	     JDIMENSION out_rows_avail));
+LJPEG_METHODDEF(void) post_process_1pass
+	JPP((LJPEG_j_decompress_ptr cinfo,
+	     JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
+	     LJPEG_JDIMENSION in_row_groups_avail,
+	     LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
+	     LJPEG_JDIMENSION out_rows_avail));
 #ifdef QUANT_2PASS_SUPPORTED
-METHODDEF(void) post_process_prepass
-	JPP((j_decompress_ptr cinfo,
-	     JSAMPIMAGE input_buf, JDIMENSION *in_row_group_ctr,
-	     JDIMENSION in_row_groups_avail,
-	     JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
-	     JDIMENSION out_rows_avail));
-METHODDEF(void) post_process_2pass
-	JPP((j_decompress_ptr cinfo,
-	     JSAMPIMAGE input_buf, JDIMENSION *in_row_group_ctr,
-	     JDIMENSION in_row_groups_avail,
-	     JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
-	     JDIMENSION out_rows_avail));
+LJPEG_METHODDEF(void) post_process_prepass
+	JPP((LJPEG_j_decompress_ptr cinfo,
+	     JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
+	     LJPEG_JDIMENSION in_row_groups_avail,
+	     LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
+	     LJPEG_JDIMENSION out_rows_avail));
+LJPEG_METHODDEF(void) post_process_2pass
+	JPP((LJPEG_j_decompress_ptr cinfo,
+	     JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
+	     LJPEG_JDIMENSION in_row_groups_avail,
+	     LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
+	     LJPEG_JDIMENSION out_rows_avail));
 #endif
 
 
@@ -69,8 +69,8 @@ METHODDEF(void) post_process_2pass
  * Initialize for a processing pass.
  */
 
-METHODDEF(void)
-start_pass_dpost (j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
+LJPEG_METHODDEF(void)
+start_pass_dpost (LJPEG_j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
 {
   my_post_ptr post = (my_post_ptr) cinfo->post;
 
@@ -86,7 +86,7 @@ start_pass_dpost (j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
       if (post->buffer == NULL) {
 	post->buffer = (*cinfo->mem->access_virt_sarray)
 	  ((LJPEG_j_common_ptr) cinfo, post->whole_image,
-	   (JDIMENSION) 0, post->strip_height, TRUE);
+	   (LJPEG_JDIMENSION) 0, post->strip_height, TRUE);
       }
     } else {
       /* For single-pass processing without color quantization,
@@ -122,15 +122,15 @@ start_pass_dpost (j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
  * This is used for color precision reduction as well as one-pass quantization.
  */
 
-METHODDEF(void)
-post_process_1pass (j_decompress_ptr cinfo,
-		    JSAMPIMAGE input_buf, JDIMENSION *in_row_group_ctr,
-		    JDIMENSION in_row_groups_avail,
-		    JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
-		    JDIMENSION out_rows_avail)
+LJPEG_METHODDEF(void)
+post_process_1pass (LJPEG_j_decompress_ptr cinfo,
+		    JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
+		    LJPEG_JDIMENSION in_row_groups_avail,
+		    LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
+		    LJPEG_JDIMENSION out_rows_avail)
 {
   my_post_ptr post = (my_post_ptr) cinfo->post;
-  JDIMENSION num_rows, max_rows;
+  LJPEG_JDIMENSION num_rows, max_rows;
 
   /* Fill the buffer, but not more than what we can dump out in one go. */
   /* Note we rely on the upsampler to detect bottom of image. */
@@ -154,15 +154,15 @@ post_process_1pass (j_decompress_ptr cinfo,
  * Process some data in the first pass of 2-pass quantization.
  */
 
-METHODDEF(void)
-post_process_prepass (j_decompress_ptr cinfo,
-		      JSAMPIMAGE input_buf, JDIMENSION *in_row_group_ctr,
-		      JDIMENSION in_row_groups_avail,
-		      JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
-		      JDIMENSION out_rows_avail)
+LJPEG_METHODDEF(void)
+post_process_prepass (LJPEG_j_decompress_ptr cinfo,
+		      JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
+		      LJPEG_JDIMENSION in_row_groups_avail,
+		      LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
+		      LJPEG_JDIMENSION out_rows_avail)
 {
   my_post_ptr post = (my_post_ptr) cinfo->post;
-  JDIMENSION old_next_row, num_rows;
+  LJPEG_JDIMENSION old_next_row, num_rows;
 
   /* Reposition virtual buffer if at start of strip. */
   if (post->next_row == 0) {
@@ -182,7 +182,7 @@ post_process_prepass (j_decompress_ptr cinfo,
   if (post->next_row > old_next_row) {
     num_rows = post->next_row - old_next_row;
     (*cinfo->cquantize->color_quantize) (cinfo, post->buffer + old_next_row,
-					 (JSAMPARRAY) NULL, (int) num_rows);
+					 (LJPEG_JSAMPARRAY) NULL, (int) num_rows);
     *out_row_ctr += num_rows;
   }
 
@@ -198,15 +198,15 @@ post_process_prepass (j_decompress_ptr cinfo,
  * Process some data in the second pass of 2-pass quantization.
  */
 
-METHODDEF(void)
-post_process_2pass (j_decompress_ptr cinfo,
-		    JSAMPIMAGE input_buf, JDIMENSION *in_row_group_ctr,
-		    JDIMENSION in_row_groups_avail,
-		    JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
-		    JDIMENSION out_rows_avail)
+LJPEG_METHODDEF(void)
+post_process_2pass (LJPEG_j_decompress_ptr cinfo,
+		    JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
+		    LJPEG_JDIMENSION in_row_groups_avail,
+		    LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
+		    LJPEG_JDIMENSION out_rows_avail)
 {
   my_post_ptr post = (my_post_ptr) cinfo->post;
-  JDIMENSION num_rows, max_rows;
+  LJPEG_JDIMENSION num_rows, max_rows;
 
   /* Reposition virtual buffer if at start of strip. */
   if (post->next_row == 0) {
@@ -247,7 +247,7 @@ post_process_2pass (j_decompress_ptr cinfo,
  */
 
 LJPEG_GLOBAL(void)
-jinit_d_post_controller (j_decompress_ptr cinfo, boolean need_full_buffer)
+jinit_d_post_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
 {
   my_post_ptr post;
 
@@ -265,7 +265,7 @@ jinit_d_post_controller (j_decompress_ptr cinfo, boolean need_full_buffer)
      * an efficient number of rows for upsampling to return.
      * (In the presence of output rescaling, we might want to be smarter?)
      */
-    post->strip_height = (JDIMENSION) cinfo->max_v_samp_factor;
+    post->strip_height = (LJPEG_JDIMENSION) cinfo->max_v_samp_factor;
     if (need_full_buffer) {
       /* Two-pass color quantization: need full-image storage. */
       /* We round up the number of rows to a multiple of the strip height. */
@@ -273,7 +273,7 @@ jinit_d_post_controller (j_decompress_ptr cinfo, boolean need_full_buffer)
       post->whole_image = (*cinfo->mem->request_virt_sarray)
 	((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
 	 cinfo->output_width * cinfo->out_color_components,
-	 (JDIMENSION) jround_up((long) cinfo->output_height,
+	 (LJPEG_JDIMENSION) jround_up((long) cinfo->output_height,
 				(long) post->strip_height),
 	 post->strip_height);
 #else

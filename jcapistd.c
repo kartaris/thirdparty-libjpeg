@@ -9,7 +9,7 @@
  * of the JPEG library.  These are the "standard" API routines that are
  * used in the normal full-compression case.  They are not used by a
  * transcoding-only application.  Note that if an application links in
- * jpeg_start_compress, it will end up linking in the entire compressor.
+ * LJPEG_jpeg_start_compress, it will end up linking in the entire compressor.
  * We thus must separate this file from jcapimin.c to avoid linking the
  * whole compression library into a transcoder.
  */
@@ -35,7 +35,7 @@
  */
 
 LJPEG_GLOBAL(void)
-jpeg_start_compress (j_compress_ptr cinfo, boolean write_all_tables)
+LJPEG_jpeg_start_compress (LJPEG_j_compress_ptr cinfo, boolean write_all_tables)
 {
   if (cinfo->global_state != CSTATE_START)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
@@ -73,11 +73,11 @@ jpeg_start_compress (j_compress_ptr cinfo, boolean write_all_tables)
  * when using a multiple-scanline buffer.
  */
 
-LJPEG_GLOBAL(JDIMENSION)
-jpeg_write_scanlines (j_compress_ptr cinfo, JSAMPARRAY scanlines,
-		      JDIMENSION num_lines)
+LJPEG_GLOBAL(LJPEG_JDIMENSION)
+jpeg_write_scanlines (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPARRAY scanlines,
+		      LJPEG_JDIMENSION num_lines)
 {
-  JDIMENSION row_ctr, rows_left;
+  LJPEG_JDIMENSION row_ctr, rows_left;
 
   if (cinfo->global_state != CSTATE_SCANNING)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
@@ -88,13 +88,13 @@ jpeg_write_scanlines (j_compress_ptr cinfo, JSAMPARRAY scanlines,
   if (cinfo->progress != NULL) {
     cinfo->progress->pass_counter = (long) cinfo->next_scanline;
     cinfo->progress->pass_limit = (long) cinfo->image_height;
-    (*cinfo->progress->progress_monitor) ((LJPEG_j_common_ptr) cinfo);
+    (*cinfo->progress->LJPEG_progress_monitor) ((LJPEG_j_common_ptr) cinfo);
   }
 
   /* Give master control module another chance if this is first call to
    * jpeg_write_scanlines.  This lets output of the frame/scan headers be
    * delayed so that application can write COM, etc, markers between
-   * jpeg_start_compress and jpeg_write_scanlines.
+   * LJPEG_jpeg_start_compress and jpeg_write_scanlines.
    */
   if (cinfo->master->call_pass_startup)
     (*cinfo->master->pass_startup) (cinfo);
@@ -116,11 +116,11 @@ jpeg_write_scanlines (j_compress_ptr cinfo, JSAMPARRAY scanlines,
  * Processes exactly one iMCU row per call, unless suspended.
  */
 
-LJPEG_GLOBAL(JDIMENSION)
-jpeg_write_raw_data (j_compress_ptr cinfo, JSAMPIMAGE data,
-		     JDIMENSION num_lines)
+LJPEG_GLOBAL(LJPEG_JDIMENSION)
+jpeg_write_raw_data (LJPEG_j_compress_ptr cinfo, JSAMPIMAGE data,
+		     LJPEG_JDIMENSION num_lines)
 {
-  JDIMENSION lines_per_iMCU_row;
+  LJPEG_JDIMENSION lines_per_iMCU_row;
 
   if (cinfo->global_state != CSTATE_RAW_OK)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
@@ -133,13 +133,13 @@ jpeg_write_raw_data (j_compress_ptr cinfo, JSAMPIMAGE data,
   if (cinfo->progress != NULL) {
     cinfo->progress->pass_counter = (long) cinfo->next_scanline;
     cinfo->progress->pass_limit = (long) cinfo->image_height;
-    (*cinfo->progress->progress_monitor) ((LJPEG_j_common_ptr) cinfo);
+    (*cinfo->progress->LJPEG_progress_monitor) ((LJPEG_j_common_ptr) cinfo);
   }
 
   /* Give master control module another chance if this is first call to
    * jpeg_write_raw_data.  This lets output of the frame/scan headers be
    * delayed so that application can write COM, etc, markers between
-   * jpeg_start_compress and jpeg_write_raw_data.
+   * LJPEG_jpeg_start_compress and jpeg_write_raw_data.
    */
   if (cinfo->master->call_pass_startup)
     (*cinfo->master->pass_startup) (cinfo);

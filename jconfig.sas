@@ -27,7 +27,7 @@
 
 #endif /* JPEG_INTERNALS */
 
-#ifdef JPEG_CJPEG_DJPEG
+#ifdef LJPEG_JPEG_CJPEG_DJPEG
 
 #define LJPEG_BMP_SUPPORTED		/* BMP image file format */
 #define LJPEG_GIF_SUPPORTED		/* GIF image file format */
@@ -40,4 +40,4 @@
 #undef DONT_USE_B_MODE
 #undef PROGRESS_REPORT		/* optional */
 
-#endif /* JPEG_CJPEG_DJPEG */
+#endif /* LJPEG_JPEG_CJPEG_DJPEG */

@@ -25,9 +25,9 @@
 
 
 /* Pointer to routine to upsample a single component */
-typedef JMETHOD(void, upsample1_ptr,
-		(j_decompress_ptr cinfo, jpeg_component_info * compptr,
-		 JSAMPARRAY input_data, JSAMPARRAY * output_data_ptr));
+typedef LJPEG_JMETHOD(void, upsample1_ptr,
+		(LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
+		 LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr));
 
 /* Private subobject */
 
@@ -41,13 +41,13 @@ typedef struct {
    * ie do not need rescaling.  The corresponding entry of color_buf[] is
    * simply set to point to the input data array, thereby avoiding copying.
    */
-  JSAMPARRAY color_buf[MAX_COMPONENTS];
+  LJPEG_JSAMPARRAY color_buf[MAX_COMPONENTS];
 
   /* Per-component upsampling method pointers */
   upsample1_ptr methods[MAX_COMPONENTS];
 
   int next_row_out;		/* counts rows emitted from color_buf */
-  JDIMENSION rows_to_go;	/* counts rows remaining in image */
+  LJPEG_JDIMENSION rows_to_go;	/* counts rows remaining in image */
 
   /* Height of an input row group for each component. */
   int rowgroup_height[MAX_COMPONENTS];
@@ -66,8 +66,8 @@ typedef my_upsampler * my_upsample_ptr;
  * Initialize for an upsampling pass.
  */
 
-METHODDEF(void)
-start_pass_upsample (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(void)
+start_pass_upsample (LJPEG_j_decompress_ptr cinfo)
 {
   my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
 
@@ -86,17 +86,17 @@ start_pass_upsample (j_decompress_ptr cinfo)
  * color conversion a row at a time.
  */
 
-METHODDEF(void)
-sep_upsample (j_decompress_ptr cinfo,
-	      JSAMPIMAGE input_buf, JDIMENSION *in_row_group_ctr,
-	      JDIMENSION in_row_groups_avail,
-	      JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
-	      JDIMENSION out_rows_avail)
+LJPEG_METHODDEF(void)
+sep_upsample (LJPEG_j_decompress_ptr cinfo,
+	      JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
+	      LJPEG_JDIMENSION in_row_groups_avail,
+	      LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
+	      LJPEG_JDIMENSION out_rows_avail)
 {
   my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
   int ci;
   jpeg_component_info * compptr;
-  JDIMENSION num_rows;
+  LJPEG_JDIMENSION num_rows;
 
   /* Fill the conversion buffer, if it's empty */
   if (upsample->next_row_out >= cinfo->max_v_samp_factor) {
@@ -115,7 +115,7 @@ sep_upsample (j_decompress_ptr cinfo,
   /* Color-convert and emit rows */
 
   /* How many we have in the buffer: */
-  num_rows = (JDIMENSION) (cinfo->max_v_samp_factor - upsample->next_row_out);
+  num_rows = (LJPEG_JDIMENSION) (cinfo->max_v_samp_factor - upsample->next_row_out);
   /* Not more than the distance to the end of the image.  Need this test
    * in case the image height is not a multiple of max_v_samp_factor:
    */
@@ -127,7 +127,7 @@ sep_upsample (j_decompress_ptr cinfo,
     num_rows = out_rows_avail;
 
   (*cinfo->cconvert->color_convert) (cinfo, upsample->color_buf,
-				     (JDIMENSION) upsample->next_row_out,
+				     (LJPEG_JDIMENSION) upsample->next_row_out,
 				     output_buf + *out_row_ctr,
 				     (int) num_rows);
 
@@ -154,9 +154,9 @@ sep_upsample (j_decompress_ptr cinfo,
  * "consumed" until we are done color converting and emitting it.
  */
 
-METHODDEF(void)
-fullsize_upsample (j_decompress_ptr cinfo, jpeg_component_info * compptr,
-		   JSAMPARRAY input_data, JSAMPARRAY * output_data_ptr)
+LJPEG_METHODDEF(void)
+fullsize_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
+		   LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
   *output_data_ptr = input_data;
 }
@@ -167,9 +167,9 @@ fullsize_upsample (j_decompress_ptr cinfo, jpeg_component_info * compptr,
  * These components will not be referenced by color conversion.
  */
 
-METHODDEF(void)
-noop_upsample (j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	       JSAMPARRAY input_data, JSAMPARRAY * output_data_ptr)
+LJPEG_METHODDEF(void)
+noop_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
+	       LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
   *output_data_ptr = NULL;	/* safety check */
 }
@@ -186,12 +186,12 @@ noop_upsample (j_decompress_ptr cinfo, jpeg_component_info * compptr,
  * you would be well advised to improve this code.
  */
 
-METHODDEF(void)
-int_upsample (j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	      JSAMPARRAY input_data, JSAMPARRAY * output_data_ptr)
+LJPEG_METHODDEF(void)
+int_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
+	      LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
   my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
-  JSAMPARRAY output_data = *output_data_ptr;
+  LJPEG_JSAMPARRAY output_data = *output_data_ptr;
   register JSAMPROW inptr, outptr;
   register JSAMPLE invalue;
   register int h;
@@ -230,11 +230,11 @@ int_upsample (j_decompress_ptr cinfo, jpeg_component_info * compptr,
  * It's still a box filter.
  */
 
-METHODDEF(void)
-h2v1_upsample (j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	       JSAMPARRAY input_data, JSAMPARRAY * output_data_ptr)
+LJPEG_METHODDEF(void)
+h2v1_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
+	       LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
-  JSAMPARRAY output_data = *output_data_ptr;
+  LJPEG_JSAMPARRAY output_data = *output_data_ptr;
   register JSAMPROW inptr, outptr;
   register JSAMPLE invalue;
   JSAMPROW outend;
@@ -258,11 +258,11 @@ h2v1_upsample (j_decompress_ptr cinfo, jpeg_component_info * compptr,
  * It's still a box filter.
  */
 
-METHODDEF(void)
-h2v2_upsample (j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	       JSAMPARRAY input_data, JSAMPARRAY * output_data_ptr)
+LJPEG_METHODDEF(void)
+h2v2_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
+	       LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
-  JSAMPARRAY output_data = *output_data_ptr;
+  LJPEG_JSAMPARRAY output_data = *output_data_ptr;
   register JSAMPROW inptr, outptr;
   register JSAMPLE invalue;
   JSAMPROW outend;
@@ -291,7 +291,7 @@ h2v2_upsample (j_decompress_ptr cinfo, jpeg_component_info * compptr,
  */
 
 LJPEG_GLOBAL(void)
-jinit_upsampler (j_decompress_ptr cinfo)
+jinit_upsampler (LJPEG_j_decompress_ptr cinfo)
 {
   my_upsample_ptr upsample;
   int ci;
@@ -353,9 +353,9 @@ jinit_upsampler (j_decompress_ptr cinfo)
     if (need_buffer) {
       upsample->color_buf[ci] = (*cinfo->mem->alloc_sarray)
 	((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-	 (JDIMENSION) jround_up((long) cinfo->output_width,
+	 (LJPEG_JDIMENSION) jround_up((long) cinfo->output_width,
 				(long) cinfo->max_h_samp_factor),
-	 (JDIMENSION) cinfo->max_v_samp_factor);
+	 (LJPEG_JDIMENSION) cinfo->max_v_samp_factor);
     }
   }
 }

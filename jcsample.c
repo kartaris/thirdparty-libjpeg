@@ -51,9 +51,9 @@
 
 
 /* Pointer to routine to downsample a single component */
-typedef JMETHOD(void, downsample1_ptr,
-		(j_compress_ptr cinfo, jpeg_component_info * compptr,
-		 JSAMPARRAY input_data, JSAMPARRAY output_data));
+typedef LJPEG_JMETHOD(void, downsample1_ptr,
+		(LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
+		 LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data));
 
 /* Private subobject */
 
@@ -80,8 +80,8 @@ typedef my_downsampler * my_downsample_ptr;
  * Initialize for a downsampling pass.
  */
 
-METHODDEF(void)
-start_pass_downsample (j_compress_ptr cinfo)
+LJPEG_METHODDEF(void)
+start_pass_downsample (LJPEG_j_compress_ptr cinfo)
 {
   /* no work for now */
 }
@@ -93,8 +93,8 @@ start_pass_downsample (j_compress_ptr cinfo)
  */
 
 LOCAL(void)
-expand_right_edge (JSAMPARRAY image_data, int num_rows,
-		   JDIMENSION input_cols, JDIMENSION output_cols)
+expand_right_edge (LJPEG_JSAMPARRAY image_data, int num_rows,
+		   LJPEG_JDIMENSION input_cols, LJPEG_JDIMENSION output_cols)
 {
   register JSAMPROW ptr;
   register JSAMPLE pixval;
@@ -119,15 +119,15 @@ expand_right_edge (JSAMPARRAY image_data, int num_rows,
  * In this version we simply downsample each component independently.
  */
 
-METHODDEF(void)
-sep_downsample (j_compress_ptr cinfo,
-		JSAMPIMAGE input_buf, JDIMENSION in_row_index,
-		JSAMPIMAGE output_buf, JDIMENSION out_row_group_index)
+LJPEG_METHODDEF(void)
+sep_downsample (LJPEG_j_compress_ptr cinfo,
+		JSAMPIMAGE input_buf, LJPEG_JDIMENSION in_row_index,
+		JSAMPIMAGE output_buf, LJPEG_JDIMENSION out_row_group_index)
 {
   my_downsample_ptr downsample = (my_downsample_ptr) cinfo->downsample;
   int ci;
   jpeg_component_info * compptr;
-  JSAMPARRAY in_ptr, out_ptr;
+  LJPEG_JSAMPARRAY in_ptr, out_ptr;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
        ci++, compptr++) {
@@ -146,14 +146,14 @@ sep_downsample (j_compress_ptr cinfo,
  * Note that this version is not actually used for customary sampling ratios.
  */
 
-METHODDEF(void)
-int_downsample (j_compress_ptr cinfo, jpeg_component_info * compptr,
-		JSAMPARRAY input_data, JSAMPARRAY output_data)
+LJPEG_METHODDEF(void)
+int_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
+		LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   my_downsample_ptr downsample = (my_downsample_ptr) cinfo->downsample;
   int inrow, outrow, h_expand, v_expand, numpix, numpix2, h, v;
-  JDIMENSION outcol, outcol_h;	/* outcol_h == outcol*h_expand */
-  JDIMENSION output_cols = compptr->width_in_blocks * compptr->DCT_h_scaled_size;
+  LJPEG_JDIMENSION outcol, outcol_h;	/* outcol_h == outcol*h_expand */
+  LJPEG_JDIMENSION output_cols = compptr->width_in_blocks * compptr->DCT_h_scaled_size;
   JSAMPROW inptr, outptr;
   INT32 outvalue;
 
@@ -195,9 +195,9 @@ int_downsample (j_compress_ptr cinfo, jpeg_component_info * compptr,
  * without smoothing.
  */
 
-METHODDEF(void)
-fullsize_downsample (j_compress_ptr cinfo, jpeg_component_info * compptr,
-		     JSAMPARRAY input_data, JSAMPARRAY output_data)
+LJPEG_METHODDEF(void)
+fullsize_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
+		     LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   /* Copy the data */
   jcopy_sample_rows(input_data, 0, output_data, 0,
@@ -220,13 +220,13 @@ fullsize_downsample (j_compress_ptr cinfo, jpeg_component_info * compptr,
  * alternate pixel locations (a simple ordered dither pattern).
  */
 
-METHODDEF(void)
-h2v1_downsample (j_compress_ptr cinfo, jpeg_component_info * compptr,
-		 JSAMPARRAY input_data, JSAMPARRAY output_data)
+LJPEG_METHODDEF(void)
+h2v1_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
+		 LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   int inrow;
-  JDIMENSION outcol;
-  JDIMENSION output_cols = compptr->width_in_blocks * compptr->DCT_h_scaled_size;
+  LJPEG_JDIMENSION outcol;
+  LJPEG_JDIMENSION output_cols = compptr->width_in_blocks * compptr->DCT_h_scaled_size;
   register JSAMPROW inptr, outptr;
   register int bias;
 
@@ -257,13 +257,13 @@ h2v1_downsample (j_compress_ptr cinfo, jpeg_component_info * compptr,
  * without smoothing.
  */
 
-METHODDEF(void)
-h2v2_downsample (j_compress_ptr cinfo, jpeg_component_info * compptr,
-		 JSAMPARRAY input_data, JSAMPARRAY output_data)
+LJPEG_METHODDEF(void)
+h2v2_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
+		 LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   int inrow, outrow;
-  JDIMENSION outcol;
-  JDIMENSION output_cols = compptr->width_in_blocks * compptr->DCT_h_scaled_size;
+  LJPEG_JDIMENSION outcol;
+  LJPEG_JDIMENSION output_cols = compptr->width_in_blocks * compptr->DCT_h_scaled_size;
   register JSAMPROW inptr0, inptr1, outptr;
   register int bias;
 
@@ -301,13 +301,13 @@ h2v2_downsample (j_compress_ptr cinfo, jpeg_component_info * compptr,
  * with smoothing.  One row of context is required.
  */
 
-METHODDEF(void)
-h2v2_smooth_downsample (j_compress_ptr cinfo, jpeg_component_info * compptr,
-			JSAMPARRAY input_data, JSAMPARRAY output_data)
+LJPEG_METHODDEF(void)
+h2v2_smooth_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
+			LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   int inrow, outrow;
-  JDIMENSION colctr;
-  JDIMENSION output_cols = compptr->width_in_blocks * compptr->DCT_h_scaled_size;
+  LJPEG_JDIMENSION colctr;
+  LJPEG_JDIMENSION output_cols = compptr->width_in_blocks * compptr->DCT_h_scaled_size;
   register JSAMPROW inptr0, inptr1, above_ptr, below_ptr, outptr;
   INT32 membersum, neighsum, memberscale, neighscale;
 
@@ -402,13 +402,13 @@ h2v2_smooth_downsample (j_compress_ptr cinfo, jpeg_component_info * compptr,
  * with smoothing.  One row of context is required.
  */
 
-METHODDEF(void)
-fullsize_smooth_downsample (j_compress_ptr cinfo, jpeg_component_info *compptr,
-			    JSAMPARRAY input_data, JSAMPARRAY output_data)
+LJPEG_METHODDEF(void)
+fullsize_smooth_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info *compptr,
+			    LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   int inrow;
-  JDIMENSION colctr;
-  JDIMENSION output_cols = compptr->width_in_blocks * compptr->DCT_h_scaled_size;
+  LJPEG_JDIMENSION colctr;
+  LJPEG_JDIMENSION output_cols = compptr->width_in_blocks * compptr->DCT_h_scaled_size;
   register JSAMPROW inptr, above_ptr, below_ptr, outptr;
   INT32 membersum, neighsum, memberscale, neighscale;
   int colsum, lastcolsum, nextcolsum;
@@ -475,7 +475,7 @@ fullsize_smooth_downsample (j_compress_ptr cinfo, jpeg_component_info *compptr,
  */
 
 LJPEG_GLOBAL(void)
-jinit_downsampler (j_compress_ptr cinfo)
+jinit_downsampler (LJPEG_j_compress_ptr cinfo)
 {
   my_downsample_ptr downsample;
   int ci;

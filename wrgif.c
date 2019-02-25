@@ -45,9 +45,9 @@
 /* Private version of data destination object */
 
 typedef struct {
-  struct djpeg_dest_struct pub;	/* public fields */
+  struct LJPEG_djpeg_dest_struct pub;	/* public fields */
 
-  j_decompress_ptr cinfo;	/* back link saves passing separate parm */
+  LJPEG_j_decompress_ptr cinfo;	/* back link saves passing separate parm */
 
   /* State for packing variable-width codes into a bitstream */
   int n_bits;			/* current number of bits/code */
@@ -216,7 +216,7 @@ put_3bytes (gif_dest_ptr dinfo, int val)
 
 
 LOCAL(void)
-emit_header (gif_dest_ptr dinfo, int num_colors, JSAMPARRAY colormap)
+emit_header (gif_dest_ptr dinfo, int num_colors, LJPEG_JSAMPARRAY colormap)
 /* Output the GIF file header, including color map */
 /* If colormap==NULL, synthesize a gray-scale colormap */
 {
@@ -298,15 +298,15 @@ emit_header (gif_dest_ptr dinfo, int num_colors, JSAMPARRAY colormap)
  * Startup: write the file header.
  */
 
-METHODDEF(void)
-start_output_gif (j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
+LJPEG_METHODDEF(void)
+start_output_gif (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 {
   gif_dest_ptr dest = (gif_dest_ptr) dinfo;
 
   if (cinfo->quantize_colors)
     emit_header(dest, cinfo->actual_number_of_colors, cinfo->colormap);
   else
-    emit_header(dest, 256, (JSAMPARRAY) NULL);
+    emit_header(dest, 256, (LJPEG_JSAMPARRAY) NULL);
 }
 
 
@@ -315,13 +315,13 @@ start_output_gif (j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
  * In this module rows_supplied will always be 1.
  */
 
-METHODDEF(void)
-put_pixel_rows (j_decompress_ptr cinfo, djpeg_dest_ptr dinfo,
-		JDIMENSION rows_supplied)
+LJPEG_METHODDEF(void)
+put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
+		LJPEG_JDIMENSION rows_supplied)
 {
   gif_dest_ptr dest = (gif_dest_ptr) dinfo;
   register JSAMPROW ptr;
-  register JDIMENSION col;
+  register LJPEG_JDIMENSION col;
 
   ptr = dest->pub.buffer[0];
   for (col = cinfo->output_width; col > 0; col--) {
@@ -334,8 +334,8 @@ put_pixel_rows (j_decompress_ptr cinfo, djpeg_dest_ptr dinfo,
  * Finish up at the end of the file.
  */
 
-METHODDEF(void)
-finish_output_gif (j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
+LJPEG_METHODDEF(void)
+finish_output_gif (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 {
   gif_dest_ptr dest = (gif_dest_ptr) dinfo;
 
@@ -356,8 +356,8 @@ finish_output_gif (j_decompress_ptr cinfo, djpeg_dest_ptr dinfo)
  * The module selection routine for GIF format output.
  */
 
-LJPEG_GLOBAL(djpeg_dest_ptr)
-jinit_write_gif (j_decompress_ptr cinfo)
+LJPEG_GLOBAL(LJPEG_djpeg_dest_ptr)
+LJPEG_jinit_write_gif (LJPEG_j_decompress_ptr cinfo)
 {
   gif_dest_ptr dest;
 
@@ -390,10 +390,10 @@ jinit_write_gif (j_decompress_ptr cinfo)
 
   /* Create decompressor output buffer. */
   dest->pub.buffer = (*cinfo->mem->alloc_sarray)
-    ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, cinfo->output_width, (JDIMENSION) 1);
+    ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, cinfo->output_width, (LJPEG_JDIMENSION) 1);
   dest->pub.buffer_height = 1;
 
-  return (djpeg_dest_ptr) dest;
+  return (LJPEG_djpeg_dest_ptr) dest;
 }
 
 #endif /* LJPEG_GIF_SUPPORTED */

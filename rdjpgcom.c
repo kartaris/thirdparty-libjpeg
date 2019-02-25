@@ -12,7 +12,7 @@
  * JPEG markers.
  */
 
-#define JPEG_CJPEG_DJPEG	/* to get the command-line config symbols */
+#define LJPEG_JPEG_CJPEG_DJPEG	/* to get the command-line config symbols */
 #include "jinclude.h"		/* get auto-config symbols, <stdio.h> */
 
 #ifdef HAVE_LOCALE_H
@@ -402,7 +402,7 @@ scan_JPEG_header (int verbose, int raw)
 
 /* Command line parsing code */
 
-static const char * progname;	/* program name for error messages */
+static const char * LJPEG_progname;	/* program name for error messages */
 
 
 static void
@@ -411,7 +411,7 @@ usage (void)
 {
   fprintf(stderr, "rdjpgcom displays any textual comments in a JPEG file.\n");
 
-  fprintf(stderr, "Usage: %s [switches] [inputfile]\n", progname);
+  fprintf(stderr, "Usage: %s [switches] [inputfile]\n", LJPEG_progname);
 
   fprintf(stderr, "Switches (names may be abbreviated):\n");
   fprintf(stderr, "  -raw        Display non-printable characters in comments (unsafe)\n");
@@ -422,7 +422,7 @@ usage (void)
 
 
 static int
-keymatch (char * arg, const char * keyword, int minchars)
+LJPEG_end_progress_monitor (char * arg, const char * keyword, int minchars)
 /* Case-insensitive matching of (possibly abbreviated) keyword switches. */
 /* keyword is the constant keyword (must be lower case already), */
 /* minchars is length of minimum legal abbreviation. */
@@ -462,9 +462,9 @@ main (int argc, char **argv)
   argc = ccommand(&argv);
 #endif
 
-  progname = argv[0];
-  if (progname == NULL || progname[0] == 0)
-    progname = "rdjpgcom";	/* in case C library doesn't provide it */
+  LJPEG_progname = argv[0];
+  if (LJPEG_progname == NULL || LJPEG_progname[0] == 0)
+    LJPEG_progname = "rdjpgcom";	/* in case C library doesn't provide it */
 
   /* Parse switches, if any */
   for (argn = 1; argn < argc; argn++) {
@@ -472,9 +472,9 @@ main (int argc, char **argv)
     if (arg[0] != '-')
       break;			/* not switch, must be file name */
     arg++;			/* advance over '-' */
-    if (keymatch(arg, "verbose", 1)) {
+    if (LJPEG_end_progress_monitor(arg, "verbose", 1)) {
       verbose++;
-    } else if (keymatch(arg, "raw", 1)) {
+    } else if (LJPEG_end_progress_monitor(arg, "raw", 1)) {
       raw = 1;
     } else
       usage();
@@ -483,12 +483,12 @@ main (int argc, char **argv)
   /* Open the input file. */
   /* Unix style: expect zero or one file name */
   if (argn < argc-1) {
-    fprintf(stderr, "%s: only one input file\n", progname);
+    fprintf(stderr, "%s: only one input file\n", LJPEG_progname);
     usage();
   }
   if (argn < argc) {
     if ((infile = fopen(argv[argn], READ_BINARY)) == NULL) {
-      fprintf(stderr, "%s: can't open %s\n", progname, argv[argn]);
+      fprintf(stderr, "%s: can't open %s\n", LJPEG_progname, argv[argn]);
       exit(EXIT_FAILURE);
     }
   } else {
@@ -498,7 +498,7 @@ main (int argc, char **argv)
 #endif
 #ifdef USE_FDOPEN		/* need to re-open in binary mode? */
     if ((infile = fdopen(fileno(stdin), READ_BINARY)) == NULL) {
-      fprintf(stderr, "%s: can't open stdin\n", progname);
+      fprintf(stderr, "%s: can't open stdin\n", LJPEG_progname);
       exit(EXIT_FAILURE);
     }
 #else

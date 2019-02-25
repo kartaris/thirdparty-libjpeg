@@ -88,7 +88,7 @@ jpeg_mem_available (LJPEG_j_common_ptr cinfo, long min_bytes_needed,
  */
 
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 read_backing_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 		    void FAR * buffer_address,
 		    long file_offset, long byte_count)
@@ -101,7 +101,7 @@ read_backing_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 }
 
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 write_backing_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 		     void FAR * buffer_address,
 		     long file_offset, long byte_count)
@@ -114,7 +114,7 @@ write_backing_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 }
 
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 close_backing_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info)
 {
   fclose(info->temp_file);

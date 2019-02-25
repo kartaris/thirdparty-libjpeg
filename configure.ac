@@ -73,15 +73,15 @@ AM_CONDITIONAL(HAVE_LD_VERSION_SCRIPT, test "$have_ld_version_script" = "yes")
 AC_MSG_CHECKING([for function prototypes])
 AC_CACHE_VAL([ijg_cv_have_prototypes],
 [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
-int testfunction (int arg1, int * arg2); /* check prototypes */
+int LJPEG_testfunction (int arg1, int * arg2); /* check prototypes */
 struct methods_struct {		/* check method-pointer declarations */
   int (*error_exit) (char *msgtext);
   int (*trace_message) (char *msgtext);
   int (*another_method) (void);
 };
-int testfunction (int arg1, int * arg2) /* check definitions */
+int LJPEG_testfunction (int arg1, int * arg2) /* check definitions */
 { return arg2[arg1]; }
-int test2function (void)	/* check void arg list */
+int LJPEG_test2function (void)	/* check void arg list */
 { return 0; }
 ]])],
           [ijg_cv_have_prototypes=yes],
@@ -166,9 +166,9 @@ typedef void (*void_func) ();
 #endif
 
 #ifdef HAVE_PROTOTYPES		/* check void function result */
-void test3function (void_ptr arg1, void_func arg2)
+void LJPEG_test3function (void_ptr arg1, void_func arg2)
 #else
-void test3function (arg1, arg2)
+void LJPEG_test3function (arg1, arg2)
      void_ptr arg1;
      void_func arg2;
 #endif
@@ -200,7 +200,7 @@ AC_DEFINE_UNQUOTED([INLINE], [$ijg_cv_inline],
 
 # We cannot check for bogus warnings, but at least we can check for errors
 AC_MSG_CHECKING([for broken incomplete types])
-AC_TRY_COMPILE([ typedef struct undefined_structure * undef_struct_ptr; ],
+AC_TRY_COMPILE([ typedef struct LJPEG_undefined_structure * LJPEG_undef_struct_ptr; ],
                [],
                [AC_MSG_RESULT(ok)],
                [AC_MSG_RESULT(broken)
@@ -211,8 +211,8 @@ AC_TRY_COMPILE([ typedef struct undefined_structure * undef_struct_ptr; ],
 # Test whether global names are unique to at least 15 chars
 AC_MSG_CHECKING([for short external names])
 AC_TRY_LINK([
-int possibly_duplicate_function () { return 0; }
-int possibly_dupli_function () { return 1; }
+int LJPEG_possibly_duplicate_function () { return 0; }
+int LJPEG_possibly_dupli_function () { return 1; }
 ], [],
             [AC_MSG_RESULT(ok)],
             [AC_MSG_RESULT(short)

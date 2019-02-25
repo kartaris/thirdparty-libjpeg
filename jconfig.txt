@@ -126,7 +126,7 @@ typedef unsigned char boolean;
  * Other applications can ignore these.
  */
 
-#ifdef JPEG_CJPEG_DJPEG
+#ifdef LJPEG_JPEG_CJPEG_DJPEG
 
 /* These defines indicate which image (non-JPEG) file formats are allowed. */
 
@@ -161,4 +161,4 @@ typedef unsigned char boolean;
 #undef PROGRESS_REPORT
 
 
-#endif /* JPEG_CJPEG_DJPEG */
+#endif /* LJPEG_JPEG_CJPEG_DJPEG */

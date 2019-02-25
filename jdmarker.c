@@ -196,7 +196,7 @@ typedef my_marker_reader * my_marker_ptr;
 
 
 LOCAL(boolean)
-get_soi (j_decompress_ptr cinfo)
+get_soi (LJPEG_j_decompress_ptr cinfo)
 /* Process an SOI marker */
 {
   int i;
@@ -237,7 +237,7 @@ get_soi (j_decompress_ptr cinfo)
 
 
 LOCAL(boolean)
-get_sof (j_decompress_ptr cinfo, boolean is_baseline, boolean is_prog,
+get_sof (LJPEG_j_decompress_ptr cinfo, boolean is_baseline, boolean is_prog,
 	 boolean is_arith)
 /* Process a SOFn marker */
 {
@@ -319,7 +319,7 @@ get_sof (j_decompress_ptr cinfo, boolean is_baseline, boolean is_prog,
 
 
 LOCAL(boolean)
-get_sos (j_decompress_ptr cinfo)
+get_sos (LJPEG_j_decompress_ptr cinfo)
 /* Process a SOS marker */
 {
   INT32 length;
@@ -407,7 +407,7 @@ get_sos (j_decompress_ptr cinfo)
 #ifdef D_ARITH_CODING_SUPPORTED
 
 LOCAL(boolean)
-get_dac (j_decompress_ptr cinfo)
+get_dac (LJPEG_j_decompress_ptr cinfo)
 /* Process a DAC marker */
 {
   INT32 length;
@@ -453,7 +453,7 @@ get_dac (j_decompress_ptr cinfo)
 
 
 LOCAL(boolean)
-get_dht (j_decompress_ptr cinfo)
+get_dht (LJPEG_j_decompress_ptr cinfo)
 /* Process a DHT marker */
 {
   INT32 length;
@@ -524,7 +524,7 @@ get_dht (j_decompress_ptr cinfo)
 
 
 LOCAL(boolean)
-get_dqt (j_decompress_ptr cinfo)
+get_dqt (LJPEG_j_decompress_ptr cinfo)
 /* Process a DQT marker */
 {
   INT32 length, count, i;
@@ -614,7 +614,7 @@ get_dqt (j_decompress_ptr cinfo)
 
 
 LOCAL(boolean)
-get_dri (j_decompress_ptr cinfo)
+get_dri (LJPEG_j_decompress_ptr cinfo)
 /* Process a DRI marker */
 {
   INT32 length;
@@ -638,7 +638,7 @@ get_dri (j_decompress_ptr cinfo)
 
 
 LOCAL(boolean)
-get_lse (j_decompress_ptr cinfo)
+get_lse (LJPEG_j_decompress_ptr cinfo)
 /* Process an LSE marker */
 {
   INT32 length;
@@ -712,7 +712,7 @@ get_lse (j_decompress_ptr cinfo)
 
 
 LOCAL(void)
-examine_app0 (j_decompress_ptr cinfo, JOCTET FAR * data,
+examine_app0 (LJPEG_j_decompress_ptr cinfo, JOCTET FAR * data,
 	      unsigned int datalen, INT32 remaining)
 /* Examine first few bytes from an APP0.
  * Take appropriate action if it is a JFIF marker.
@@ -788,7 +788,7 @@ examine_app0 (j_decompress_ptr cinfo, JOCTET FAR * data,
 
 
 LOCAL(void)
-examine_app14 (j_decompress_ptr cinfo, JOCTET FAR * data,
+examine_app14 (LJPEG_j_decompress_ptr cinfo, JOCTET FAR * data,
 	       unsigned int datalen, INT32 remaining)
 /* Examine first few bytes from an APP14.
  * Take appropriate action if it is an Adobe marker.
@@ -818,8 +818,8 @@ examine_app14 (j_decompress_ptr cinfo, JOCTET FAR * data,
 }
 
 
-METHODDEF(boolean)
-get_interesting_appn (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(boolean)
+get_interesting_appn (LJPEG_j_decompress_ptr cinfo)
 /* Process an APP0 or APP14 marker without saving it */
 {
   INT32 length;
@@ -866,8 +866,8 @@ get_interesting_appn (j_decompress_ptr cinfo)
 
 #ifdef SAVE_MARKERS_SUPPORTED
 
-METHODDEF(boolean)
-save_marker (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(boolean)
+save_marker (LJPEG_j_decompress_ptr cinfo)
 /* Save an APPn or COM marker into the marker list */
 {
   my_marker_ptr marker = (my_marker_ptr) cinfo->marker;
@@ -972,8 +972,8 @@ save_marker (j_decompress_ptr cinfo)
 #endif /* SAVE_MARKERS_SUPPORTED */
 
 
-METHODDEF(boolean)
-skip_variable (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(boolean)
+skip_variable (LJPEG_j_decompress_ptr cinfo)
 /* Skip over an unknown or uninteresting variable-length marker */
 {
   INT32 length;
@@ -1002,7 +1002,7 @@ skip_variable (j_decompress_ptr cinfo)
  */
 
 LOCAL(boolean)
-next_marker (j_decompress_ptr cinfo)
+next_marker (LJPEG_j_decompress_ptr cinfo)
 {
   int c;
   INPUT_VARS(cinfo);
@@ -1049,7 +1049,7 @@ next_marker (j_decompress_ptr cinfo)
 
 
 LOCAL(boolean)
-first_marker (j_decompress_ptr cinfo)
+first_marker (LJPEG_j_decompress_ptr cinfo)
 /* Like next_marker, but used to obtain the initial SOI marker. */
 /* For this marker, we do not allow preceding garbage or fill; otherwise,
  * we might well scan an entire input file before realizing it ain't JPEG.
@@ -1084,8 +1084,8 @@ first_marker (j_decompress_ptr cinfo)
  * after processing for the caller.
  */
 
-METHODDEF(int)
-read_markers (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(int)
+read_markers (LJPEG_j_decompress_ptr cinfo)
 {
   /* Outer loop repeats once for each marker. */
   for (;;) {
@@ -1254,8 +1254,8 @@ read_markers (j_decompress_ptr cinfo)
  * it holds a marker which the decoder will be unable to read past.
  */
 
-METHODDEF(boolean)
-read_restart_marker (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(boolean)
+read_restart_marker (LJPEG_j_decompress_ptr cinfo)
 {
   /* Obtain a marker unless we already did. */
   /* Note that next_marker will complain if it skips any data. */
@@ -1334,7 +1334,7 @@ read_restart_marker (j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(boolean)
-jpeg_resync_to_restart (j_decompress_ptr cinfo, int desired)
+jpeg_resync_to_restart (LJPEG_j_decompress_ptr cinfo, int desired)
 {
   int marker = cinfo->unread_marker;
   int action = 1;
@@ -1383,8 +1383,8 @@ jpeg_resync_to_restart (j_decompress_ptr cinfo, int desired)
  * Reset marker processing state to begin a fresh datastream.
  */
 
-METHODDEF(void)
-reset_marker_reader (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(void)
+reset_marker_reader (LJPEG_j_decompress_ptr cinfo)
 {
   my_marker_ptr marker = (my_marker_ptr) cinfo->marker;
 
@@ -1404,7 +1404,7 @@ reset_marker_reader (j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(void)
-jinit_marker_reader (j_decompress_ptr cinfo)
+jinit_marker_reader (LJPEG_j_decompress_ptr cinfo)
 {
   my_marker_ptr marker;
   int i;
@@ -1442,7 +1442,7 @@ jinit_marker_reader (j_decompress_ptr cinfo)
 #ifdef SAVE_MARKERS_SUPPORTED
 
 LJPEG_GLOBAL(void)
-jpeg_save_markers (j_decompress_ptr cinfo, int marker_code,
+jpeg_save_markers (LJPEG_j_decompress_ptr cinfo, int marker_code,
 		   unsigned int length_limit)
 {
   my_marker_ptr marker = (my_marker_ptr) cinfo->marker;
@@ -1491,7 +1491,7 @@ jpeg_save_markers (j_decompress_ptr cinfo, int marker_code,
  */
 
 LJPEG_GLOBAL(void)
-jpeg_set_marker_processor (j_decompress_ptr cinfo, int marker_code,
+jpeg_set_marker_processor (LJPEG_j_decompress_ptr cinfo, int marker_code,
 			   jpeg_marker_parser_method routine)
 {
   my_marker_ptr marker = (my_marker_ptr) cinfo->marker;

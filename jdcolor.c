@@ -88,7 +88,7 @@ typedef my_color_deconverter * my_cconvert_ptr;
  */
 
 LOCAL(void)
-build_ycc_rgb_table (j_decompress_ptr cinfo)
+build_ycc_rgb_table (LJPEG_j_decompress_ptr cinfo)
 {
   my_cconvert_ptr cconvert = (my_cconvert_ptr) cinfo->cconvert;
   int i;
@@ -137,17 +137,17 @@ build_ycc_rgb_table (j_decompress_ptr cinfo)
  * offset required on that side.
  */
 
-METHODDEF(void)
-ycc_rgb_convert (j_decompress_ptr cinfo,
-		 JSAMPIMAGE input_buf, JDIMENSION input_row,
-		 JSAMPARRAY output_buf, int num_rows)
+LJPEG_METHODDEF(void)
+ycc_rgb_convert (LJPEG_j_decompress_ptr cinfo,
+		 JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+		 LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
   my_cconvert_ptr cconvert = (my_cconvert_ptr) cinfo->cconvert;
   register int y, cb, cr;
   register JSAMPROW outptr;
   register JSAMPROW inptr0, inptr1, inptr2;
-  register JDIMENSION col;
-  JDIMENSION num_cols = cinfo->output_width;
+  register LJPEG_JDIMENSION col;
+  LJPEG_JDIMENSION num_cols = cinfo->output_width;
   /* copy these pointers into registers if possible */
   register JSAMPLE * range_limit = cinfo->sample_range_limit;
   register int * Crrtab = cconvert->Cr_r_tab;
@@ -186,7 +186,7 @@ ycc_rgb_convert (j_decompress_ptr cinfo,
  */
 
 LOCAL(void)
-build_rgb_y_table (j_decompress_ptr cinfo)
+build_rgb_y_table (LJPEG_j_decompress_ptr cinfo)
 {
   my_cconvert_ptr cconvert = (my_cconvert_ptr) cinfo->cconvert;
   INT32 * rgb_y_tab;
@@ -209,18 +209,18 @@ build_rgb_y_table (j_decompress_ptr cinfo)
  * Convert RGB to grayscale.
  */
 
-METHODDEF(void)
-rgb_gray_convert (j_decompress_ptr cinfo,
-		  JSAMPIMAGE input_buf, JDIMENSION input_row,
-		  JSAMPARRAY output_buf, int num_rows)
+LJPEG_METHODDEF(void)
+rgb_gray_convert (LJPEG_j_decompress_ptr cinfo,
+		  JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+		  LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
   my_cconvert_ptr cconvert = (my_cconvert_ptr) cinfo->cconvert;
   register INT32 * ctab = cconvert->rgb_y_tab;
   register int r, g, b;
   register JSAMPROW outptr;
   register JSAMPROW inptr0, inptr1, inptr2;
-  register JDIMENSION col;
-  JDIMENSION num_cols = cinfo->output_width;
+  register LJPEG_JDIMENSION col;
+  LJPEG_JDIMENSION num_cols = cinfo->output_width;
 
   while (--num_rows >= 0) {
     inptr0 = input_buf[0][input_row];
@@ -246,16 +246,16 @@ rgb_gray_convert (j_decompress_ptr cinfo,
  * (inverse color transform).
  */
 
-METHODDEF(void)
-rgb1_rgb_convert (j_decompress_ptr cinfo,
-		  JSAMPIMAGE input_buf, JDIMENSION input_row,
-		  JSAMPARRAY output_buf, int num_rows)
+LJPEG_METHODDEF(void)
+rgb1_rgb_convert (LJPEG_j_decompress_ptr cinfo,
+		  JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+		  LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
   register int r, g, b;
   register JSAMPROW outptr;
   register JSAMPROW inptr0, inptr1, inptr2;
-  register JDIMENSION col;
-  JDIMENSION num_cols = cinfo->output_width;
+  register LJPEG_JDIMENSION col;
+  LJPEG_JDIMENSION num_cols = cinfo->output_width;
 
   while (--num_rows >= 0) {
     inptr0 = input_buf[0][input_row];
@@ -284,18 +284,18 @@ rgb1_rgb_convert (j_decompress_ptr cinfo,
  * (inverse color transform).
  */
 
-METHODDEF(void)
-rgb1_gray_convert (j_decompress_ptr cinfo,
-		   JSAMPIMAGE input_buf, JDIMENSION input_row,
-		   JSAMPARRAY output_buf, int num_rows)
+LJPEG_METHODDEF(void)
+rgb1_gray_convert (LJPEG_j_decompress_ptr cinfo,
+		   JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+		   LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
   my_cconvert_ptr cconvert = (my_cconvert_ptr) cinfo->cconvert;
   register INT32 * ctab = cconvert->rgb_y_tab;
   register int r, g, b;
   register JSAMPROW outptr;
   register JSAMPROW inptr0, inptr1, inptr2;
-  register JDIMENSION col;
-  JDIMENSION num_cols = cinfo->output_width;
+  register LJPEG_JDIMENSION col;
+  LJPEG_JDIMENSION num_cols = cinfo->output_width;
 
   while (--num_rows >= 0) {
     inptr0 = input_buf[0][input_row];
@@ -326,15 +326,15 @@ rgb1_gray_convert (j_decompress_ptr cinfo,
  * to interleaved representation.
  */
 
-METHODDEF(void)
-rgb_convert (j_decompress_ptr cinfo,
-	     JSAMPIMAGE input_buf, JDIMENSION input_row,
-	     JSAMPARRAY output_buf, int num_rows)
+LJPEG_METHODDEF(void)
+rgb_convert (LJPEG_j_decompress_ptr cinfo,
+	     JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+	     LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
   register JSAMPROW outptr;
   register JSAMPROW inptr0, inptr1, inptr2;
-  register JDIMENSION col;
-  JDIMENSION num_cols = cinfo->output_width;
+  register LJPEG_JDIMENSION col;
+  LJPEG_JDIMENSION num_cols = cinfo->output_width;
 
   while (--num_rows >= 0) {
     inptr0 = input_buf[0][input_row];
@@ -358,17 +358,17 @@ rgb_convert (j_decompress_ptr cinfo,
  * converting from separate-planes to interleaved representation.
  */
 
-METHODDEF(void)
-null_convert (j_decompress_ptr cinfo,
-	      JSAMPIMAGE input_buf, JDIMENSION input_row,
-	      JSAMPARRAY output_buf, int num_rows)
+LJPEG_METHODDEF(void)
+null_convert (LJPEG_j_decompress_ptr cinfo,
+	      JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+	      LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
   int ci;
   register int nc = cinfo->num_components;
   register JSAMPROW outptr;
   register JSAMPROW inptr;
-  register JDIMENSION col;
-  JDIMENSION num_cols = cinfo->output_width;
+  register LJPEG_JDIMENSION col;
+  LJPEG_JDIMENSION num_cols = cinfo->output_width;
 
   while (--num_rows >= 0) {
     for (ci = 0; ci < nc; ci++) {
@@ -391,10 +391,10 @@ null_convert (j_decompress_ptr cinfo,
  * we just copy the Y (luminance) component and ignore chrominance.
  */
 
-METHODDEF(void)
-grayscale_convert (j_decompress_ptr cinfo,
-		   JSAMPIMAGE input_buf, JDIMENSION input_row,
-		   JSAMPARRAY output_buf, int num_rows)
+LJPEG_METHODDEF(void)
+grayscale_convert (LJPEG_j_decompress_ptr cinfo,
+		   JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+		   LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
   jcopy_sample_rows(input_buf[0], (int) input_row, output_buf, 0,
 		    num_rows, cinfo->output_width);
@@ -407,15 +407,15 @@ grayscale_convert (j_decompress_ptr cinfo,
  * with grayscale as a separate case.
  */
 
-METHODDEF(void)
-gray_rgb_convert (j_decompress_ptr cinfo,
-		  JSAMPIMAGE input_buf, JDIMENSION input_row,
-		  JSAMPARRAY output_buf, int num_rows)
+LJPEG_METHODDEF(void)
+gray_rgb_convert (LJPEG_j_decompress_ptr cinfo,
+		  JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+		  LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
   register JSAMPROW outptr;
   register JSAMPROW inptr;
-  register JDIMENSION col;
-  JDIMENSION num_cols = cinfo->output_width;
+  register LJPEG_JDIMENSION col;
+  LJPEG_JDIMENSION num_cols = cinfo->output_width;
 
   while (--num_rows >= 0) {
     inptr = input_buf[0][input_row++];
@@ -436,17 +436,17 @@ gray_rgb_convert (j_decompress_ptr cinfo,
  * We assume build_ycc_rgb_table has been called.
  */
 
-METHODDEF(void)
-ycck_cmyk_convert (j_decompress_ptr cinfo,
-		   JSAMPIMAGE input_buf, JDIMENSION input_row,
-		   JSAMPARRAY output_buf, int num_rows)
+LJPEG_METHODDEF(void)
+ycck_cmyk_convert (LJPEG_j_decompress_ptr cinfo,
+		   JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+		   LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
   my_cconvert_ptr cconvert = (my_cconvert_ptr) cinfo->cconvert;
   register int y, cb, cr;
   register JSAMPROW outptr;
   register JSAMPROW inptr0, inptr1, inptr2, inptr3;
-  register JDIMENSION col;
-  JDIMENSION num_cols = cinfo->output_width;
+  register LJPEG_JDIMENSION col;
+  LJPEG_JDIMENSION num_cols = cinfo->output_width;
   /* copy these pointers into registers if possible */
   register JSAMPLE * range_limit = cinfo->sample_range_limit;
   register int * Crrtab = cconvert->Cr_r_tab;
@@ -484,8 +484,8 @@ ycck_cmyk_convert (j_decompress_ptr cinfo,
  * Empty method for start_pass.
  */
 
-METHODDEF(void)
-start_pass_dcolor (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(void)
+start_pass_dcolor (LJPEG_j_decompress_ptr cinfo)
 {
   /* no work needed */
 }
@@ -495,7 +495,7 @@ start_pass_dcolor (j_decompress_ptr cinfo)
  * Module initialization routine for output colorspace conversion.
  */
 LJPEG_GLOBAL(void)
-jinit_color_deconverter (j_decompress_ptr cinfo)
+jinit_color_deconverter (LJPEG_j_decompress_ptr cinfo)
 {
   my_cconvert_ptr cconvert;
   int ci;

@@ -45,9 +45,9 @@ typedef struct {
   struct jpeg_upsampler pub;	/* public fields */
 
   /* Pointer to routine to do actual upsampling/conversion of one row group */
-  JMETHOD(void, upmethod, (j_decompress_ptr cinfo,
-			   JSAMPIMAGE input_buf, JDIMENSION in_row_group_ctr,
-			   JSAMPARRAY output_buf));
+  LJPEG_JMETHOD(void, upmethod, (LJPEG_j_decompress_ptr cinfo,
+			   JSAMPIMAGE input_buf, LJPEG_JDIMENSION in_row_group_ctr,
+			   LJPEG_JSAMPARRAY output_buf));
 
   /* Private state for YCC->RGB conversion */
   int * Cr_r_tab;		/* => table for Cr to R conversion */
@@ -63,8 +63,8 @@ typedef struct {
   JSAMPROW spare_row;
   boolean spare_full;		/* T if spare buffer is occupied */
 
-  JDIMENSION out_row_width;	/* samples per output row */
-  JDIMENSION rows_to_go;	/* counts rows remaining in image */
+  LJPEG_JDIMENSION out_row_width;	/* samples per output row */
+  LJPEG_JDIMENSION rows_to_go;	/* counts rows remaining in image */
 } my_upsampler;
 
 typedef my_upsampler * my_upsample_ptr;
@@ -80,7 +80,7 @@ typedef my_upsampler * my_upsample_ptr;
  */
 
 LOCAL(void)
-build_ycc_rgb_table (j_decompress_ptr cinfo)
+build_ycc_rgb_table (LJPEG_j_decompress_ptr cinfo)
 {
   my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
   int i;
@@ -122,8 +122,8 @@ build_ycc_rgb_table (j_decompress_ptr cinfo)
  * Initialize for an upsampling pass.
  */
 
-METHODDEF(void)
-start_pass_merged_upsample (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(void)
+start_pass_merged_upsample (LJPEG_j_decompress_ptr cinfo)
 {
   my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
 
@@ -140,17 +140,17 @@ start_pass_merged_upsample (j_decompress_ptr cinfo)
  * The control routine just handles the row buffering considerations.
  */
 
-METHODDEF(void)
-merged_2v_upsample (j_decompress_ptr cinfo,
-		    JSAMPIMAGE input_buf, JDIMENSION *in_row_group_ctr,
-		    JDIMENSION in_row_groups_avail,
-		    JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
-		    JDIMENSION out_rows_avail)
+LJPEG_METHODDEF(void)
+merged_2v_upsample (LJPEG_j_decompress_ptr cinfo,
+		    JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
+		    LJPEG_JDIMENSION in_row_groups_avail,
+		    LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
+		    LJPEG_JDIMENSION out_rows_avail)
 /* 2:1 vertical sampling case: may need a spare row. */
 {
   my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
   JSAMPROW work_ptrs[2];
-  JDIMENSION num_rows;		/* number of rows returned to caller */
+  LJPEG_JDIMENSION num_rows;		/* number of rows returned to caller */
 
   if (upsample->spare_full) {
     /* If we have a spare row saved from a previous cycle, just return it. */
@@ -189,12 +189,12 @@ merged_2v_upsample (j_decompress_ptr cinfo,
 }
 
 
-METHODDEF(void)
-merged_1v_upsample (j_decompress_ptr cinfo,
-		    JSAMPIMAGE input_buf, JDIMENSION *in_row_group_ctr,
-		    JDIMENSION in_row_groups_avail,
-		    JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
-		    JDIMENSION out_rows_avail)
+LJPEG_METHODDEF(void)
+merged_1v_upsample (LJPEG_j_decompress_ptr cinfo,
+		    JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
+		    LJPEG_JDIMENSION in_row_groups_avail,
+		    LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
+		    LJPEG_JDIMENSION out_rows_avail)
 /* 1:1 vertical sampling case: much easier, never need a spare row. */
 {
   my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
@@ -222,17 +222,17 @@ merged_1v_upsample (j_decompress_ptr cinfo,
  * Upsample and color convert for the case of 2:1 horizontal and 1:1 vertical.
  */
 
-METHODDEF(void)
-h2v1_merged_upsample (j_decompress_ptr cinfo,
-		      JSAMPIMAGE input_buf, JDIMENSION in_row_group_ctr,
-		      JSAMPARRAY output_buf)
+LJPEG_METHODDEF(void)
+h2v1_merged_upsample (LJPEG_j_decompress_ptr cinfo,
+		      JSAMPIMAGE input_buf, LJPEG_JDIMENSION in_row_group_ctr,
+		      LJPEG_JSAMPARRAY output_buf)
 {
   my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
   register int y, cred, cgreen, cblue;
   int cb, cr;
   register JSAMPROW outptr;
   JSAMPROW inptr0, inptr1, inptr2;
-  JDIMENSION col;
+  LJPEG_JDIMENSION col;
   /* copy these pointers into registers if possible */
   register JSAMPLE * range_limit = cinfo->sample_range_limit;
   int * Crrtab = upsample->Cr_r_tab;
@@ -284,17 +284,17 @@ h2v1_merged_upsample (j_decompress_ptr cinfo,
  * Upsample and color convert for the case of 2:1 horizontal and 2:1 vertical.
  */
 
-METHODDEF(void)
-h2v2_merged_upsample (j_decompress_ptr cinfo,
-		      JSAMPIMAGE input_buf, JDIMENSION in_row_group_ctr,
-		      JSAMPARRAY output_buf)
+LJPEG_METHODDEF(void)
+h2v2_merged_upsample (LJPEG_j_decompress_ptr cinfo,
+		      JSAMPIMAGE input_buf, LJPEG_JDIMENSION in_row_group_ctr,
+		      LJPEG_JSAMPARRAY output_buf)
 {
   my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
   register int y, cred, cgreen, cblue;
   int cb, cr;
   register JSAMPROW outptr0, outptr1;
   JSAMPROW inptr00, inptr01, inptr1, inptr2;
-  JDIMENSION col;
+  LJPEG_JDIMENSION col;
   /* copy these pointers into registers if possible */
   register JSAMPLE * range_limit = cinfo->sample_range_limit;
   int * Crrtab = upsample->Cr_r_tab;
@@ -367,7 +367,7 @@ h2v2_merged_upsample (j_decompress_ptr cinfo,
  */
 
 LJPEG_GLOBALvoid)
-jinit_merged_upsampler (j_decompress_ptr cinfo)
+jinit_merged_upsampler (LJPEG_j_decompress_ptr cinfo)
 {
   my_upsample_ptr upsample;
 

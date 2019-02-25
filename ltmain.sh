@@ -28,7 +28,7 @@
 # or obtained by writing to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-# Usage: $progname [OPTION]... [MODE-ARG]...
+# Usage: $LJPEG_progname [OPTION]... [MODE-ARG]...
 #
 # Provide generalized library-building support services.
 #
@@ -60,7 +60,7 @@
 #
 # MODE-ARGS vary depending on the MODE.  When passed as first option,
 # `--mode=MODE' may be abbreviated as `MODE' or a unique abbreviation of that.
-# Try `$progname --help --mode=MODE' for a more detailed description of MODE.
+# Try `$LJPEG_progname --help --mode=MODE' for a more detailed description of MODE.
 #
 # When reporting a bug, please describe a test case to reproduce it and
 # include the following information:
@@ -70,7 +70,7 @@
 #         compiler:		$LTCC
 #         compiler flags:		$LTCFLAGS
 #         linker:		$LD (gnu? $with_gnu_ld)
-#         $progname:	(GNU libtool) 2.4.2
+#         $LJPEG_progname:	(GNU libtool) 2.4.2
 #         automake:	$automake_version
 #         autoconf:	$autoconf_version
 #
@@ -371,7 +371,7 @@ func_relative_path ()
 
 # The name of this program:
 func_dirname_and_basename "$progpath"
-progname=$func_basename_result
+LJPEG_progname=$func_basename_result
 
 # Make sure we have an absolute path for reexecution:
 case $progpath in
@@ -379,18 +379,18 @@ case $progpath in
   *[\\/]*)
      progdir=$func_dirname_result
      progdir=`cd "$progdir" && pwd`
-     progpath="$progdir/$progname"
+     progpath="$progdir/$LJPEG_progname"
      ;;
   *)
      save_IFS="$IFS"
      IFS=${PATH_SEPARATOR-:}
      for progdir in $PATH; do
        IFS="$save_IFS"
-       test -x "$progdir/$progname" && break
+       test -x "$progdir/$LJPEG_progname" && break
      done
      IFS="$save_IFS"
      test -n "$progdir" || progdir=`pwd`
-     progpath="$progdir/$progname"
+     progpath="$progdir/$LJPEG_progname"
      ;;
 esac
 
@@ -439,7 +439,7 @@ opt_warning=:
 # name if it has been set yet.
 func_echo ()
 {
-    $ECHO "$progname: ${opt_mode+$opt_mode: }$*"
+    $ECHO "$LJPEG_progname: ${opt_mode+$opt_mode: }$*"
 }
 
 # func_verbose arg...
@@ -465,14 +465,14 @@ func_echo_all ()
 # Echo program name prefixed message to standard error.
 func_error ()
 {
-    $ECHO "$progname: ${opt_mode+$opt_mode: }"${1+"$@"} 1>&2
+    $ECHO "$LJPEG_progname: ${opt_mode+$opt_mode: }"${1+"$@"} 1>&2
 }
 
 # func_warning arg...
 # Echo program name prefixed warning message to standard error.
 func_warning ()
 {
-    $opt_warning && $ECHO "$progname: ${opt_mode+$opt_mode: }warning: "${1+"$@"} 1>&2
+    $opt_warning && $ECHO "$LJPEG_progname: ${opt_mode+$opt_mode: }warning: "${1+"$@"} 1>&2
 
     # bash bug again:
     :
@@ -494,7 +494,7 @@ func_fatal_help ()
     func_error ${1+"$@"}
     func_fatal_error "$help"
 }
-help="Try \`$progname --help' for more information."  ## default
+help="Try \`$LJPEG_progname --help' for more information."  ## default
 
 
 # func_grep expression filename
@@ -556,7 +556,7 @@ func_mkdir_p ()
 # given, STRING is the basename for that directory.
 func_mktempdir ()
 {
-    my_template="${TMPDIR-/tmp}/${1-$progname}"
+    my_template="${TMPDIR-/tmp}/${1-$LJPEG_progname}"
 
     if test "$opt_dry_run" = ":"; then
       # Return a directory name, but don't create it in dry-run mode
@@ -741,11 +741,11 @@ func_usage ()
     $SED -n '/^# Usage:/,/^#  *.*--help/ {
         s/^# //
 	s/^# *$//
-	s/\$progname/'$progname'/
+	s/\$LJPEG_progname/'$LJPEG_progname'/
 	p
     }' < "$progpath"
     echo
-    $ECHO "run \`$progname --help | more' for full usage"
+    $ECHO "run \`$LJPEG_progname --help | more' for full usage"
     exit $?
 }
 
@@ -760,7 +760,7 @@ func_help ()
 	:print
         s/^# //
 	s/^# *$//
-	s*\$progname*'$progname'*
+	s*\$LJPEG_progname*'$LJPEG_progname'*
 	s*\$host*'"$host"'*
 	s*\$SHELL*'"$SHELL"'*
 	s*\$LTCC*'"$LTCC"'*
@@ -984,25 +984,25 @@ func_check_version_match ()
     if test "$VERSION" != "$macro_version"; then
       if test -z "$macro_version"; then
         cat >&2 <<_LT_EOF
-$progname: Version mismatch error.  This is $PACKAGE $VERSION, but the
-$progname: definition of this LT_INIT comes from an older release.
-$progname: You should recreate aclocal.m4 with macros from $PACKAGE $VERSION
-$progname: and run autoconf again.
+$LJPEG_progname: Version mismatch error.  This is $PACKAGE $VERSION, but the
+$LJPEG_progname: definition of this LT_INIT comes from an older release.
+$LJPEG_progname: You should recreate aclocal.m4 with macros from $PACKAGE $VERSION
+$LJPEG_progname: and run autoconf again.
 _LT_EOF
       else
         cat >&2 <<_LT_EOF
-$progname: Version mismatch error.  This is $PACKAGE $VERSION, but the
-$progname: definition of this LT_INIT comes from $PACKAGE $macro_version.
-$progname: You should recreate aclocal.m4 with macros from $PACKAGE $VERSION
-$progname: and run autoconf again.
+$LJPEG_progname: Version mismatch error.  This is $PACKAGE $VERSION, but the
+$LJPEG_progname: definition of this LT_INIT comes from $PACKAGE $macro_version.
+$LJPEG_progname: You should recreate aclocal.m4 with macros from $PACKAGE $VERSION
+$LJPEG_progname: and run autoconf again.
 _LT_EOF
       fi
     else
       cat >&2 <<_LT_EOF
-$progname: Version mismatch error.  This is $PACKAGE $VERSION, revision $package_revision,
-$progname: but the definition of this LT_INIT comes from revision $macro_revision.
-$progname: You should recreate aclocal.m4 with macros from revision $package_revision
-$progname: of $PACKAGE $VERSION and run autoconf again.
+$LJPEG_progname: Version mismatch error.  This is $PACKAGE $VERSION, revision $package_revision,
+$LJPEG_progname: but the definition of this LT_INIT comes from revision $macro_revision.
+$LJPEG_progname: You should recreate aclocal.m4 with macros from revision $package_revision
+$LJPEG_progname: of $PACKAGE $VERSION and run autoconf again.
 _LT_EOF
     fi
 
@@ -1209,7 +1209,7 @@ func_enable_tag "$optarg"
 
     # Change the help message to a mode-specific one.
     generic_help="$help"
-    help="Try \`$progname --help --mode=$opt_mode' for more information."
+    help="Try \`$LJPEG_progname --help --mode=$opt_mode' for more information."
   }
 
 
@@ -2306,7 +2306,7 @@ func_mode_help ()
 
       clean)
         $ECHO \
-"Usage: $progname [OPTION]... --mode=clean RM [RM-OPTION]... FILE...
+"Usage: $LJPEG_progname [OPTION]... --mode=clean RM [RM-OPTION]... FILE...
 
 Remove files from the build directory.
 
@@ -2320,7 +2320,7 @@ with it are deleted. Otherwise, only FILE itself is deleted using RM."
 
       compile)
       $ECHO \
-"Usage: $progname [OPTION]... --mode=compile COMPILE-COMMAND... SOURCEFILE
+"Usage: $LJPEG_progname [OPTION]... --mode=compile COMPILE-COMMAND... SOURCEFILE
 
 Compile a source file into a libtool library object.
 
@@ -2344,7 +2344,7 @@ library object suffix, \`.lo'."
 
       execute)
         $ECHO \
-"Usage: $progname [OPTION]... --mode=execute COMMAND [ARGS]...
+"Usage: $LJPEG_progname [OPTION]... --mode=execute COMMAND [ARGS]...
 
 Automatically set library path, then run a program.
 
@@ -2364,7 +2364,7 @@ Then, COMMAND is executed, with ARGS as arguments."
 
       finish)
         $ECHO \
-"Usage: $progname [OPTION]... --mode=finish [LIBDIR]...
+"Usage: $LJPEG_progname [OPTION]... --mode=finish [LIBDIR]...
 
 Complete the installation of libtool libraries.
 
@@ -2376,7 +2376,7 @@ the \`--dry-run' option if you just want to see what would be executed."
 
       install)
         $ECHO \
-"Usage: $progname [OPTION]... --mode=install INSTALL-COMMAND...
+"Usage: $LJPEG_progname [OPTION]... --mode=install INSTALL-COMMAND...
 
 Install executables or libraries.
 
@@ -2393,7 +2393,7 @@ BSD-compatible install options are recognized)."
 
       link)
         $ECHO \
-"Usage: $progname [OPTION]... --mode=link LINK-COMMAND...
+"Usage: $LJPEG_progname [OPTION]... --mode=link LINK-COMMAND...
 
 Link object files or libraries together to form another library, or to
 create an executable program.
@@ -2460,7 +2460,7 @@ is created, otherwise an executable program is created."
 
       uninstall)
         $ECHO \
-"Usage: $progname [OPTION]... --mode=uninstall RM [RM-OPTION]... FILE...
+"Usage: $LJPEG_progname [OPTION]... --mode=uninstall RM [RM-OPTION]... FILE...
 
 Remove libraries from an installation directory.
 
@@ -2478,7 +2478,7 @@ Otherwise, only FILE itself is deleted using RM."
     esac
 
     echo
-    $ECHO "Try \`$progname --help' for more information about other modes."
+    $ECHO "Try \`$LJPEG_progname --help' for more information about other modes."
 }
 
 # Now that we've collected a possible --mode arg, show help if necessary
@@ -3216,7 +3216,7 @@ func_mode_install ()
     done
 
     test -n "$future_libdirs" && \
-      func_warning "remember to run \`$progname --finish$future_libdirs'"
+      func_warning "remember to run \`$LJPEG_progname --finish$future_libdirs'"
 
     if test -n "$current_libdirs"; then
       # Maybe just do a dry run.

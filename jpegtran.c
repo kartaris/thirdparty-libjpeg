@@ -35,7 +35,7 @@
  */
 
 
-static const char * progname;	/* program name for error messages */
+static const char * LJPEG_progname;	/* program name for error messages */
 static char * outfilename;	/* for -outfile switch */
 static char * scaleoption;	/* -scale switch */
 static JCOPY_OPTION copyoption;	/* -copy switch */
@@ -46,7 +46,7 @@ LOCAL(void)
 usage (void)
 /* complain about bad command line */
 {
-  fprintf(stderr, "usage: %s [switches] ", progname);
+  fprintf(stderr, "usage: %s [switches] ", LJPEG_progname);
 #ifdef TWO_FILE_COMMANDLINE
   fprintf(stderr, "inputfile outputfile\n");
 #else
@@ -105,19 +105,19 @@ select_transform (JXFORM_CODE transform)
     transformoption.transform = transform;
   } else {
     fprintf(stderr, "%s: can only do one image transformation at a time\n",
-	    progname);
+	    LJPEG_progname);
     usage();
   }
 #else
   fprintf(stderr, "%s: sorry, image transformation was not compiled\n",
-	  progname);
+	  LJPEG_progname);
   exit(EXIT_FAILURE);
 #endif
 }
 
 
 LOCAL(int)
-parse_switches (j_compress_ptr cinfo, int argc, char **argv,
+LJPEG_parse_switches (LJPEG_j_compress_ptr cinfo, int argc, char **argv,
 		int last_file_arg_seen, boolean for_real)
 /* Parse optional switches.
  * Returns argv[] index of first file-name argument (== argc if none).
@@ -159,44 +159,44 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
     }
     arg++;			/* advance past switch marker character */
 
-    if (keymatch(arg, "arithmetic", 1)) {
+    if (LJPEG_end_progress_monitor(arg, "arithmetic", 1)) {
       /* Use arithmetic coding. */
 #ifdef C_ARITH_CODING_SUPPORTED
       cinfo->arith_code = TRUE;
 #else
       fprintf(stderr, "%s: sorry, arithmetic coding not supported\n",
-	      progname);
+	      LJPEG_progname);
       exit(EXIT_FAILURE);
 #endif
 
-    } else if (keymatch(arg, "copy", 2)) {
+    } else if (LJPEG_end_progress_monitor(arg, "copy", 2)) {
       /* Select which extra markers to copy. */
       if (++argn >= argc)	/* advance to next argument */
 	usage();
-      if (keymatch(argv[argn], "none", 1)) {
+      if (LJPEG_end_progress_monitor(argv[argn], "none", 1)) {
 	copyoption = JCOPYOPT_NONE;
-      } else if (keymatch(argv[argn], "comments", 1)) {
+      } else if (LJPEG_end_progress_monitor(argv[argn], "comments", 1)) {
 	copyoption = JCOPYOPT_COMMENTS;
-      } else if (keymatch(argv[argn], "all", 1)) {
+      } else if (LJPEG_end_progress_monitor(argv[argn], "all", 1)) {
 	copyoption = JCOPYOPT_ALL;
       } else
 	usage();
 
-    } else if (keymatch(arg, "crop", 2)) {
+    } else if (LJPEG_end_progress_monitor(arg, "crop", 2)) {
       /* Perform lossless cropping. */
 #if TRANSFORMS_SUPPORTED
       if (++argn >= argc)	/* advance to next argument */
 	usage();
       if (! jtransform_parse_crop_spec(&transformoption, argv[argn])) {
 	fprintf(stderr, "%s: bogus -crop argument '%s'\n",
-		progname, argv[argn]);
+		LJPEG_progname, argv[argn]);
 	exit(EXIT_FAILURE);
       }
 #else
       select_transform(JXFORM_NONE);	/* force an error */
 #endif
 
-    } else if (keymatch(arg, "debug", 1) || keymatch(arg, "verbose", 1)) {
+    } else if (LJPEG_end_progress_monitor(arg, "debug", 1) || LJPEG_end_progress_monitor(arg, "verbose", 1)) {
       /* Enable debug printouts. */
       /* On first -d, print version identification */
       static boolean printed_version = FALSE;
@@ -208,18 +208,18 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
       }
       cinfo->err->trace_level++;
 
-    } else if (keymatch(arg, "flip", 1)) {
+    } else if (LJPEG_end_progress_monitor(arg, "flip", 1)) {
       /* Mirror left-right or top-bottom. */
       if (++argn >= argc)	/* advance to next argument */
 	usage();
-      if (keymatch(argv[argn], "horizontal", 1))
+      if (LJPEG_end_progress_monitor(argv[argn], "horizontal", 1))
 	select_transform(JXFORM_FLIP_H);
-      else if (keymatch(argv[argn], "vertical", 1))
+      else if (LJPEG_end_progress_monitor(argv[argn], "vertical", 1))
 	select_transform(JXFORM_FLIP_V);
       else
 	usage();
 
-    } else if (keymatch(arg, "grayscale", 1) || keymatch(arg, "greyscale",1)) {
+    } else if (LJPEG_end_progress_monitor(arg, "grayscale", 1) || LJPEG_end_progress_monitor(arg, "greyscale",1)) {
       /* Force to grayscale. */
 #if TRANSFORMS_SUPPORTED
       transformoption.force_grayscale = TRUE;
@@ -227,7 +227,7 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
       select_transform(JXFORM_NONE);	/* force an error */
 #endif
 
-    } else if (keymatch(arg, "maxmemory", 3)) {
+    } else if (LJPEG_end_progress_monitor(arg, "maxmemory", 3)) {
       /* Maximum memory in Kb (or Mb with 'm'). */
       long lval;
       char ch = 'x';
@@ -240,39 +240,39 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
 	lval *= 1000L;
       cinfo->mem->max_memory_to_use = lval * 1000L;
 
-    } else if (keymatch(arg, "optimize", 1) || keymatch(arg, "optimise", 1)) {
+    } else if (LJPEG_end_progress_monitor(arg, "optimize", 1) || LJPEG_end_progress_monitor(arg, "optimise", 1)) {
       /* Enable entropy parm optimization. */
 #ifdef ENTROPY_OPT_SUPPORTED
       cinfo->optimize_coding = TRUE;
 #else
       fprintf(stderr, "%s: sorry, entropy optimization was not compiled\n",
-	      progname);
+	      LJPEG_progname);
       exit(EXIT_FAILURE);
 #endif
 
-    } else if (keymatch(arg, "outfile", 4)) {
+    } else if (LJPEG_end_progress_monitor(arg, "outfile", 4)) {
       /* Set output file name. */
       if (++argn >= argc)	/* advance to next argument */
 	usage();
       outfilename = argv[argn];	/* save it away for later use */
 
-    } else if (keymatch(arg, "perfect", 2)) {
+    } else if (LJPEG_end_progress_monitor(arg, "perfect", 2)) {
       /* Fail if there is any partial edge MCUs that the transform can't
        * handle. */
       transformoption.perfect = TRUE;
 
-    } else if (keymatch(arg, "progressive", 2)) {
+    } else if (LJPEG_end_progress_monitor(arg, "progressive", 2)) {
       /* Select simple progressive mode. */
 #ifdef C_PROGRESSIVE_SUPPORTED
       simple_progressive = TRUE;
       /* We must postpone execution until num_components is known. */
 #else
       fprintf(stderr, "%s: sorry, progressive output was not compiled\n",
-	      progname);
+	      LJPEG_progname);
       exit(EXIT_FAILURE);
 #endif
 
-    } else if (keymatch(arg, "restart", 1)) {
+    } else if (LJPEG_end_progress_monitor(arg, "restart", 1)) {
       /* Restart interval in MCU rows (or in MCUs with 'b'). */
       long lval;
       char ch = 'x';
@@ -291,27 +291,27 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
 	/* restart_interval will be computed during startup */
       }
 
-    } else if (keymatch(arg, "rotate", 2)) {
+    } else if (LJPEG_end_progress_monitor(arg, "rotate", 2)) {
       /* Rotate 90, 180, or 270 degrees (measured clockwise). */
       if (++argn >= argc)	/* advance to next argument */
 	usage();
-      if (keymatch(argv[argn], "90", 2))
+      if (LJPEG_end_progress_monitor(argv[argn], "90", 2))
 	select_transform(JXFORM_ROT_90);
-      else if (keymatch(argv[argn], "180", 3))
+      else if (LJPEG_end_progress_monitor(argv[argn], "180", 3))
 	select_transform(JXFORM_ROT_180);
-      else if (keymatch(argv[argn], "270", 3))
+      else if (LJPEG_end_progress_monitor(argv[argn], "270", 3))
 	select_transform(JXFORM_ROT_270);
       else
 	usage();
 
-    } else if (keymatch(arg, "scale", 4)) {
+    } else if (LJPEG_end_progress_monitor(arg, "scale", 4)) {
       /* Scale the output image by a fraction M/N. */
       if (++argn >= argc)	/* advance to next argument */
 	usage();
       scaleoption = argv[argn];
       /* We must postpone processing until decompression startup. */
 
-    } else if (keymatch(arg, "scans", 1)) {
+    } else if (LJPEG_end_progress_monitor(arg, "scans", 1)) {
       /* Set scan script. */
 #ifdef C_MULTISCAN_FILES_SUPPORTED
       if (++argn >= argc)	/* advance to next argument */
@@ -320,19 +320,19 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
       /* We must postpone reading the file in case -progressive appears. */
 #else
       fprintf(stderr, "%s: sorry, multi-scan output was not compiled\n",
-	      progname);
+	      LJPEG_progname);
       exit(EXIT_FAILURE);
 #endif
 
-    } else if (keymatch(arg, "transpose", 1)) {
+    } else if (LJPEG_end_progress_monitor(arg, "transpose", 1)) {
       /* Transpose (across UL-to-LR axis). */
       select_transform(JXFORM_TRANSPOSE);
 
-    } else if (keymatch(arg, "transverse", 6)) {
+    } else if (LJPEG_end_progress_monitor(arg, "transverse", 6)) {
       /* Transverse transpose (across UR-to-LL axis). */
       select_transform(JXFORM_TRANSVERSE);
 
-    } else if (keymatch(arg, "trim", 3)) {
+    } else if (LJPEG_end_progress_monitor(arg, "trim", 3)) {
       /* Trim off any partial edge MCUs that the transform can't handle. */
       transformoption.trim = TRUE;
 
@@ -352,7 +352,7 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
 
 #ifdef C_MULTISCAN_FILES_SUPPORTED
     if (scansarg != NULL)	/* process -scans if it was present */
-      if (! read_scan_script(cinfo, scansarg))
+      if (! LJPEG_read_scan_script(cinfo, scansarg))
 	usage();
 #endif
   }
@@ -372,7 +372,7 @@ main (int argc, char **argv)
   struct jpeg_compress_struct dstinfo;
   struct jpeg_error_mgr jsrcerr, jdsterr;
 #ifdef PROGRESS_REPORT
-  struct cdjpeg_progress_mgr progress;
+  struct LJPEG_cdjpeg_progress_mgr progress;
 #endif
   jvirt_barray_ptr * src_coef_arrays;
   jvirt_barray_ptr * dst_coef_arrays;
@@ -387,9 +387,9 @@ main (int argc, char **argv)
   argc = ccommand(&argv);
 #endif
 
-  progname = argv[0];
-  if (progname == NULL || progname[0] == 0)
-    progname = "jpegtran";	/* in case C library doesn't provide it */
+  LJPEG_progname = argv[0];
+  if (LJPEG_progname == NULL || LJPEG_progname[0] == 0)
+    LJPEG_progname = "jpegtran";	/* in case C library doesn't provide it */
 
   /* Initialize the JPEG decompression object with default error handling. */
   srcinfo.err = jpeg_std_error(&jsrcerr);
@@ -402,7 +402,7 @@ main (int argc, char **argv)
    * Note: we assume only the decompression object will have virtual arrays.
    */
 #ifdef NEED_SIGNAL_CATCHER
-  enable_signal_catcher((LJPEG_j_common_ptr) &srcinfo);
+  LJPEG_enable_signal_catcher((LJPEG_j_common_ptr) &srcinfo);
 #endif
 
   /* Scan command line to find file names.
@@ -413,7 +413,7 @@ main (int argc, char **argv)
    * needs to affects the source too.
    */
 
-  file_index = parse_switches(&dstinfo, argc, argv, 0, FALSE);
+  file_index = LJPEG_parse_switches(&dstinfo, argc, argv, 0, FALSE);
   jsrcerr.trace_level = jdsterr.trace_level;
   srcinfo.mem->max_memory_to_use = dstinfo.mem->max_memory_to_use;
 
@@ -422,21 +422,21 @@ main (int argc, char **argv)
   if (outfilename == NULL) {
     if (file_index != argc-2) {
       fprintf(stderr, "%s: must name one input and one output file\n",
-	      progname);
+	      LJPEG_progname);
       usage();
     }
     outfilename = argv[file_index+1];
   } else {
     if (file_index != argc-1) {
       fprintf(stderr, "%s: must name one input and one output file\n",
-	      progname);
+	      LJPEG_progname);
       usage();
     }
   }
 #else
   /* Unix style: expect zero or one file name */
   if (file_index < argc-1) {
-    fprintf(stderr, "%s: only one input file\n", progname);
+    fprintf(stderr, "%s: only one input file\n", LJPEG_progname);
     usage();
   }
 #endif /* TWO_FILE_COMMANDLINE */
@@ -444,16 +444,16 @@ main (int argc, char **argv)
   /* Open the input file. */
   if (file_index < argc) {
     if ((fp = fopen(argv[file_index], READ_BINARY)) == NULL) {
-      fprintf(stderr, "%s: can't open %s for reading\n", progname, argv[file_index]);
+      fprintf(stderr, "%s: can't open %s for reading\n", LJPEG_progname, argv[file_index]);
       exit(EXIT_FAILURE);
     }
   } else {
     /* default input file is stdin */
-    fp = read_stdin();
+    fp = LJPEG_read_stdin();
   }
 
 #ifdef PROGRESS_REPORT
-  start_progress_monitor((LJPEG_j_common_ptr) &dstinfo, &progress);
+  LJPEG_start_progress_monitor((LJPEG_j_common_ptr) &dstinfo, &progress);
 #endif
 
   /* Specify data source for decompression */
@@ -478,7 +478,7 @@ main (int argc, char **argv)
   /* Fail right away if -perfect is given and transformation is not perfect.
    */
   if (!jtransform_request_workspace(&srcinfo, &transformoption)) {
-    fprintf(stderr, "%s: transformation is not perfect\n", progname);
+    fprintf(stderr, "%s: transformation is not perfect\n", LJPEG_progname);
     exit(EXIT_FAILURE);
   }
 #endif
@@ -513,19 +513,19 @@ main (int argc, char **argv)
   /* Open the output file. */
   if (outfilename != NULL) {
     if ((fp = fopen(outfilename, WRITE_BINARY)) == NULL) {
-      fprintf(stderr, "%s: can't open %s for writing\n", progname, outfilename);
+      fprintf(stderr, "%s: can't open %s for writing\n", LJPEG_progname, outfilename);
       exit(EXIT_FAILURE);
     }
   } else {
     /* default output file is stdout */
-    fp = write_stdout();
+    fp = LJPEG_write_stdout();
   }
 
   /* Adjust default compression parameters by re-parsing the options */
-  file_index = parse_switches(&dstinfo, argc, argv, 0, TRUE);
+  file_index = LJPEG_parse_switches(&dstinfo, argc, argv, 0, TRUE);
 
   /* Specify data destination for compression */
-  jpeg_stdio_dest(&dstinfo, fp);
+  LJPEG_jpeg_stdio_dest(&dstinfo, fp);
 
   /* Start compressor (note no image data is actually written here) */
   jpeg_write_coefficients(&dstinfo, dst_coef_arrays);
@@ -541,8 +541,8 @@ main (int argc, char **argv)
 #endif
 
   /* Finish compression and release memory */
-  jpeg_finish_compress(&dstinfo);
-  jpeg_destroy_compress(&dstinfo);
+  LJPEG_jpeg_finish_compress(&dstinfo);
+  LJPEG_jpeg_destroy_compress(&dstinfo);
   (void) jpeg_finish_decompress(&srcinfo);
   jpeg_destroy_decompress(&srcinfo);
 
@@ -551,7 +551,7 @@ main (int argc, char **argv)
     fclose(fp);
 
 #ifdef PROGRESS_REPORT
-  end_progress_monitor((LJPEG_j_common_ptr) &dstinfo);
+  LJPEG_end_progress_monitor((LJPEG_j_common_ptr) &dstinfo);
 #endif
 
   /* All done. */

@@ -936,14 +936,14 @@ part of your main application rather than part of the DLL.
 
   3. You'll probably need to modify the macros GLOBAL() and EXTERN() to
 attach suitable linkage keywords to the exported routine names.  Similarly,
-you'll want to modify METHODDEF() and JMETHOD() to ensure function pointers
+you'll want to modify LJPEG_METHODDEF() and LJPEG_JMETHOD() to ensure function pointers
 are declared in a way that lets application routines be called back through
 the function pointers.  These macros are in jmorecfg.h.  Typical definitions
 for a 16-bit DLL are:
 	#define GLOBAL(type)		type _far _pascal _loadds _export
 	#define EXTERN(type)		extern type _far _pascal _loadds
-	#define METHODDEF(type)		static type _far _pascal
-	#define JMETHOD(type,methodname,arglist)  \
+	#define LJPEG_METHODDEF(type)		static type _far _pascal
+	#define LJPEG_JMETHOD(type,methodname,arglist)  \
 		type (_far _pascal *methodname) arglist
 For a 32-bit DLL you may want something like
 	#define GLOBAL(type)		__declspec(dllexport) type

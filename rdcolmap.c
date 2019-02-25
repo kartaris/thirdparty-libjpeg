@@ -43,7 +43,7 @@
  */
 
 LOCAL(void)
-add_map_entry (j_decompress_ptr cinfo, int R, int G, int B)
+add_map_entry (LJPEG_j_decompress_ptr cinfo, int R, int G, int B)
 {
   JSAMPROW colormap0 = cinfo->colormap[0];
   JSAMPROW colormap1 = cinfo->colormap[1];
@@ -76,13 +76,13 @@ add_map_entry (j_decompress_ptr cinfo, int R, int G, int B)
  */
 
 LOCAL(void)
-read_gif_map (j_decompress_ptr cinfo, FILE * infile)
+read_gif_map (LJPEG_j_decompress_ptr cinfo, FILE * infile)
 {
   int header[13];
   int i, colormaplen;
   int R, G, B;
 
-  /* Initial 'G' has already been read by read_color_map */
+  /* Initial 'G' has already been read by LJPEG_read_color_map */
   /* Read the rest of the GIF header and logical screen descriptor */
   for (i = 1; i < 13; i++) {
     if ((header[i] = getc(infile)) == EOF)
@@ -135,7 +135,7 @@ pbm_getc (FILE * infile)
 
 
 LOCAL(unsigned int)
-read_pbm_integer (j_decompress_ptr cinfo, FILE * infile)
+read_pbm_integer (LJPEG_j_decompress_ptr cinfo, FILE * infile)
 /* Read an unsigned decimal integer from the PPM file */
 /* Swallows one trailing character after the integer */
 /* Note that on a 16-bit-int machine, only values up to 64k can be read. */
@@ -168,13 +168,13 @@ read_pbm_integer (j_decompress_ptr cinfo, FILE * infile)
  */
 
 LOCAL(void)
-read_ppm_map (j_decompress_ptr cinfo, FILE * infile)
+read_ppm_map (LJPEG_j_decompress_ptr cinfo, FILE * infile)
 {
   int c;
   unsigned int w, h, maxval, row, col;
   int R, G, B;
 
-  /* Initial 'P' has already been read by read_color_map */
+  /* Initial 'P' has already been read by LJPEG_read_color_map */
   c = getc(infile);		/* save format discriminator for a sec */
 
   /* while we fetch the remaining header info */
@@ -228,12 +228,12 @@ read_ppm_map (j_decompress_ptr cinfo, FILE * infile)
  */
 
 LJPEG_GLOBAL(void)
-read_color_map (j_decompress_ptr cinfo, FILE * infile)
+LJPEG_read_color_map (LJPEG_j_decompress_ptr cinfo, FILE * infile)
 {
   /* Allocate space for a color map of maximum supported size. */
   cinfo->colormap = (*cinfo->mem->alloc_sarray)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-     (JDIMENSION) (MAXJSAMPLE+1), (JDIMENSION) 3);
+     (LJPEG_JDIMENSION) (MAXJSAMPLE+1), (LJPEG_JDIMENSION) 3);
   cinfo->actual_number_of_colors = 0; /* initialize map to empty */
 
   /* Read first byte to determine file format */

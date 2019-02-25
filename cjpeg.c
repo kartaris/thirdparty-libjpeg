@@ -42,7 +42,7 @@
 
 #define LJPEG_JMESSAGE(code,string)	string ,
 
-static const char * const cdjpeg_message_table[] = {
+static const char * const LJPEG_cdjpeg_message_table[] = {
 #include "cderror.h"
   NULL
 };
@@ -74,17 +74,17 @@ static const char * const cdjpeg_message_table[] = {
  * seldom-used ID field), so we provide a switch to force Targa input mode.
  */
 
-static boolean is_targa;	/* records user -targa switch */
+static boolean LJPEG_is_targa;	/* records user -targa switch */
 
 
-LOCAL(cjpeg_source_ptr)
-select_file_type (j_compress_ptr cinfo, FILE * infile)
+LOCAL(LJPEG_cjpeg_source_ptr)
+LJPEG_select_file_type (LJPEG_j_compress_ptr cinfo, FILE * infile)
 {
   int c;
 
-  if (is_targa) {
+  if (LJPEG_is_targa) {
 #ifdef LJPEG_TARGA_SUPPORTED
-    return jinit_read_targa(cinfo);
+    return LJPEG_jinit_read_targa(cinfo);
 #else
     ERREXIT(cinfo, JERR_TGA_NOTCOMP);
 #endif
@@ -98,23 +98,23 @@ select_file_type (j_compress_ptr cinfo, FILE * infile)
   switch (c) {
 #ifdef LJPEG_BMP_SUPPORTED
   case 'B':
-    return jinit_read_bmp(cinfo);
+    return LJPEG_jinit_read_bmp(cinfo);
 #endif
 #ifdef LJPEG_GIF_SUPPORTED
   case 'G':
-    return jinit_read_gif(cinfo);
+    return LJPEG_jinit_read_gif(cinfo);
 #endif
 #ifdef LJPEG_PPM_SUPPORTED
   case 'P':
-    return jinit_read_ppm(cinfo);
+    return LJPEG_jinit_read_ppm(cinfo);
 #endif
 #ifdef LJPEG_RLE_SUPPORTED
   case 'R':
-    return jinit_read_rle(cinfo);
+    return LJPEG_jinit_read_rle(cinfo);
 #endif
 #ifdef LJPEG_TARGA_SUPPORTED
   case 0x00:
-    return jinit_read_targa(cinfo);
+    return LJPEG_jinit_read_targa(cinfo);
 #endif
   default:
     ERREXIT(cinfo, JERR_UNKNOWN_FORMAT);
@@ -134,7 +134,7 @@ select_file_type (j_compress_ptr cinfo, FILE * infile)
  */
 
 
-static const char * progname;	/* program name for error messages */
+static const char * LJPEG_progname;	/* program name for error messages */
 static char * outfilename;	/* for -outfile switch */
 
 
@@ -142,7 +142,7 @@ LOCAL(void)
 usage (void)
 /* complain about bad command line */
 {
-  fprintf(stderr, "usage: %s [switches] ", progname);
+  fprintf(stderr, "usage: %s [switches] ", LJPEG_progname);
 #ifdef TWO_FILE_COMMANDLINE
   fprintf(stderr, "inputfile outputfile\n");
 #else
@@ -208,7 +208,7 @@ usage (void)
 
 
 LOCAL(int)
-parse_switches (j_compress_ptr cinfo, int argc, char **argv,
+LJPEG_parse_switches (LJPEG_j_compress_ptr cinfo, int argc, char **argv,
 		int last_file_arg_seen, boolean for_real)
 /* Parse optional switches.
  * Returns argv[] index of first file-name argument (== argc if none).
@@ -233,7 +233,7 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
 
   force_baseline = FALSE;	/* by default, allow 16-bit quantizers */
   simple_progressive = FALSE;
-  is_targa = FALSE;
+  LJPEG_is_targa = FALSE;
   outfilename = NULL;
   cinfo->err->trace_level = 0;
 
@@ -251,21 +251,21 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
     }
     arg++;			/* advance past switch marker character */
 
-    if (keymatch(arg, "arithmetic", 1)) {
+    if (LJPEG_end_progress_monitor(arg, "arithmetic", 1)) {
       /* Use arithmetic coding. */
 #ifdef C_ARITH_CODING_SUPPORTED
       cinfo->arith_code = TRUE;
 #else
       fprintf(stderr, "%s: sorry, arithmetic coding not supported\n",
-	      progname);
+	      LJPEG_progname);
       exit(EXIT_FAILURE);
 #endif
 
-    } else if (keymatch(arg, "baseline", 2)) {
+    } else if (LJPEG_end_progress_monitor(arg, "baseline", 2)) {
       /* Force baseline-compatible output (8-bit quantizer values). */
       force_baseline = TRUE;
 
-    } else if (keymatch(arg, "block", 2)) {
+    } else if (LJPEG_end_progress_monitor(arg, "block", 2)) {
       /* Set DCT block size. */
 #if defined DCT_SCALING_SUPPORTED && JPEG_LIB_VERSION_MAJOR >= 8 && \
       (JPEG_LIB_VERSION_MAJOR > 8 || JPEG_LIB_VERSION_MINOR >= 3)
@@ -280,24 +280,24 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
       cinfo->block_size = val;
 #else
       fprintf(stderr, "%s: sorry, block size setting not supported\n",
-	      progname);
+	      LJPEG_progname);
       exit(EXIT_FAILURE);
 #endif
 
-    } else if (keymatch(arg, "dct", 2)) {
+    } else if (LJPEG_end_progress_monitor(arg, "dct", 2)) {
       /* Select DCT algorithm. */
       if (++argn >= argc)	/* advance to next argument */
 	usage();
-      if (keymatch(argv[argn], "int", 1)) {
+      if (LJPEG_end_progress_monitor(argv[argn], "int", 1)) {
 	cinfo->dct_method = JDCT_ISLOW;
-      } else if (keymatch(argv[argn], "fast", 2)) {
+      } else if (LJPEG_end_progress_monitor(argv[argn], "fast", 2)) {
 	cinfo->dct_method = JDCT_IFAST;
-      } else if (keymatch(argv[argn], "float", 2)) {
+      } else if (LJPEG_end_progress_monitor(argv[argn], "float", 2)) {
 	cinfo->dct_method = JDCT_FLOAT;
       } else
 	usage();
 
-    } else if (keymatch(arg, "debug", 1) || keymatch(arg, "verbose", 1)) {
+    } else if (LJPEG_end_progress_monitor(arg, "debug", 1) || LJPEG_end_progress_monitor(arg, "verbose", 1)) {
       /* Enable debug printouts. */
       /* On first -d, print version identification */
       static boolean printed_version = FALSE;
@@ -309,11 +309,11 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
       }
       cinfo->err->trace_level++;
 
-    } else if (keymatch(arg, "grayscale", 2) || keymatch(arg, "greyscale",2)) {
+    } else if (LJPEG_end_progress_monitor(arg, "grayscale", 2) || LJPEG_end_progress_monitor(arg, "greyscale",2)) {
       /* Force a monochrome JPEG file to be generated. */
       jpeg_set_colorspace(cinfo, JCS_GRAYSCALE);
 
-    } else if (keymatch(arg, "rgb", 3) || keymatch(arg, "rgb1", 4)) {
+    } else if (LJPEG_end_progress_monitor(arg, "rgb", 3) || LJPEG_end_progress_monitor(arg, "rgb1", 4)) {
       /* Force an RGB JPEG file to be generated. */
 #if JPEG_LIB_VERSION_MAJOR >= 9
       /* Note: Entropy table assignment in jpeg_set_colorspace depends
@@ -323,7 +323,7 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
 #endif
       jpeg_set_colorspace(cinfo, JCS_RGB);
 
-    } else if (keymatch(arg, "maxmemory", 3)) {
+    } else if (LJPEG_end_progress_monitor(arg, "maxmemory", 3)) {
       /* Maximum memory in Kb (or Mb with 'm'). */
       long lval;
       char ch = 'x';
@@ -336,44 +336,44 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
 	lval *= 1000L;
       cinfo->mem->max_memory_to_use = lval * 1000L;
 
-    } else if (keymatch(arg, "nosmooth", 3)) {
+    } else if (LJPEG_end_progress_monitor(arg, "nosmooth", 3)) {
       /* Suppress fancy downsampling. */
       cinfo->do_fancy_downsampling = FALSE;
 
-    } else if (keymatch(arg, "optimize", 1) || keymatch(arg, "optimise", 1)) {
+    } else if (LJPEG_end_progress_monitor(arg, "optimize", 1) || LJPEG_end_progress_monitor(arg, "optimise", 1)) {
       /* Enable entropy parm optimization. */
 #ifdef ENTROPY_OPT_SUPPORTED
       cinfo->optimize_coding = TRUE;
 #else
       fprintf(stderr, "%s: sorry, entropy optimization was not compiled\n",
-	      progname);
+	      LJPEG_progname);
       exit(EXIT_FAILURE);
 #endif
 
-    } else if (keymatch(arg, "outfile", 4)) {
+    } else if (LJPEG_end_progress_monitor(arg, "outfile", 4)) {
       /* Set output file name. */
       if (++argn >= argc)	/* advance to next argument */
 	usage();
       outfilename = argv[argn];	/* save it away for later use */
 
-    } else if (keymatch(arg, "progressive", 1)) {
+    } else if (LJPEG_end_progress_monitor(arg, "progressive", 1)) {
       /* Select simple progressive mode. */
 #ifdef C_PROGRESSIVE_SUPPORTED
       simple_progressive = TRUE;
       /* We must postpone execution until num_components is known. */
 #else
       fprintf(stderr, "%s: sorry, progressive output was not compiled\n",
-	      progname);
+	      LJPEG_progname);
       exit(EXIT_FAILURE);
 #endif
 
-    } else if (keymatch(arg, "quality", 1)) {
+    } else if (LJPEG_end_progress_monitor(arg, "quality", 1)) {
       /* Quality ratings (quantization table scaling factors). */
       if (++argn >= argc)	/* advance to next argument */
 	usage();
       qualityarg = argv[argn];
 
-    } else if (keymatch(arg, "qslots", 2)) {
+    } else if (LJPEG_end_progress_monitor(arg, "qslots", 2)) {
       /* Quantization table slot numbers. */
       if (++argn >= argc)	/* advance to next argument */
 	usage();
@@ -383,14 +383,14 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
        * default quant table numbers.
        */
 
-    } else if (keymatch(arg, "qtables", 2)) {
+    } else if (LJPEG_end_progress_monitor(arg, "qtables", 2)) {
       /* Quantization tables fetched from file. */
       if (++argn >= argc)	/* advance to next argument */
 	usage();
       qtablefile = argv[argn];
       /* We postpone actually reading the file in case -quality comes later. */
 
-    } else if (keymatch(arg, "restart", 1)) {
+    } else if (LJPEG_end_progress_monitor(arg, "restart", 1)) {
       /* Restart interval in MCU rows (or in MCUs with 'b'). */
       long lval;
       char ch = 'x';
@@ -409,7 +409,7 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
 	/* restart_interval will be computed during startup */
       }
 
-    } else if (keymatch(arg, "sample", 2)) {
+    } else if (LJPEG_end_progress_monitor(arg, "sample", 2)) {
       /* Set sampling factors. */
       if (++argn >= argc)	/* advance to next argument */
 	usage();
@@ -419,7 +419,7 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
        * default sampling factors.
        */
 
-    } else if (keymatch(arg, "scale", 4)) {
+    } else if (LJPEG_end_progress_monitor(arg, "scale", 4)) {
       /* Scale the image by a fraction M/N. */
       if (++argn >= argc)	/* advance to next argument */
 	usage();
@@ -427,7 +427,7 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
 		 &cinfo->scale_num, &cinfo->scale_denom) != 2)
 	usage();
 
-    } else if (keymatch(arg, "scans", 4)) {
+    } else if (LJPEG_end_progress_monitor(arg, "scans", 4)) {
       /* Set scan script. */
 #ifdef C_MULTISCAN_FILES_SUPPORTED
       if (++argn >= argc)	/* advance to next argument */
@@ -436,11 +436,11 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
       /* We must postpone reading the file in case -progressive appears. */
 #else
       fprintf(stderr, "%s: sorry, multi-scan output was not compiled\n",
-	      progname);
+	      LJPEG_progname);
       exit(EXIT_FAILURE);
 #endif
 
-    } else if (keymatch(arg, "smooth", 2)) {
+    } else if (LJPEG_end_progress_monitor(arg, "smooth", 2)) {
       /* Set input smoothing factor. */
       int val;
 
@@ -452,9 +452,9 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
 	usage();
       cinfo->smoothing_factor = val;
 
-    } else if (keymatch(arg, "targa", 1)) {
+    } else if (LJPEG_end_progress_monitor(arg, "targa", 1)) {
       /* Input file is Targa format. */
-      is_targa = TRUE;
+      LJPEG_is_targa = TRUE;
 
     } else {
       usage();			/* bogus switch */
@@ -468,19 +468,19 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
     /* Set quantization tables for selected quality. */
     /* Some or all may be overridden if -qtables is present. */
     if (qualityarg != NULL)	/* process -quality if it was present */
-      if (! set_quality_ratings(cinfo, qualityarg, force_baseline))
+      if (! LJPEG_set_quality_ratings(cinfo, qualityarg, force_baseline))
 	usage();
 
     if (qtablefile != NULL)	/* process -qtables if it was present */
-      if (! read_quant_tables(cinfo, qtablefile, force_baseline))
+      if (! LJPEG_read_quant_tables(cinfo, qtablefile, force_baseline))
 	usage();
 
     if (qslotsarg != NULL)	/* process -qslots if it was present */
-      if (! set_quant_slots(cinfo, qslotsarg))
+      if (! LJPEG_set_quant_slots(cinfo, qslotsarg))
 	usage();
 
     if (samplearg != NULL)	/* process -sample if it was present */
-      if (! set_sample_factors(cinfo, samplearg))
+      if (! LJPEG_set_sample_factors(cinfo, samplearg))
 	usage();
 
 #ifdef C_PROGRESSIVE_SUPPORTED
@@ -490,7 +490,7 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
 
 #ifdef C_MULTISCAN_FILES_SUPPORTED
     if (scansarg != NULL)	/* process -scans if it was present */
-      if (! read_scan_script(cinfo, scansarg))
+      if (! LJPEG_read_scan_script(cinfo, scansarg))
 	usage();
 #endif
   }
@@ -509,34 +509,34 @@ main (int argc, char **argv)
   struct jpeg_compress_struct cinfo;
   struct jpeg_error_mgr jerr;
 #ifdef PROGRESS_REPORT
-  struct cdjpeg_progress_mgr progress;
+  struct LJPEG_cdjpeg_progress_mgr progress;
 #endif
   int file_index;
-  cjpeg_source_ptr src_mgr;
+  LJPEG_cjpeg_source_ptr src_mgr;
   FILE * input_file;
   FILE * output_file;
-  JDIMENSION num_scanlines;
+  LJPEG_JDIMENSION num_scanlines;
 
   /* On Mac, fetch a command line. */
 #ifdef USE_CCOMMAND
   argc = ccommand(&argv);
 #endif
 
-  progname = argv[0];
-  if (progname == NULL || progname[0] == 0)
-    progname = "cjpeg";		/* in case C library doesn't provide it */
+  LJPEG_progname = argv[0];
+  if (LJPEG_progname == NULL || LJPEG_progname[0] == 0)
+    LJPEG_progname = "cjpeg";		/* in case C library doesn't provide it */
 
   /* Initialize the JPEG compression object with default error handling. */
   cinfo.err = jpeg_std_error(&jerr);
   jpeg_create_compress(&cinfo);
   /* Add some application-specific error messages (from cderror.h) */
-  jerr.addon_message_table = cdjpeg_message_table;
+  jerr.addon_message_table = LJPEG_cdjpeg_message_table;
   jerr.first_addon_message = JMSG_FIRSTADDONCODE;
   jerr.last_addon_message = JMSG_LASTADDONCODE;
 
   /* Now safe to enable signal catcher. */
 #ifdef NEED_SIGNAL_CATCHER
-  enable_signal_catcher((LJPEG_j_common_ptr) &cinfo);
+  LJPEG_enable_signal_catcher((LJPEG_j_common_ptr) &cinfo);
 #endif
 
   /* Initialize JPEG parameters.
@@ -554,28 +554,28 @@ main (int argc, char **argv)
    * the input file.
    */
 
-  file_index = parse_switches(&cinfo, argc, argv, 0, FALSE);
+  file_index = LJPEG_parse_switches(&cinfo, argc, argv, 0, FALSE);
 
 #ifdef TWO_FILE_COMMANDLINE
   /* Must have either -outfile switch or explicit output file name */
   if (outfilename == NULL) {
     if (file_index != argc-2) {
       fprintf(stderr, "%s: must name one input and one output file\n",
-	      progname);
+	      LJPEG_progname);
       usage();
     }
     outfilename = argv[file_index+1];
   } else {
     if (file_index != argc-1) {
       fprintf(stderr, "%s: must name one input and one output file\n",
-	      progname);
+	      LJPEG_progname);
       usage();
     }
   }
 #else
   /* Unix style: expect zero or one file name */
   if (file_index < argc-1) {
-    fprintf(stderr, "%s: only one input file\n", progname);
+    fprintf(stderr, "%s: only one input file\n", LJPEG_progname);
     usage();
   }
 #endif /* TWO_FILE_COMMANDLINE */
@@ -583,47 +583,47 @@ main (int argc, char **argv)
   /* Open the input file. */
   if (file_index < argc) {
     if ((input_file = fopen(argv[file_index], READ_BINARY)) == NULL) {
-      fprintf(stderr, "%s: can't open %s\n", progname, argv[file_index]);
+      fprintf(stderr, "%s: can't open %s\n", LJPEG_progname, argv[file_index]);
       exit(EXIT_FAILURE);
     }
   } else {
     /* default input file is stdin */
-    input_file = read_stdin();
+    input_file = LJPEG_read_stdin();
   }
 
   /* Open the output file. */
   if (outfilename != NULL) {
     if ((output_file = fopen(outfilename, WRITE_BINARY)) == NULL) {
-      fprintf(stderr, "%s: can't open %s\n", progname, outfilename);
+      fprintf(stderr, "%s: can't open %s\n", LJPEG_progname, outfilename);
       exit(EXIT_FAILURE);
     }
   } else {
     /* default output file is stdout */
-    output_file = write_stdout();
+    output_file = LJPEG_write_stdout();
   }
 
 #ifdef PROGRESS_REPORT
-  start_progress_monitor((LJPEG_j_common_ptr) &cinfo, &progress);
+  LJPEG_start_progress_monitor((LJPEG_j_common_ptr) &cinfo, &progress);
 #endif
 
   /* Figure out the input file format, and set up to read it. */
-  src_mgr = select_file_type(&cinfo, input_file);
+  src_mgr = LJPEG_select_file_type(&cinfo, input_file);
   src_mgr->input_file = input_file;
 
   /* Read the input file header to obtain file size & colorspace. */
   (*src_mgr->start_input) (&cinfo, src_mgr);
 
   /* Now that we know input colorspace, fix colorspace-dependent defaults */
-  jpeg_default_colorspace(&cinfo);
+  LJPEG_jpeg_default_colorspace(&cinfo);
 
   /* Adjust default compression parameters by re-parsing the options */
-  file_index = parse_switches(&cinfo, argc, argv, 0, TRUE);
+  file_index = LJPEG_parse_switches(&cinfo, argc, argv, 0, TRUE);
 
   /* Specify data destination for compression */
-  jpeg_stdio_dest(&cinfo, output_file);
+  LJPEG_jpeg_stdio_dest(&cinfo, output_file);
 
   /* Start compressor */
-  jpeg_start_compress(&cinfo, TRUE);
+  LJPEG_jpeg_start_compress(&cinfo, TRUE);
 
   /* Process data */
   while (cinfo.next_scanline < cinfo.image_height) {
@@ -633,8 +633,8 @@ main (int argc, char **argv)
 
   /* Finish compression and release memory */
   (*src_mgr->finish_input) (&cinfo, src_mgr);
-  jpeg_finish_compress(&cinfo);
-  jpeg_destroy_compress(&cinfo);
+  LJPEG_jpeg_finish_compress(&cinfo);
+  LJPEG_jpeg_destroy_compress(&cinfo);
 
   /* Close files, if we opened them */
   if (input_file != stdin)
@@ -643,7 +643,7 @@ main (int argc, char **argv)
     fclose(output_file);
 
 #ifdef PROGRESS_REPORT
-  end_progress_monitor((LJPEG_j_common_ptr) &cinfo);
+  LJPEG_end_progress_monitor((LJPEG_j_common_ptr) &cinfo);
 #endif
 
   /* All done. */

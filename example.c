@@ -115,7 +115,7 @@ write_JPEG_file (char * filename, int quality)
     fprintf(stderr, "can't open %s\n", filename);
     exit(1);
   }
-  jpeg_stdio_dest(&cinfo, outfile);
+  LJPEG_jpeg_stdio_dest(&cinfo, outfile);
 
   /* Step 3: set parameters for compression */
 
@@ -141,7 +141,7 @@ write_JPEG_file (char * filename, int quality)
   /* TRUE ensures that we will write a complete interchange-JPEG file.
    * Pass TRUE unless you are very sure of what you're doing.
    */
-  jpeg_start_compress(&cinfo, TRUE);
+  LJPEG_jpeg_start_compress(&cinfo, TRUE);
 
   /* Step 5: while (scan lines remain to be written) */
   /*           jpeg_write_scanlines(...); */
@@ -164,14 +164,14 @@ write_JPEG_file (char * filename, int quality)
 
   /* Step 6: Finish compression */
 
-  jpeg_finish_compress(&cinfo);
+  LJPEG_jpeg_finish_compress(&cinfo);
   /* After finish_compress, we can close the output file. */
   fclose(outfile);
 
   /* Step 7: release JPEG compression object */
 
   /* This is an important step since it will release a good deal of memory. */
-  jpeg_destroy_compress(&cinfo);
+  LJPEG_jpeg_destroy_compress(&cinfo);
 
   /* And we're done! */
 }
@@ -259,7 +259,7 @@ typedef struct my_error_mgr * my_error_ptr;
  * Here's the routine that will replace the standard error_exit method:
  */
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 my_error_exit (LJPEG_j_common_ptr cinfo)
 {
   /* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
@@ -294,7 +294,7 @@ read_JPEG_file (char * filename)
   struct my_error_mgr jerr;
   /* More stuff */
   FILE * infile;		/* source file */
-  JSAMPARRAY buffer;		/* Output row buffer */
+  LJPEG_JSAMPARRAY buffer;		/* Output row buffer */
   int row_stride;		/* physical row width in output buffer */
 
   /* In this example we want to open the input file before doing anything else,

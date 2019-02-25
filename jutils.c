@@ -174,9 +174,9 @@ jzero_far (void FAR * target, size_t bytestozero)
 
 
 LJPEG_GLOBALvoid)
-jcopy_sample_rows (JSAMPARRAY input_array, int source_row,
-		   JSAMPARRAY output_array, int dest_row,
-		   int num_rows, JDIMENSION num_cols)
+jcopy_sample_rows (LJPEG_JSAMPARRAY input_array, int source_row,
+		   LJPEG_JSAMPARRAY output_array, int dest_row,
+		   int num_rows, LJPEG_JDIMENSION num_cols)
 /* Copy some rows of samples from one place to another.
  * num_rows rows are copied from input_array[source_row++]
  * to output_array[dest_row++]; these areas may overlap for duplication.
@@ -187,7 +187,7 @@ jcopy_sample_rows (JSAMPARRAY input_array, int source_row,
 #ifdef FMEMCOPY
   register size_t count = (size_t) (num_cols * SIZEOF(JSAMPLE));
 #else
-  register JDIMENSION count;
+  register LJPEG_JDIMENSION count;
 #endif
   register int row;
 
@@ -209,7 +209,7 @@ jcopy_sample_rows (JSAMPARRAY input_array, int source_row,
 
 LJPEG_GLOBALvoid)
 jcopy_block_row (JBLOCKROW input_row, JBLOCKROW output_row,
-		 JDIMENSION num_blocks)
+		 LJPEG_JDIMENSION num_blocks)
 /* Copy a row of coefficient blocks from one place to another. */
 {
 #ifdef FMEMCOPY

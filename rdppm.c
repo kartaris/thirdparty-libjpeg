@@ -70,7 +70,7 @@ typedef char U_CHAR;
 /* Private version of data source object */
 
 typedef struct {
-  struct cjpeg_source_struct pub; /* public fields */
+  struct LJPEG_cjpeg_source_struct pub; /* public fields */
 
   U_CHAR *iobuffer;		/* non-FAR pointer to I/O buffer */
   JSAMPROW pixrow;		/* FAR pointer to same */
@@ -99,7 +99,7 @@ pbm_getc (FILE * infile)
 
 
 LOCAL(unsigned int)
-read_pbm_integer (j_compress_ptr cinfo, FILE * infile)
+read_pbm_integer (LJPEG_j_compress_ptr cinfo, FILE * infile)
 /* Read an unsigned decimal integer from the PPM file */
 /* Swallows one trailing character after the integer */
 /* Note that on a 16-bit-int machine, only values up to 64k can be read. */
@@ -138,15 +138,15 @@ read_pbm_integer (j_compress_ptr cinfo, FILE * infile)
  */
 
 
-METHODDEF(JDIMENSION)
-get_text_gray_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
+LJPEG_METHODDEF(LJPEG_JDIMENSION)
+get_text_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading text-format PGM files with any maxval */
 {
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
   FILE * infile = source->pub.input_file;
   register JSAMPROW ptr;
   register JSAMPLE *rescale = source->rescale;
-  JDIMENSION col;
+  LJPEG_JDIMENSION col;
 
   ptr = source->pub.buffer[0];
   for (col = cinfo->image_width; col > 0; col--) {
@@ -156,15 +156,15 @@ get_text_gray_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 }
 
 
-METHODDEF(JDIMENSION)
-get_text_rgb_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
+LJPEG_METHODDEF(LJPEG_JDIMENSION)
+get_text_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading text-format PPM files with any maxval */
 {
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
   FILE * infile = source->pub.input_file;
   register JSAMPROW ptr;
   register JSAMPLE *rescale = source->rescale;
-  JDIMENSION col;
+  LJPEG_JDIMENSION col;
 
   ptr = source->pub.buffer[0];
   for (col = cinfo->image_width; col > 0; col--) {
@@ -176,15 +176,15 @@ get_text_rgb_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 }
 
 
-METHODDEF(JDIMENSION)
-get_scaled_gray_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
+LJPEG_METHODDEF(LJPEG_JDIMENSION)
+get_scaled_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading raw-byte-format PGM files with any maxval */
 {
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
   register JSAMPROW ptr;
   register U_CHAR * bufferptr;
   register JSAMPLE *rescale = source->rescale;
-  JDIMENSION col;
+  LJPEG_JDIMENSION col;
 
   if (! ReadOK(source->pub.input_file, source->iobuffer, source->buffer_width))
     ERREXIT(cinfo, JERR_INPUT_EOF);
@@ -197,15 +197,15 @@ get_scaled_gray_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 }
 
 
-METHODDEF(JDIMENSION)
-get_scaled_rgb_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
+LJPEG_METHODDEF(LJPEG_JDIMENSION)
+get_scaled_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading raw-byte-format PPM files with any maxval */
 {
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
   register JSAMPROW ptr;
   register U_CHAR * bufferptr;
   register JSAMPLE *rescale = source->rescale;
-  JDIMENSION col;
+  LJPEG_JDIMENSION col;
 
   if (! ReadOK(source->pub.input_file, source->iobuffer, source->buffer_width))
     ERREXIT(cinfo, JERR_INPUT_EOF);
@@ -220,8 +220,8 @@ get_scaled_rgb_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 }
 
 
-METHODDEF(JDIMENSION)
-get_raw_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
+LJPEG_METHODDEF(LJPEG_JDIMENSION)
+get_raw_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading raw-byte-format files with maxval = MAXJSAMPLE.
  * In this case we just read right into the JSAMPLE buffer!
  * Note that same code works for PPM and PGM files.
@@ -235,15 +235,15 @@ get_raw_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 }
 
 
-METHODDEF(JDIMENSION)
-get_word_gray_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
+LJPEG_METHODDEF(LJPEG_JDIMENSION)
+get_word_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading raw-word-format PGM files with any maxval */
 {
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
   register JSAMPROW ptr;
   register U_CHAR * bufferptr;
   register JSAMPLE *rescale = source->rescale;
-  JDIMENSION col;
+  LJPEG_JDIMENSION col;
 
   if (! ReadOK(source->pub.input_file, source->iobuffer, source->buffer_width))
     ERREXIT(cinfo, JERR_INPUT_EOF);
@@ -259,15 +259,15 @@ get_word_gray_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 }
 
 
-METHODDEF(JDIMENSION)
-get_word_rgb_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
+LJPEG_METHODDEF(LJPEG_JDIMENSION)
+get_word_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading raw-word-format PPM files with any maxval */
 {
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
   register JSAMPROW ptr;
   register U_CHAR * bufferptr;
   register JSAMPLE *rescale = source->rescale;
-  JDIMENSION col;
+  LJPEG_JDIMENSION col;
 
   if (! ReadOK(source->pub.input_file, source->iobuffer, source->buffer_width))
     ERREXIT(cinfo, JERR_INPUT_EOF);
@@ -293,8 +293,8 @@ get_word_rgb_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
  * Read the file header; return image size and component count.
  */
 
-METHODDEF(void)
-start_input_ppm (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
+LJPEG_METHODDEF(void)
+start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
   int c;
@@ -327,8 +327,8 @@ start_input_ppm (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
     ERREXIT(cinfo, JERR_PPM_NOT);
 
   cinfo->data_precision = BITS_IN_JSAMPLE; /* we always rescale data to this */
-  cinfo->image_width = (JDIMENSION) w;
-  cinfo->image_height = (JDIMENSION) h;
+  cinfo->image_width = (LJPEG_JDIMENSION) w;
+  cinfo->image_height = (LJPEG_JDIMENSION) h;
 
   /* initialize flags to most common settings */
   need_iobuffer = TRUE;		/* do we need an I/O buffer? */
@@ -395,7 +395,7 @@ start_input_ppm (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
   /* Create compressor input buffer. */
   if (use_raw_buffer) {
     /* For unscaled raw-input case, we can just map it onto the I/O buffer. */
-    /* Synthesize a JSAMPARRAY pointer structure */
+    /* Synthesize a LJPEG_JSAMPARRAY pointer structure */
     /* Cast here implies near->far pointer conversion on PCs */
     source->pixrow = (JSAMPROW) source->iobuffer;
     source->pub.buffer = & source->pixrow;
@@ -404,7 +404,7 @@ start_input_ppm (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
     /* Need to translate anyway, so make a separate sample buffer. */
     source->pub.buffer = (*cinfo->mem->alloc_sarray)
       ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-       (JDIMENSION) w * cinfo->input_components, (JDIMENSION) 1);
+       (LJPEG_JDIMENSION) w * cinfo->input_components, (LJPEG_JDIMENSION) 1);
     source->pub.buffer_height = 1;
   }
 
@@ -429,8 +429,8 @@ start_input_ppm (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
  * Finish up at the end of the file.
  */
 
-METHODDEF(void)
-finish_input_ppm (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
+LJPEG_METHODDEF(void)
+finish_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   /* no work */
 }
@@ -440,8 +440,8 @@ finish_input_ppm (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
  * The module selection routine for PPM format input.
  */
 
-LJPEG_GLOBAL(cjpeg_source_ptr)
-jinit_read_ppm (j_compress_ptr cinfo)
+LJPEG_GLOBAL(LJPEG_cjpeg_source_ptr)
+LJPEG_jinit_read_ppm (LJPEG_j_compress_ptr cinfo)
 {
   ppm_source_ptr source;
 
@@ -453,7 +453,7 @@ jinit_read_ppm (j_compress_ptr cinfo)
   source->pub.start_input = start_input_ppm;
   source->pub.finish_input = finish_input_ppm;
 
-  return (cjpeg_source_ptr) source;
+  return (LJPEG_cjpeg_source_ptr) source;
 }
 
 #endif /* LJPEG_PPM_SUPPORTED */

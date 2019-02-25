@@ -116,10 +116,10 @@ typedef struct {
   struct jpeg_d_main_controller pub; /* public fields */
 
   /* Pointer to allocated workspace (M or M+2 row groups). */
-  JSAMPARRAY buffer[MAX_COMPONENTS];
+  LJPEG_JSAMPARRAY buffer[MAX_COMPONENTS];
 
   boolean buffer_full;		/* Have we gotten an iMCU row from decoder? */
-  JDIMENSION rowgroup_ctr;	/* counts row groups output to postprocessor */
+  LJPEG_JDIMENSION rowgroup_ctr;	/* counts row groups output to postprocessor */
 
   /* Remaining fields are only used in the context case. */
 
@@ -128,8 +128,8 @@ typedef struct {
 
   int whichptr;			/* indicates which pointer set is now in use */
   int context_state;		/* process_data state machine status */
-  JDIMENSION rowgroups_avail;	/* row groups available to postprocessor */
-  JDIMENSION iMCU_row_ctr;	/* counts iMCU rows to detect image top/bot */
+  LJPEG_JDIMENSION rowgroups_avail;	/* row groups available to postprocessor */
+  LJPEG_JDIMENSION iMCU_row_ctr;	/* counts iMCU rows to detect image top/bot */
 } my_main_controller;
 
 typedef my_main_controller * my_main_ptr;
@@ -141,21 +141,21 @@ typedef my_main_controller * my_main_ptr;
 
 
 /* Forward declarations */
-METHODDEF(void) process_data_simple_main
-	JPP((j_decompress_ptr cinfo, JSAMPARRAY output_buf,
-	     JDIMENSION *out_row_ctr, JDIMENSION out_rows_avail));
-METHODDEF(void) process_data_context_main
-	JPP((j_decompress_ptr cinfo, JSAMPARRAY output_buf,
-	     JDIMENSION *out_row_ctr, JDIMENSION out_rows_avail));
+LJPEG_METHODDEF(void) process_data_simple_main
+	JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY output_buf,
+	     LJPEG_JDIMENSION *out_row_ctr, LJPEG_JDIMENSION out_rows_avail));
+LJPEG_METHODDEF(void) process_data_context_main
+	JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY output_buf,
+	     LJPEG_JDIMENSION *out_row_ctr, LJPEG_JDIMENSION out_rows_avail));
 #ifdef QUANT_2PASS_SUPPORTED
-METHODDEF(void) process_data_crank_post
-	JPP((j_decompress_ptr cinfo, JSAMPARRAY output_buf,
-	     JDIMENSION *out_row_ctr, JDIMENSION out_rows_avail));
+LJPEG_METHODDEF(void) process_data_crank_post
+	JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY output_buf,
+	     LJPEG_JDIMENSION *out_row_ctr, LJPEG_JDIMENSION out_rows_avail));
 #endif
 
 
 LOCAL(void)
-alloc_funny_pointers (j_decompress_ptr cinfo)
+alloc_funny_pointers (LJPEG_j_decompress_ptr cinfo)
 /* Allocate space for the funny pointer lists.
  * This is done only once, not once per pass.
  */
@@ -164,14 +164,14 @@ alloc_funny_pointers (j_decompress_ptr cinfo)
   int ci, rgroup;
   int M = cinfo->min_DCT_v_scaled_size;
   jpeg_component_info *compptr;
-  JSAMPARRAY xbuf;
+  LJPEG_JSAMPARRAY xbuf;
 
   /* Get top-level space for component array pointers.
    * We alloc both arrays with one call to save a few cycles.
    */
   mainp->xbuffer[0] = (JSAMPIMAGE)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				cinfo->num_components * 2 * SIZEOF(JSAMPARRAY));
+				cinfo->num_components * 2 * SIZEOF(LJPEG_JSAMPARRAY));
   mainp->xbuffer[1] = mainp->xbuffer[0] + cinfo->num_components;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
@@ -181,7 +181,7 @@ alloc_funny_pointers (j_decompress_ptr cinfo)
     /* Get space for pointer lists --- M+4 row groups in each list.
      * We alloc both pointer lists with one call to save a few cycles.
      */
-    xbuf = (JSAMPARRAY)
+    xbuf = (LJPEG_JSAMPARRAY)
       (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  2 * (rgroup * (M + 4)) * SIZEOF(JSAMPROW));
     xbuf += rgroup;		/* want one row group at negative offsets */
@@ -193,7 +193,7 @@ alloc_funny_pointers (j_decompress_ptr cinfo)
 
 
 LOCAL(void)
-make_funny_pointers (j_decompress_ptr cinfo)
+make_funny_pointers (LJPEG_j_decompress_ptr cinfo)
 /* Create the funny pointer lists discussed in the comments above.
  * The actual workspace is already allocated (in main->buffer),
  * and the space for the pointer lists is allocated too.
@@ -205,7 +205,7 @@ make_funny_pointers (j_decompress_ptr cinfo)
   int ci, i, rgroup;
   int M = cinfo->min_DCT_v_scaled_size;
   jpeg_component_info *compptr;
-  JSAMPARRAY buf, xbuf0, xbuf1;
+  LJPEG_JSAMPARRAY buf, xbuf0, xbuf1;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
        ci++, compptr++) {
@@ -236,7 +236,7 @@ make_funny_pointers (j_decompress_ptr cinfo)
 
 
 LOCAL(void)
-set_wraparound_pointers (j_decompress_ptr cinfo)
+set_wraparound_pointers (LJPEG_j_decompress_ptr cinfo)
 /* Set up the "wraparound" pointers at top and bottom of the pointer lists.
  * This changes the pointer list state from top-of-image to the normal state.
  */
@@ -245,7 +245,7 @@ set_wraparound_pointers (j_decompress_ptr cinfo)
   int ci, i, rgroup;
   int M = cinfo->min_DCT_v_scaled_size;
   jpeg_component_info *compptr;
-  JSAMPARRAY xbuf0, xbuf1;
+  LJPEG_JSAMPARRAY xbuf0, xbuf1;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
        ci++, compptr++) {
@@ -264,7 +264,7 @@ set_wraparound_pointers (j_decompress_ptr cinfo)
 
 
 LOCAL(void)
-set_bottom_pointers (j_decompress_ptr cinfo)
+set_bottom_pointers (LJPEG_j_decompress_ptr cinfo)
 /* Change the pointer lists to duplicate the last sample row at the bottom
  * of the image.  whichptr indicates which xbuffer holds the final iMCU row.
  * Also sets rowgroups_avail to indicate number of nondummy row groups in row.
@@ -273,7 +273,7 @@ set_bottom_pointers (j_decompress_ptr cinfo)
   my_main_ptr mainp = (my_main_ptr) cinfo->main;
   int ci, i, rgroup, iMCUheight, rows_left;
   jpeg_component_info *compptr;
-  JSAMPARRAY xbuf;
+  LJPEG_JSAMPARRAY xbuf;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
        ci++, compptr++) {
@@ -281,13 +281,13 @@ set_bottom_pointers (j_decompress_ptr cinfo)
     iMCUheight = compptr->v_samp_factor * compptr->DCT_v_scaled_size;
     rgroup = iMCUheight / cinfo->min_DCT_v_scaled_size;
     /* Count nondummy sample rows remaining for this component */
-    rows_left = (int) (compptr->downsampled_height % (JDIMENSION) iMCUheight);
+    rows_left = (int) (compptr->downsampled_height % (LJPEG_JDIMENSION) iMCUheight);
     if (rows_left == 0) rows_left = iMCUheight;
     /* Count nondummy row groups.  Should get same answer for each component,
      * so we need only do it once.
      */
     if (ci == 0) {
-      mainp->rowgroups_avail = (JDIMENSION) ((rows_left-1) / rgroup + 1);
+      mainp->rowgroups_avail = (LJPEG_JDIMENSION) ((rows_left-1) / rgroup + 1);
     }
     /* Duplicate the last real sample row rgroup*2 times; this pads out the
      * last partial rowgroup and ensures at least one full rowgroup of context.
@@ -304,8 +304,8 @@ set_bottom_pointers (j_decompress_ptr cinfo)
  * Initialize for a processing pass.
  */
 
-METHODDEF(void)
-start_pass_main (j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
+LJPEG_METHODDEF(void)
+start_pass_main (LJPEG_j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
 {
   my_main_ptr mainp = (my_main_ptr) cinfo->main;
 
@@ -342,13 +342,13 @@ start_pass_main (j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
  * This handles the simple case where no context is required.
  */
 
-METHODDEF(void)
-process_data_simple_main (j_decompress_ptr cinfo,
-			  JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
-			  JDIMENSION out_rows_avail)
+LJPEG_METHODDEF(void)
+process_data_simple_main (LJPEG_j_decompress_ptr cinfo,
+			  LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
+			  LJPEG_JDIMENSION out_rows_avail)
 {
   my_main_ptr mainp = (my_main_ptr) cinfo->main;
-  JDIMENSION rowgroups_avail;
+  LJPEG_JDIMENSION rowgroups_avail;
 
   /* Read input data if we haven't filled the main buffer yet */
   if (! mainp->buffer_full) {
@@ -358,7 +358,7 @@ process_data_simple_main (j_decompress_ptr cinfo,
   }
 
   /* There are always min_DCT_scaled_size row groups in an iMCU row. */
-  rowgroups_avail = (JDIMENSION) cinfo->min_DCT_v_scaled_size;
+  rowgroups_avail = (LJPEG_JDIMENSION) cinfo->min_DCT_v_scaled_size;
   /* Note: at the bottom of the image, we may pass extra garbage row groups
    * to the postprocessor.  The postprocessor has to check for bottom
    * of image anyway (at row resolution), so no point in us doing it too.
@@ -382,10 +382,10 @@ process_data_simple_main (j_decompress_ptr cinfo,
  * This handles the case where context rows must be provided.
  */
 
-METHODDEF(void)
-process_data_context_main (j_decompress_ptr cinfo,
-			   JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
-			   JDIMENSION out_rows_avail)
+LJPEG_METHODDEF(void)
+process_data_context_main (LJPEG_j_decompress_ptr cinfo,
+			   LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
+			   LJPEG_JDIMENSION out_rows_avail)
 {
   my_main_ptr mainp = (my_main_ptr) cinfo->main;
 
@@ -418,7 +418,7 @@ process_data_context_main (j_decompress_ptr cinfo,
   case CTX_PREPARE_FOR_IMCU:
     /* Prepare to process first M-1 row groups of this iMCU row */
     mainp->rowgroup_ctr = 0;
-    mainp->rowgroups_avail = (JDIMENSION) (cinfo->min_DCT_v_scaled_size - 1);
+    mainp->rowgroups_avail = (LJPEG_JDIMENSION) (cinfo->min_DCT_v_scaled_size - 1);
     /* Check for bottom of image: if so, tweak pointers to "duplicate"
      * the last sample row, and adjust rowgroups_avail to ignore padding rows.
      */
@@ -441,8 +441,8 @@ process_data_context_main (j_decompress_ptr cinfo,
     mainp->buffer_full = FALSE;
     /* Still need to process last row group of this iMCU row, */
     /* which is saved at index M+1 of the other xbuffer */
-    mainp->rowgroup_ctr = (JDIMENSION) (cinfo->min_DCT_v_scaled_size + 1);
-    mainp->rowgroups_avail = (JDIMENSION) (cinfo->min_DCT_v_scaled_size + 2);
+    mainp->rowgroup_ctr = (LJPEG_JDIMENSION) (cinfo->min_DCT_v_scaled_size + 1);
+    mainp->rowgroups_avail = (LJPEG_JDIMENSION) (cinfo->min_DCT_v_scaled_size + 2);
     mainp->context_state = CTX_POSTPONED_ROW;
   }
 }
@@ -456,13 +456,13 @@ process_data_context_main (j_decompress_ptr cinfo,
 
 #ifdef QUANT_2PASS_SUPPORTED
 
-METHODDEF(void)
-process_data_crank_post (j_decompress_ptr cinfo,
-			 JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
-			 JDIMENSION out_rows_avail)
+LJPEG_METHODDEF(void)
+process_data_crank_post (LJPEG_j_decompress_ptr cinfo,
+			 LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
+			 LJPEG_JDIMENSION out_rows_avail)
 {
   (*cinfo->post->post_process_data) (cinfo, (JSAMPIMAGE) NULL,
-				     (JDIMENSION *) NULL, (JDIMENSION) 0,
+				     (LJPEG_JDIMENSION *) NULL, (LJPEG_JDIMENSION) 0,
 				     output_buf, out_row_ctr, out_rows_avail);
 }
 
@@ -473,7 +473,7 @@ process_data_crank_post (j_decompress_ptr cinfo,
  * Initialize main buffer controller.
  */
 LJPEG_GLOBAL(void)
-jinit_d_main_controller (j_decompress_ptr cinfo, boolean need_full_buffer)
+jinit_d_main_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
 {
   my_main_ptr mainp;
   int ci, rgroup, ngroups;
@@ -506,7 +506,7 @@ jinit_d_main_controller (j_decompress_ptr cinfo, boolean need_full_buffer)
       cinfo->min_DCT_v_scaled_size; /* height of a row group of component */
     mainp->buffer[ci] = (*cinfo->mem->alloc_sarray)
       ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-       compptr->width_in_blocks * ((JDIMENSION) compptr->DCT_h_scaled_size),
-       (JDIMENSION) (rgroup * ngroups));
+       compptr->width_in_blocks * ((LJPEG_JDIMENSION) compptr->DCT_h_scaled_size),
+       (LJPEG_JDIMENSION) (rgroup * ngroups));
   }
 }

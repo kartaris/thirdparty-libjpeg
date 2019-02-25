@@ -43,7 +43,7 @@ LJPEG_signal_catcher (int signum)
 }
 
 LJPEG_GLOBAL(void)
-enable_signal_catcher (LJPEG_j_common_ptr cinfo)
+LJPEG_enable_signal_catcher (LJPEG_j_common_ptr cinfo)
 {
   LJPEG_sig_cinfo = cinfo;
 #ifdef SIGINT			/* not all systems have SIGINT */
@@ -63,8 +63,8 @@ enable_signal_catcher (LJPEG_j_common_ptr cinfo)
 
 #ifdef PROGRESS_REPORT
 
-METHODDEF(void)
-progress_monitor (LJPEG_j_common_ptr cinfo)
+LJPEG_METHODDEF(void)
+LJPEG_progress_monitor (LJPEG_j_common_ptr cinfo)
 {
   cd_progress_ptr prog = (cd_progress_ptr) cinfo->progress;
   int total_passes = prog->pub.total_passes + prog->total_extra_passes;
@@ -84,11 +84,11 @@ progress_monitor (LJPEG_j_common_ptr cinfo)
 }
 
 LJPEG_GLOBAL(void)
-start_progress_monitor (LJPEG_j_common_ptr cinfo, cd_progress_ptr progress)
+LJPEG_start_progress_monitor (LJPEG_j_common_ptr cinfo, cd_progress_ptr progress)
 {
   /* Enable progress display, unless trace output is on */
   if (cinfo->err->trace_level == 0) {
-    progress->pub.progress_monitor = progress_monitor;
+    progress->pub.LJPEG_progress_monitor = LJPEG_progress_monitor;
     progress->completed_extra_passes = 0;
     progress->total_extra_passes = 0;
     progress->percent_done = -1;
@@ -97,7 +97,7 @@ start_progress_monitor (LJPEG_j_common_ptr cinfo, cd_progress_ptr progress)
 }
 
 LJPEG_GLOBAL(void)
-end_progress_monitor (LJPEG_j_common_ptr cinfo)
+LJPEG_end_progress_monitor (LJPEG_j_common_ptr cinfo)
 {
   /* Clear away progress display */
   if (cinfo->err->trace_level == 0) {
@@ -115,7 +115,7 @@ end_progress_monitor (LJPEG_j_common_ptr cinfo)
  * minchars is length of minimum legal abbreviation.
  */
 LJPEG_GLOBAL(boolean)
-keymatch (char * arg, const char * keyword, int minchars)
+LJPEG_end_progress_monitor (char * arg, const char * keyword, int minchars)
 {
   register int ca, ck;
   register int nmatched = 0;
@@ -141,7 +141,7 @@ keymatch (char * arg, const char * keyword, int minchars)
  * Non-Unix systems often require some hacking to get out of text mode.
  */
 LJPEG_GLOBAL(FILE *)
-read_stdin (void)
+LJPEG_read_stdin (void)
 {
   FILE * input_file = stdin;
 
@@ -158,7 +158,7 @@ read_stdin (void)
 }
 
 LJPEG_GLOBAL(FILE *)
-write_stdout (void)
+LJPEG_write_stdout (void)
 {
   FILE * output_file = stdout;
 

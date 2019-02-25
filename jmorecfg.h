@@ -175,7 +175,7 @@ typedef long INT32;
  * can change this datatype.
  */
 
-typedef unsigned int JDIMENSION;
+typedef unsigned int LJPEG_JDIMENSION;
 
 #define JPEG_MAX_DIMENSION  65500L  /* a tad under 64K to prevent overflows */
 
@@ -188,7 +188,7 @@ typedef unsigned int JDIMENSION;
  */
 
 /* a function called through method pointers: */
-#define METHODDEF(type)		static type
+#define LJPEG_METHODDEF(type)		static type
 /* a function used only in its module: */
 #define LOCAL(type)		static type
 /* a function referenced thru EXTERNs: */
@@ -204,9 +204,9 @@ typedef unsigned int JDIMENSION;
  */
 
 #ifdef HAVE_PROTOTYPES
-#define JMETHOD(type,methodname,arglist)  type (*methodname) arglist
+#define LJPEG_JMETHOD(type,methodname,arglist)  type (*methodname) arglist
 #else
-#define JMETHOD(type,methodname,arglist)  type (*methodname) ()
+#define LJPEG_JMETHOD(type,methodname,arglist)  type (*methodname) ()
 #endif
 
 
@@ -268,14 +268,14 @@ typedef enum { FALSE = 0, TRUE = 1 } boolean;
  * The remaining options affect code selection within the JPEG library,
  * but they don't need to be visible to most applications using the library.
  * To minimize application namespace pollution, the symbols won't be
- * defined unless JPEG_INTERNALS or JPEG_INTERNAL_OPTIONS has been defined.
+ * defined unless JPEG_INTERNALS or LJPEG_JPEG_INTERNAL_OPTIONS has been defined.
  */
 
 #ifdef JPEG_INTERNALS
-#define JPEG_INTERNAL_OPTIONS
+#define LJPEG_JPEG_INTERNAL_OPTIONS
 #endif
 
-#ifdef JPEG_INTERNAL_OPTIONS
+#ifdef LJPEG_JPEG_INTERNAL_OPTIONS
 
 
 /*
@@ -387,4 +387,4 @@ typedef enum { FALSE = 0, TRUE = 1 } boolean;
 #endif
 #endif
 
-#endif /* JPEG_INTERNAL_OPTIONS */
+#endif /* LJPEG_JPEG_INTERNAL_OPTIONS */

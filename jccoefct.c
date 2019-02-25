@@ -35,8 +35,8 @@
 typedef struct {
   struct jpeg_c_coef_controller pub; /* public fields */
 
-  JDIMENSION iMCU_row_num;	/* iMCU row # within image */
-  JDIMENSION mcu_ctr;		/* counts MCUs processed in current row */
+  LJPEG_JDIMENSION iMCU_row_num;	/* iMCU row # within image */
+  LJPEG_JDIMENSION mcu_ctr;		/* counts MCUs processed in current row */
   int MCU_vert_offset;		/* counts MCU rows within iMCU row */
   int MCU_rows_per_iMCU_row;	/* number of such rows needed */
 
@@ -59,18 +59,18 @@ typedef my_coef_controller * my_coef_ptr;
 
 
 /* Forward declarations */
-METHODDEF(boolean) compress_data
-    JPP((j_compress_ptr cinfo, JSAMPIMAGE input_buf));
+LJPEG_METHODDEF(boolean) compress_data
+    JPP((LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf));
 #ifdef FULL_COEF_BUFFER_SUPPORTED
-METHODDEF(boolean) compress_first_pass
-    JPP((j_compress_ptr cinfo, JSAMPIMAGE input_buf));
-METHODDEF(boolean) compress_output
-    JPP((j_compress_ptr cinfo, JSAMPIMAGE input_buf));
+LJPEG_METHODDEF(boolean) compress_first_pass
+    JPP((LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf));
+LJPEG_METHODDEF(boolean) compress_output
+    JPP((LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf));
 #endif
 
 
 LOCAL(void)
-start_iMCU_row (j_compress_ptr cinfo)
+start_iMCU_row (LJPEG_j_compress_ptr cinfo)
 /* Reset within-iMCU-row counters for a new row */
 {
   my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
@@ -97,8 +97,8 @@ start_iMCU_row (j_compress_ptr cinfo)
  * Initialize for a processing pass.
  */
 
-METHODDEF(void)
-start_pass_coef (j_compress_ptr cinfo, J_BUF_MODE pass_mode)
+LJPEG_METHODDEF(void)
+start_pass_coef (LJPEG_j_compress_ptr cinfo, J_BUF_MODE pass_mode)
 {
   my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
 
@@ -140,15 +140,15 @@ start_pass_coef (j_compress_ptr cinfo, J_BUF_MODE pass_mode)
  * which we index according to the component's SOF position.
  */
 
-METHODDEF(boolean)
-compress_data (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
+LJPEG_METHODDEF(boolean)
+compress_data (LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf)
 {
   my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
-  JDIMENSION MCU_col_num;	/* index of current MCU within row */
-  JDIMENSION last_MCU_col = cinfo->MCUs_per_row - 1;
-  JDIMENSION last_iMCU_row = cinfo->total_iMCU_rows - 1;
+  LJPEG_JDIMENSION MCU_col_num;	/* index of current MCU within row */
+  LJPEG_JDIMENSION last_MCU_col = cinfo->MCUs_per_row - 1;
+  LJPEG_JDIMENSION last_iMCU_row = cinfo->total_iMCU_rows - 1;
   int blkn, bi, ci, yindex, yoffset, blockcnt;
-  JDIMENSION ypos, xpos;
+  LJPEG_JDIMENSION ypos, xpos;
   jpeg_component_info *compptr;
   forward_DCT_ptr forward_DCT;
 
@@ -181,7 +181,7 @@ compress_data (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
 	    (*forward_DCT) (cinfo, compptr,
 			    input_buf[compptr->component_index],
 			    coef->MCU_buffer[blkn],
-			    ypos, xpos, (JDIMENSION) blockcnt);
+			    ypos, xpos, (LJPEG_JDIMENSION) blockcnt);
 	    if (blockcnt < compptr->MCU_width) {
 	      /* Create some dummy blocks at the right edge of the image. */
 	      FMEMZERO((void FAR *) coef->MCU_buffer[blkn + blockcnt],
@@ -245,12 +245,12 @@ compress_data (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
  * at the scan-dependent variables (MCU dimensions, etc).
  */
 
-METHODDEF(boolean)
-compress_first_pass (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
+LJPEG_METHODDEF(boolean)
+compress_first_pass (LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf)
 {
   my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
-  JDIMENSION last_iMCU_row = cinfo->total_iMCU_rows - 1;
-  JDIMENSION blocks_across, MCUs_across, MCUindex;
+  LJPEG_JDIMENSION last_iMCU_row = cinfo->total_iMCU_rows - 1;
+  LJPEG_JDIMENSION blocks_across, MCUs_across, MCUindex;
   int bi, ci, h_samp_factor, block_row, block_rows, ndummy;
   JCOEF lastDC;
   jpeg_component_info *compptr;
@@ -264,7 +264,7 @@ compress_first_pass (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
     buffer = (*cinfo->mem->access_virt_barray)
       ((LJPEG_j_common_ptr) cinfo, coef->whole_image[ci],
        coef->iMCU_row_num * compptr->v_samp_factor,
-       (JDIMENSION) compptr->v_samp_factor, TRUE);
+       (LJPEG_JDIMENSION) compptr->v_samp_factor, TRUE);
     /* Count non-dummy DCT block rows in this iMCU row. */
     if (coef->iMCU_row_num < last_iMCU_row)
       block_rows = compptr->v_samp_factor;
@@ -286,8 +286,8 @@ compress_first_pass (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
     for (block_row = 0; block_row < block_rows; block_row++) {
       thisblockrow = buffer[block_row];
       (*forward_DCT) (cinfo, compptr, input_buf[ci], thisblockrow,
-		      (JDIMENSION) (block_row * compptr->DCT_v_scaled_size),
-		      (JDIMENSION) 0, blocks_across);
+		      (LJPEG_JDIMENSION) (block_row * compptr->DCT_v_scaled_size),
+		      (LJPEG_JDIMENSION) 0, blocks_across);
       if (ndummy > 0) {
 	/* Create dummy blocks at the right edge of the image. */
 	thisblockrow += blocks_across; /* => first dummy block */
@@ -342,13 +342,13 @@ compress_first_pass (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
  * NB: input_buf is ignored; it is likely to be a NULL pointer.
  */
 
-METHODDEF(boolean)
-compress_output (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
+LJPEG_METHODDEF(boolean)
+compress_output (LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf)
 {
   my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
-  JDIMENSION MCU_col_num;	/* index of current MCU within row */
+  LJPEG_JDIMENSION MCU_col_num;	/* index of current MCU within row */
   int blkn, ci, xindex, yindex, yoffset;
-  JDIMENSION start_col;
+  LJPEG_JDIMENSION start_col;
   JBLOCKARRAY buffer[MAX_COMPS_IN_SCAN];
   JBLOCKROW buffer_ptr;
   jpeg_component_info *compptr;
@@ -362,7 +362,7 @@ compress_output (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
     buffer[ci] = (*cinfo->mem->access_virt_barray)
       ((LJPEG_j_common_ptr) cinfo, coef->whole_image[compptr->component_index],
        coef->iMCU_row_num * compptr->v_samp_factor,
-       (JDIMENSION) compptr->v_samp_factor, FALSE);
+       (LJPEG_JDIMENSION) compptr->v_samp_factor, FALSE);
   }
 
   /* Loop to process one whole iMCU row */
@@ -407,7 +407,7 @@ compress_output (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
  */
 
 LJPEG_GLOBAL(void)
-jinit_c_coef_controller (j_compress_ptr cinfo, boolean need_full_buffer)
+jinit_c_coef_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buffer)
 {
   my_coef_ptr coef;
 
@@ -429,11 +429,11 @@ jinit_c_coef_controller (j_compress_ptr cinfo, boolean need_full_buffer)
 	 ci++, compptr++) {
       coef->whole_image[ci] = (*cinfo->mem->request_virt_barray)
 	((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
-	 (JDIMENSION) jround_up((long) compptr->width_in_blocks,
+	 (LJPEG_JDIMENSION) jround_up((long) compptr->width_in_blocks,
 				(long) compptr->h_samp_factor),
-	 (JDIMENSION) jround_up((long) compptr->height_in_blocks,
+	 (LJPEG_JDIMENSION) jround_up((long) compptr->height_in_blocks,
 				(long) compptr->v_samp_factor),
-	 (JDIMENSION) compptr->v_samp_factor);
+	 (LJPEG_JDIMENSION) compptr->v_samp_factor);
     }
 #else
     ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);

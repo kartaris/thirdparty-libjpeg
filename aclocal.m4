@@ -3833,7 +3833,7 @@ _LT_EOF
       echo "cannot run $lt_cv_sys_global_symbol_pipe" >&AS_MESSAGE_LOG_FD
     fi
   else
-    echo "$progname: failed program was:" >&AS_MESSAGE_LOG_FD
+    echo "$LJPEG_progname: failed program was:" >&AS_MESSAGE_LOG_FD
     cat conftest.$ac_ext >&5
   fi
   rm -rf conftest* conftst*

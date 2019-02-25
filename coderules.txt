@@ -50,22 +50,22 @@ function_name (int a, char *b)
 }
 
 Note that each function definition must begin with GLOBAL(type), LOCAL(type),
-or METHODDEF(type).  These macros expand to "static type" or just "type" as
+or LJPEG_METHODDEF(type).  These macros expand to "static type" or just "type" as
 appropriate.  They provide a readable indication of the routine's usage and
 can readily be changed for special needs.  (For instance, special linkage
 keywords can be inserted for use in Windows DLLs.)
 
 ansi2knr does not transform method declarations (function pointers in
-structs).  We handle these with a macro JMETHOD, defined as
+structs).  We handle these with a macro LJPEG_JMETHOD, defined as
 	#ifdef HAVE_PROTOTYPES
-	#define JMETHOD(type,methodname,arglist)  type (*methodname) arglist
+	#define LJPEG_JMETHOD(type,methodname,arglist)  type (*methodname) arglist
 	#else
-	#define JMETHOD(type,methodname,arglist)  type (*methodname) ()
+	#define LJPEG_JMETHOD(type,methodname,arglist)  type (*methodname) ()
 	#endif
 which is used like this:
 	struct function_pointers {
-	  JMETHOD(void, init_entropy_encoder, (int somearg, jparms *jp));
-	  JMETHOD(void, term_entropy_encoder, (void));
+	  LJPEG_JMETHOD(void, init_entropy_encoder, (int somearg, jparms *jp));
+	  LJPEG_JMETHOD(void, term_entropy_encoder, (void));
 	};
 Note the set of parentheses surrounding the parameter list.
 

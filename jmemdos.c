@@ -239,7 +239,7 @@ jpeg_mem_available (LJPEG_j_common_ptr cinfo, long min_bytes_needed,
  */
 
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 read_file_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 		 void FAR * buffer_address,
 		 long file_offset, long byte_count)
@@ -255,7 +255,7 @@ read_file_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 }
 
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 write_file_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 		  void FAR * buffer_address,
 		  long file_offset, long byte_count)
@@ -271,7 +271,7 @@ write_file_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 }
 
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 close_file_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info)
 {
   jdos_close(info->handle.file_handle);	/* close the file */
@@ -329,7 +329,7 @@ typedef struct {		/* XMS move specification structure */
 #define ODD(X)	(((X) & 1L) != 0)
 
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 read_xms_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 		void FAR * buffer_address,
 		long file_offset, long byte_count)
@@ -362,7 +362,7 @@ read_xms_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 }
 
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 write_xms_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 		 void FAR * buffer_address,
 		 long file_offset, long byte_count)
@@ -397,7 +397,7 @@ write_xms_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 }
 
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 close_xms_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info)
 {
   XMScontext ctx;
@@ -487,7 +487,7 @@ typedef union {			/* EMS move specification structure */
 #define LOBYTE(W)  ((W) & 0xFF)
 
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 read_ems_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 		void FAR * buffer_address,
 		long file_offset, long byte_count)
@@ -512,7 +512,7 @@ read_ems_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 }
 
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 write_ems_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 		 void FAR * buffer_address,
 		 long file_offset, long byte_count)
@@ -537,7 +537,7 @@ write_ems_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 }
 
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 close_ems_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info)
 {
   EMScontext ctx;

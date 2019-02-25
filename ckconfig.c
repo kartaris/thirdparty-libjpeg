@@ -100,7 +100,7 @@ typedef size_t my_size_t;	/* The payoff: do we have size_t now? */
 #define HAVE_PROTOTYPES
 
 #ifdef HAVE_PROTOTYPES
-int testfunction (int arg1, int * arg2); /* check prototypes */
+int LJPEG_testfunction (int arg1, int * arg2); /* check prototypes */
 
 struct methods_struct {		/* check method-pointer declarations */
   int (*error_exit) (char *msgtext);
@@ -108,12 +108,12 @@ struct methods_struct {		/* check method-pointer declarations */
   int (*another_method) (void);
 };
 
-int testfunction (int arg1, int * arg2) /* check definitions */
+int LJPEG_testfunction (int arg1, int * arg2) /* check definitions */
 {
   return arg2[arg1];
 }
 
-int test2function (void)	/* check void arg list */
+int LJPEG_test2function (void)	/* check void arg list */
 {
   return 0;
 }
@@ -160,9 +160,9 @@ typedef void (*void_func) ();
 #endif
 
 #ifdef HAVE_PROTOTYPES		/* check void function result */
-void test3function (void_ptr arg1, void_func arg2)
+void LJPEG_test3function (void_ptr arg1, void_func arg2)
 #else
-void test3function (arg1, arg2)
+void LJPEG_test3function (arg1, arg2)
      void_ptr arg1;
      void_func arg2;
 #endif
@@ -181,16 +181,16 @@ void test3function (arg1, arg2)
 #define HAVE_CONST
 
 #ifdef HAVE_CONST
-static const int carray[3] = {1, 2, 3};
+static const int LJPEG_carray[3] = {1, 2, 3};
 
 #ifdef HAVE_PROTOTYPES
-int test4function (const int arg1)
+int LJPEG_test4function (const int arg1)
 #else
-int test4function (arg1)
+int LJPEG_test4function (arg1)
      const int arg1;
 #endif
 {
-  return carray[arg1];
+  return LJPEG_carray[arg1];
 }
 #endif
 
@@ -202,7 +202,7 @@ int test4function (arg1)
 #undef INCOMPLETE_TYPES_BROKEN
 
 #ifndef INCOMPLETE_TYPES_BROKEN
-typedef struct undefined_structure * undef_struct_ptr;
+typedef struct LJPEG_undefined_structure * LJPEG_undef_struct_ptr;
 #endif
 
 
@@ -214,12 +214,12 @@ typedef struct undefined_structure * undef_struct_ptr;
 
 #ifndef NEED_SHORT_EXTERNAL_NAMES
 
-int possibly_duplicate_function ()
+int LJPEG_possibly_duplicate_function ()
 {
   return 0;
 }
 
-int possibly_dupli_function ()
+int LJPEG_possibly_dupli_function ()
 {
   return 1;
 }
@@ -368,7 +368,7 @@ int main (argc, argv)
   else
     fprintf(outfile, "#define RIGHT_SHIFT_IS_UNSIGNED\n");
   fprintf(outfile, "\n#endif /* JPEG_INTERNALS */\n");
-  fprintf(outfile, "\n#ifdef JPEG_CJPEG_DJPEG\n\n");
+  fprintf(outfile, "\n#ifdef LJPEG_JPEG_CJPEG_DJPEG\n\n");
   fprintf(outfile, "#define LJPEG_BMP_SUPPORTED		/* BMP image file format */\n");
   fprintf(outfile, "#define LJPEG_GIF_SUPPORTED		/* GIF image file format */\n");
   fprintf(outfile, "#define LJPEG_PPM_SUPPORTED		/* PBMPLUS PPM/PGM image file format */\n");
@@ -378,7 +378,7 @@ int main (argc, argv)
   fprintf(outfile, "#undef NEED_SIGNAL_CATCHER	/* Define this if you use jmemname.c */\n");
   fprintf(outfile, "#undef DONT_USE_B_MODE\n");
   fprintf(outfile, "/* #define PROGRESS_REPORT */	/* optional */\n");
-  fprintf(outfile, "\n#endif /* JPEG_CJPEG_DJPEG */\n");
+  fprintf(outfile, "\n#endif /* LJPEG_JPEG_CJPEG_DJPEG */\n");
 
   /* Close the jconfig.h file */
   fclose(outfile);

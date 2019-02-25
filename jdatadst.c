@@ -56,12 +56,12 @@ typedef my_mem_destination_mgr * my_mem_dest_ptr;
 
 
 /*
- * Initialize destination --- called by jpeg_start_compress
+ * Initialize destination --- called by LJPEG_jpeg_start_compress
  * before any data is actually written.
  */
 
-METHODDEF(void)
-init_destination (j_compress_ptr cinfo)
+LJPEG_METHODDEF(void)
+init_destination (LJPEG_j_compress_ptr cinfo)
 {
   my_dest_ptr dest = (my_dest_ptr) cinfo->dest;
 
@@ -74,8 +74,8 @@ init_destination (j_compress_ptr cinfo)
   dest->pub.free_in_buffer = OUTPUT_BUF_SIZE;
 }
 
-METHODDEF(void)
-init_mem_destination (j_compress_ptr cinfo)
+LJPEG_METHODDEF(void)
+init_mem_destination (LJPEG_j_compress_ptr cinfo)
 {
   /* no work necessary here */
 }
@@ -104,8 +104,8 @@ init_mem_destination (j_compress_ptr cinfo)
  * write it out when emptying the buffer externally.
  */
 
-METHODDEF(boolean)
-empty_output_buffer (j_compress_ptr cinfo)
+LJPEG_METHODDEF(boolean)
+empty_output_buffer (LJPEG_j_compress_ptr cinfo)
 {
   my_dest_ptr dest = (my_dest_ptr) cinfo->dest;
 
@@ -119,8 +119,8 @@ empty_output_buffer (j_compress_ptr cinfo)
   return TRUE;
 }
 
-METHODDEF(boolean)
-empty_mem_output_buffer (j_compress_ptr cinfo)
+LJPEG_METHODDEF(boolean)
+empty_mem_output_buffer (LJPEG_j_compress_ptr cinfo)
 {
   size_t nextsize;
   JOCTET * nextbuffer;
@@ -151,7 +151,7 @@ empty_mem_output_buffer (j_compress_ptr cinfo)
 
 
 /*
- * Terminate destination --- called by jpeg_finish_compress
+ * Terminate destination --- called by LJPEG_jpeg_finish_compress
  * after all data has been written.  Usually needs to flush buffer.
  *
  * NB: *not* called by jpeg_abort or jpeg_destroy; surrounding
@@ -159,8 +159,8 @@ empty_mem_output_buffer (j_compress_ptr cinfo)
  * for error exit.
  */
 
-METHODDEF(void)
-term_destination (j_compress_ptr cinfo)
+LJPEG_METHODDEF(void)
+term_destination (LJPEG_j_compress_ptr cinfo)
 {
   my_dest_ptr dest = (my_dest_ptr) cinfo->dest;
   size_t datacount = OUTPUT_BUF_SIZE - dest->pub.free_in_buffer;
@@ -176,8 +176,8 @@ term_destination (j_compress_ptr cinfo)
     ERREXIT(cinfo, JERR_FILE_WRITE);
 }
 
-METHODDEF(void)
-term_mem_destination (j_compress_ptr cinfo)
+LJPEG_METHODDEF(void)
+term_mem_destination (LJPEG_j_compress_ptr cinfo)
 {
   my_mem_dest_ptr dest = (my_mem_dest_ptr) cinfo->dest;
 
@@ -193,12 +193,12 @@ term_mem_destination (j_compress_ptr cinfo)
  */
 
 LJPEG_GLOBALvoid)
-jpeg_stdio_dest (j_compress_ptr cinfo, FILE * outfile)
+LJPEG_jpeg_stdio_dest (LJPEG_j_compress_ptr cinfo, FILE * outfile)
 {
   my_dest_ptr dest;
 
   /* The destination object is made permanent so that multiple JPEG images
-   * can be written to the same file without re-executing jpeg_stdio_dest.
+   * can be written to the same file without re-executing LJPEG_jpeg_stdio_dest.
    * This makes it dangerous to use this manager and a different destination
    * manager serially with the same JPEG object, because their private object
    * sizes may be different.  Caveat programmer.
@@ -232,7 +232,7 @@ jpeg_stdio_dest (j_compress_ptr cinfo, FILE * outfile)
  */
 
 LJPEG_GLOBALvoid)
-jpeg_mem_dest (j_compress_ptr cinfo,
+jpeg_mem_dest (LJPEG_j_compress_ptr cinfo,
 	       unsigned char ** outbuffer, unsigned long * outsize)
 {
   my_mem_dest_ptr dest;

@@ -41,8 +41,8 @@ typedef my_source_mgr * my_src_ptr;
  * before any data is actually read.
  */
 
-METHODDEF(void)
-init_source (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(void)
+init_source (LJPEG_j_decompress_ptr cinfo)
 {
   my_src_ptr src = (my_src_ptr) cinfo->src;
 
@@ -53,8 +53,8 @@ init_source (j_decompress_ptr cinfo)
   src->start_of_file = TRUE;
 }
 
-METHODDEF(void)
-init_mem_source (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(void)
+init_mem_source (LJPEG_j_decompress_ptr cinfo)
 {
   /* no work necessary here */
 }
@@ -93,8 +93,8 @@ init_mem_source (j_decompress_ptr cinfo)
  * the front of the buffer rather than discarding it.
  */
 
-METHODDEF(boolean)
-fill_input_buffer (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(boolean)
+fill_input_buffer (LJPEG_j_decompress_ptr cinfo)
 {
   my_src_ptr src = (my_src_ptr) cinfo->src;
   size_t nbytes;
@@ -118,8 +118,8 @@ fill_input_buffer (j_decompress_ptr cinfo)
   return TRUE;
 }
 
-METHODDEF(boolean)
-fill_mem_input_buffer (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(boolean)
+fill_mem_input_buffer (LJPEG_j_decompress_ptr cinfo)
 {
   static const JOCTET mybuffer[4] = {
     (JOCTET) 0xFF, (JOCTET) JPEG_EOI, 0, 0
@@ -152,8 +152,8 @@ fill_mem_input_buffer (j_decompress_ptr cinfo)
  * buffer is the application writer's problem.
  */
 
-METHODDEF(void)
-skip_input_data (j_decompress_ptr cinfo, long num_bytes)
+LJPEG_METHODDEF(void)
+skip_input_data (LJPEG_j_decompress_ptr cinfo, long num_bytes)
 {
   struct jpeg_source_mgr * src = cinfo->src;
 
@@ -193,8 +193,8 @@ skip_input_data (j_decompress_ptr cinfo, long num_bytes)
  * for error exit.
  */
 
-METHODDEF(void)
-term_source (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(void)
+term_source (LJPEG_j_decompress_ptr cinfo)
 {
   /* no work necessary here */
 }
@@ -207,7 +207,7 @@ term_source (j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBALvoid)
-jpeg_stdio_src (j_decompress_ptr cinfo, FILE * infile)
+jpeg_stdio_src (LJPEG_j_decompress_ptr cinfo, FILE * infile)
 {
   my_src_ptr src;
 
@@ -246,7 +246,7 @@ jpeg_stdio_src (j_decompress_ptr cinfo, FILE * infile)
  */
 
 LJPEG_GLOBALvoid)
-jpeg_mem_src (j_decompress_ptr cinfo,
+jpeg_mem_src (LJPEG_j_decompress_ptr cinfo,
 	      unsigned char * inbuffer, unsigned long insize)
 {
   struct jpeg_source_mgr * src;

@@ -28,7 +28,7 @@
  */
 
 LJPEG_GLOBAL(void)
-jpeg_CreateDecompress (j_decompress_ptr cinfo, int version, size_t structsize)
+jpeg_CreateDecompress (LJPEG_j_decompress_ptr cinfo, int version, size_t structsize)
 {
   int i;
 
@@ -89,7 +89,7 @@ jpeg_CreateDecompress (j_decompress_ptr cinfo, int version, size_t structsize)
  */
 
 LJPEG_GLOBAL(void)
-jpeg_destroy_decompress (j_decompress_ptr cinfo)
+jpeg_destroy_decompress (LJPEG_j_decompress_ptr cinfo)
 {
   jpeg_destroy((LJPEG_j_common_ptr) cinfo); /* use common routine */
 }
@@ -101,7 +101,7 @@ jpeg_destroy_decompress (j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(void)
-jpeg_abort_decompress (j_decompress_ptr cinfo)
+jpeg_abort_decompress (LJPEG_j_decompress_ptr cinfo)
 {
   jpeg_abort((LJPEG_j_common_ptr) cinfo); /* use common routine */
 }
@@ -112,7 +112,7 @@ jpeg_abort_decompress (j_decompress_ptr cinfo)
  */
 
 LOCAL(void)
-default_decompress_parms (j_decompress_ptr cinfo)
+default_decompress_parms (LJPEG_j_decompress_ptr cinfo)
 {
   /* Guess the input colorspace, and set output colorspace accordingly. */
   /* (Wish JPEG committee had provided a real way to specify this...) */
@@ -239,7 +239,7 @@ default_decompress_parms (j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(int)
-jpeg_read_header (j_decompress_ptr cinfo, boolean require_image)
+jpeg_read_header (LJPEG_j_decompress_ptr cinfo, boolean require_image)
 {
   int retcode;
 
@@ -285,7 +285,7 @@ jpeg_read_header (j_decompress_ptr cinfo, boolean require_image)
  */
 
 LJPEG_GLOBAL(int)
-jpeg_consume_input (j_decompress_ptr cinfo)
+jpeg_consume_input (LJPEG_j_decompress_ptr cinfo)
 {
   int retcode = JPEG_SUSPENDED;
 
@@ -332,7 +332,7 @@ jpeg_consume_input (j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(boolean)
-jpeg_input_complete (j_decompress_ptr cinfo)
+jpeg_input_complete (LJPEG_j_decompress_ptr cinfo)
 {
   /* Check for valid jpeg object */
   if (cinfo->global_state < DSTATE_START ||
@@ -347,7 +347,7 @@ jpeg_input_complete (j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(boolean)
-jpeg_has_multiple_scans (j_decompress_ptr cinfo)
+jpeg_has_multiple_scans (LJPEG_j_decompress_ptr cinfo)
 {
   /* Only valid after jpeg_read_header completes */
   if (cinfo->global_state < DSTATE_READY ||
@@ -367,7 +367,7 @@ jpeg_has_multiple_scans (j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(boolean)
-jpeg_finish_decompress (j_decompress_ptr cinfo)
+jpeg_finish_decompress (LJPEG_j_decompress_ptr cinfo)
 {
   if ((cinfo->global_state == DSTATE_SCANNING ||
        cinfo->global_state == DSTATE_RAW_OK) && ! cinfo->buffered_image) {

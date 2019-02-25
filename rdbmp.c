@@ -51,15 +51,15 @@ typedef char U_CHAR;
 typedef struct _bmp_source_struct * bmp_source_ptr;
 
 typedef struct _bmp_source_struct {
-  struct cjpeg_source_struct pub; /* public fields */
+  struct LJPEG_cjpeg_source_struct pub; /* public fields */
 
-  j_compress_ptr cinfo;		/* back link saves passing separate parm */
+  LJPEG_j_compress_ptr cinfo;		/* back link saves passing separate parm */
 
-  JSAMPARRAY colormap;		/* BMP colormap (converted to my format) */
+  LJPEG_JSAMPARRAY colormap;		/* BMP colormap (converted to my format) */
 
   jvirt_sarray_ptr whole_image;	/* Needed to reverse row order */
-  JDIMENSION source_row;	/* Current source row number */
-  JDIMENSION row_width;		/* Physical width of scanlines in file */
+  LJPEG_JDIMENSION source_row;	/* Current source row number */
+  LJPEG_JDIMENSION row_width;		/* Physical width of scanlines in file */
 
   int bits_per_pixel;		/* remembers 8- or 24-bit format */
 } bmp_source_struct;
@@ -116,22 +116,22 @@ read_colormap (bmp_source_ptr sinfo, int cmaplen, int mapentrysize)
  * it is an 8-bit image, we must expand colormapped pixels to 24bit format.
  */
 
-METHODDEF(JDIMENSION)
-get_8bit_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
+LJPEG_METHODDEF(LJPEG_JDIMENSION)
+get_8bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading 8-bit colormap indexes */
 {
   bmp_source_ptr source = (bmp_source_ptr) sinfo;
-  register JSAMPARRAY colormap = source->colormap;
-  JSAMPARRAY image_ptr;
+  register LJPEG_JSAMPARRAY colormap = source->colormap;
+  LJPEG_JSAMPARRAY image_ptr;
   register int t;
   register JSAMPROW inptr, outptr;
-  register JDIMENSION col;
+  register LJPEG_JDIMENSION col;
 
   /* Fetch next row from virtual array */
   source->source_row--;
   image_ptr = (*cinfo->mem->access_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, source->whole_image,
-     source->source_row, (JDIMENSION) 1, FALSE);
+     source->source_row, (LJPEG_JDIMENSION) 1, FALSE);
 
   /* Expand the colormap indexes to real data */
   inptr = image_ptr[0];
@@ -147,20 +147,20 @@ get_8bit_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 }
 
 
-METHODDEF(JDIMENSION)
-get_24bit_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
+LJPEG_METHODDEF(LJPEG_JDIMENSION)
+get_24bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading 24-bit pixels */
 {
   bmp_source_ptr source = (bmp_source_ptr) sinfo;
-  JSAMPARRAY image_ptr;
+  LJPEG_JSAMPARRAY image_ptr;
   register JSAMPROW inptr, outptr;
-  register JDIMENSION col;
+  register LJPEG_JDIMENSION col;
 
   /* Fetch next row from virtual array */
   source->source_row--;
   image_ptr = (*cinfo->mem->access_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, source->whole_image,
-     source->source_row, (JDIMENSION) 1, FALSE);
+     source->source_row, (LJPEG_JDIMENSION) 1, FALSE);
 
   /* Transfer data.  Note source values are in BGR order
    * (even though Microsoft's own documents say the opposite).
@@ -178,20 +178,20 @@ get_24bit_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 }
 
 
-METHODDEF(JDIMENSION)
-get_32bit_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
+LJPEG_METHODDEF(LJPEG_JDIMENSION)
+get_32bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading 32-bit pixels */
 {
   bmp_source_ptr source = (bmp_source_ptr) sinfo;
-  JSAMPARRAY image_ptr;
+  LJPEG_JSAMPARRAY image_ptr;
   register JSAMPROW inptr, outptr;
-  register JDIMENSION col;
+  register LJPEG_JDIMENSION col;
 
   /* Fetch next row from virtual array */
   source->source_row--;
   image_ptr = (*cinfo->mem->access_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, source->whole_image,
-     source->source_row, (JDIMENSION) 1, FALSE);
+     source->source_row, (LJPEG_JDIMENSION) 1, FALSE);
   /* Transfer data.  Note source values are in BGR order
    * (even though Microsoft's own documents say the opposite).
    */
@@ -215,15 +215,15 @@ get_32bit_row (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
  * get_8bit_row, get_24bit_row, or get_32bit_row on subsequent calls.
  */
 
-METHODDEF(JDIMENSION)
-preload_image (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
+LJPEG_METHODDEF(LJPEG_JDIMENSION)
+preload_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   bmp_source_ptr source = (bmp_source_ptr) sinfo;
   register FILE *infile = source->pub.input_file;
   register int c;
   register JSAMPROW out_ptr;
-  JSAMPARRAY image_ptr;
-  JDIMENSION row, col;
+  LJPEG_JSAMPARRAY image_ptr;
+  LJPEG_JDIMENSION row, col;
   cd_progress_ptr progress = (cd_progress_ptr) cinfo->progress;
 
   /* Read the data into a virtual array in input-file row order. */
@@ -231,11 +231,11 @@ preload_image (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
     if (progress != NULL) {
       progress->pub.pass_counter = (long) row;
       progress->pub.pass_limit = (long) cinfo->image_height;
-      (*progress->pub.progress_monitor) ((LJPEG_j_common_ptr) cinfo);
+      (*progress->pub.LJPEG_progress_monitor) ((LJPEG_j_common_ptr) cinfo);
     }
     image_ptr = (*cinfo->mem->access_virt_sarray)
       ((LJPEG_j_common_ptr) cinfo, source->whole_image,
-       row, (JDIMENSION) 1, TRUE);
+       row, (LJPEG_JDIMENSION) 1, TRUE);
     out_ptr = image_ptr[0];
     for (col = source->row_width; col > 0; col--) {
       /* inline copy of read_byte() for speed */
@@ -272,8 +272,8 @@ preload_image (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
  * Read the file header; return image size and component count.
  */
 
-METHODDEF(void)
-start_input_bmp (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
+LJPEG_METHODDEF(void)
+start_input_bmp (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   bmp_source_ptr source = (bmp_source_ptr) sinfo;
   U_CHAR bmpfileheader[14];
@@ -294,7 +294,7 @@ start_input_bmp (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
   INT32 biClrUsed = 0;
   int mapentrysize = 0;		/* 0 indicates no colormap */
   INT32 bPad;
-  JDIMENSION row_width;
+  LJPEG_JDIMENSION row_width;
 
   /* Read and verify the bitmap file header */
   if (! ReadOK(source->pub.input_file, bmpfileheader, 14))
@@ -397,7 +397,7 @@ start_input_bmp (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
     /* Allocate space to store the colormap */
     source->colormap = (*cinfo->mem->alloc_sarray)
       ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-       (JDIMENSION) biClrUsed, (JDIMENSION) 3);
+       (LJPEG_JDIMENSION) biClrUsed, (LJPEG_JDIMENSION) 3);
     /* and read it from the file */
     read_colormap(source, (int) biClrUsed, mapentrysize);
     /* account for size of colormap */
@@ -413,18 +413,18 @@ start_input_bmp (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
 
   /* Compute row width in file, including padding to 4-byte boundary */
   if (source->bits_per_pixel == 24)
-    row_width = (JDIMENSION) (biWidth * 3);
+    row_width = (LJPEG_JDIMENSION) (biWidth * 3);
   else if (source->bits_per_pixel == 32)
-    row_width = (JDIMENSION) (biWidth * 4);
+    row_width = (LJPEG_JDIMENSION) (biWidth * 4);
   else
-    row_width = (JDIMENSION) biWidth;
+    row_width = (LJPEG_JDIMENSION) biWidth;
   while ((row_width & 3) != 0) row_width++;
   source->row_width = row_width;
 
   /* Allocate space for inversion array, prepare for preload pass */
   source->whole_image = (*cinfo->mem->request_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
-     row_width, (JDIMENSION) biHeight, (JDIMENSION) 1);
+     row_width, (LJPEG_JDIMENSION) biHeight, (LJPEG_JDIMENSION) 1);
   source->pub.get_pixel_rows = preload_image;
   if (cinfo->progress != NULL) {
     cd_progress_ptr progress = (cd_progress_ptr) cinfo->progress;
@@ -434,14 +434,14 @@ start_input_bmp (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
   /* Allocate one-row buffer for returned data */
   source->pub.buffer = (*cinfo->mem->alloc_sarray)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-     (JDIMENSION) (biWidth * 3), (JDIMENSION) 1);
+     (LJPEG_JDIMENSION) (biWidth * 3), (LJPEG_JDIMENSION) 1);
   source->pub.buffer_height = 1;
 
   cinfo->in_color_space = JCS_RGB;
   cinfo->input_components = 3;
   cinfo->data_precision = 8;
-  cinfo->image_width = (JDIMENSION) biWidth;
-  cinfo->image_height = (JDIMENSION) biHeight;
+  cinfo->image_width = (LJPEG_JDIMENSION) biWidth;
+  cinfo->image_height = (LJPEG_JDIMENSION) biHeight;
 }
 
 
@@ -449,8 +449,8 @@ start_input_bmp (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
  * Finish up at the end of the file.
  */
 
-METHODDEF(void)
-finish_input_bmp (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
+LJPEG_METHODDEF(void)
+finish_input_bmp (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   /* no work */
 }
@@ -460,8 +460,8 @@ finish_input_bmp (j_compress_ptr cinfo, cjpeg_source_ptr sinfo)
  * The module selection routine for BMP format input.
  */
 
-LJPEG_GLOBALcjpeg_source_ptr)
-jinit_read_bmp (j_compress_ptr cinfo)
+LJPEG_GLOBALLJPEG_cjpeg_source_ptr)
+LJPEG_jinit_read_bmp (LJPEG_j_compress_ptr cinfo)
 {
   bmp_source_ptr source;
 
@@ -474,7 +474,7 @@ jinit_read_bmp (j_compress_ptr cinfo)
   source->pub.start_input = start_input_bmp;
   source->pub.finish_input = finish_input_bmp;
 
-  return (cjpeg_source_ptr) source;
+  return (LJPEG_cjpeg_source_ptr) source;
 }
 
 #endif /* LJPEG_BMP_SUPPORTED */

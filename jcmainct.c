@@ -29,8 +29,8 @@
 typedef struct {
   struct jpeg_c_main_controller pub; /* public fields */
 
-  JDIMENSION cur_iMCU_row;	/* number of current iMCU row */
-  JDIMENSION rowgroup_ctr;	/* counts row groups received in iMCU row */
+  LJPEG_JDIMENSION cur_iMCU_row;	/* number of current iMCU row */
+  LJPEG_JDIMENSION rowgroup_ctr;	/* counts row groups received in iMCU row */
   boolean suspended;		/* remember if we suspended output */
   J_BUF_MODE pass_mode;		/* current operating mode */
 
@@ -38,7 +38,7 @@ typedef struct {
    * (we allocate one for each component).  In the full-image case, this
    * points to the currently accessible strips of the virtual arrays.
    */
-  JSAMPARRAY buffer[MAX_COMPONENTS];
+  LJPEG_JSAMPARRAY buffer[MAX_COMPONENTS];
 
 #ifdef FULL_MAIN_BUFFER_SUPPORTED
   /* If using full-image storage, this array holds pointers to virtual-array
@@ -52,13 +52,13 @@ typedef my_main_controller * my_main_ptr;
 
 
 /* Forward declarations */
-METHODDEF(void) process_data_simple_main
-	JPP((j_compress_ptr cinfo, JSAMPARRAY input_buf,
-	     JDIMENSION *in_row_ctr, JDIMENSION in_rows_avail));
+LJPEG_METHODDEF(void) process_data_simple_main
+	JPP((LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
+	     LJPEG_JDIMENSION *in_row_ctr, LJPEG_JDIMENSION in_rows_avail));
 #ifdef FULL_MAIN_BUFFER_SUPPORTED
-METHODDEF(void) process_data_buffer_main
-	JPP((j_compress_ptr cinfo, JSAMPARRAY input_buf,
-	     JDIMENSION *in_row_ctr, JDIMENSION in_rows_avail));
+LJPEG_METHODDEF(void) process_data_buffer_main
+	JPP((LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
+	     LJPEG_JDIMENSION *in_row_ctr, LJPEG_JDIMENSION in_rows_avail));
 #endif
 
 
@@ -66,8 +66,8 @@ METHODDEF(void) process_data_buffer_main
  * Initialize for a processing pass.
  */
 
-METHODDEF(void)
-start_pass_main (j_compress_ptr cinfo, J_BUF_MODE pass_mode)
+LJPEG_METHODDEF(void)
+start_pass_main (LJPEG_j_compress_ptr cinfo, J_BUF_MODE pass_mode)
 {
   my_main_ptr mainp = (my_main_ptr) cinfo->main;
 
@@ -110,26 +110,26 @@ start_pass_main (j_compress_ptr cinfo, J_BUF_MODE pass_mode)
  * where we have only a strip buffer.
  */
 
-METHODDEF(void)
-process_data_simple_main (j_compress_ptr cinfo,
-			  JSAMPARRAY input_buf, JDIMENSION *in_row_ctr,
-			  JDIMENSION in_rows_avail)
+LJPEG_METHODDEF(void)
+process_data_simple_main (LJPEG_j_compress_ptr cinfo,
+			  LJPEG_JSAMPARRAY input_buf, LJPEG_JDIMENSION *in_row_ctr,
+			  LJPEG_JDIMENSION in_rows_avail)
 {
   my_main_ptr mainp = (my_main_ptr) cinfo->main;
 
   while (mainp->cur_iMCU_row < cinfo->total_iMCU_rows) {
     /* Read input data if we haven't filled the main buffer yet */
-    if (mainp->rowgroup_ctr < (JDIMENSION) cinfo->min_DCT_v_scaled_size)
+    if (mainp->rowgroup_ctr < (LJPEG_JDIMENSION) cinfo->min_DCT_v_scaled_size)
       (*cinfo->prep->pre_process_data) (cinfo,
 					input_buf, in_row_ctr, in_rows_avail,
 					mainp->buffer, &mainp->rowgroup_ctr,
-					(JDIMENSION) cinfo->min_DCT_v_scaled_size);
+					(LJPEG_JDIMENSION) cinfo->min_DCT_v_scaled_size);
 
     /* If we don't have a full iMCU row buffered, return to application for
      * more data.  Note that preprocessor will always pad to fill the iMCU row
      * at the bottom of the image.
      */
-    if (mainp->rowgroup_ctr != (JDIMENSION) cinfo->min_DCT_v_scaled_size)
+    if (mainp->rowgroup_ctr != (LJPEG_JDIMENSION) cinfo->min_DCT_v_scaled_size)
       return;
 
     /* Send the completed row to the compressor */
@@ -166,10 +166,10 @@ process_data_simple_main (j_compress_ptr cinfo,
  * This routine handles all of the modes that use a full-size buffer.
  */
 
-METHODDEF(void)
-process_data_buffer_main (j_compress_ptr cinfo,
-			  JSAMPARRAY input_buf, JDIMENSION *in_row_ctr,
-			  JDIMENSION in_rows_avail)
+LJPEG_METHODDEF(void)
+process_data_buffer_main (LJPEG_j_compress_ptr cinfo,
+			  LJPEG_JSAMPARRAY input_buf, LJPEG_JDIMENSION *in_row_ctr,
+			  LJPEG_JDIMENSION in_rows_avail)
 {
   my_main_ptr mainp = (my_main_ptr) cinfo->main;
   int ci;
@@ -183,15 +183,15 @@ process_data_buffer_main (j_compress_ptr cinfo,
 	   ci++, compptr++) {
 	mainp->buffer[ci] = (*cinfo->mem->access_virt_sarray)
 	  ((LJPEG_j_common_ptr) cinfo, mainp->whole_image[ci], mainp->cur_iMCU_row *
-	   ((JDIMENSION) (compptr->v_samp_factor * cinfo->min_DCT_v_scaled_size)),
-	   (JDIMENSION) (compptr->v_samp_factor * cinfo->min_DCT_v_scaled_size),
+	   ((LJPEG_JDIMENSION) (compptr->v_samp_factor * cinfo->min_DCT_v_scaled_size)),
+	   (LJPEG_JDIMENSION) (compptr->v_samp_factor * cinfo->min_DCT_v_scaled_size),
 	   writing);
       }
       /* In a read pass, pretend we just read some source data. */
       if (! writing) {
-	*in_row_ctr += (JDIMENSION)
+	*in_row_ctr += (LJPEG_JDIMENSION)
 	  (cinfo->max_v_samp_factor * cinfo->min_DCT_v_scaled_size);
-	mainp->rowgroup_ctr = (JDIMENSION) cinfo->min_DCT_v_scaled_size;
+	mainp->rowgroup_ctr = (LJPEG_JDIMENSION) cinfo->min_DCT_v_scaled_size;
       }
     }
 
@@ -201,9 +201,9 @@ process_data_buffer_main (j_compress_ptr cinfo,
       (*cinfo->prep->pre_process_data) (cinfo,
 					input_buf, in_row_ctr, in_rows_avail,
 					mainp->buffer, &mainp->rowgroup_ctr,
-					(JDIMENSION) cinfo->min_DCT_v_scaled_size);
+					(LJPEG_JDIMENSION) cinfo->min_DCT_v_scaled_size);
       /* Return to application if we need more data to fill the iMCU row. */
-      if (mainp->rowgroup_ctr < (JDIMENSION) cinfo->min_DCT_v_scaled_size)
+      if (mainp->rowgroup_ctr < (LJPEG_JDIMENSION) cinfo->min_DCT_v_scaled_size)
 	return;
     }
 
@@ -245,7 +245,7 @@ process_data_buffer_main (j_compress_ptr cinfo,
  */
 
 LJPEG_GLOBAL(void)
-jinit_c_main_controller (j_compress_ptr cinfo, boolean need_full_buffer)
+jinit_c_main_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buffer)
 {
   my_main_ptr mainp;
   int ci;
@@ -272,11 +272,11 @@ jinit_c_main_controller (j_compress_ptr cinfo, boolean need_full_buffer)
 	 ci++, compptr++) {
       mainp->whole_image[ci] = (*cinfo->mem->request_virt_sarray)
 	((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
-	 compptr->width_in_blocks * ((JDIMENSION) compptr->DCT_h_scaled_size),
-	 ((JDIMENSION) jround_up((long) compptr->height_in_blocks,
+	 compptr->width_in_blocks * ((LJPEG_JDIMENSION) compptr->DCT_h_scaled_size),
+	 ((LJPEG_JDIMENSION) jround_up((long) compptr->height_in_blocks,
 				 (long) compptr->v_samp_factor)) *
-	 ((JDIMENSION) cinfo->min_DCT_v_scaled_size),
-	 (JDIMENSION) (compptr->v_samp_factor * compptr->DCT_v_scaled_size));
+	 ((LJPEG_JDIMENSION) cinfo->min_DCT_v_scaled_size),
+	 (LJPEG_JDIMENSION) (compptr->v_samp_factor * compptr->DCT_v_scaled_size));
     }
 #else
     ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
@@ -290,8 +290,8 @@ jinit_c_main_controller (j_compress_ptr cinfo, boolean need_full_buffer)
 	 ci++, compptr++) {
       mainp->buffer[ci] = (*cinfo->mem->alloc_sarray)
 	((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-	 compptr->width_in_blocks * ((JDIMENSION) compptr->DCT_h_scaled_size),
-	 (JDIMENSION) (compptr->v_samp_factor * compptr->DCT_v_scaled_size));
+	 compptr->width_in_blocks * ((LJPEG_JDIMENSION) compptr->DCT_h_scaled_size),
+	 (LJPEG_JDIMENSION) (compptr->v_samp_factor * compptr->DCT_v_scaled_size));
     }
   }
 }

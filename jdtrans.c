@@ -17,7 +17,7 @@
 
 
 /* Forward declarations */
-LOCAL(void) transdecode_master_selection JPP((j_decompress_ptr cinfo));
+LOCAL(void) transdecode_master_selection JPP((LJPEG_j_decompress_ptr cinfo));
 
 
 /*
@@ -42,7 +42,7 @@ LOCAL(void) transdecode_master_selection JPP((j_decompress_ptr cinfo));
  * a suspending data source is used.
  */
 LJPEG_GLOBAL(jvirt_barray_ptr *)
-jpeg_read_coefficients (j_decompress_ptr cinfo)
+jpeg_read_coefficients (LJPEG_j_decompress_ptr cinfo)
 {
   if (cinfo->global_state == DSTATE_READY) {
     /* First call: initialize active modules */
@@ -55,7 +55,7 @@ jpeg_read_coefficients (j_decompress_ptr cinfo)
       int retcode;
       /* Call progress monitor hook if present */
       if (cinfo->progress != NULL)
-	(*cinfo->progress->progress_monitor) ((LJPEG_j_common_ptr) cinfo);
+	(*cinfo->progress->LJPEG_progress_monitor) ((LJPEG_j_common_ptr) cinfo);
       /* Absorb some more input */
       retcode = (*cinfo->inputctl->consume_input) (cinfo);
       if (retcode == JPEG_SUSPENDED)
@@ -94,7 +94,7 @@ jpeg_read_coefficients (j_decompress_ptr cinfo)
  */
 
 LOCAL(void)
-transdecode_master_selection (j_decompress_ptr cinfo)
+transdecode_master_selection (LJPEG_j_decompress_ptr cinfo)
 {
   /* This is effectively a buffered-image operation. */
   cinfo->buffered_image = TRUE;

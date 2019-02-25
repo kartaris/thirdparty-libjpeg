@@ -195,7 +195,7 @@ typedef struct {
   struct jpeg_color_quantizer pub; /* public fields */
 
   /* Space for the eventually created colormap is stashed here */
-  JSAMPARRAY sv_colormap;	/* colormap allocated at init time */
+  LJPEG_JSAMPARRAY sv_colormap;	/* colormap allocated at init time */
   int desired;			/* desired # of colors = size of colormap */
 
   /* Variables for accumulating image statistics */
@@ -221,17 +221,17 @@ typedef my_cquantizer * my_cquantize_ptr;
  * NULL pointer).
  */
 
-METHODDEF(void)
-prescan_quantize (j_decompress_ptr cinfo, JSAMPARRAY input_buf,
-		  JSAMPARRAY output_buf, int num_rows)
+LJPEG_METHODDEF(void)
+prescan_quantize (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
+		  LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
   my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
   register JSAMPROW ptr;
   register histptr histp;
   register hist3d histogram = cquantize->histogram;
   int row;
-  JDIMENSION col;
-  JDIMENSION width = cinfo->output_width;
+  LJPEG_JDIMENSION col;
+  LJPEG_JDIMENSION width = cinfo->output_width;
 
   for (row = 0; row < num_rows; row++) {
     ptr = input_buf[row];
@@ -311,7 +311,7 @@ find_biggest_volume (boxptr boxlist, int numboxes)
 
 
 LOCAL(void)
-update_box (j_decompress_ptr cinfo, boxptr boxp)
+update_box (LJPEG_j_decompress_ptr cinfo, boxptr boxp)
 /* Shrink the min/max bounds of a box to enclose only nonzero elements, */
 /* and recompute its volume and population */
 {
@@ -422,7 +422,7 @@ update_box (j_decompress_ptr cinfo, boxptr boxp)
 
 
 LOCAL(int)
-median_cut (j_decompress_ptr cinfo, boxptr boxlist, int numboxes,
+median_cut (LJPEG_j_decompress_ptr cinfo, boxptr boxlist, int numboxes,
 	    int desired_colors)
 /* Repeatedly select and split the largest box until we have enough boxes */
 {
@@ -497,7 +497,7 @@ median_cut (j_decompress_ptr cinfo, boxptr boxlist, int numboxes,
 
 
 LOCAL(void)
-compute_color (j_decompress_ptr cinfo, boxptr boxp, int icolor)
+compute_color (LJPEG_j_decompress_ptr cinfo, boxptr boxp, int icolor)
 /* Compute representative color for a box, put it in colormap[icolor] */
 {
   /* Current algorithm: mean weighted by pixels (not colors) */
@@ -537,7 +537,7 @@ compute_color (j_decompress_ptr cinfo, boxptr boxp, int icolor)
 
 
 LOCAL(void)
-select_colors (j_decompress_ptr cinfo, int desired_colors)
+select_colors (LJPEG_j_decompress_ptr cinfo, int desired_colors)
 /* Master routine for color selection */
 {
   boxptr boxlist;
@@ -644,7 +644,7 @@ select_colors (j_decompress_ptr cinfo, int desired_colors)
  */
 
 LOCAL(int)
-find_nearby_colors (j_decompress_ptr cinfo, int minc0, int minc1, int minc2,
+find_nearby_colors (LJPEG_j_decompress_ptr cinfo, int minc0, int minc1, int minc2,
 		    JSAMPLE colorlist[])
 /* Locate the colormap entries close enough to an update box to be candidates
  * for the nearest entry to some cell(s) in the update box.  The update box
@@ -773,7 +773,7 @@ find_nearby_colors (j_decompress_ptr cinfo, int minc0, int minc1, int minc2,
 
 
 LOCAL(void)
-find_best_colors (j_decompress_ptr cinfo, int minc0, int minc1, int minc2,
+find_best_colors (LJPEG_j_decompress_ptr cinfo, int minc0, int minc1, int minc2,
 		  int numcolors, JSAMPLE colorlist[], JSAMPLE bestcolor[])
 /* Find the closest colormap entry for each cell in the update box,
  * given the list of candidate colors prepared by find_nearby_colors.
@@ -853,7 +853,7 @@ find_best_colors (j_decompress_ptr cinfo, int minc0, int minc1, int minc2,
 
 
 LOCAL(void)
-fill_inverse_cmap (j_decompress_ptr cinfo, int c0, int c1, int c2)
+fill_inverse_cmap (LJPEG_j_decompress_ptr cinfo, int c0, int c1, int c2)
 /* Fill the inverse-colormap entries in the update box that contains */
 /* histogram cell c0/c1/c2.  (Only that one cell MUST be filled, but */
 /* we can fill as many others as we wish.) */
@@ -912,9 +912,9 @@ fill_inverse_cmap (j_decompress_ptr cinfo, int c0, int c1, int c2)
  * Map some rows of pixels to the output colormapped representation.
  */
 
-METHODDEF(void)
-pass2_no_dither (j_decompress_ptr cinfo,
-		 JSAMPARRAY input_buf, JSAMPARRAY output_buf, int num_rows)
+LJPEG_METHODDEF(void)
+pass2_no_dither (LJPEG_j_decompress_ptr cinfo,
+		 LJPEG_JSAMPARRAY input_buf, LJPEG_JSAMPARRAY output_buf, int num_rows)
 /* This version performs no dithering */
 {
   my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
@@ -923,8 +923,8 @@ pass2_no_dither (j_decompress_ptr cinfo,
   register histptr cachep;
   register int c0, c1, c2;
   int row;
-  JDIMENSION col;
-  JDIMENSION width = cinfo->output_width;
+  LJPEG_JDIMENSION col;
+  LJPEG_JDIMENSION width = cinfo->output_width;
 
   for (row = 0; row < num_rows; row++) {
     inptr = input_buf[row];
@@ -946,9 +946,9 @@ pass2_no_dither (j_decompress_ptr cinfo,
 }
 
 
-METHODDEF(void)
-pass2_fs_dither (j_decompress_ptr cinfo,
-		 JSAMPARRAY input_buf, JSAMPARRAY output_buf, int num_rows)
+LJPEG_METHODDEF(void)
+pass2_fs_dither (LJPEG_j_decompress_ptr cinfo,
+		 LJPEG_JSAMPARRAY input_buf, LJPEG_JSAMPARRAY output_buf, int num_rows)
 /* This version performs Floyd-Steinberg dithering */
 {
   my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
@@ -963,8 +963,8 @@ pass2_fs_dither (j_decompress_ptr cinfo,
   int dir;			/* +1 or -1 depending on direction */
   int dir3;			/* 3*dir, for advancing inptr & errorptr */
   int row;
-  JDIMENSION col;
-  JDIMENSION width = cinfo->output_width;
+  LJPEG_JDIMENSION col;
+  LJPEG_JDIMENSION width = cinfo->output_width;
   JSAMPLE *range_limit = cinfo->sample_range_limit;
   int *error_limit = cquantize->error_limiter;
   JSAMPROW colormap0 = cinfo->colormap[0];
@@ -1106,7 +1106,7 @@ pass2_fs_dither (j_decompress_ptr cinfo,
  */
 
 LOCAL(void)
-init_error_limit (j_decompress_ptr cinfo)
+init_error_limit (LJPEG_j_decompress_ptr cinfo)
 /* Allocate and fill in the error_limiter table */
 {
   my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
@@ -1140,8 +1140,8 @@ init_error_limit (j_decompress_ptr cinfo)
  * Finish up at the end of each pass.
  */
 
-METHODDEF(void)
-finish_pass1 (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(void)
+finish_pass1 (LJPEG_j_decompress_ptr cinfo)
 {
   my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
 
@@ -1153,8 +1153,8 @@ finish_pass1 (j_decompress_ptr cinfo)
 }
 
 
-METHODDEF(void)
-finish_pass2 (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(void)
+finish_pass2 (LJPEG_j_decompress_ptr cinfo)
 {
   /* no work */
 }
@@ -1164,8 +1164,8 @@ finish_pass2 (j_decompress_ptr cinfo)
  * Initialize for each processing pass.
  */
 
-METHODDEF(void)
-start_pass_2_quant (j_decompress_ptr cinfo, boolean is_pre_scan)
+LJPEG_METHODDEF(void)
+start_pass_2_quant (LJPEG_j_decompress_ptr cinfo, boolean is_pre_scan)
 {
   my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
   hist3d histogram = cquantize->histogram;
@@ -1227,8 +1227,8 @@ start_pass_2_quant (j_decompress_ptr cinfo, boolean is_pre_scan)
  * Switch to a new external colormap between output passes.
  */
 
-METHODDEF(void)
-new_color_map_2_quant (j_decompress_ptr cinfo)
+LJPEG_METHODDEF(void)
+new_color_map_2_quant (LJPEG_j_decompress_ptr cinfo)
 {
   my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
 
@@ -1242,7 +1242,7 @@ new_color_map_2_quant (j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(void)
-jinit_2pass_quantizer (j_decompress_ptr cinfo)
+jinit_2pass_quantizer (LJPEG_j_decompress_ptr cinfo)
 {
   my_cquantize_ptr cquantize;
   int i;
@@ -1284,7 +1284,7 @@ jinit_2pass_quantizer (j_decompress_ptr cinfo)
     if (desired > MAXNUMCOLORS)
       ERREXIT1(cinfo, JERR_QUANT_MANY_COLORS, MAXNUMCOLORS);
     cquantize->sv_colormap = (*cinfo->mem->alloc_sarray)
-      ((LJPEG_j_common_ptr) cinfo,JPOOL_IMAGE, (JDIMENSION) desired, (JDIMENSION) 3);
+      ((LJPEG_j_common_ptr) cinfo,JPOOL_IMAGE, (LJPEG_JDIMENSION) desired, (LJPEG_JDIMENSION) 3);
     cquantize->desired = desired;
   } else
     cquantize->sv_colormap = NULL;

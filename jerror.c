@@ -67,7 +67,7 @@ const char * const jpeg_std_message_table[] = {
  * or jpeg_destroy) at some point.
  */
 
-METHODDEF(noreturn_t)
+LJPEG_METHODDEF(noreturn_t)
 error_exit (LJPEG_j_common_ptr cinfo)
 {
   /* Always display the message */
@@ -95,7 +95,7 @@ error_exit (LJPEG_j_common_ptr cinfo)
  * not just not use this routine.
  */
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 output_message (LJPEG_j_common_ptr cinfo)
 {
   char buffer[JMSG_LENGTH_MAX];
@@ -125,7 +125,7 @@ output_message (LJPEG_j_common_ptr cinfo)
  * or change the policy about which messages to display.
  */
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 emit_message (LJPEG_j_common_ptr cinfo, int msg_level)
 {
   struct jpeg_error_mgr * err = cinfo->err;
@@ -154,7 +154,7 @@ emit_message (LJPEG_j_common_ptr cinfo, int msg_level)
  * Few applications should need to override this method.
  */
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 format_message (LJPEG_j_common_ptr cinfo, char * buffer)
 {
   struct jpeg_error_mgr * err = cinfo->err;
@@ -209,7 +209,7 @@ format_message (LJPEG_j_common_ptr cinfo, char * buffer)
  * this method if it has additional error processing state.
  */
 
-METHODDEF(void)
+LJPEG_METHODDEF(void)
 reset_error_mgr (LJPEG_j_common_ptr cinfo)
 {
   cinfo->err->num_warnings = 0;

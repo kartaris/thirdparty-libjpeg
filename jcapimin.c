@@ -28,7 +28,7 @@
  */
 
 LJPEG_GLOBAL(void)
-jpeg_CreateCompress (j_compress_ptr cinfo, int version, size_t structsize)
+jpeg_CreateCompress (LJPEG_j_compress_ptr cinfo, int version, size_t structsize)
 {
   int i;
 
@@ -93,7 +93,7 @@ jpeg_CreateCompress (j_compress_ptr cinfo, int version, size_t structsize)
  */
 
 LJPEG_GLOBAL(void)
-jpeg_destroy_compress (j_compress_ptr cinfo)
+LJPEG_jpeg_destroy_compress (LJPEG_j_compress_ptr cinfo)
 {
   jpeg_destroy((LJPEG_j_common_ptr) cinfo); /* use common routine */
 }
@@ -105,7 +105,7 @@ jpeg_destroy_compress (j_compress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(void)
-jpeg_abort_compress (j_compress_ptr cinfo)
+jpeg_abort_compress (LJPEG_j_compress_ptr cinfo)
 {
   jpeg_abort((LJPEG_j_common_ptr) cinfo); /* use common routine */
 }
@@ -115,16 +115,16 @@ jpeg_abort_compress (j_compress_ptr cinfo)
  * Forcibly suppress or un-suppress all quantization and Huffman tables.
  * Marks all currently defined tables as already written (if suppress)
  * or not written (if !suppress).  This will control whether they get emitted
- * by a subsequent jpeg_start_compress call.
+ * by a subsequent LJPEG_jpeg_start_compress call.
  *
  * This routine is exported for use by applications that want to produce
  * abbreviated JPEG datastreams.  It logically belongs in jcparam.c, but
- * since it is called by jpeg_start_compress, we put it here --- otherwise
+ * since it is called by LJPEG_jpeg_start_compress, we put it here --- otherwise
  * jcparam.o would be linked whether the application used it or not.
  */
 
 LJPEG_GLOBAL(void)
-jpeg_suppress_tables (j_compress_ptr cinfo, boolean suppress)
+jpeg_suppress_tables (LJPEG_j_compress_ptr cinfo, boolean suppress)
 {
   int i;
   JQUANT_TBL * qtbl;
@@ -152,9 +152,9 @@ jpeg_suppress_tables (j_compress_ptr cinfo, boolean suppress)
  */
 
 LJPEG_GLOBAL(void)
-jpeg_finish_compress (j_compress_ptr cinfo)
+LJPEG_jpeg_finish_compress (LJPEG_j_compress_ptr cinfo)
 {
-  JDIMENSION iMCU_row;
+  LJPEG_JDIMENSION iMCU_row;
 
   if (cinfo->global_state == CSTATE_SCANNING ||
       cinfo->global_state == CSTATE_RAW_OK) {
@@ -171,7 +171,7 @@ jpeg_finish_compress (j_compress_ptr cinfo)
       if (cinfo->progress != NULL) {
 	cinfo->progress->pass_counter = (long) iMCU_row;
 	cinfo->progress->pass_limit = (long) cinfo->total_iMCU_rows;
-	(*cinfo->progress->progress_monitor) ((LJPEG_j_common_ptr) cinfo);
+	(*cinfo->progress->LJPEG_progress_monitor) ((LJPEG_j_common_ptr) cinfo);
       }
       /* We bypass the main controller and invoke coef controller directly;
        * all work is being done from the coefficient buffer.
@@ -192,15 +192,15 @@ jpeg_finish_compress (j_compress_ptr cinfo)
 /*
  * Write a special marker.
  * This is only recommended for writing COM or APPn markers.
- * Must be called after jpeg_start_compress() and before
+ * Must be called after LJPEG_jpeg_start_compress() and before
  * first call to jpeg_write_scanlines() or jpeg_write_raw_data().
  */
 
 LJPEG_GLOBAL(void)
-jpeg_write_marker (j_compress_ptr cinfo, int marker,
+jpeg_write_marker (LJPEG_j_compress_ptr cinfo, int marker,
 		   const JOCTET *dataptr, unsigned int datalen)
 {
-  JMETHOD(void, write_marker_byte, (j_compress_ptr info, int val));
+  LJPEG_JMETHOD(void, write_marker_byte, (LJPEG_j_compress_ptr info, int val));
 
   if (cinfo->next_scanline != 0 ||
       (cinfo->global_state != CSTATE_SCANNING &&
@@ -219,7 +219,7 @@ jpeg_write_marker (j_compress_ptr cinfo, int marker,
 /* Same, but piecemeal. */
 
 LJPEG_GLOBAL(void)
-jpeg_write_m_header (j_compress_ptr cinfo, int marker, unsigned int datalen)
+jpeg_write_m_header (LJPEG_j_compress_ptr cinfo, int marker, unsigned int datalen)
 {
   if (cinfo->next_scanline != 0 ||
       (cinfo->global_state != CSTATE_SCANNING &&
@@ -231,7 +231,7 @@ jpeg_write_m_header (j_compress_ptr cinfo, int marker, unsigned int datalen)
 }
 
 LJPEG_GLOBAL(void)
-jpeg_write_m_byte (j_compress_ptr cinfo, int val)
+jpeg_write_m_byte (LJPEG_j_compress_ptr cinfo, int val)
 {
   (*cinfo->marker->write_marker_byte) (cinfo, val);
 }
@@ -249,9 +249,9 @@ jpeg_write_m_byte (j_compress_ptr cinfo, int val)
  *		set destination to table file
  *		jpeg_write_tables(cinfo);
  *		set destination to image file
- *		jpeg_start_compress(cinfo, FALSE);
+ *		LJPEG_jpeg_start_compress(cinfo, FALSE);
  *		write data...
- *		jpeg_finish_compress(cinfo);
+ *		LJPEG_jpeg_finish_compress(cinfo);
  *
  * jpeg_write_tables has the side effect of marking all tables written
  * (same as jpeg_suppress_tables(..., TRUE)).  Thus a subsequent start_compress
@@ -259,7 +259,7 @@ jpeg_write_m_byte (j_compress_ptr cinfo, int val)
  */
 
 LJPEG_GLOBAL(void)
-jpeg_write_tables (j_compress_ptr cinfo)
+jpeg_write_tables (LJPEG_j_compress_ptr cinfo)
 {
   if (cinfo->global_state != CSTATE_START)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);

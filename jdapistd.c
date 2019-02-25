@@ -20,7 +20,7 @@
 
 
 /* Forward declarations */
-LOCAL(boolean) output_pass_setup JPP((j_decompress_ptr cinfo));
+LOCAL(boolean) output_pass_setup JPP((LJPEG_j_decompress_ptr cinfo));
 
 
 /*
@@ -34,7 +34,7 @@ LOCAL(boolean) output_pass_setup JPP((j_decompress_ptr cinfo));
  * a suspending data source is used.
  */
 LJPEG_GLOBAL(boolean)
-jpeg_start_decompress (j_decompress_ptr cinfo)
+jpeg_start_decompress (LJPEG_j_decompress_ptr cinfo)
 {
   if (cinfo->global_state == DSTATE_READY) {
     /* First call: initialize master control, select active modules */
@@ -54,7 +54,7 @@ jpeg_start_decompress (j_decompress_ptr cinfo)
 	int retcode;
 	/* Call progress monitor hook if present */
 	if (cinfo->progress != NULL)
-	  (*cinfo->progress->progress_monitor) ((LJPEG_j_common_ptr) cinfo);
+	  (*cinfo->progress->LJPEG_progress_monitor) ((LJPEG_j_common_ptr) cinfo);
 	/* Absorb some more input */
 	retcode = (*cinfo->inputctl->consume_input) (cinfo);
 	if (retcode == JPEG_SUSPENDED)
@@ -91,7 +91,7 @@ jpeg_start_decompress (j_decompress_ptr cinfo)
  */
 
 LOCAL(boolean)
-output_pass_setup (j_decompress_ptr cinfo)
+output_pass_setup (LJPEG_j_decompress_ptr cinfo)
 {
   if (cinfo->global_state != DSTATE_PRESCAN) {
     /* First call: do pass setup */
@@ -104,17 +104,17 @@ output_pass_setup (j_decompress_ptr cinfo)
 #ifdef QUANT_2PASS_SUPPORTED
     /* Crank through the dummy pass */
     while (cinfo->output_scanline < cinfo->output_height) {
-      JDIMENSION last_scanline;
+      LJPEG_JDIMENSION last_scanline;
       /* Call progress monitor hook if present */
       if (cinfo->progress != NULL) {
 	cinfo->progress->pass_counter = (long) cinfo->output_scanline;
 	cinfo->progress->pass_limit = (long) cinfo->output_height;
-	(*cinfo->progress->progress_monitor) ((LJPEG_j_common_ptr) cinfo);
+	(*cinfo->progress->LJPEG_progress_monitor) ((LJPEG_j_common_ptr) cinfo);
       }
       /* Process some data */
       last_scanline = cinfo->output_scanline;
-      (*cinfo->main->process_data) (cinfo, (JSAMPARRAY) NULL,
-				    &cinfo->output_scanline, (JDIMENSION) 0);
+      (*cinfo->main->process_data) (cinfo, (LJPEG_JSAMPARRAY) NULL,
+				    &cinfo->output_scanline, (LJPEG_JDIMENSION) 0);
       if (cinfo->output_scanline == last_scanline)
 	return FALSE;		/* No progress made, must suspend */
     }
@@ -146,11 +146,11 @@ output_pass_setup (j_decompress_ptr cinfo)
  * this likely signals an application programmer error.  However,
  * an oversize buffer (max_lines > scanlines remaining) is not an error.
  */
-LJPEG_GLOBAL(JDIMENSION)
-jpeg_read_scanlines (j_decompress_ptr cinfo, JSAMPARRAY scanlines,
-		     JDIMENSION max_lines)
+LJPEG_GLOBAL(LJPEG_JDIMENSION)
+jpeg_read_scanlines (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY scanlines,
+		     LJPEG_JDIMENSION max_lines)
 {
-  JDIMENSION row_ctr;
+  LJPEG_JDIMENSION row_ctr;
 
   if (cinfo->global_state != DSTATE_SCANNING)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
@@ -163,7 +163,7 @@ jpeg_read_scanlines (j_decompress_ptr cinfo, JSAMPARRAY scanlines,
   if (cinfo->progress != NULL) {
     cinfo->progress->pass_counter = (long) cinfo->output_scanline;
     cinfo->progress->pass_limit = (long) cinfo->output_height;
-    (*cinfo->progress->progress_monitor) ((LJPEG_j_common_ptr) cinfo);
+    (*cinfo->progress->LJPEG_progress_monitor) ((LJPEG_j_common_ptr) cinfo);
   }
 
   /* Process some data */
@@ -178,11 +178,11 @@ jpeg_read_scanlines (j_decompress_ptr cinfo, JSAMPARRAY scanlines,
  * Alternate entry point to read raw data.
  * Processes exactly one iMCU row per call, unless suspended.
  */
-LJPEG_GLOBAL(JDIMENSION)
-jpeg_read_raw_data (j_decompress_ptr cinfo, JSAMPIMAGE data,
-		    JDIMENSION max_lines)
+LJPEG_GLOBAL(LJPEG_JDIMENSION)
+jpeg_read_raw_data (LJPEG_j_decompress_ptr cinfo, JSAMPIMAGE data,
+		    LJPEG_JDIMENSION max_lines)
 {
-  JDIMENSION lines_per_iMCU_row;
+  LJPEG_JDIMENSION lines_per_iMCU_row;
 
   if (cinfo->global_state != DSTATE_RAW_OK)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
@@ -195,7 +195,7 @@ jpeg_read_raw_data (j_decompress_ptr cinfo, JSAMPIMAGE data,
   if (cinfo->progress != NULL) {
     cinfo->progress->pass_counter = (long) cinfo->output_scanline;
     cinfo->progress->pass_limit = (long) cinfo->output_height;
-    (*cinfo->progress->progress_monitor) ((LJPEG_j_common_ptr) cinfo);
+    (*cinfo->progress->LJPEG_progress_monitor) ((LJPEG_j_common_ptr) cinfo);
   }
 
   /* Verify that at least one iMCU row can be returned. */
@@ -221,7 +221,7 @@ jpeg_read_raw_data (j_decompress_ptr cinfo, JSAMPIMAGE data,
  * Initialize for an output pass in buffered-image mode.
  */
 LJPEG_GLOBAL(boolean)
-jpeg_start_output (j_decompress_ptr cinfo, int scan_number)
+jpeg_start_output (LJPEG_j_decompress_ptr cinfo, int scan_number)
 {
   if (cinfo->global_state != DSTATE_BUFIMAGE &&
       cinfo->global_state != DSTATE_PRESCAN)
@@ -245,7 +245,7 @@ jpeg_start_output (j_decompress_ptr cinfo, int scan_number)
  * a suspending data source is used.
  */
 LJPEG_GLOBAL(boolean)
-jpeg_finish_output (j_decompress_ptr cinfo)
+jpeg_finish_output (LJPEG_j_decompress_ptr cinfo)
 {
   if ((cinfo->global_state == DSTATE_SCANNING ||
        cinfo->global_state == DSTATE_RAW_OK) && cinfo->buffered_image) {
