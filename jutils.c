@@ -215,11 +215,11 @@ jcopy_block_row (LJPEG_JBLOCKROW input_row, LJPEG_JBLOCKROW output_row,
 #ifdef FMEMCOPY
   FMEMCOPY(output_row, input_row, num_blocks * (DCTSIZE2 * SIZEOF(JCOEF)));
 #else
-  register JCOEFPTR inptr, outptr;
+  register LJPEG_JCOEFPTR inptr, outptr;
   register long count;
 
-  inptr = (JCOEFPTR) input_row;
-  outptr = (JCOEFPTR) output_row;
+  inptr = (LJPEG_JCOEFPTR) input_row;
+  outptr = (LJPEG_JCOEFPTR) output_row;
   for (count = (long) num_blocks * DCTSIZE2; count > 0; count--) {
     *outptr++ = *inptr++;
   }

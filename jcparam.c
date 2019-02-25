@@ -43,7 +43,7 @@ jpeg_add_quant_table (LJPEG_j_compress_ptr cinfo, int which_tbl,
   qtblptr = & cinfo->quant_tbl_ptrs[which_tbl];
 
   if (*qtblptr == NULL)
-    *qtblptr = jpeg_alloc_quant_table((LJPEG_j_common_ptr) cinfo);
+    *qtblptr = LJPEG_jpeg_alloc_quant_table((LJPEG_j_common_ptr) cinfo);
 
   for (i = 0; i < DCTSIZE2; i++) {
     temp = ((long) basic_table[i] * scale_factor + 50L) / 100L;
@@ -168,7 +168,7 @@ add_huff_table (LJPEG_j_compress_ptr cinfo,
   int nsymbols, len;
 
   if (*htblptr == NULL)
-    *htblptr = jpeg_alloc_huff_table((LJPEG_j_common_ptr) cinfo);
+    *htblptr = LJPEG_jpeg_alloc_huff_table((LJPEG_j_common_ptr) cinfo);
 
   /* Copy the number-of-symbols-of-each-code-length counts */
   MEMCOPY((*htblptr)->bits, bits, SIZEOF((*htblptr)->bits));
@@ -289,9 +289,9 @@ LJPEG_jpeg_set_defaults (LJPEG_j_compress_ptr cinfo)
    * multiple images at same param settings.
    */
   if (cinfo->comp_info == NULL)
-    cinfo->comp_info = (jpeg_component_info *)
+    cinfo->comp_info = (LJPEG_jpeg_component_info *)
       (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
-				  MAX_COMPONENTS * SIZEOF(jpeg_component_info));
+				  MAX_COMPONENTS * SIZEOF(LJPEG_jpeg_component_info));
 
   /* Initialize everything not dependent on the color space */
 
@@ -407,7 +407,7 @@ LJPEG_jpeg_default_colorspace (LJPEG_j_compress_ptr cinfo)
 LJPEG_GLOBAL(void)
 jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
 {
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
   int ci;
 
 #define SET_COMP(index,id,hsamp,vsamp,quant,dctbl,actbl)  \

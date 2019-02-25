@@ -91,7 +91,7 @@ LJPEG_start_pass (LJPEG_j_decompress_ptr cinfo)
 {
   my_idct_ptr idct = (my_idct_ptr) cinfo->idct;
   int ci, i;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   int method = 0;
   inverse_DCT_method_ptr method_ptr = NULL;
   JQUANT_TBL * qtbl;
@@ -363,7 +363,7 @@ jinit_inverse_dct (LJPEG_j_decompress_ptr cinfo)
 {
   my_idct_ptr idct;
   int ci;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
 
   idct = (my_idct_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,

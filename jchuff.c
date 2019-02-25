@@ -43,12 +43,12 @@ typedef struct {
   unsigned int ehufco[256];	/* code for each symbol */
   char ehufsi[256];		/* length of code for each symbol */
   /* If no code has been allocated for a symbol S, ehufsi[S] contains 0 */
-} c_derived_tbl;
+} LJPEG_c_derived_tbl;
 
 
 /* Expanded entropy encoder object for Huffman encoding.
  *
- * The savable_state subrecord contains fields that change within an MCU,
+ * The LJPEG_savable_state subrecord contains fields that change within an MCU,
  * but must not be updated permanently until we complete the MCU.
  */
 
@@ -56,7 +56,7 @@ typedef struct {
   INT32 put_buffer;		/* current bit-accumulation buffer */
   int put_bits;			/* # of bits now in it */
   int last_dc_val[MAX_COMPS_IN_SCAN]; /* last DC coef for each component */
-} savable_state;
+} LJPEG_savable_state;
 
 /* This macro is to work around compilers with missing or broken
  * structure assignment.  You'll need to fix this code if you have
@@ -81,15 +81,15 @@ typedef struct {
 typedef struct {
   struct LJPEG_jpeg_entropy_encoder pub; /* public fields */
 
-  savable_state saved;		/* Bit buffer & DC state at start of MCU */
+  LJPEG_savable_state saved;		/* Bit buffer & DC state at start of MCU */
 
   /* These fields are NOT loaded into local working state. */
   unsigned int restarts_to_go;	/* MCUs left in this restart interval */
   int next_restart_num;		/* next restart number to write (0-7) */
 
   /* Pointers to derived tables (these workspaces have image lifespan) */
-  c_derived_tbl * dc_derived_tbls[NUM_HUFF_TBLS];
-  c_derived_tbl * ac_derived_tbls[NUM_HUFF_TBLS];
+  LJPEG_c_derived_tbl * dc_derived_tbls[NUM_HUFF_TBLS];
+  LJPEG_c_derived_tbl * ac_derived_tbls[NUM_HUFF_TBLS];
 
   /* Statistics tables for optimization */
   long * dc_count_ptrs[NUM_HUFF_TBLS];
@@ -112,9 +112,9 @@ typedef struct {
   unsigned int BE;		/* # of buffered correction bits before MCU */
   char * bit_buffer;		/* buffer for correction bits (1 per char) */
   /* packing correction bits tightly would save some space but cost time... */
-} huff_entropy_encoder;
+} LJPEG_huff_entropy_encoder;
 
-typedef huff_entropy_encoder * huff_entropy_ptr;
+typedef LJPEG_huff_entropy_encoder * LJPEG_huff_entropy_ptr;
 
 /* Working state while writing an MCU (sequential mode).
  * This struct contains all the fields that are needed by subroutines.
@@ -123,9 +123,9 @@ typedef huff_entropy_encoder * huff_entropy_ptr;
 typedef struct {
   JOCTET * next_output_byte;	/* => next byte to write in buffer */
   size_t free_in_buffer;	/* # of byte spaces remaining in buffer */
-  savable_state cur;		/* Current bit buffer & DC state */
+  LJPEG_savable_state cur;		/* Current bit buffer & DC state */
   LJPEG_j_compress_ptr cinfo;		/* dump_buffer needs access to this */
-} working_state;
+} LJPEG_working_state;
 
 /* MAX_CORR_BITS is the number of bits the AC refinement correction-bit
  * buffer can hold.  Larger sizes may slightly improve compression, but
@@ -158,11 +158,11 @@ typedef struct {
  */
 
 LOCAL(void)
-jpeg_make_c_derived_tbl (LJPEG_j_compress_ptr cinfo, boolean isDC, int tblno,
-			 c_derived_tbl ** pdtbl)
+LJPEG_jpeg_make_c_derived_tbl (LJPEG_j_compress_ptr cinfo, boolean isDC, int tblno,
+			 LJPEG_c_derived_tbl ** pdtbl)
 {
   JHUFF_TBL *htbl;
-  c_derived_tbl *dtbl;
+  LJPEG_c_derived_tbl *dtbl;
   int p, i, l, lastp, si, maxsymbol;
   char huffsize[257];
   unsigned int huffcode[257];
@@ -182,9 +182,9 @@ jpeg_make_c_derived_tbl (LJPEG_j_compress_ptr cinfo, boolean isDC, int tblno,
 
   /* Allocate a workspace if we haven't already done so. */
   if (*pdtbl == NULL)
-    *pdtbl = (c_derived_tbl *)
+    *pdtbl = (LJPEG_c_derived_tbl *)
       (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				  SIZEOF(c_derived_tbl));
+				  SIZEOF(LJPEG_c_derived_tbl));
   dtbl = *pdtbl;
   
   /* Figure C.1: make table of Huffman code length for each symbol */
@@ -255,18 +255,18 @@ jpeg_make_c_derived_tbl (LJPEG_j_compress_ptr cinfo, boolean isDC, int tblno,
 #define LJPEG_emit_byte_s(state,val,action)  \
 	{ *(state)->next_output_byte++ = (JOCTET) (val);  \
 	  if (--(state)->free_in_buffer == 0)  \
-	    if (! dump_buffer_s(state))  \
+	    if (! LJPEG_dump_buffer_s(state))  \
 	      { action; } }
 
 /* Emit a byte */
 #define LJPEG_emit_byte_e(entropy,val)  \
 	{ *(entropy)->next_output_byte++ = (JOCTET) (val);  \
 	  if (--(entropy)->free_in_buffer == 0)  \
-	    dump_buffer_e(entropy); }
+	    LJPEG_dump_buffer_e(entropy); }
 
 
 LOCAL(boolean)
-dump_buffer_s (working_state * state)
+LJPEG_dump_buffer_s (LJPEG_working_state * state)
 /* Empty the output buffer; return TRUE if successful, FALSE if must suspend */
 {
   struct jpeg_destination_mgr * dest = state->cinfo->dest;
@@ -281,7 +281,7 @@ dump_buffer_s (working_state * state)
 
 
 LOCAL(void)
-dump_buffer_e (huff_entropy_ptr entropy)
+LJPEG_dump_buffer_e (LJPEG_huff_entropy_ptr entropy)
 /* Empty the output buffer; we do not support suspension in this case. */
 {
   struct jpeg_destination_mgr * dest = entropy->cinfo->dest;
@@ -304,7 +304,7 @@ dump_buffer_e (huff_entropy_ptr entropy)
 
 INLINE
 LOCAL(boolean)
-emit_bits_s (working_state * state, unsigned int code, int size)
+LJPEG_emit_bits_s (LJPEG_working_state * state, unsigned int code, int size)
 /* Emit some bits; return TRUE if successful, FALSE if must suspend */
 {
   /* This routine is heavily used, so it's worth coding tightly. */
@@ -343,7 +343,7 @@ emit_bits_s (working_state * state, unsigned int code, int size)
 
 INLINE
 LOCAL(void)
-emit_bits_e (huff_entropy_ptr entropy, unsigned int code, int size)
+LJPEG_emit_bits_e (LJPEG_huff_entropy_ptr entropy, unsigned int code, int size)
 /* Emit some bits, unless we are in gather mode */
 {
   /* This routine is heavily used, so it's worth coding tightly. */
@@ -383,9 +383,9 @@ emit_bits_e (huff_entropy_ptr entropy, unsigned int code, int size)
 
 
 LOCAL(boolean)
-flush_bits_s (working_state * state)
+LJPEG_flush_bits_s (LJPEG_working_state * state)
 {
-  if (! emit_bits_s(state, 0x7F, 7)) /* fill any partial byte with ones */
+  if (! LJPEG_emit_bits_s(state, 0x7F, 7)) /* fill any partial byte with ones */
     return FALSE;
   state->cur.put_buffer = 0;	     /* and reset bit-buffer to empty */
   state->cur.put_bits = 0;
@@ -394,9 +394,9 @@ flush_bits_s (working_state * state)
 
 
 LOCAL(void)
-flush_bits_e (huff_entropy_ptr entropy)
+LJPEG_flush_bits_e (LJPEG_huff_entropy_ptr entropy)
 {
-  emit_bits_e(entropy, 0x7F, 7); /* fill any partial byte with ones */
+  LJPEG_emit_bits_e(entropy, 0x7F, 7); /* fill any partial byte with ones */
   entropy->saved.put_buffer = 0; /* and reset bit-buffer to empty */
   entropy->saved.put_bits = 0;
 }
@@ -408,26 +408,26 @@ flush_bits_e (huff_entropy_ptr entropy)
 
 INLINE
 LOCAL(void)
-emit_dc_symbol (huff_entropy_ptr entropy, int tbl_no, int symbol)
+LJPEG_emit_dc_symbol (LJPEG_huff_entropy_ptr entropy, int tbl_no, int symbol)
 {
   if (entropy->gather_statistics)
     entropy->dc_count_ptrs[tbl_no][symbol]++;
   else {
-    c_derived_tbl * tbl = entropy->dc_derived_tbls[tbl_no];
-    emit_bits_e(entropy, tbl->ehufco[symbol], tbl->ehufsi[symbol]);
+    LJPEG_c_derived_tbl * tbl = entropy->dc_derived_tbls[tbl_no];
+    LJPEG_emit_bits_e(entropy, tbl->ehufco[symbol], tbl->ehufsi[symbol]);
   }
 }
 
 
 INLINE
 LOCAL(void)
-emit_ac_symbol (huff_entropy_ptr entropy, int tbl_no, int symbol)
+LJPEG_emit_ac_symbol (LJPEG_huff_entropy_ptr entropy, int tbl_no, int symbol)
 {
   if (entropy->gather_statistics)
     entropy->ac_count_ptrs[tbl_no][symbol]++;
   else {
-    c_derived_tbl * tbl = entropy->ac_derived_tbls[tbl_no];
-    emit_bits_e(entropy, tbl->ehufco[symbol], tbl->ehufsi[symbol]);
+    LJPEG_c_derived_tbl * tbl = entropy->ac_derived_tbls[tbl_no];
+    LJPEG_emit_bits_e(entropy, tbl->ehufco[symbol], tbl->ehufsi[symbol]);
   }
 }
 
@@ -437,14 +437,14 @@ emit_ac_symbol (huff_entropy_ptr entropy, int tbl_no, int symbol)
  */
 
 LOCAL(void)
-emit_buffered_bits (huff_entropy_ptr entropy, char * bufstart,
+LJPEG_emit_buffered_bits (LJPEG_huff_entropy_ptr entropy, char * bufstart,
 		    unsigned int nbits)
 {
   if (entropy->gather_statistics)
     return;			/* no real work */
 
   while (nbits > 0) {
-    emit_bits_e(entropy, (unsigned int) (*bufstart), 1);
+    LJPEG_emit_bits_e(entropy, (unsigned int) (*bufstart), 1);
     bufstart++;
     nbits--;
   }
@@ -456,7 +456,7 @@ emit_buffered_bits (huff_entropy_ptr entropy, char * bufstart,
  */
 
 LOCAL(void)
-emit_eobrun (huff_entropy_ptr entropy)
+LJPEG_emit_eobrun (LJPEG_huff_entropy_ptr entropy)
 {
   register int temp, nbits;
 
@@ -469,14 +469,14 @@ emit_eobrun (huff_entropy_ptr entropy)
     if (nbits > 14)
       ERREXIT(entropy->cinfo, JERR_HUFF_MISSING_CODE);
 
-    emit_ac_symbol(entropy, entropy->ac_tbl_no, nbits << 4);
+    LJPEG_emit_ac_symbol(entropy, entropy->ac_tbl_no, nbits << 4);
     if (nbits)
-      emit_bits_e(entropy, entropy->EOBRUN, nbits);
+      LJPEG_emit_bits_e(entropy, entropy->EOBRUN, nbits);
 
     entropy->EOBRUN = 0;
 
     /* Emit any buffered correction bits */
-    emit_buffered_bits(entropy, entropy->bit_buffer, entropy->BE);
+    LJPEG_emit_buffered_bits(entropy, entropy->bit_buffer, entropy->BE);
     entropy->BE = 0;
   }
 }
@@ -487,11 +487,11 @@ emit_eobrun (huff_entropy_ptr entropy)
  */
 
 LOCAL(boolean)
-LJPEG_emit_restart_s (working_state * state, int restart_num)
+LJPEG_emit_restart_s (LJPEG_working_state * state, int restart_num)
 {
   int ci;
 
-  if (! flush_bits_s(state))
+  if (! LJPEG_flush_bits_s(state))
     return FALSE;
 
   LJPEG_emit_byte_s(state, 0xFF, return FALSE);
@@ -508,14 +508,14 @@ LJPEG_emit_restart_s (working_state * state, int restart_num)
 
 
 LOCAL(void)
-LJPEG_emit_restart_e (huff_entropy_ptr entropy, int restart_num)
+LJPEG_emit_restart_e (LJPEG_huff_entropy_ptr entropy, int restart_num)
 {
   int ci;
 
-  emit_eobrun(entropy);
+  LJPEG_emit_eobrun(entropy);
 
   if (! entropy->gather_statistics) {
-    flush_bits_e(entropy);
+    LJPEG_flush_bits_e(entropy);
     LJPEG_emit_byte_e(entropy, 0xFF);
     LJPEG_emit_byte_e(entropy, JPEG_RST0 + restart_num);
   }
@@ -538,15 +538,15 @@ LJPEG_emit_restart_e (huff_entropy_ptr entropy, int restart_num)
  */
 
 LJPEG_METHODDEF(boolean)
-LJPEG_LJPEG_encode_mcu_DC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_encode_mcu_DC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   register int temp, temp2;
   register int nbits;
   int blkn, ci;
   int Al = cinfo->Al;
   LJPEG_JBLOCKROW block;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
   ISHIFT_TEMPS
 
   entropy->next_output_byte = cinfo->dest->next_output_byte;
@@ -594,12 +594,12 @@ LJPEG_LJPEG_encode_mcu_DC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MC
       ERREXIT(cinfo, JERR_BAD_DCT_COEF);
     
     /* Count/emit the Huffman-coded symbol for the number of bits */
-    emit_dc_symbol(entropy, compptr->dc_tbl_no, nbits);
+    LJPEG_emit_dc_symbol(entropy, compptr->dc_tbl_no, nbits);
     
     /* Emit that number of bits of the value, if positive, */
     /* or the complement of its magnitude, if negative. */
     if (nbits)			/* emit_bits rejects calls with size 0 */
-      emit_bits_e(entropy, (unsigned int) temp2, nbits);
+      LJPEG_emit_bits_e(entropy, (unsigned int) temp2, nbits);
   }
 
   cinfo->dest->next_output_byte = entropy->next_output_byte;
@@ -625,9 +625,9 @@ LJPEG_LJPEG_encode_mcu_DC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MC
  */
 
 LJPEG_METHODDEF(boolean)
-LJPEG_LJPEG_encode_mcu_AC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_encode_mcu_AC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   register int temp, temp2;
   register int nbits;
   register int r, k;
@@ -681,10 +681,10 @@ LJPEG_LJPEG_encode_mcu_AC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MC
 
     /* Emit any pending EOBRUN */
     if (entropy->EOBRUN > 0)
-      emit_eobrun(entropy);
+      LJPEG_emit_eobrun(entropy);
     /* if run length > 15, must emit special run-length-16 codes (0xF0) */
     while (r > 15) {
-      emit_ac_symbol(entropy, entropy->ac_tbl_no, 0xF0);
+      LJPEG_emit_ac_symbol(entropy, entropy->ac_tbl_no, 0xF0);
       r -= 16;
     }
 
@@ -697,11 +697,11 @@ LJPEG_LJPEG_encode_mcu_AC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MC
       ERREXIT(cinfo, JERR_BAD_DCT_COEF);
 
     /* Count/emit Huffman symbol for run length / number of bits */
-    emit_ac_symbol(entropy, entropy->ac_tbl_no, (r << 4) + nbits);
+    LJPEG_emit_ac_symbol(entropy, entropy->ac_tbl_no, (r << 4) + nbits);
 
     /* Emit that number of bits of the value, if positive, */
     /* or the complement of its magnitude, if negative. */
-    emit_bits_e(entropy, (unsigned int) temp2, nbits);
+    LJPEG_emit_bits_e(entropy, (unsigned int) temp2, nbits);
 
     r = 0;			/* reset zero run length */
   }
@@ -709,7 +709,7 @@ LJPEG_LJPEG_encode_mcu_AC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MC
   if (r > 0) {			/* If there are trailing zeroes, */
     entropy->EOBRUN++;		/* count an EOB */
     if (entropy->EOBRUN == 0x7FFF)
-      emit_eobrun(entropy);	/* force it out to avoid overflow */
+      LJPEG_emit_eobrun(entropy);	/* force it out to avoid overflow */
   }
 
   cinfo->dest->next_output_byte = entropy->next_output_byte;
@@ -736,9 +736,9 @@ LJPEG_LJPEG_encode_mcu_AC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MC
  */
 
 LJPEG_METHODDEF(boolean)
-LJPEG_LJPEG_encode_mcu_DC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_encode_mcu_DC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   register int temp;
   int blkn;
   int Al = cinfo->Al;
@@ -758,7 +758,7 @@ LJPEG_LJPEG_encode_mcu_DC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *M
 
     /* We simply emit the Al'th bit of the DC coefficient value. */
     temp = (*block)[0];
-    emit_bits_e(entropy, (unsigned int) (temp >> Al), 1);
+    LJPEG_emit_bits_e(entropy, (unsigned int) (temp >> Al), 1);
   }
 
   cinfo->dest->next_output_byte = entropy->next_output_byte;
@@ -783,9 +783,9 @@ LJPEG_LJPEG_encode_mcu_DC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *M
  */
 
 LJPEG_METHODDEF(boolean)
-LJPEG_LJPEG_encode_mcu_AC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_encode_mcu_AC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   register int temp;
   register int r, k;
   int EOB;
@@ -844,12 +844,12 @@ LJPEG_LJPEG_encode_mcu_AC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *M
     /* Emit any required ZRLs, but not if they can be folded into EOB */
     while (r > 15 && k <= EOB) {
       /* emit any pending EOBRUN and the BE correction bits */
-      emit_eobrun(entropy);
+      LJPEG_emit_eobrun(entropy);
       /* Emit ZRL */
-      emit_ac_symbol(entropy, entropy->ac_tbl_no, 0xF0);
+      LJPEG_emit_ac_symbol(entropy, entropy->ac_tbl_no, 0xF0);
       r -= 16;
       /* Emit buffered correction bits that must be associated with ZRL */
-      emit_buffered_bits(entropy, BR_buffer, BR);
+      LJPEG_emit_buffered_bits(entropy, BR_buffer, BR);
       BR_buffer = entropy->bit_buffer; /* BE bits are gone now */
       BR = 0;
     }
@@ -866,17 +866,17 @@ LJPEG_LJPEG_encode_mcu_AC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *M
     }
 
     /* Emit any pending EOBRUN and the BE correction bits */
-    emit_eobrun(entropy);
+    LJPEG_emit_eobrun(entropy);
 
     /* Count/emit Huffman symbol for run length / number of bits */
-    emit_ac_symbol(entropy, entropy->ac_tbl_no, (r << 4) + 1);
+    LJPEG_emit_ac_symbol(entropy, entropy->ac_tbl_no, (r << 4) + 1);
 
     /* Emit output bit for newly-nonzero coef */
     temp = ((*block)[natural_order[k]] < 0) ? 0 : 1;
-    emit_bits_e(entropy, (unsigned int) temp, 1);
+    LJPEG_emit_bits_e(entropy, (unsigned int) temp, 1);
 
     /* Emit buffered correction bits that must be associated with this code */
-    emit_buffered_bits(entropy, BR_buffer, BR);
+    LJPEG_emit_buffered_bits(entropy, BR_buffer, BR);
     BR_buffer = entropy->bit_buffer; /* BE bits are gone now */
     BR = 0;
     r = 0;			/* reset zero run length */
@@ -890,7 +890,7 @@ LJPEG_LJPEG_encode_mcu_AC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *M
      * 2. overflow of the correction bit buffer during the next MCU.
      */
     if (entropy->EOBRUN == 0x7FFF || entropy->BE > (MAX_CORR_BITS-DCTSIZE2+1))
-      emit_eobrun(entropy);
+      LJPEG_emit_eobrun(entropy);
   }
 
   cinfo->dest->next_output_byte = entropy->next_output_byte;
@@ -913,8 +913,8 @@ LJPEG_LJPEG_encode_mcu_AC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *M
 /* Encode a single block's worth of coefficients */
 
 LOCAL(boolean)
-encode_one_block (working_state * state, JCOEFPTR block, int last_dc_val,
-		  c_derived_tbl *dctbl, c_derived_tbl *actbl)
+LJPEG_encode_one_block (LJPEG_working_state * state, LJPEG_JCOEFPTR block, int last_dc_val,
+		  LJPEG_c_derived_tbl *dctbl, LJPEG_c_derived_tbl *actbl)
 {
   register int temp, temp2;
   register int nbits;
@@ -946,13 +946,13 @@ encode_one_block (working_state * state, JCOEFPTR block, int last_dc_val,
     ERREXIT(state->cinfo, JERR_BAD_DCT_COEF);
 
   /* Emit the Huffman-coded symbol for the number of bits */
-  if (! emit_bits_s(state, dctbl->ehufco[nbits], dctbl->ehufsi[nbits]))
+  if (! LJPEG_emit_bits_s(state, dctbl->ehufco[nbits], dctbl->ehufsi[nbits]))
     return FALSE;
 
   /* Emit that number of bits of the value, if positive, */
   /* or the complement of its magnitude, if negative. */
   if (nbits)			/* emit_bits rejects calls with size 0 */
-    if (! emit_bits_s(state, (unsigned int) temp2, nbits))
+    if (! LJPEG_emit_bits_s(state, (unsigned int) temp2, nbits))
       return FALSE;
 
   /* Encode the AC coefficients per section F.1.2.2 */
@@ -965,7 +965,7 @@ encode_one_block (working_state * state, JCOEFPTR block, int last_dc_val,
     } else {
       /* if run length > 15, must emit special run-length-16 codes (0xF0) */
       while (r > 15) {
-	if (! emit_bits_s(state, actbl->ehufco[0xF0], actbl->ehufsi[0xF0]))
+	if (! LJPEG_emit_bits_s(state, actbl->ehufco[0xF0], actbl->ehufsi[0xF0]))
 	  return FALSE;
 	r -= 16;
       }
@@ -987,12 +987,12 @@ encode_one_block (working_state * state, JCOEFPTR block, int last_dc_val,
 
       /* Emit Huffman symbol for run length / number of bits */
       i = (r << 4) + nbits;
-      if (! emit_bits_s(state, actbl->ehufco[i], actbl->ehufsi[i]))
+      if (! LJPEG_emit_bits_s(state, actbl->ehufco[i], actbl->ehufsi[i]))
 	return FALSE;
 
       /* Emit that number of bits of the value, if positive, */
       /* or the complement of its magnitude, if negative. */
-      if (! emit_bits_s(state, (unsigned int) temp2, nbits))
+      if (! LJPEG_emit_bits_s(state, (unsigned int) temp2, nbits))
 	return FALSE;
 
       r = 0;
@@ -1001,7 +1001,7 @@ encode_one_block (working_state * state, JCOEFPTR block, int last_dc_val,
 
   /* If the last coef(s) were zero, emit an end-of-block code */
   if (r > 0)
-    if (! emit_bits_s(state, actbl->ehufco[0], actbl->ehufsi[0]))
+    if (! LJPEG_emit_bits_s(state, actbl->ehufco[0], actbl->ehufsi[0]))
       return FALSE;
 
   return TRUE;
@@ -1015,10 +1015,10 @@ encode_one_block (working_state * state, JCOEFPTR block, int last_dc_val,
 LJPEG_METHODDEF(boolean)
 LJPEG_encode_mcu_huff (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
-  working_state state;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
+  LJPEG_working_state state;
   int blkn, ci;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
 
   /* Load up working state */
   state.next_output_byte = cinfo->dest->next_output_byte;
@@ -1037,7 +1037,7 @@ LJPEG_encode_mcu_huff (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
   for (blkn = 0; blkn < cinfo->blocks_in_MCU; blkn++) {
     ci = cinfo->MCU_membership[blkn];
     compptr = cinfo->cur_comp_info[ci];
-    if (! encode_one_block(&state,
+    if (! LJPEG_encode_one_block(&state,
 			   MCU_data[blkn][0], state.cur.last_dc_val[ci],
 			   entropy->dc_derived_tbls[compptr->dc_tbl_no],
 			   entropy->ac_derived_tbls[compptr->ac_tbl_no]))
@@ -1072,16 +1072,16 @@ LJPEG_encode_mcu_huff (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 LJPEG_METHODDEF(void)
 LJPEG_finish_pass_huff (LJPEG_j_compress_ptr cinfo)
 {
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
-  working_state state;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
+  LJPEG_working_state state;
 
   if (cinfo->progressive_mode) {
     entropy->next_output_byte = cinfo->dest->next_output_byte;
     entropy->free_in_buffer = cinfo->dest->free_in_buffer;
 
     /* Flush out any buffered data */
-    emit_eobrun(entropy);
-    flush_bits_e(entropy);
+    LJPEG_emit_eobrun(entropy);
+    LJPEG_flush_bits_e(entropy);
 
     cinfo->dest->next_output_byte = entropy->next_output_byte;
     cinfo->dest->free_in_buffer = entropy->free_in_buffer;
@@ -1093,7 +1093,7 @@ LJPEG_finish_pass_huff (LJPEG_j_compress_ptr cinfo)
     state.cinfo = cinfo;
 
     /* Flush out the last data */
-    if (! flush_bits_s(&state))
+    if (! LJPEG_flush_bits_s(&state))
       ERREXIT(cinfo, JERR_CANT_SUSPEND);
 
     /* Update state */
@@ -1119,7 +1119,7 @@ LJPEG_finish_pass_huff (LJPEG_j_compress_ptr cinfo)
 /* Process a single block's worth of coefficients */
 
 LOCAL(void)
-htest_one_block (LJPEG_j_compress_ptr cinfo, JCOEFPTR block, int last_dc_val,
+LJPEG_htest_one_block (LJPEG_j_compress_ptr cinfo, LJPEG_JCOEFPTR block, int last_dc_val,
 		 long dc_counts[], long ac_counts[])
 {
   register int temp;
@@ -1196,9 +1196,9 @@ htest_one_block (LJPEG_j_compress_ptr cinfo, JCOEFPTR block, int last_dc_val,
 LJPEG_METHODDEF(boolean)
 LJPEG_encode_mcu_gather (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   int blkn, ci;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
 
   /* Take care of restart intervals if needed */
   if (cinfo->restart_interval) {
@@ -1215,7 +1215,7 @@ LJPEG_encode_mcu_gather (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
   for (blkn = 0; blkn < cinfo->blocks_in_MCU; blkn++) {
     ci = cinfo->MCU_membership[blkn];
     compptr = cinfo->cur_comp_info[ci];
-    htest_one_block(cinfo, MCU_data[blkn][0], entropy->saved.last_dc_val[ci],
+    LJPEG_htest_one_block(cinfo, MCU_data[blkn][0], entropy->saved.last_dc_val[ci],
 		    entropy->dc_count_ptrs[compptr->dc_tbl_no],
 		    entropy->ac_count_ptrs[compptr->ac_tbl_no]);
     entropy->saved.last_dc_val[ci] = MCU_data[blkn][0][0];
@@ -1253,7 +1253,7 @@ LJPEG_encode_mcu_gather (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
  */
 
 LOCAL(void)
-jpeg_gen_optimal_table (LJPEG_j_compress_ptr cinfo, JHUFF_TBL * htbl, long freq[])
+LJPEG_jpeg_gen_optimal_table (LJPEG_j_compress_ptr cinfo, JHUFF_TBL * htbl, long freq[])
 {
 #define MAX_CLEN 32		/* assumed maximum initial code length */
   UINT8 bits[MAX_CLEN+1];	/* bits[k] = # of symbols with code length k */
@@ -1396,19 +1396,19 @@ jpeg_gen_optimal_table (LJPEG_j_compress_ptr cinfo, JHUFF_TBL * htbl, long freq[
 LJPEG_METHODDEF(void)
 LJPEG_finish_pass_gather (LJPEG_j_compress_ptr cinfo)
 {
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   int ci, tbl;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
   JHUFF_TBL **htblptr;
   boolean did_dc[NUM_HUFF_TBLS];
   boolean did_ac[NUM_HUFF_TBLS];
 
-  /* It's important not to apply jpeg_gen_optimal_table more than once
+  /* It's important not to apply LJPEG_jpeg_gen_optimal_table more than once
    * per table, because it clobbers the input frequency counts!
    */
   if (cinfo->progressive_mode)
     /* Flush out buffered data (all we care about is counting the EOB symbol) */
-    emit_eobrun(entropy);
+    LJPEG_emit_eobrun(entropy);
 
   MEMZERO(did_dc, SIZEOF(did_dc));
   MEMZERO(did_ac, SIZEOF(did_ac));
@@ -1421,8 +1421,8 @@ LJPEG_finish_pass_gather (LJPEG_j_compress_ptr cinfo)
       if (! did_dc[tbl]) {
 	htblptr = & cinfo->dc_huff_tbl_ptrs[tbl];
 	if (*htblptr == NULL)
-	  *htblptr = jpeg_alloc_huff_table((LJPEG_j_common_ptr) cinfo);
-	jpeg_gen_optimal_table(cinfo, *htblptr, entropy->dc_count_ptrs[tbl]);
+	  *htblptr = LJPEG_jpeg_alloc_huff_table((LJPEG_j_common_ptr) cinfo);
+	LJPEG_jpeg_gen_optimal_table(cinfo, *htblptr, entropy->dc_count_ptrs[tbl]);
 	did_dc[tbl] = TRUE;
       }
     }
@@ -1432,8 +1432,8 @@ LJPEG_finish_pass_gather (LJPEG_j_compress_ptr cinfo)
       if (! did_ac[tbl]) {
 	htblptr = & cinfo->ac_huff_tbl_ptrs[tbl];
 	if (*htblptr == NULL)
-	  *htblptr = jpeg_alloc_huff_table((LJPEG_j_common_ptr) cinfo);
-	jpeg_gen_optimal_table(cinfo, *htblptr, entropy->ac_count_ptrs[tbl]);
+	  *htblptr = LJPEG_jpeg_alloc_huff_table((LJPEG_j_common_ptr) cinfo);
+	LJPEG_jpeg_gen_optimal_table(cinfo, *htblptr, entropy->ac_count_ptrs[tbl]);
 	did_ac[tbl] = TRUE;
       }
     }
@@ -1450,9 +1450,9 @@ LJPEG_finish_pass_gather (LJPEG_j_compress_ptr cinfo)
 LJPEG_METHODDEF(void)
 LJPEG_start_pass_huff (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
 {
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   int ci, tbl;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
 
   if (gather_statistics)
     entropy->pub.LJPEG_finish_pass = LJPEG_finish_pass_gather;
@@ -1468,14 +1468,14 @@ LJPEG_start_pass_huff (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
     /* Select execution routine */
     if (cinfo->Ah == 0) {
       if (cinfo->Ss == 0)
-	entropy->pub.LJPEG_encode_mcu = LJPEG_LJPEG_encode_mcu_DC_first;
+	entropy->pub.LJPEG_encode_mcu = LJPEG_encode_mcu_DC_first;
       else
-	entropy->pub.LJPEG_encode_mcu = LJPEG_LJPEG_encode_mcu_AC_first;
+	entropy->pub.LJPEG_encode_mcu = LJPEG_encode_mcu_AC_first;
     } else {
       if (cinfo->Ss == 0)
-	entropy->pub.LJPEG_encode_mcu = LJPEG_LJPEG_encode_mcu_DC_refine;
+	entropy->pub.LJPEG_encode_mcu = LJPEG_encode_mcu_DC_refine;
       else {
-	entropy->pub.LJPEG_encode_mcu = LJPEG_LJPEG_encode_mcu_AC_refine;
+	entropy->pub.LJPEG_encode_mcu = LJPEG_encode_mcu_AC_refine;
 	/* AC refinement needs a correction bit buffer */
 	if (entropy->bit_buffer == NULL)
 	  entropy->bit_buffer = (char *)
@@ -1506,7 +1506,7 @@ LJPEG_start_pass_huff (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
 	if (tbl < 0 || tbl >= NUM_HUFF_TBLS)
 	  ERREXIT1(cinfo, JERR_NO_HUFF_TABLE, tbl);
 	/* Allocate and zero the statistics tables */
-	/* Note that jpeg_gen_optimal_table expects 257 entries in each table! */
+	/* Note that LJPEG_jpeg_gen_optimal_table expects 257 entries in each table! */
 	if (entropy->dc_count_ptrs[tbl] == NULL)
 	  entropy->dc_count_ptrs[tbl] = (long *)
 	    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
@@ -1515,7 +1515,7 @@ LJPEG_start_pass_huff (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
       } else {
 	/* Compute derived values for Huffman tables */
 	/* We may do this more than once for a table, but it's not expensive */
-	jpeg_make_c_derived_tbl(cinfo, TRUE, tbl,
+	LJPEG_jpeg_make_c_derived_tbl(cinfo, TRUE, tbl,
 				& entropy->dc_derived_tbls[tbl]);
       }
       /* Initialize DC predictions to 0 */
@@ -1533,7 +1533,7 @@ LJPEG_start_pass_huff (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
 					257 * SIZEOF(long));
 	MEMZERO(entropy->ac_count_ptrs[tbl], 257 * SIZEOF(long));
       } else {
-	jpeg_make_c_derived_tbl(cinfo, FALSE, tbl,
+	LJPEG_jpeg_make_c_derived_tbl(cinfo, FALSE, tbl,
 				& entropy->ac_derived_tbls[tbl]);
       }
     }
@@ -1554,14 +1554,14 @@ LJPEG_start_pass_huff (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
  */
 
 LJPEG_GLOBAL(void)
-jinit_huff_encoder (LJPEG_j_compress_ptr cinfo)
+LJPEG_jinit_huff_encoder (LJPEG_j_compress_ptr cinfo)
 {
-  huff_entropy_ptr entropy;
+  LJPEG_huff_entropy_ptr entropy;
   int i;
 
-  entropy = (huff_entropy_ptr)
+  entropy = (LJPEG_huff_entropy_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(huff_entropy_encoder));
+				SIZEOF(LJPEG_huff_entropy_encoder));
   cinfo->entropy = (struct LJPEG_jpeg_entropy_encoder *) entropy;
   entropy->pub.LJPEG_start_pass = LJPEG_start_pass_huff;
 

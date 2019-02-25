@@ -37,7 +37,7 @@ LJPEG_signal_catcher (int signum)
   if (LJPEG_sig_cinfo != NULL) {
     if (LJPEG_sig_cinfo->err != NULL) /* turn off trace output */
       LJPEG_sig_cinfo->err->trace_level = 0;
-    jpeg_destroy(LJPEG_sig_cinfo);	/* clean up memory allocation & temp files */
+    LJPEG_jpeg_destroy(LJPEG_sig_cinfo);	/* clean up memory allocation & temp files */
   }
   exit(EXIT_FAILURE);
 }

@@ -53,7 +53,7 @@
 typedef struct {
   struct LJPEG_djpeg_dest_struct pub; /* public fields */
 
-  jvirt_sarray_ptr image;	/* virtual array to store the output image */
+  LJPEG_jvirt_sarray_ptr image;	/* virtual array to store the output image */
   rle_map *colormap;	 	/* RLE-style color map, or NULL if none */
   rle_pixel **rle_row;		/* To pass rows to rle_putrow() */
 

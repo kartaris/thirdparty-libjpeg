@@ -93,13 +93,13 @@ typedef struct {		/* Bitreading working state within an MCU */
   int bits_left;		/* # of unused bits in it */
   /* Pointer needed by jpeg_fill_bit_buffer. */
   LJPEG_j_decompress_ptr cinfo;	/* back link to decompress master record */
-} bitread_working_state;
+} bitread_LJPEG_working_state;
 
 /* Macros to declare and load/save bitread local variables. */
 #define BITREAD_STATE_VARS  \
 	register bit_buf_type get_buffer;  \
 	register int bits_left;  \
-	bitread_working_state br_state
+	bitread_LJPEG_working_state br_state
 
 #define BITREAD_LOAD_STATE(cinfop,permstate)  \
 	br_state.cinfo = cinfop; \
@@ -191,14 +191,14 @@ slowlabel: \
 /*
  * Expanded entropy decoder object for Huffman decoding.
  *
- * The savable_state subrecord contains fields that change within an MCU,
+ * The LJPEG_savable_state subrecord contains fields that change within an MCU,
  * but must not be updated permanently until we complete the MCU.
  */
 
 typedef struct {
   unsigned int EOBRUN;			/* remaining EOBs in EOBRUN */
   int last_dc_val[MAX_COMPS_IN_SCAN];	/* last DC coef for each component */
-} savable_state;
+} LJPEG_savable_state;
 
 /* This macro is to work around compilers with missing or broken
  * structure assignment.  You'll need to fix this code if you have
@@ -226,7 +226,7 @@ typedef struct {
    * In case of suspension, we exit WITHOUT updating them.
    */
   bitread_perm_state bitstate;	/* Bit buffer at start of MCU */
-  savable_state saved;		/* Other state at start of MCU */
+  LJPEG_savable_state saved;		/* Other state at start of MCU */
 
   /* These fields are NOT loaded into local working state. */
   boolean insufficient_data;	/* set TRUE after emitting warning */
@@ -254,7 +254,7 @@ typedef struct {
   int coef_limit[D_MAX_BLOCKS_IN_MCU];
 } huff_entropy_decoder;
 
-typedef huff_entropy_decoder * huff_entropy_ptr;
+typedef huff_entropy_decoder * LJPEG_huff_entropy_ptr;
 
 
 static const int jpeg_zigzag_order[8][8] = {
@@ -462,7 +462,7 @@ jpeg_make_d_derived_tbl (LJPEG_j_decompress_ptr cinfo, boolean isDC, int tblno,
 
 
 LOCAL(boolean)
-jpeg_fill_bit_buffer (bitread_working_state * state,
+jpeg_fill_bit_buffer (bitread_LJPEG_working_state * state,
 		      register bit_buf_type get_buffer, register int bits_left,
 		      int nbits)
 /* Load up the bit buffer to a depth of at least nbits */
@@ -542,9 +542,9 @@ jpeg_fill_bit_buffer (bitread_working_state * state,
        * We use a nonvolatile flag to ensure that only one warning message
        * appears per data segment.
        */
-      if (! ((huff_entropy_ptr) cinfo->entropy)->insufficient_data) {
+      if (! ((LJPEG_huff_entropy_ptr) cinfo->entropy)->insufficient_data) {
 	WARNMS(cinfo, JWRN_HIT_MARKER);
-	((huff_entropy_ptr) cinfo->entropy)->insufficient_data = TRUE;
+	((LJPEG_huff_entropy_ptr) cinfo->entropy)->insufficient_data = TRUE;
       }
       /* Fill the buffer with zero bits */
       get_buffer <<= MIN_GET_BITS - bits_left;
@@ -589,7 +589,7 @@ static const int bmask[16] =	/* bmask[n] is mask for n rightmost bits */
  */
 
 LOCAL(int)
-jpeg_huff_decode (bitread_working_state * state,
+jpeg_huff_decode (bitread_LJPEG_working_state * state,
 		  register bit_buf_type get_buffer, register int bits_left,
 		  d_derived_tbl * htbl, int min_bits)
 {
@@ -635,7 +635,7 @@ jpeg_huff_decode (bitread_working_state * state,
 LOCAL(boolean)
 process_restart (LJPEG_j_decompress_ptr cinfo)
 {
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   int ci;
 
   /* Throw away any unused bits remaining in bit buffer; */
@@ -694,15 +694,15 @@ process_restart (LJPEG_j_decompress_ptr cinfo)
 LJPEG_METHODDEF(boolean)
 decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {   
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   int Al = cinfo->Al;
   register int s, r;
   int blkn, ci;
   LJPEG_JBLOCKROW block;
   BITREAD_STATE_VARS;
-  savable_state state;
+  LJPEG_savable_state state;
   d_derived_tbl * tbl;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
 
   /* Process restart marker if needed; may have to suspend */
   if (cinfo->restart_interval) {
@@ -765,7 +765,7 @@ decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 LJPEG_METHODDEF(boolean)
 decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {   
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   register int s, k, r;
   unsigned int EOBRUN;
   int Se, Al;
@@ -853,7 +853,7 @@ decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 LJPEG_METHODDEF(boolean)
 decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {   
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   int p1 = 1 << cinfo->Al;	/* 1 in the bit position being coded */
   int blkn;
   LJPEG_JBLOCKROW block;
@@ -902,13 +902,13 @@ decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 LJPEG_METHODDEF(boolean)
 decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {   
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   register int s, k, r;
   unsigned int EOBRUN;
   int Se, p1, m1;
   const int * natural_order;
   LJPEG_JBLOCKROW block;
-  JCOEFPTR thiscoef;
+  LJPEG_JCOEFPTR thiscoef;
   BITREAD_STATE_VARS;
   d_derived_tbl * tbl;
   int num_newnz;
@@ -1059,11 +1059,11 @@ undoit:
 LJPEG_METHODDEF(boolean)
 decode_mcu_sub (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   const int * natural_order;
   int Se, blkn;
   BITREAD_STATE_VARS;
-  savable_state state;
+  LJPEG_savable_state state;
 
   /* Process restart marker if needed; may have to suspend */
   if (cinfo->restart_interval) {
@@ -1187,10 +1187,10 @@ decode_mcu_sub (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 LJPEG_METHODDEF(boolean)
 decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   int blkn;
   BITREAD_STATE_VARS;
-  savable_state state;
+  LJPEG_savable_state state;
 
   /* Process restart marker if needed; may have to suspend */
   if (cinfo->restart_interval) {
@@ -1310,9 +1310,9 @@ decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 LJPEG_METHODDEF(void)
 LJPEG_start_pass_huff_decoder (LJPEG_j_decompress_ptr cinfo)
 {
-  huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
+  LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   int ci, blkn, tbl, i;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
 
   if (cinfo->progressive_mode) {
     /* Validate progressive scan parameters */
@@ -1509,10 +1509,10 @@ LJPEG_start_pass_huff_decoder (LJPEG_j_decompress_ptr cinfo)
 LJPEG_GLOBALvoid)
 jinit_huff_decoder (LJPEG_j_decompress_ptr cinfo)
 {
-  huff_entropy_ptr entropy;
+  LJPEG_huff_entropy_ptr entropy;
   int i;
 
-  entropy = (huff_entropy_ptr)
+  entropy = (LJPEG_huff_entropy_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(huff_entropy_decoder));
   cinfo->entropy = &entropy->pub;

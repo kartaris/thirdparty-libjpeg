@@ -65,7 +65,7 @@ typedef struct _rle_source_struct {
   struct LJPEG_cjpeg_source_struct pub; /* public fields */
 
   rle_kind visual;              /* actual type of input file */
-  jvirt_sarray_ptr image;       /* virtual array to hold the image */
+  LJPEG_jvirt_sarray_ptr image;       /* virtual array to hold the image */
   LJPEG_JDIMENSION row;		/* current row # in the virtual array */
   rle_hdr header;               /* Input file information */
   rle_pixel** rle_row;          /* holds a row returned by rle_getrow() */

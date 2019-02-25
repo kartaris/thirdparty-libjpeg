@@ -33,7 +33,7 @@ LJPEG_jpeg_CreateCompress (LJPEG_j_compress_ptr cinfo, int version, size_t struc
   int i;
 
   /* Guard against version mismatches between library and caller. */
-  cinfo->mem = NULL;		/* so jpeg_destroy knows mem mgr not called */
+  cinfo->mem = NULL;		/* so LJPEG_jpeg_destroy knows mem mgr not called */
   if (version != JPEG_LIB_VERSION)
     ERREXIT2(cinfo, JERR_BAD_LIB_VERSION, JPEG_LIB_VERSION, version);
   if (structsize != SIZEOF(struct LJPEG_jpeg_compress_struct))
@@ -74,7 +74,7 @@ LJPEG_jpeg_CreateCompress (LJPEG_j_compress_ptr cinfo, int version, size_t struc
     cinfo->ac_huff_tbl_ptrs[i] = NULL;
   }
 
-  /* Must do it here for emit_dqt in case LJPEG_jpeg_write_tables is used */
+  /* Must do it here for LJPEG_emit_dqt in case LJPEG_jpeg_write_tables is used */
   cinfo->block_size = DCTSIZE;
   cinfo->natural_order = jpeg_natural_order;
   cinfo->lim_Se = DCTSIZE2-1;
@@ -95,7 +95,7 @@ LJPEG_jpeg_CreateCompress (LJPEG_j_compress_ptr cinfo, int version, size_t struc
 LJPEG_GLOBAL(void)
 LJPEG_jpeg_destroy_compress (LJPEG_j_compress_ptr cinfo)
 {
-  jpeg_destroy((LJPEG_j_common_ptr) cinfo); /* use common routine */
+  LJPEG_jpeg_destroy((LJPEG_j_common_ptr) cinfo); /* use common routine */
 }
 
 
@@ -105,9 +105,9 @@ LJPEG_jpeg_destroy_compress (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(void)
-LJPEG_jpeg_abort_compress (LJPEG_j_compress_ptr cinfo)
+LJPEG_LJPEG_jpeg_abort_compress (LJPEG_j_compress_ptr cinfo)
 {
-  jpeg_abort((LJPEG_j_common_ptr) cinfo); /* use common routine */
+  LJPEG_jpeg_abort((LJPEG_j_common_ptr) cinfo); /* use common routine */
 }
 
 
@@ -166,7 +166,7 @@ LJPEG_jpeg_finish_compress (LJPEG_j_compress_ptr cinfo)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
   /* Perform any remaining passes */
   while (! cinfo->master->is_last_pass) {
-    (*cinfo->master->prepare_for_pass) (cinfo);
+    (*cinfo->master->LJPEG_prepare_for_pass) (cinfo);
     for (iMCU_row = 0; iMCU_row < cinfo->total_iMCU_rows; iMCU_row++) {
       if (cinfo->progress != NULL) {
 	cinfo->progress->pass_counter = (long) iMCU_row;
@@ -182,10 +182,10 @@ LJPEG_jpeg_finish_compress (LJPEG_j_compress_ptr cinfo)
     (*cinfo->master->LJPEG_finish_pass) (cinfo);
   }
   /* Write EOI, do final cleanup */
-  (*cinfo->marker->write_file_trailer) (cinfo);
+  (*cinfo->marker->LJPEG_write_file_trailer) (cinfo);
   (*cinfo->dest->term_destination) (cinfo);
-  /* We can use jpeg_abort to release memory and reset global_state */
-  jpeg_abort((LJPEG_j_common_ptr) cinfo);
+  /* We can use LJPEG_jpeg_abort to release memory and reset global_state */
+  LJPEG_jpeg_abort((LJPEG_j_common_ptr) cinfo);
 }
 
 
@@ -208,7 +208,7 @@ LJPEG_jpeg_write_marker (LJPEG_j_compress_ptr cinfo, int marker,
        cinfo->global_state != CSTATE_WRCOEFS))
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
 
-  (*cinfo->marker->write_marker_header) (cinfo, marker, datalen);
+  (*cinfo->marker->LJPEG_write_marker_header) (cinfo, marker, datalen);
   write_marker_byte = cinfo->marker->write_marker_byte;	/* copy for speed */
   while (datalen--) {
     (*write_marker_byte) (cinfo, *dataptr);
@@ -227,7 +227,7 @@ LJPEG_jpeg_write_m_header (LJPEG_j_compress_ptr cinfo, int marker, unsigned int 
        cinfo->global_state != CSTATE_WRCOEFS))
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
 
-  (*cinfo->marker->write_marker_header) (cinfo, marker, datalen);
+  (*cinfo->marker->LJPEG_write_marker_header) (cinfo, marker, datalen);
 }
 
 LJPEG_GLOBAL(void)
@@ -268,13 +268,13 @@ LJPEG_jpeg_write_tables (LJPEG_j_compress_ptr cinfo)
   (*cinfo->err->reset_error_mgr) ((LJPEG_j_common_ptr) cinfo);
   (*cinfo->dest->init_destination) (cinfo);
   /* Initialize the marker writer ... bit of a crock to do it here. */
-  jinit_marker_writer(cinfo);
+  LJPEG_jinit_marker_writer(cinfo);
   /* Write them tables! */
-  (*cinfo->marker->write_tables_only) (cinfo);
+  (*cinfo->marker->LJPEG_write_tables_only) (cinfo);
   /* And clean up. */
   (*cinfo->dest->term_destination) (cinfo);
   /*
-   * In library releases up through v6a, we called jpeg_abort() here to free
+   * In library releases up through v6a, we called LJPEG_jpeg_abort() here to free
    * any working memory allocated by the destination manager and marker
    * writer.  Some applications had a problem with that: they allocated space
    * of their own from the library memory manager, and didn't want it to go
@@ -282,7 +282,7 @@ LJPEG_jpeg_write_tables (LJPEG_j_compress_ptr cinfo)
    * memory leak if an app calls write_tables repeatedly without doing a full
    * compression cycle or otherwise resetting the JPEG object.  However, that
    * seems less bad than unexpectedly freeing memory in the normal case.
-   * An app that prefers the old behavior can call jpeg_abort for itself after
+   * An app that prefers the old behavior can call LJPEG_jpeg_abort for itself after
    * each call to LJPEG_jpeg_write_tables().
    */
 }

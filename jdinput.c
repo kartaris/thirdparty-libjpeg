@@ -51,7 +51,7 @@ jpeg_core_output_dimensions (LJPEG_j_decompress_ptr cinfo)
 {
 #ifdef IDCT_SCALING_SUPPORTED
   int ci;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
 
   /* Compute actual output image dimensions and DCT scaling choices. */
   if (cinfo->scale_num * cinfo->block_size <= cinfo->scale_denom) {
@@ -205,11 +205,11 @@ jpeg_core_output_dimensions (LJPEG_j_decompress_ptr cinfo)
 
 
 LOCAL(void)
-initial_setup (LJPEG_j_decompress_ptr cinfo)
+LJPEG_initial_setup (LJPEG_j_decompress_ptr cinfo)
 /* Called once, when first SOS marker is reached */
 {
   int ci;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
 
   /* Make sure image isn't bigger than I can handle */
   if ((long) cinfo->image_height > (long) JPEG_MAX_DIMENSION ||
@@ -385,12 +385,12 @@ initial_setup (LJPEG_j_decompress_ptr cinfo)
 
 
 LOCAL(void)
-per_scan_setup (LJPEG_j_decompress_ptr cinfo)
+LJPEG_per_scan_setup (LJPEG_j_decompress_ptr cinfo)
 /* Do computations that are needed before processing a JPEG scan */
 /* cinfo->comps_in_scan and cinfo->cur_comp_info[] were set from SOS marker */
 {
   int ci, mcublks, tmp;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   
   if (cinfo->comps_in_scan == 1) {
     
@@ -487,7 +487,7 @@ LOCAL(void)
 latch_quant_tables (LJPEG_j_decompress_ptr cinfo)
 {
   int ci, qtblno;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   JQUANT_TBL * qtbl;
 
   for (ci = 0; ci < cinfo->comps_in_scan; ci++) {
@@ -520,7 +520,7 @@ latch_quant_tables (LJPEG_j_decompress_ptr cinfo)
 LJPEG_METHODDEF(void)
 start_input_pass (LJPEG_j_decompress_ptr cinfo)
 {
-  per_scan_setup(cinfo);
+  LJPEG_per_scan_setup(cinfo);
   latch_quant_tables(cinfo);
   (*cinfo->entropy->LJPEG_start_pass) (cinfo);
   (*cinfo->coef->start_input_pass) (cinfo);
@@ -571,7 +571,7 @@ consume_markers (LJPEG_j_decompress_ptr cinfo)
     case JPEG_REACHED_SOS:	/* Found SOS */
       if (inputctl->inheaders) { /* 1st SOS */
 	if (inputctl->inheaders == 1)
-	  initial_setup(cinfo);
+	  LJPEG_initial_setup(cinfo);
 	if (cinfo->comps_in_scan == 0) { /* pseudo SOS marker */
 	  inputctl->inheaders = 2;
 	  break;

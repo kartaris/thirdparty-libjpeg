@@ -31,7 +31,7 @@ typedef struct {
    * For two-pass color quantization, we need a full-image buffer;
    * for one-pass operation, a strip buffer is sufficient.
    */
-  jvirt_sarray_ptr whole_image;	/* virtual array, or NULL if one-pass */
+  LJPEG_jvirt_sarray_ptr whole_image;	/* virtual array, or NULL if one-pass */
   LJPEG_JSAMPARRAY buffer;		/* strip buffer, or current strip of virtual */
   LJPEG_JDIMENSION strip_height;	/* buffer size in rows */
   /* for two-pass mode only: */
@@ -70,12 +70,12 @@ LJPEG_METHODDEF(void) post_process_2pass
  */
 
 LJPEG_METHODDEF(void)
-LJPEG_start_pass_dpost (LJPEG_j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
+LJPEG_start_pass_dpost (LJPEG_j_decompress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode)
 {
   my_post_ptr post = (my_post_ptr) cinfo->post;
 
   switch (pass_mode) {
-  case JBUF_PASS_THRU:
+  case LJPEG_JBUF_PASS_THRU:
     if (cinfo->quantize_colors) {
       /* Single-pass processing with color quantization. */
       post->pub.post_process_data = post_process_1pass;
@@ -96,13 +96,13 @@ LJPEG_start_pass_dpost (LJPEG_j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
     }
     break;
 #ifdef QUANT_2PASS_SUPPORTED
-  case JBUF_SAVE_AND_PASS:
+  case LJPEG_JBUF_SAVE_AND_PASS:
     /* First pass of 2-pass quantization */
     if (post->whole_image == NULL)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
     post->pub.post_process_data = post_process_prepass;
     break;
-  case JBUF_CRANK_DEST:
+  case LJPEG_JBUF_CRANK_DEST:
     /* Second pass of 2-pass quantization */
     if (post->whole_image == NULL)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);

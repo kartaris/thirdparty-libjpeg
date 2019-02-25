@@ -80,7 +80,7 @@ typedef enum {			/* JPEG marker codes */
   M_TEM   = 0x01,
 
   M_ERROR = 0x100
-} JPEG_MARKER;
+} LJPEG_JPEG_MARKER;
 
 
 /* Private state */
@@ -89,9 +89,9 @@ typedef struct {
   struct jpeg_marker_writer pub; /* public fields */
 
   unsigned int last_restart_interval; /* last DRI value emitted; 0 after SOI */
-} my_marker_writer;
+} LJPEG_my_marker_writer;
 
-typedef my_marker_writer * my_marker_ptr;
+typedef LJPEG_my_marker_writer * LJPEG_my_marker_ptr;
 
 
 /*
@@ -121,7 +121,7 @@ LJPEG_emit_byte (LJPEG_j_compress_ptr cinfo, int val)
 
 
 LOCAL(void)
-emit_marker (LJPEG_j_compress_ptr cinfo, JPEG_MARKER mark)
+LJPEG_emit_marker (LJPEG_j_compress_ptr cinfo, LJPEG_JPEG_MARKER mark)
 /* Emit a marker code */
 {
   LJPEG_emit_byte(cinfo, 0xFF);
@@ -130,7 +130,7 @@ emit_marker (LJPEG_j_compress_ptr cinfo, JPEG_MARKER mark)
 
 
 LOCAL(void)
-emit_2bytes (LJPEG_j_compress_ptr cinfo, int value)
+LJPEG_emit_2bytes (LJPEG_j_compress_ptr cinfo, int value)
 /* Emit a 2-byte integer; these are always MSB first in JPEG files */
 {
   LJPEG_emit_byte(cinfo, (value >> 8) & 0xFF);
@@ -143,7 +143,7 @@ emit_2bytes (LJPEG_j_compress_ptr cinfo, int value)
  */
 
 LOCAL(int)
-emit_dqt (LJPEG_j_compress_ptr cinfo, int index)
+LJPEG_emit_dqt (LJPEG_j_compress_ptr cinfo, int index)
 /* Emit a DQT marker */
 /* Returns the precision used (0 = 8bits, 1 = 16bits) for baseline checking */
 {
@@ -161,9 +161,9 @@ emit_dqt (LJPEG_j_compress_ptr cinfo, int index)
   }
 
   if (! qtbl->sent_table) {
-    emit_marker(cinfo, M_DQT);
+    LJPEG_emit_marker(cinfo, M_DQT);
 
-    emit_2bytes(cinfo,
+    LJPEG_emit_2bytes(cinfo,
       prec ? cinfo->lim_Se * 2 + 2 + 1 + 2 : cinfo->lim_Se + 1 + 1 + 2);
 
     LJPEG_emit_byte(cinfo, index + (prec<<4));
@@ -184,7 +184,7 @@ emit_dqt (LJPEG_j_compress_ptr cinfo, int index)
 
 
 LOCAL(void)
-emit_dht (LJPEG_j_compress_ptr cinfo, int index, boolean is_ac)
+LJPEG_emit_dht (LJPEG_j_compress_ptr cinfo, int index, boolean is_ac)
 /* Emit a DHT marker */
 {
   JHUFF_TBL * htbl;
@@ -201,13 +201,13 @@ emit_dht (LJPEG_j_compress_ptr cinfo, int index, boolean is_ac)
     ERREXIT1(cinfo, JERR_NO_HUFF_TABLE, index);
   
   if (! htbl->sent_table) {
-    emit_marker(cinfo, M_DHT);
+    LJPEG_emit_marker(cinfo, M_DHT);
     
     length = 0;
     for (i = 1; i <= 16; i++)
       length += htbl->bits[i];
     
-    emit_2bytes(cinfo, length + 2 + 1 + 16);
+    LJPEG_emit_2bytes(cinfo, length + 2 + 1 + 16);
     LJPEG_emit_byte(cinfo, index);
     
     for (i = 1; i <= 16; i++)
@@ -222,7 +222,7 @@ emit_dht (LJPEG_j_compress_ptr cinfo, int index, boolean is_ac)
 
 
 LOCAL(void)
-emit_dac (LJPEG_j_compress_ptr cinfo)
+LJPEG_emit_dac (LJPEG_j_compress_ptr cinfo)
 /* Emit a DAC marker */
 /* Since the useful info is so small, we want to emit all the tables in */
 /* one DAC marker.  Therefore this routine does its own scan of the table. */
@@ -231,7 +231,7 @@ emit_dac (LJPEG_j_compress_ptr cinfo)
   char dc_in_use[NUM_ARITH_TBLS];
   char ac_in_use[NUM_ARITH_TBLS];
   int length, i;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
 
   for (i = 0; i < NUM_ARITH_TBLS; i++)
     dc_in_use[i] = ac_in_use[i] = 0;
@@ -251,9 +251,9 @@ emit_dac (LJPEG_j_compress_ptr cinfo)
     length += dc_in_use[i] + ac_in_use[i];
 
   if (length) {
-    emit_marker(cinfo, M_DAC);
+    LJPEG_emit_marker(cinfo, M_DAC);
 
-    emit_2bytes(cinfo, length*2 + 2);
+    LJPEG_emit_2bytes(cinfo, length*2 + 2);
 
     for (i = 0; i < NUM_ARITH_TBLS; i++) {
       if (dc_in_use[i]) {
@@ -271,19 +271,19 @@ emit_dac (LJPEG_j_compress_ptr cinfo)
 
 
 LOCAL(void)
-emit_dri (LJPEG_j_compress_ptr cinfo)
+LJPEG_emit_dri (LJPEG_j_compress_ptr cinfo)
 /* Emit a DRI marker */
 {
-  emit_marker(cinfo, M_DRI);
+  LJPEG_emit_marker(cinfo, M_DRI);
   
-  emit_2bytes(cinfo, 4);	/* fixed length */
+  LJPEG_emit_2bytes(cinfo, 4);	/* fixed length */
 
-  emit_2bytes(cinfo, (int) cinfo->restart_interval);
+  LJPEG_emit_2bytes(cinfo, (int) cinfo->restart_interval);
 }
 
 
 LOCAL(void)
-emit_lse_ict (LJPEG_j_compress_ptr cinfo)
+LJPEG_emit_lse_ict (LJPEG_j_compress_ptr cinfo)
 /* Emit an LSE inverse color transform specification marker */
 {
   /* Support only 1 transform */
@@ -291,38 +291,38 @@ emit_lse_ict (LJPEG_j_compress_ptr cinfo)
       cinfo->num_components < 3)
     ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);
 
-  emit_marker(cinfo, M_JPG8);
+  LJPEG_emit_marker(cinfo, M_JPG8);
   
-  emit_2bytes(cinfo, 24);	/* fixed length */
+  LJPEG_emit_2bytes(cinfo, 24);	/* fixed length */
 
   LJPEG_emit_byte(cinfo, 0x0D);	/* ID inverse transform specification */
-  emit_2bytes(cinfo, MAXJSAMPLE);	/* MAXTRANS */
+  LJPEG_emit_2bytes(cinfo, MAXJSAMPLE);	/* MAXTRANS */
   LJPEG_emit_byte(cinfo, 3);		/* Nt=3 */
   LJPEG_emit_byte(cinfo, cinfo->comp_info[1].component_id);
   LJPEG_emit_byte(cinfo, cinfo->comp_info[0].component_id);
   LJPEG_emit_byte(cinfo, cinfo->comp_info[2].component_id);
   LJPEG_emit_byte(cinfo, 0x80);	/* F1: CENTER1=1, NORM1=0 */
-  emit_2bytes(cinfo, 0);	/* A(1,1)=0 */
-  emit_2bytes(cinfo, 0);	/* A(1,2)=0 */
+  LJPEG_emit_2bytes(cinfo, 0);	/* A(1,1)=0 */
+  LJPEG_emit_2bytes(cinfo, 0);	/* A(1,2)=0 */
   LJPEG_emit_byte(cinfo, 0);		/* F2: CENTER2=0, NORM2=0 */
-  emit_2bytes(cinfo, 1);	/* A(2,1)=1 */
-  emit_2bytes(cinfo, 0);	/* A(2,2)=0 */
+  LJPEG_emit_2bytes(cinfo, 1);	/* A(2,1)=1 */
+  LJPEG_emit_2bytes(cinfo, 0);	/* A(2,2)=0 */
   LJPEG_emit_byte(cinfo, 0);		/* F3: CENTER3=0, NORM3=0 */
-  emit_2bytes(cinfo, 1);	/* A(3,1)=1 */
-  emit_2bytes(cinfo, 0);	/* A(3,2)=0 */
+  LJPEG_emit_2bytes(cinfo, 1);	/* A(3,1)=1 */
+  LJPEG_emit_2bytes(cinfo, 0);	/* A(3,2)=0 */
 }
 
 
 LOCAL(void)
-emit_sof (LJPEG_j_compress_ptr cinfo, JPEG_MARKER code)
+LJPEG_emit_sof (LJPEG_j_compress_ptr cinfo, LJPEG_JPEG_MARKER code)
 /* Emit a SOF marker */
 {
   int ci;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   
-  emit_marker(cinfo, code);
+  LJPEG_emit_marker(cinfo, code);
   
-  emit_2bytes(cinfo, 3 * cinfo->num_components + 2 + 5 + 1); /* length */
+  LJPEG_emit_2bytes(cinfo, 3 * cinfo->num_components + 2 + 5 + 1); /* length */
 
   /* Make sure image isn't bigger than SOF field can handle */
   if ((long) cinfo->jpeg_height > 65535L ||
@@ -330,8 +330,8 @@ emit_sof (LJPEG_j_compress_ptr cinfo, JPEG_MARKER code)
     ERREXIT1(cinfo, JERR_IMAGE_TOO_BIG, (unsigned int) 65535);
 
   LJPEG_emit_byte(cinfo, cinfo->data_precision);
-  emit_2bytes(cinfo, (int) cinfo->jpeg_height);
-  emit_2bytes(cinfo, (int) cinfo->jpeg_width);
+  LJPEG_emit_2bytes(cinfo, (int) cinfo->jpeg_height);
+  LJPEG_emit_2bytes(cinfo, (int) cinfo->jpeg_width);
 
   LJPEG_emit_byte(cinfo, cinfo->num_components);
 
@@ -345,15 +345,15 @@ emit_sof (LJPEG_j_compress_ptr cinfo, JPEG_MARKER code)
 
 
 LOCAL(void)
-emit_sos (LJPEG_j_compress_ptr cinfo)
+LJPEG_emit_sos (LJPEG_j_compress_ptr cinfo)
 /* Emit a SOS marker */
 {
   int i, td, ta;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   
-  emit_marker(cinfo, M_SOS);
+  LJPEG_emit_marker(cinfo, M_SOS);
   
-  emit_2bytes(cinfo, 2 * cinfo->comps_in_scan + 2 + 1 + 3); /* length */
+  LJPEG_emit_2bytes(cinfo, 2 * cinfo->comps_in_scan + 2 + 1 + 3); /* length */
   
   LJPEG_emit_byte(cinfo, cinfo->comps_in_scan);
   
@@ -380,12 +380,12 @@ emit_sos (LJPEG_j_compress_ptr cinfo)
 
 
 LOCAL(void)
-emit_pseudo_sos (LJPEG_j_compress_ptr cinfo)
+LJPEG_emit_pseudo_sos (LJPEG_j_compress_ptr cinfo)
 /* Emit a pseudo SOS marker */
 {
-  emit_marker(cinfo, M_SOS);
+  LJPEG_emit_marker(cinfo, M_SOS);
   
-  emit_2bytes(cinfo, 2 + 1 + 3); /* length */
+  LJPEG_emit_2bytes(cinfo, 2 + 1 + 3); /* length */
   
   LJPEG_emit_byte(cinfo, 0); /* Ns */
 
@@ -396,7 +396,7 @@ emit_pseudo_sos (LJPEG_j_compress_ptr cinfo)
 
 
 LOCAL(void)
-emit_jfif_app0 (LJPEG_j_compress_ptr cinfo)
+LJPEG_emit_jfif_app0 (LJPEG_j_compress_ptr cinfo)
 /* Emit a JFIF-compliant APP0 marker */
 {
   /*
@@ -411,9 +411,9 @@ emit_jfif_app0 (LJPEG_j_compress_ptr cinfo)
    * Thumbnail Y size		(1 byte)
    */
   
-  emit_marker(cinfo, M_APP0);
+  LJPEG_emit_marker(cinfo, M_APP0);
   
-  emit_2bytes(cinfo, 2 + 4 + 1 + 2 + 1 + 2 + 2 + 1 + 1); /* length */
+  LJPEG_emit_2bytes(cinfo, 2 + 4 + 1 + 2 + 1 + 2 + 2 + 1 + 1); /* length */
 
   LJPEG_emit_byte(cinfo, 0x4A);	/* Identifier: ASCII "JFIF" */
   LJPEG_emit_byte(cinfo, 0x46);
@@ -423,15 +423,15 @@ emit_jfif_app0 (LJPEG_j_compress_ptr cinfo)
   LJPEG_emit_byte(cinfo, cinfo->JFIF_major_version); /* Version fields */
   LJPEG_emit_byte(cinfo, cinfo->JFIF_minor_version);
   LJPEG_emit_byte(cinfo, cinfo->density_unit); /* Pixel size information */
-  emit_2bytes(cinfo, (int) cinfo->X_density);
-  emit_2bytes(cinfo, (int) cinfo->Y_density);
+  LJPEG_emit_2bytes(cinfo, (int) cinfo->X_density);
+  LJPEG_emit_2bytes(cinfo, (int) cinfo->Y_density);
   LJPEG_emit_byte(cinfo, 0);		/* No thumbnail image */
   LJPEG_emit_byte(cinfo, 0);
 }
 
 
 LOCAL(void)
-emit_adobe_app14 (LJPEG_j_compress_ptr cinfo)
+LJPEG_emit_adobe_app14 (LJPEG_j_compress_ptr cinfo)
 /* Emit an Adobe APP14 marker */
 {
   /*
@@ -450,18 +450,18 @@ emit_adobe_app14 (LJPEG_j_compress_ptr cinfo)
    * whether the encoder performed a transformation, which is pretty useless.
    */
   
-  emit_marker(cinfo, M_APP14);
+  LJPEG_emit_marker(cinfo, M_APP14);
   
-  emit_2bytes(cinfo, 2 + 5 + 2 + 2 + 2 + 1); /* length */
+  LJPEG_emit_2bytes(cinfo, 2 + 5 + 2 + 2 + 2 + 1); /* length */
 
   LJPEG_emit_byte(cinfo, 0x41);	/* Identifier: ASCII "Adobe" */
   LJPEG_emit_byte(cinfo, 0x64);
   LJPEG_emit_byte(cinfo, 0x6F);
   LJPEG_emit_byte(cinfo, 0x62);
   LJPEG_emit_byte(cinfo, 0x65);
-  emit_2bytes(cinfo, 100);	/* Version */
-  emit_2bytes(cinfo, 0);	/* Flags0 */
-  emit_2bytes(cinfo, 0);	/* Flags1 */
+  LJPEG_emit_2bytes(cinfo, 100);	/* Version */
+  LJPEG_emit_2bytes(cinfo, 0);	/* Flags0 */
+  LJPEG_emit_2bytes(cinfo, 0);	/* Flags1 */
   switch (cinfo->jpeg_color_space) {
   case JCS_YCbCr:
     LJPEG_emit_byte(cinfo, 1);	/* Color transform = 1 */
@@ -479,26 +479,26 @@ emit_adobe_app14 (LJPEG_j_compress_ptr cinfo)
 /*
  * These routines allow writing an arbitrary marker with parameters.
  * The only intended use is to emit COM or APPn markers after calling
- * write_file_header and before calling write_frame_header.
+ * LJPEG_write_file_header and before calling LJPEG_write_frame_header.
  * Other uses are not guaranteed to produce desirable results.
  * Counting the parameter bytes properly is the caller's responsibility.
  */
 
 LJPEG_METHODDEF(void)
-write_marker_header (LJPEG_j_compress_ptr cinfo, int marker, unsigned int datalen)
+LJPEG_write_marker_header (LJPEG_j_compress_ptr cinfo, int marker, unsigned int datalen)
 /* Emit an arbitrary marker header */
 {
   if (datalen > (unsigned int) 65533)		/* safety check */
     ERREXIT(cinfo, JERR_BAD_LENGTH);
 
-  emit_marker(cinfo, (JPEG_MARKER) marker);
+  LJPEG_emit_marker(cinfo, (LJPEG_JPEG_MARKER) marker);
 
-  emit_2bytes(cinfo, (int) (datalen + 2));	/* total length */
+  LJPEG_emit_2bytes(cinfo, (int) (datalen + 2));	/* total length */
 }
 
 LJPEG_METHODDEF(void)
 write_marker_byte (LJPEG_j_compress_ptr cinfo, int val)
-/* Emit one byte of marker parameters following write_marker_header */
+/* Emit one byte of marker parameters following LJPEG_write_marker_header */
 {
   LJPEG_emit_byte(cinfo, val);
 }
@@ -516,19 +516,19 @@ write_marker_byte (LJPEG_j_compress_ptr cinfo, int val)
  */
 
 LJPEG_METHODDEF(void)
-write_file_header (LJPEG_j_compress_ptr cinfo)
+LJPEG_write_file_header (LJPEG_j_compress_ptr cinfo)
 {
-  my_marker_ptr marker = (my_marker_ptr) cinfo->marker;
+  LJPEG_my_marker_ptr marker = (LJPEG_my_marker_ptr) cinfo->marker;
 
-  emit_marker(cinfo, M_SOI);	/* first the SOI */
+  LJPEG_emit_marker(cinfo, M_SOI);	/* first the SOI */
 
   /* SOI is defined to reset restart interval to 0 */
   marker->last_restart_interval = 0;
 
   if (cinfo->write_JFIF_header)	/* next an optional JFIF APP0 */
-    emit_jfif_app0(cinfo);
+    LJPEG_emit_jfif_app0(cinfo);
   if (cinfo->write_Adobe_marker) /* next an optional Adobe APP14 */
-    emit_adobe_app14(cinfo);
+    LJPEG_emit_adobe_app14(cinfo);
 }
 
 
@@ -542,19 +542,19 @@ write_file_header (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-write_frame_header (LJPEG_j_compress_ptr cinfo)
+LJPEG_write_frame_header (LJPEG_j_compress_ptr cinfo)
 {
   int ci, prec;
   boolean is_baseline;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   
   /* Emit DQT for each quantization table.
-   * Note that emit_dqt() suppresses any duplicate tables.
+   * Note that LJPEG_emit_dqt() suppresses any duplicate tables.
    */
   prec = 0;
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
        ci++, compptr++) {
-    prec += emit_dqt(cinfo, compptr->quant_tbl_no);
+    prec += LJPEG_emit_dqt(cinfo, compptr->quant_tbl_no);
   }
   /* now prec is nonzero iff there are any 16-bit quant tables. */
 
@@ -581,25 +581,25 @@ write_frame_header (LJPEG_j_compress_ptr cinfo)
   /* Emit the proper SOF marker */
   if (cinfo->arith_code) {
     if (cinfo->progressive_mode)
-      emit_sof(cinfo, M_SOF10); /* SOF code for progressive arithmetic */
+      LJPEG_emit_sof(cinfo, M_SOF10); /* SOF code for progressive arithmetic */
     else
-      emit_sof(cinfo, M_SOF9);  /* SOF code for sequential arithmetic */
+      LJPEG_emit_sof(cinfo, M_SOF9);  /* SOF code for sequential arithmetic */
   } else {
     if (cinfo->progressive_mode)
-      emit_sof(cinfo, M_SOF2);	/* SOF code for progressive Huffman */
+      LJPEG_emit_sof(cinfo, M_SOF2);	/* SOF code for progressive Huffman */
     else if (is_baseline)
-      emit_sof(cinfo, M_SOF0);	/* SOF code for baseline implementation */
+      LJPEG_emit_sof(cinfo, M_SOF0);	/* SOF code for baseline implementation */
     else
-      emit_sof(cinfo, M_SOF1);	/* SOF code for non-baseline Huffman file */
+      LJPEG_emit_sof(cinfo, M_SOF1);	/* SOF code for non-baseline Huffman file */
   }
 
   /* Check to emit LSE inverse color transform specification marker */
   if (cinfo->color_transform)
-    emit_lse_ict(cinfo);
+    LJPEG_emit_lse_ict(cinfo);
 
   /* Check to emit pseudo SOS marker */
   if (cinfo->progressive_mode && cinfo->block_size != DCTSIZE)
-    emit_pseudo_sos(cinfo);
+    LJPEG_emit_pseudo_sos(cinfo);
 }
 
 
@@ -610,30 +610,30 @@ write_frame_header (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-write_scan_header (LJPEG_j_compress_ptr cinfo)
+LJPEG_write_scan_header (LJPEG_j_compress_ptr cinfo)
 {
-  my_marker_ptr marker = (my_marker_ptr) cinfo->marker;
+  LJPEG_my_marker_ptr marker = (LJPEG_my_marker_ptr) cinfo->marker;
   int i;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
 
   if (cinfo->arith_code) {
     /* Emit arith conditioning info.  We may have some duplication
      * if the file has multiple scans, but it's so small it's hardly
      * worth worrying about.
      */
-    emit_dac(cinfo);
+    LJPEG_emit_dac(cinfo);
   } else {
     /* Emit Huffman tables.
-     * Note that emit_dht() suppresses any duplicate tables.
+     * Note that LJPEG_emit_dht() suppresses any duplicate tables.
      */
     for (i = 0; i < cinfo->comps_in_scan; i++) {
       compptr = cinfo->cur_comp_info[i];
       /* DC needs no table for refinement scan */
       if (cinfo->Ss == 0 && cinfo->Ah == 0)
-	emit_dht(cinfo, compptr->dc_tbl_no, FALSE);
+	LJPEG_emit_dht(cinfo, compptr->dc_tbl_no, FALSE);
       /* AC needs no table when not present */
       if (cinfo->Se)
-	emit_dht(cinfo, compptr->ac_tbl_no, TRUE);
+	LJPEG_emit_dht(cinfo, compptr->ac_tbl_no, TRUE);
     }
   }
 
@@ -641,11 +641,11 @@ write_scan_header (LJPEG_j_compress_ptr cinfo)
    * We avoid wasting space with unnecessary DRIs, however.
    */
   if (cinfo->restart_interval != marker->last_restart_interval) {
-    emit_dri(cinfo);
+    LJPEG_emit_dri(cinfo);
     marker->last_restart_interval = cinfo->restart_interval;
   }
 
-  emit_sos(cinfo);
+  LJPEG_emit_sos(cinfo);
 }
 
 
@@ -654,9 +654,9 @@ write_scan_header (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-write_file_trailer (LJPEG_j_compress_ptr cinfo)
+LJPEG_write_file_trailer (LJPEG_j_compress_ptr cinfo)
 {
-  emit_marker(cinfo, M_EOI);
+  LJPEG_emit_marker(cinfo, M_EOI);
 }
 
 
@@ -668,27 +668,27 @@ write_file_trailer (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-write_tables_only (LJPEG_j_compress_ptr cinfo)
+LJPEG_write_tables_only (LJPEG_j_compress_ptr cinfo)
 {
   int i;
 
-  emit_marker(cinfo, M_SOI);
+  LJPEG_emit_marker(cinfo, M_SOI);
 
   for (i = 0; i < NUM_QUANT_TBLS; i++) {
     if (cinfo->quant_tbl_ptrs[i] != NULL)
-      (void) emit_dqt(cinfo, i);
+      (void) LJPEG_emit_dqt(cinfo, i);
   }
 
   if (! cinfo->arith_code) {
     for (i = 0; i < NUM_HUFF_TBLS; i++) {
       if (cinfo->dc_huff_tbl_ptrs[i] != NULL)
-	emit_dht(cinfo, i, FALSE);
+	LJPEG_emit_dht(cinfo, i, FALSE);
       if (cinfo->ac_huff_tbl_ptrs[i] != NULL)
-	emit_dht(cinfo, i, TRUE);
+	LJPEG_emit_dht(cinfo, i, TRUE);
     }
   }
 
-  emit_marker(cinfo, M_EOI);
+  LJPEG_emit_marker(cinfo, M_EOI);
 }
 
 
@@ -697,22 +697,22 @@ write_tables_only (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_GLOBALvoid)
-jinit_marker_writer (LJPEG_j_compress_ptr cinfo)
+LJPEG_jinit_marker_writer (LJPEG_j_compress_ptr cinfo)
 {
-  my_marker_ptr marker;
+  LJPEG_my_marker_ptr marker;
 
   /* Create the subobject */
-  marker = (my_marker_ptr)
+  marker = (LJPEG_my_marker_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(my_marker_writer));
+				SIZEOF(LJPEG_my_marker_writer));
   cinfo->marker = &marker->pub;
   /* Initialize method pointers */
-  marker->pub.write_file_header = write_file_header;
-  marker->pub.write_frame_header = write_frame_header;
-  marker->pub.write_scan_header = write_scan_header;
-  marker->pub.write_file_trailer = write_file_trailer;
-  marker->pub.write_tables_only = write_tables_only;
-  marker->pub.write_marker_header = write_marker_header;
+  marker->pub.LJPEG_write_file_header = LJPEG_write_file_header;
+  marker->pub.LJPEG_write_frame_header = LJPEG_write_frame_header;
+  marker->pub.LJPEG_write_scan_header = LJPEG_write_scan_header;
+  marker->pub.LJPEG_write_file_trailer = LJPEG_write_file_trailer;
+  marker->pub.LJPEG_write_tables_only = LJPEG_write_tables_only;
+  marker->pub.LJPEG_write_marker_header = LJPEG_write_marker_header;
   marker->pub.write_marker_byte = write_marker_byte;
   /* Initialize private state */
   marker->last_restart_interval = 0;

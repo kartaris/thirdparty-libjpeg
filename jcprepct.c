@@ -75,11 +75,11 @@ typedef my_prep_controller * my_prep_ptr;
  */
 
 LJPEG_METHODDEF(void)
-LJPEG_start_pass_prep (LJPEG_j_compress_ptr cinfo, J_BUF_MODE pass_mode)
+LJPEG_start_pass_prep (LJPEG_j_compress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode)
 {
   my_prep_ptr prep = (my_prep_ptr) cinfo->prep;
 
-  if (pass_mode != JBUF_PASS_THRU)
+  if (pass_mode != LJPEG_JBUF_PASS_THRU)
     ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
 
   /* Initialize total-height counter for detecting bottom of image */
@@ -134,7 +134,7 @@ pre_process_data (LJPEG_j_compress_ptr cinfo,
   my_prep_ptr prep = (my_prep_ptr) cinfo->prep;
   int numrows, ci;
   LJPEG_JDIMENSION inrows;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
 
   while (*in_row_ctr < in_rows_avail &&
 	 *out_row_group_ctr < out_row_groups_avail) {
@@ -271,7 +271,7 @@ create_context_buffer (LJPEG_j_compress_ptr cinfo)
   my_prep_ptr prep = (my_prep_ptr) cinfo->prep;
   int rgroup_height = cinfo->max_v_samp_factor;
   int ci, i;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
   LJPEG_JSAMPARRAY true_buffer, fake_buffer;
 
   /* Grab enough space for fake row pointers for all the components;
@@ -315,11 +315,11 @@ create_context_buffer (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(void)
-jinit_c_prep_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buffer)
+LJPEG_jinit_c_prep_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buffer)
 {
   my_prep_ptr prep;
   int ci;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
 
   if (need_full_buffer)		/* safety check */
     ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);

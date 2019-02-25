@@ -33,7 +33,7 @@ typedef struct {
   struct jpeg_color_quantizer * quantizer_2pass;
 } my_decomp_master;
 
-typedef my_decomp_master * my_master_ptr;
+typedef my_decomp_master * LJPEG_my_master_ptr;
 
 
 /*
@@ -91,7 +91,7 @@ jpeg_calc_output_dimensions (LJPEG_j_decompress_ptr cinfo)
 {
 #ifdef IDCT_SCALING_SUPPORTED
   int ci;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
 #endif
 
   /* Prevent application from calling me at wrong times */
@@ -267,7 +267,7 @@ prepare_range_limit_table (LJPEG_j_decompress_ptr cinfo)
 LOCAL(void)
 master_selection (LJPEG_j_decompress_ptr cinfo)
 {
-  my_master_ptr master = (my_master_ptr) cinfo->master;
+  LJPEG_my_master_ptr master = (LJPEG_my_master_ptr) cinfo->master;
   boolean use_c_buffer;
   long samplesperrow;
   LJPEG_JDIMENSION jd_samplesperrow;
@@ -410,15 +410,15 @@ master_selection (LJPEG_j_decompress_ptr cinfo)
 LJPEG_METHODDEF(void)
 prepare_for_output_pass (LJPEG_j_decompress_ptr cinfo)
 {
-  my_master_ptr master = (my_master_ptr) cinfo->master;
+  LJPEG_my_master_ptr master = (LJPEG_my_master_ptr) cinfo->master;
 
   if (master->pub.is_dummy_pass) {
 #ifdef QUANT_2PASS_SUPPORTED
     /* Final pass of 2-pass quantization */
     master->pub.is_dummy_pass = FALSE;
     (*cinfo->cquantize->LJPEG_start_pass) (cinfo, FALSE);
-    (*cinfo->post->LJPEG_start_pass) (cinfo, JBUF_CRANK_DEST);
-    (*cinfo->main->LJPEG_start_pass) (cinfo, JBUF_CRANK_DEST);
+    (*cinfo->post->LJPEG_start_pass) (cinfo, LJPEG_JBUF_CRANK_DEST);
+    (*cinfo->main->LJPEG_start_pass) (cinfo, LJPEG_JBUF_CRANK_DEST);
 #else
     ERREXIT(cinfo, JERR_NOT_COMPILED);
 #endif /* QUANT_2PASS_SUPPORTED */
@@ -443,8 +443,8 @@ prepare_for_output_pass (LJPEG_j_decompress_ptr cinfo)
       if (cinfo->quantize_colors)
 	(*cinfo->cquantize->LJPEG_start_pass) (cinfo, master->pub.is_dummy_pass);
       (*cinfo->post->LJPEG_start_pass) (cinfo,
-	    (master->pub.is_dummy_pass ? JBUF_SAVE_AND_PASS : JBUF_PASS_THRU));
-      (*cinfo->main->LJPEG_start_pass) (cinfo, JBUF_PASS_THRU);
+	    (master->pub.is_dummy_pass ? LJPEG_JBUF_SAVE_AND_PASS : LJPEG_JBUF_PASS_THRU));
+      (*cinfo->main->LJPEG_start_pass) (cinfo, LJPEG_JBUF_PASS_THRU);
     }
   }
 
@@ -470,7 +470,7 @@ prepare_for_output_pass (LJPEG_j_decompress_ptr cinfo)
 LJPEG_METHODDEF(void)
 finish_output_pass (LJPEG_j_decompress_ptr cinfo)
 {
-  my_master_ptr master = (my_master_ptr) cinfo->master;
+  LJPEG_my_master_ptr master = (LJPEG_my_master_ptr) cinfo->master;
 
   if (cinfo->quantize_colors)
     (*cinfo->cquantize->LJPEG_finish_pass) (cinfo);
@@ -486,7 +486,7 @@ finish_output_pass (LJPEG_j_decompress_ptr cinfo)
 LJPEG_GLOBAL(void)
 jpeg_new_colormap (LJPEG_j_decompress_ptr cinfo)
 {
-  my_master_ptr master = (my_master_ptr) cinfo->master;
+  LJPEG_my_master_ptr master = (LJPEG_my_master_ptr) cinfo->master;
 
   /* Prevent application from calling me at wrong times */
   if (cinfo->global_state != DSTATE_BUFIMAGE)
@@ -513,9 +513,9 @@ jpeg_new_colormap (LJPEG_j_decompress_ptr cinfo)
 LJPEG_GLOBAL(void)
 jinit_master_decompress (LJPEG_j_decompress_ptr cinfo)
 {
-  my_master_ptr master;
+  LJPEG_my_master_ptr master;
 
-  master = (my_master_ptr)
+  master = (LJPEG_my_master_ptr)
       (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(my_decomp_master));
   cinfo->master = (struct jpeg_decomp_master *) master;

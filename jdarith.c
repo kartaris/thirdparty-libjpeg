@@ -191,7 +191,7 @@ process_restart (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   int ci;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
 
   /* Advance past the RSTn marker */
   if (! (*cinfo->marker->read_restart_marker) (cinfo))
@@ -435,7 +435,7 @@ decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   LJPEG_JBLOCKROW block;
-  JCOEFPTR thiscoef;
+  LJPEG_JCOEFPTR thiscoef;
   unsigned char *st;
   int tbl, k, kex;
   int p1, m1;
@@ -509,7 +509,7 @@ LJPEG_METHODDEF(boolean)
 decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
   LJPEG_JBLOCKROW block;
   unsigned char *st;
   int blkn, ci, tbl, sign, k;
@@ -642,7 +642,7 @@ LJPEG_start_pass (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   int ci, tbl;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
 
   if (cinfo->progressive_mode) {
     /* Validate progressive scan parameters */

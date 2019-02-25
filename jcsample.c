@@ -52,7 +52,7 @@
 
 /* Pointer to routine to downsample a single component */
 typedef LJPEG_JMETHOD(void, downsample1_ptr,
-		(LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
+		(LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		 LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data));
 
 /* Private subobject */
@@ -126,7 +126,7 @@ sep_downsample (LJPEG_j_compress_ptr cinfo,
 {
   my_downsample_ptr downsample = (my_downsample_ptr) cinfo->downsample;
   int ci;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
   LJPEG_JSAMPARRAY in_ptr, out_ptr;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
@@ -147,7 +147,7 @@ sep_downsample (LJPEG_j_compress_ptr cinfo,
  */
 
 LJPEG_METHODDEF(void)
-int_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
+int_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   my_downsample_ptr downsample = (my_downsample_ptr) cinfo->downsample;
@@ -196,7 +196,7 @@ int_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
  */
 
 LJPEG_METHODDEF(void)
-fullsize_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
+fullsize_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		     LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   /* Copy the data */
@@ -221,7 +221,7 @@ fullsize_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
  */
 
 LJPEG_METHODDEF(void)
-h2v1_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
+h2v1_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		 LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   int inrow;
@@ -258,7 +258,7 @@ h2v1_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
  */
 
 LJPEG_METHODDEF(void)
-h2v2_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
+h2v2_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		 LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   int inrow, outrow;
@@ -302,7 +302,7 @@ h2v2_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
  */
 
 LJPEG_METHODDEF(void)
-h2v2_smooth_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
+h2v2_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 			LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   int inrow, outrow;
@@ -403,7 +403,7 @@ h2v2_smooth_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * comppt
  */
 
 LJPEG_METHODDEF(void)
-fullsize_smooth_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info *compptr,
+fullsize_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info *compptr,
 			    LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   int inrow;
@@ -475,11 +475,11 @@ fullsize_smooth_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info *com
  */
 
 LJPEG_GLOBAL(void)
-jinit_downsampler (LJPEG_j_compress_ptr cinfo)
+LJPEG_jinit_downsampler (LJPEG_j_compress_ptr cinfo)
 {
   my_downsample_ptr downsample;
   int ci;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
   boolean smoothok = TRUE;
   int h_in_group, v_in_group, h_out_group, v_out_group;
 

@@ -394,7 +394,7 @@ LJPEG_read_JPEG_file (char * filename)
   /* After finish_decompress, we can close the input file.
    * Here we postpone it until after no more JPEG errors are possible,
    * so as to simplify the setjmp error logic above.  (Actually, I don't
-   * think that jpeg_destroy can do an error exit, but why assume anything...)
+   * think that LJPEG_jpeg_destroy can do an error exit, but why assume anything...)
    */
   fclose(infile);
 

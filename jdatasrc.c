@@ -188,7 +188,7 @@ skip_input_data (LJPEG_j_decompress_ptr cinfo, long num_bytes)
  * Terminate source --- called by LJPEG_jpeg_finish_decompress
  * after all data has been read.  Often a no-op.
  *
- * NB: *not* called by jpeg_abort or jpeg_destroy; surrounding
+ * NB: *not* called by LJPEG_jpeg_abort or LJPEG_jpeg_destroy; surrounding
  * application must deal with any cleanup that should happen even
  * for error exit.
  */

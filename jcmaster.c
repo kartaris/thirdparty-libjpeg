@@ -23,20 +23,20 @@ typedef enum {
 	main_pass,		/* input data, also do first output step */
 	huff_opt_pass,		/* Huffman code optimization pass */
 	output_pass		/* data output pass */
-} c_pass_type;
+} LJPEG_c_pass_type;
 
 typedef struct {
   struct jpeg_comp_master pub;	/* public fields */
 
-  c_pass_type pass_type;	/* the type of the current pass */
+  LJPEG_c_pass_type pass_type;	/* the type of the current pass */
 
   int pass_number;		/* # of passes completed */
   int total_passes;		/* total # of passes needed */
 
   int scan_number;		/* current index in scan_info[] */
-} my_comp_master;
+} LJPEG_my_comp_master;
 
-typedef my_comp_master * my_master_ptr;
+typedef LJPEG_my_comp_master * LJPEG_my_master_ptr;
 
 
 /*
@@ -50,14 +50,14 @@ typedef my_comp_master * my_master_ptr;
  */
 
 LJPEG_GLOBAL(void)
-jpeg_calc_jpeg_dimensions (LJPEG_j_compress_ptr cinfo)
+LJPEG_jpeg_calc_jpeg_dimensions (LJPEG_j_compress_ptr cinfo)
 /* Do computations that are needed before master selection phase */
 {
 #ifdef DCT_SCALING_SUPPORTED
 
   /* Sanity check on input image dimensions to prevent overflow in
    * following calculation.
-   * We do check jpeg_width and jpeg_height in initial_setup below,
+   * We do check jpeg_width and jpeg_height in LJPEG_initial_setup below,
    * but image_width and image_height can come from arbitrary data,
    * and we need some space for multiplication by block_size.
    */
@@ -206,7 +206,7 @@ jpeg_calc_jpeg_dimensions (LJPEG_j_compress_ptr cinfo)
 
 
 LOCAL(void)
-jpeg_calc_trans_dimensions (LJPEG_j_compress_ptr cinfo)
+LJPEG_jpeg_calc_trans_dimensions (LJPEG_j_compress_ptr cinfo)
 {
   if (cinfo->min_DCT_h_scaled_size != cinfo->min_DCT_v_scaled_size)
     ERREXIT2(cinfo, JERR_BAD_DCTSIZE,
@@ -217,18 +217,18 @@ jpeg_calc_trans_dimensions (LJPEG_j_compress_ptr cinfo)
 
 
 LOCAL(void)
-initial_setup (LJPEG_j_compress_ptr cinfo, boolean transcode_only)
+LJPEG_initial_setup (LJPEG_j_compress_ptr cinfo, boolean transcode_only)
 /* Do computations that are needed before master selection phase */
 {
   int ci, ssize;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   long samplesperrow;
   LJPEG_JDIMENSION jd_samplesperrow;
 
   if (transcode_only)
-    jpeg_calc_trans_dimensions(cinfo);
+    LJPEG_jpeg_calc_trans_dimensions(cinfo);
   else
-    jpeg_calc_jpeg_dimensions(cinfo);
+    LJPEG_jpeg_calc_jpeg_dimensions(cinfo);
 
   /* Sanity check on block_size */
   if (cinfo->block_size < 1 || cinfo->block_size > 16)
@@ -355,7 +355,7 @@ initial_setup (LJPEG_j_compress_ptr cinfo, boolean transcode_only)
 #ifdef C_MULTISCAN_FILES_SUPPORTED
 
 LOCAL(void)
-validate_script (LJPEG_j_compress_ptr cinfo)
+LJPEG_validate_script (LJPEG_j_compress_ptr cinfo)
 /* Verify that the scan script in cinfo->scan_info[] is valid; also
  * determine whether it uses progressive JPEG, and set cinfo->progressive_mode.
  */
@@ -490,7 +490,7 @@ validate_script (LJPEG_j_compress_ptr cinfo)
 
 
 LOCAL(void)
-reduce_script (LJPEG_j_compress_ptr cinfo)
+LJPEG_reduce_script (LJPEG_j_compress_ptr cinfo)
 /* Adapt scan script for use with reduced block size;
  * assume that script has been validated before.
  */
@@ -525,7 +525,7 @@ reduce_script (LJPEG_j_compress_ptr cinfo)
 
 
 LOCAL(void)
-select_scan_parameters (LJPEG_j_compress_ptr cinfo)
+LJPEG_select_scan_parameters (LJPEG_j_compress_ptr cinfo)
 /* Set up the scan parameters for the current scan */
 {
   int ci;
@@ -533,7 +533,7 @@ select_scan_parameters (LJPEG_j_compress_ptr cinfo)
 #ifdef C_MULTISCAN_FILES_SUPPORTED
   if (cinfo->scan_info != NULL) {
     /* Prepare for current scan --- the script is already validated */
-    my_master_ptr master = (my_master_ptr) cinfo->master;
+    LJPEG_my_master_ptr master = (LJPEG_my_master_ptr) cinfo->master;
     const jpeg_scan_info * scanptr = cinfo->scan_info + master->scan_number;
 
     cinfo->comps_in_scan = scanptr->comps_in_scan;
@@ -569,12 +569,12 @@ select_scan_parameters (LJPEG_j_compress_ptr cinfo)
 
 
 LOCAL(void)
-per_scan_setup (LJPEG_j_compress_ptr cinfo)
+LJPEG_per_scan_setup (LJPEG_j_compress_ptr cinfo)
 /* Do computations that are needed before processing a JPEG scan */
 /* cinfo->comps_in_scan and cinfo->cur_comp_info[] are already set */
 {
   int ci, mcublks, tmp;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   
   if (cinfo->comps_in_scan == 1) {
     
@@ -662,45 +662,45 @@ per_scan_setup (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-prepare_for_pass (LJPEG_j_compress_ptr cinfo)
+LJPEG_prepare_for_pass (LJPEG_j_compress_ptr cinfo)
 {
-  my_master_ptr master = (my_master_ptr) cinfo->master;
+  LJPEG_my_master_ptr master = (LJPEG_my_master_ptr) cinfo->master;
 
   switch (master->pass_type) {
   case main_pass:
     /* Initial pass: will collect input data, and do either Huffman
      * optimization or data output for the first scan.
      */
-    select_scan_parameters(cinfo);
-    per_scan_setup(cinfo);
+    LJPEG_select_scan_parameters(cinfo);
+    LJPEG_per_scan_setup(cinfo);
     if (! cinfo->raw_data_in) {
       (*cinfo->cconvert->LJPEG_start_pass) (cinfo);
       (*cinfo->downsample->LJPEG_start_pass) (cinfo);
-      (*cinfo->prep->LJPEG_start_pass) (cinfo, JBUF_PASS_THRU);
+      (*cinfo->prep->LJPEG_start_pass) (cinfo, LJPEG_JBUF_PASS_THRU);
     }
     (*cinfo->fdct->LJPEG_start_pass) (cinfo);
     (*cinfo->entropy->LJPEG_start_pass) (cinfo, cinfo->optimize_coding);
     (*cinfo->coef->LJPEG_start_pass) (cinfo,
 				(master->total_passes > 1 ?
-				 JBUF_SAVE_AND_PASS : JBUF_PASS_THRU));
-    (*cinfo->main->LJPEG_start_pass) (cinfo, JBUF_PASS_THRU);
+				 LJPEG_JBUF_SAVE_AND_PASS : LJPEG_JBUF_PASS_THRU));
+    (*cinfo->main->LJPEG_start_pass) (cinfo, LJPEG_JBUF_PASS_THRU);
     if (cinfo->optimize_coding) {
       /* No immediate data output; postpone writing frame/scan headers */
-      master->pub.call_pass_startup = FALSE;
+      master->pub.call_LJPEG_pass_startup = FALSE;
     } else {
       /* Will write frame/scan headers at first LJPEG_jpeg_write_scanlines call */
-      master->pub.call_pass_startup = TRUE;
+      master->pub.call_LJPEG_pass_startup = TRUE;
     }
     break;
 #ifdef ENTROPY_OPT_SUPPORTED
   case huff_opt_pass:
     /* Do Huffman optimization for a scan after the first one. */
-    select_scan_parameters(cinfo);
-    per_scan_setup(cinfo);
+    LJPEG_select_scan_parameters(cinfo);
+    LJPEG_per_scan_setup(cinfo);
     if (cinfo->Ss != 0 || cinfo->Ah == 0) {
       (*cinfo->entropy->LJPEG_start_pass) (cinfo, TRUE);
-      (*cinfo->coef->LJPEG_start_pass) (cinfo, JBUF_CRANK_DEST);
-      master->pub.call_pass_startup = FALSE;
+      (*cinfo->coef->LJPEG_start_pass) (cinfo, LJPEG_JBUF_CRANK_DEST);
+      master->pub.call_LJPEG_pass_startup = FALSE;
       break;
     }
     /* Special case: Huffman DC refinement scans need no Huffman table
@@ -714,16 +714,16 @@ prepare_for_pass (LJPEG_j_compress_ptr cinfo)
     /* Do a data-output pass. */
     /* We need not repeat per-scan setup if prior optimization pass did it. */
     if (! cinfo->optimize_coding) {
-      select_scan_parameters(cinfo);
-      per_scan_setup(cinfo);
+      LJPEG_select_scan_parameters(cinfo);
+      LJPEG_per_scan_setup(cinfo);
     }
     (*cinfo->entropy->LJPEG_start_pass) (cinfo, FALSE);
-    (*cinfo->coef->LJPEG_start_pass) (cinfo, JBUF_CRANK_DEST);
+    (*cinfo->coef->LJPEG_start_pass) (cinfo, LJPEG_JBUF_CRANK_DEST);
     /* We emit frame/scan headers now */
     if (master->scan_number == 0)
-      (*cinfo->marker->write_frame_header) (cinfo);
-    (*cinfo->marker->write_scan_header) (cinfo);
-    master->pub.call_pass_startup = FALSE;
+      (*cinfo->marker->LJPEG_write_frame_header) (cinfo);
+    (*cinfo->marker->LJPEG_write_scan_header) (cinfo);
+    master->pub.call_LJPEG_pass_startup = FALSE;
     break;
   default:
     ERREXIT(cinfo, JERR_NOT_COMPILED);
@@ -741,7 +741,7 @@ prepare_for_pass (LJPEG_j_compress_ptr cinfo)
 
 /*
  * Special start-of-pass hook.
- * This is called by LJPEG_jpeg_write_scanlines if call_pass_startup is TRUE.
+ * This is called by LJPEG_jpeg_write_scanlines if call_LJPEG_pass_startup is TRUE.
  * In single-pass processing, we need this hook because we don't want to
  * write frame/scan headers during LJPEG_jpeg_start_compress; we want to let the
  * application write COM markers etc. between LJPEG_jpeg_start_compress and the
@@ -750,12 +750,12 @@ prepare_for_pass (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-pass_startup (LJPEG_j_compress_ptr cinfo)
+LJPEG_pass_startup (LJPEG_j_compress_ptr cinfo)
 {
-  cinfo->master->call_pass_startup = FALSE; /* reset flag so call only once */
+  cinfo->master->call_LJPEG_pass_startup = FALSE; /* reset flag so call only once */
 
-  (*cinfo->marker->write_frame_header) (cinfo);
-  (*cinfo->marker->write_scan_header) (cinfo);
+  (*cinfo->marker->LJPEG_write_frame_header) (cinfo);
+  (*cinfo->marker->LJPEG_write_scan_header) (cinfo);
 }
 
 
@@ -766,7 +766,7 @@ pass_startup (LJPEG_j_compress_ptr cinfo)
 LJPEG_METHODDEF(void)
 LJPEG_finish_pass_master (LJPEG_j_compress_ptr cinfo)
 {
-  my_master_ptr master = (my_master_ptr) cinfo->master;
+  LJPEG_my_master_ptr master = (LJPEG_my_master_ptr) cinfo->master;
 
   /* The entropy coder always needs an end-of-pass call,
    * either to analyze statistics or to flush its output buffer.
@@ -804,27 +804,27 @@ LJPEG_finish_pass_master (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(void)
-jinit_c_master_control (LJPEG_j_compress_ptr cinfo, boolean transcode_only)
+LJPEG_jinit_c_master_control (LJPEG_j_compress_ptr cinfo, boolean transcode_only)
 {
-  my_master_ptr master;
+  LJPEG_my_master_ptr master;
 
-  master = (my_master_ptr)
+  master = (LJPEG_my_master_ptr)
       (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				  SIZEOF(my_comp_master));
+				  SIZEOF(LJPEG_my_comp_master));
   cinfo->master = (struct jpeg_comp_master *) master;
-  master->pub.prepare_for_pass = prepare_for_pass;
-  master->pub.pass_startup = pass_startup;
+  master->pub.LJPEG_prepare_for_pass = LJPEG_prepare_for_pass;
+  master->pub.LJPEG_pass_startup = LJPEG_pass_startup;
   master->pub.LJPEG_finish_pass = LJPEG_finish_pass_master;
   master->pub.is_last_pass = FALSE;
 
   /* Validate parameters, determine derived values */
-  initial_setup(cinfo, transcode_only);
+  LJPEG_initial_setup(cinfo, transcode_only);
 
   if (cinfo->scan_info != NULL) {
 #ifdef C_MULTISCAN_FILES_SUPPORTED
-    validate_script(cinfo);
+    LJPEG_validate_script(cinfo);
     if (cinfo->block_size < DCTSIZE)
-      reduce_script(cinfo);
+      LJPEG_reduce_script(cinfo);
 #else
     ERREXIT(cinfo, JERR_NOT_COMPILED);
 #endif

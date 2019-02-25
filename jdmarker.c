@@ -84,7 +84,7 @@ typedef enum {			/* JPEG marker codes */
   M_TEM   = 0x01,
 
   M_ERROR = 0x100
-} JPEG_MARKER;
+} LJPEG_JPEG_MARKER;
 
 
 /* Private state */
@@ -106,7 +106,7 @@ typedef struct {
   /* Note: cur_marker is not linked into marker_list until it's all read. */
 } my_marker_reader;
 
-typedef my_marker_reader * my_marker_ptr;
+typedef my_marker_reader * LJPEG_my_marker_ptr;
 
 
 /*
@@ -243,7 +243,7 @@ get_sof (LJPEG_j_decompress_ptr cinfo, boolean is_baseline, boolean is_prog,
 {
   INT32 length;
   int c, ci, i;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
   INPUT_VARS(cinfo);
 
   cinfo->is_baseline = is_baseline;
@@ -277,9 +277,9 @@ get_sof (LJPEG_j_decompress_ptr cinfo, boolean is_baseline, boolean is_prog,
     ERREXIT(cinfo, JERR_BAD_LENGTH);
 
   if (cinfo->comp_info == NULL)	/* do only once, even if suspend */
-    cinfo->comp_info = (jpeg_component_info *) (*cinfo->mem->alloc_small)
+    cinfo->comp_info = (LJPEG_jpeg_component_info *) (*cinfo->mem->alloc_small)
 			((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-			 cinfo->num_components * SIZEOF(jpeg_component_info));
+			 cinfo->num_components * SIZEOF(LJPEG_jpeg_component_info));
 
   for (ci = 0; ci < cinfo->num_components; ci++) {
     INPUT_BYTE(cinfo, c, return FALSE);
@@ -324,7 +324,7 @@ get_sos (LJPEG_j_decompress_ptr cinfo)
 {
   INT32 length;
   int c, ci, i, n;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
   INPUT_VARS(cinfo);
 
   if (! cinfo->marker->saw_SOF)
@@ -509,7 +509,7 @@ get_dht (LJPEG_j_decompress_ptr cinfo)
       ERREXIT1(cinfo, JERR_DHT_INDEX, index);
 
     if (*htblptr == NULL)
-      *htblptr = jpeg_alloc_huff_table((LJPEG_j_common_ptr) cinfo);
+      *htblptr = LJPEG_jpeg_alloc_huff_table((LJPEG_j_common_ptr) cinfo);
   
     MEMCOPY((*htblptr)->bits, bits, SIZEOF((*htblptr)->bits));
     MEMCOPY((*htblptr)->huffval, huffval, SIZEOF((*htblptr)->huffval));
@@ -549,7 +549,7 @@ get_dqt (LJPEG_j_decompress_ptr cinfo)
       ERREXIT1(cinfo, JERR_DQT_INDEX, n);
       
     if (cinfo->quant_tbl_ptrs[n] == NULL)
-      cinfo->quant_tbl_ptrs[n] = jpeg_alloc_quant_table((LJPEG_j_common_ptr) cinfo);
+      cinfo->quant_tbl_ptrs[n] = LJPEG_jpeg_alloc_quant_table((LJPEG_j_common_ptr) cinfo);
     quant_ptr = cinfo->quant_tbl_ptrs[n];
 
     if (prec) {
@@ -870,7 +870,7 @@ LJPEG_METHODDEF(boolean)
 save_marker (LJPEG_j_decompress_ptr cinfo)
 /* Save an APPn or COM marker into the marker list */
 {
-  my_marker_ptr marker = (my_marker_ptr) cinfo->marker;
+  LJPEG_my_marker_ptr marker = (LJPEG_my_marker_ptr) cinfo->marker;
   jpeg_saved_marker_ptr cur_marker = marker->cur_marker;
   unsigned int bytes_read, data_length;
   JOCTET FAR * data;
@@ -1200,13 +1200,13 @@ read_markers (LJPEG_j_decompress_ptr cinfo)
     case M_APP13:
     case M_APP14:
     case M_APP15:
-      if (! (*((my_marker_ptr) cinfo->marker)->process_APPn[
+      if (! (*((LJPEG_my_marker_ptr) cinfo->marker)->process_APPn[
 		cinfo->unread_marker - (int) M_APP0]) (cinfo))
 	return JPEG_SUSPENDED;
       break;
 
     case M_COM:
-      if (! (*((my_marker_ptr) cinfo->marker)->process_COM) (cinfo))
+      if (! (*((LJPEG_my_marker_ptr) cinfo->marker)->process_COM) (cinfo))
 	return JPEG_SUSPENDED;
       break;
 
@@ -1386,7 +1386,7 @@ jpeg_resync_to_restart (LJPEG_j_decompress_ptr cinfo, int desired)
 LJPEG_METHODDEF(void)
 reset_marker_reader (LJPEG_j_decompress_ptr cinfo)
 {
-  my_marker_ptr marker = (my_marker_ptr) cinfo->marker;
+  LJPEG_my_marker_ptr marker = (LJPEG_my_marker_ptr) cinfo->marker;
 
   cinfo->comp_info = NULL;		/* until allocated by get_sof */
   cinfo->input_scan_number = 0;		/* no SOS seen yet */
@@ -1406,11 +1406,11 @@ reset_marker_reader (LJPEG_j_decompress_ptr cinfo)
 LJPEG_GLOBAL(void)
 jinit_marker_reader (LJPEG_j_decompress_ptr cinfo)
 {
-  my_marker_ptr marker;
+  LJPEG_my_marker_ptr marker;
   int i;
 
   /* Create subobject in permanent pool */
-  marker = (my_marker_ptr)
+  marker = (LJPEG_my_marker_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
 				SIZEOF(my_marker_reader));
   cinfo->marker = &marker->pub;
@@ -1445,7 +1445,7 @@ LJPEG_GLOBAL(void)
 jpeg_save_markers (LJPEG_j_decompress_ptr cinfo, int marker_code,
 		   unsigned int length_limit)
 {
-  my_marker_ptr marker = (my_marker_ptr) cinfo->marker;
+  LJPEG_my_marker_ptr marker = (LJPEG_my_marker_ptr) cinfo->marker;
   long maxlength;
   jpeg_marker_parser_method processor;
 
@@ -1494,7 +1494,7 @@ LJPEG_GLOBAL(void)
 LJPEG_jpeg_set_marker_processor (LJPEG_j_decompress_ptr cinfo, int marker_code,
 			   jpeg_marker_parser_method routine)
 {
-  my_marker_ptr marker = (my_marker_ptr) cinfo->marker;
+  LJPEG_my_marker_ptr marker = (LJPEG_my_marker_ptr) cinfo->marker;
 
   if (marker_code == (int) M_COM)
     marker->process_COM = routine;

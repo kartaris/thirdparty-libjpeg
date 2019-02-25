@@ -32,7 +32,7 @@ typedef struct {
   LJPEG_JDIMENSION cur_iMCU_row;	/* number of current iMCU row */
   LJPEG_JDIMENSION rowgroup_ctr;	/* counts row groups received in iMCU row */
   boolean suspended;		/* remember if we suspended output */
-  J_BUF_MODE pass_mode;		/* current operating mode */
+  LJPEG_J_BUF_MODE pass_mode;		/* current operating mode */
 
   /* If using just a strip buffer, this points to the entire set of buffers
    * (we allocate one for each component).  In the full-image case, this
@@ -44,19 +44,19 @@ typedef struct {
   /* If using full-image storage, this array holds pointers to virtual-array
    * control blocks for each component.  Unused if not full-image storage.
    */
-  jvirt_sarray_ptr whole_image[MAX_COMPONENTS];
+  LJPEG_jvirt_sarray_ptr whole_image[MAX_COMPONENTS];
 #endif
-} my_main_controller;
+} LJPEG_my_main_controller;
 
-typedef my_main_controller * my_main_ptr;
+typedef LJPEG_my_main_controller * LJPEG_my_main_ptr;
 
 
 /* Forward declarations */
-LJPEG_METHODDEF(void) process_data_simple_main
+LJPEG_METHODDEF(void) LJPEG_process_data_simple_main
 	LJPEG_JPP((LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 	     LJPEG_JDIMENSION *in_row_ctr, LJPEG_JDIMENSION in_rows_avail));
 #ifdef FULL_MAIN_BUFFER_SUPPORTED
-LJPEG_METHODDEF(void) process_data_buffer_main
+LJPEG_METHODDEF(void) LJPEG_process_data_buffer_main
 	LJPEG_JPP((LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 	     LJPEG_JDIMENSION *in_row_ctr, LJPEG_JDIMENSION in_rows_avail));
 #endif
@@ -67,9 +67,9 @@ LJPEG_METHODDEF(void) process_data_buffer_main
  */
 
 LJPEG_METHODDEF(void)
-LJPEG_start_pass_main (LJPEG_j_compress_ptr cinfo, J_BUF_MODE pass_mode)
+LJPEG_start_pass_main (LJPEG_j_compress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode)
 {
-  my_main_ptr mainp = (my_main_ptr) cinfo->main;
+  LJPEG_my_main_ptr mainp = (LJPEG_my_main_ptr) cinfo->main;
 
   /* Do nothing in raw-data mode. */
   if (cinfo->raw_data_in)
@@ -81,20 +81,20 @@ LJPEG_start_pass_main (LJPEG_j_compress_ptr cinfo, J_BUF_MODE pass_mode)
   mainp->pass_mode = pass_mode;	/* save mode for use by process_data */
 
   switch (pass_mode) {
-  case JBUF_PASS_THRU:
+  case LJPEG_JBUF_PASS_THRU:
 #ifdef FULL_MAIN_BUFFER_SUPPORTED
     if (mainp->whole_image[0] != NULL)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
 #endif
-    mainp->pub.process_data = process_data_simple_main;
+    mainp->pub.process_data = LJPEG_process_data_simple_main;
     break;
 #ifdef FULL_MAIN_BUFFER_SUPPORTED
-  case JBUF_SAVE_SOURCE:
-  case JBUF_CRANK_DEST:
-  case JBUF_SAVE_AND_PASS:
+  case LJPEG_JBUF_SAVE_SOURCE:
+  case LJPEG_JBUF_CRANK_DEST:
+  case LJPEG_JBUF_SAVE_AND_PASS:
     if (mainp->whole_image[0] == NULL)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
-    mainp->pub.process_data = process_data_buffer_main;
+    mainp->pub.process_data = LJPEG_process_data_buffer_main;
     break;
 #endif
   default:
@@ -111,11 +111,11 @@ LJPEG_start_pass_main (LJPEG_j_compress_ptr cinfo, J_BUF_MODE pass_mode)
  */
 
 LJPEG_METHODDEF(void)
-process_data_simple_main (LJPEG_j_compress_ptr cinfo,
+LJPEG_process_data_simple_main (LJPEG_j_compress_ptr cinfo,
 			  LJPEG_JSAMPARRAY input_buf, LJPEG_JDIMENSION *in_row_ctr,
 			  LJPEG_JDIMENSION in_rows_avail)
 {
-  my_main_ptr mainp = (my_main_ptr) cinfo->main;
+  LJPEG_my_main_ptr mainp = (LJPEG_my_main_ptr) cinfo->main;
 
   while (mainp->cur_iMCU_row < cinfo->total_iMCU_rows) {
     /* Read input data if we haven't filled the main buffer yet */
@@ -167,14 +167,14 @@ process_data_simple_main (LJPEG_j_compress_ptr cinfo,
  */
 
 LJPEG_METHODDEF(void)
-process_data_buffer_main (LJPEG_j_compress_ptr cinfo,
+LJPEG_process_data_buffer_main (LJPEG_j_compress_ptr cinfo,
 			  LJPEG_JSAMPARRAY input_buf, LJPEG_JDIMENSION *in_row_ctr,
 			  LJPEG_JDIMENSION in_rows_avail)
 {
-  my_main_ptr mainp = (my_main_ptr) cinfo->main;
+  LJPEG_my_main_ptr mainp = (LJPEG_my_main_ptr) cinfo->main;
   int ci;
-  jpeg_component_info *compptr;
-  boolean writing = (mainp->pass_mode != JBUF_CRANK_DEST);
+  LJPEG_jpeg_component_info *compptr;
+  boolean writing = (mainp->pass_mode != LJPEG_JBUF_CRANK_DEST);
 
   while (mainp->cur_iMCU_row < cinfo->total_iMCU_rows) {
     /* Realign the virtual buffers if at the start of an iMCU row. */
@@ -208,7 +208,7 @@ process_data_buffer_main (LJPEG_j_compress_ptr cinfo,
     }
 
     /* Emit data, unless this is a sink-only pass. */
-    if (mainp->pass_mode != JBUF_SAVE_SOURCE) {
+    if (mainp->pass_mode != LJPEG_JBUF_SAVE_SOURCE) {
       if (! (*cinfo->coef->LJPEG_compress_data) (cinfo, mainp->buffer)) {
 	/* If compressor did not consume the whole row, then we must need to
 	 * suspend processing and return to the application.  In this situation
@@ -245,15 +245,15 @@ process_data_buffer_main (LJPEG_j_compress_ptr cinfo,
  */
 
 LJPEG_GLOBAL(void)
-jinit_c_main_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buffer)
+LJPEG_jinit_c_main_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buffer)
 {
-  my_main_ptr mainp;
+  LJPEG_my_main_ptr mainp;
   int ci;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
 
-  mainp = (my_main_ptr)
+  mainp = (LJPEG_my_main_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(my_main_controller));
+				SIZEOF(LJPEG_my_main_controller));
   cinfo->main = &mainp->pub;
   mainp->pub.LJPEG_start_pass = LJPEG_start_pass_main;
 

@@ -63,7 +63,7 @@ jpeg_copy_critical_parameters (LJPEG_j_decompress_ptr srcinfo,
 			       LJPEG_j_compress_ptr dstinfo)
 {
   JQUANT_TBL ** qtblptr;
-  jpeg_component_info *incomp, *outcomp;
+  LJPEG_jpeg_component_info *incomp, *outcomp;
   JQUANT_TBL *c_quant, *slot_quant;
   int tblno, ci, coefi;
 
@@ -95,7 +95,7 @@ jpeg_copy_critical_parameters (LJPEG_j_decompress_ptr srcinfo,
     if (srcinfo->quant_tbl_ptrs[tblno] != NULL) {
       qtblptr = & dstinfo->quant_tbl_ptrs[tblno];
       if (*qtblptr == NULL)
-	*qtblptr = jpeg_alloc_quant_table((LJPEG_j_common_ptr) dstinfo);
+	*qtblptr = LJPEG_jpeg_alloc_quant_table((LJPEG_j_common_ptr) dstinfo);
       MEMCOPY((*qtblptr)->quantval,
 	      srcinfo->quant_tbl_ptrs[tblno]->quantval,
 	      SIZEOF((*qtblptr)->quantval));
@@ -165,19 +165,19 @@ transencode_master_selection (LJPEG_j_compress_ptr cinfo,
 			      jvirt_barray_ptr * coef_arrays)
 {
   /* Initialize master control (includes parameter checking/processing) */
-  jinit_c_master_control(cinfo, TRUE /* transcode only */);
+  LJPEG_jinit_c_master_control(cinfo, TRUE /* transcode only */);
 
   /* Entropy encoding: either Huffman or arithmetic coding. */
   if (cinfo->arith_code)
     LJPEG_jinit_LJPEG_arith_encoder(cinfo);
   else {
-    jinit_huff_encoder(cinfo);
+    LJPEG_jinit_huff_encoder(cinfo);
   }
 
   /* We need a special coefficient buffer controller. */
   transencode_coef_controller(cinfo, coef_arrays);
 
-  jinit_marker_writer(cinfo);
+  LJPEG_jinit_marker_writer(cinfo);
 
   /* We can now tell the memory manager to allocate virtual arrays. */
   (*cinfo->mem->realize_virt_arrays) ((LJPEG_j_common_ptr) cinfo);
@@ -186,7 +186,7 @@ transencode_master_selection (LJPEG_j_compress_ptr cinfo,
    * Frame and scan headers are postponed till later.
    * This lets application insert special markers after the SOI.
    */
-  (*cinfo->marker->write_file_header) (cinfo);
+  (*cinfo->marker->LJPEG_write_file_header) (cinfo);
 }
 
 
@@ -247,11 +247,11 @@ LJPEG_start_iMCU_row (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-LJPEG_start_pass_coef (LJPEG_j_compress_ptr cinfo, J_BUF_MODE pass_mode)
+LJPEG_start_pass_coef (LJPEG_j_compress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode)
 {
   LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
 
-  if (pass_mode != JBUF_CRANK_DEST)
+  if (pass_mode != LJPEG_JBUF_CRANK_DEST)
     ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
 
   coef->iMCU_row_num = 0;
@@ -281,7 +281,7 @@ LJPEG_compress_output (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_buf)
   JBLOCKARRAY buffer[MAX_COMPS_IN_SCAN];
   LJPEG_JBLOCKROW MCU_buffer[C_MAX_BLOCKS_IN_MCU];
   LJPEG_JBLOCKROW buffer_ptr;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
 
   /* Align the virtual buffers for the components used in this scan. */
   for (ci = 0; ci < cinfo->comps_in_scan; ci++) {

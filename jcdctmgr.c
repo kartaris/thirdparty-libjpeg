@@ -20,10 +20,10 @@
 /* Private subobject for this module */
 
 typedef struct {
-  struct jpeg_forward_dct pub;	/* public fields */
+  struct LJPEG_jpeg_forward_dct pub;	/* public fields */
 
   /* Pointer to the DCT routine actually in use */
-  forward_DCT_method_ptr do_dct[MAX_COMPONENTS];
+  LJPEG_forward_DCT_method_ptr do_dct[MAX_COMPONENTS];
 
   /* The actual post-DCT divisors --- not identical to the quant table
    * entries, because of scaling (especially for an unnormalized DCT).
@@ -36,9 +36,9 @@ typedef struct {
   float_DCT_method_ptr do_float_dct[MAX_COMPONENTS];
   FAST_FLOAT * float_divisors[NUM_QUANT_TBLS];
 #endif
-} my_fdct_controller;
+} LJPEG_my_fdct_controller;
 
-typedef my_fdct_controller * my_fdct_ptr;
+typedef LJPEG_my_fdct_controller * LJPEG_my_fdct_ptr;
 
 
 /* The current scaled-DCT routines require ISLOW-style divisor tables,
@@ -62,15 +62,15 @@ typedef my_fdct_controller * my_fdct_ptr;
  */
 
 LJPEG_METHODDEF(void)
-forward_DCT (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
+LJPEG_forward_DCT (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	     LJPEG_JSAMPARRAY sample_data, LJPEG_JBLOCKROW coef_blocks,
 	     LJPEG_JDIMENSION start_row, LJPEG_JDIMENSION start_col,
 	     LJPEG_JDIMENSION num_blocks)
 /* This version is used for integer DCT implementations. */
 {
   /* This routine is heavily used, so it's worth coding it tightly. */
-  my_fdct_ptr fdct = (my_fdct_ptr) cinfo->fdct;
-  forward_DCT_method_ptr do_dct = fdct->do_dct[compptr->component_index];
+  LJPEG_my_fdct_ptr fdct = (LJPEG_my_fdct_ptr) cinfo->fdct;
+  LJPEG_forward_DCT_method_ptr do_dct = fdct->do_dct[compptr->component_index];
   DCTELEM * divisors = fdct->divisors[compptr->quant_tbl_no];
   DCTELEM workspace[DCTSIZE2];	/* work area for FDCT subroutine */
   LJPEG_JDIMENSION bi;
@@ -84,7 +84,7 @@ forward_DCT (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
     /* Quantize/descale the coefficients, and store into coef_blocks[] */
     { register DCTELEM temp, qval;
       register int i;
-      register JCOEFPTR output_ptr = coef_blocks[bi];
+      register LJPEG_JCOEFPTR output_ptr = coef_blocks[bi];
 
       for (i = 0; i < DCTSIZE2; i++) {
 	qval = divisors[i];
@@ -125,14 +125,14 @@ forward_DCT (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
 #ifdef DCT_FLOAT_SUPPORTED
 
 LJPEG_METHODDEF(void)
-forward_DCT_float (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
+LJPEG_forward_DCT_float (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		   LJPEG_JSAMPARRAY sample_data, LJPEG_JBLOCKROW coef_blocks,
 		   LJPEG_JDIMENSION start_row, LJPEG_JDIMENSION start_col,
 		   LJPEG_JDIMENSION num_blocks)
 /* This version is used for floating-point DCT implementations. */
 {
   /* This routine is heavily used, so it's worth coding it tightly. */
-  my_fdct_ptr fdct = (my_fdct_ptr) cinfo->fdct;
+  LJPEG_my_fdct_ptr fdct = (LJPEG_my_fdct_ptr) cinfo->fdct;
   float_DCT_method_ptr do_dct = fdct->do_float_dct[compptr->component_index];
   FAST_FLOAT * divisors = fdct->float_divisors[compptr->quant_tbl_no];
   FAST_FLOAT workspace[DCTSIZE2]; /* work area for FDCT subroutine */
@@ -147,7 +147,7 @@ forward_DCT_float (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
     /* Quantize/descale the coefficients, and store into coef_blocks[] */
     { register FAST_FLOAT temp;
       register int i;
-      register JCOEFPTR output_ptr = coef_blocks[bi];
+      register LJPEG_JCOEFPTR output_ptr = coef_blocks[bi];
 
       for (i = 0; i < DCTSIZE2; i++) {
 	/* Apply the quantization and scaling factor */
@@ -179,9 +179,9 @@ forward_DCT_float (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
 LJPEG_METHODDEF(void)
 LJPEG_start_pass_fdctmgr (LJPEG_j_compress_ptr cinfo)
 {
-  my_fdct_ptr fdct = (my_fdct_ptr) cinfo->fdct;
+  LJPEG_my_fdct_ptr fdct = (LJPEG_my_fdct_ptr) cinfo->fdct;
   int ci, qtblno, i;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   int method = 0;
   JQUANT_TBL * qtbl;
   DCTELEM * dtbl;
@@ -369,7 +369,7 @@ LJPEG_start_pass_fdctmgr (LJPEG_j_compress_ptr cinfo)
       for (i = 0; i < DCTSIZE2; i++) {
 	dtbl[i] = ((DCTELEM) qtbl->quantval[i]) << 3;
       }
-      fdct->pub.forward_DCT[ci] = forward_DCT;
+      fdct->pub.LJPEG_forward_DCT[ci] = LJPEG_forward_DCT;
       break;
 #endif
 #ifdef DCT_IFAST_SUPPORTED
@@ -408,7 +408,7 @@ LJPEG_start_pass_fdctmgr (LJPEG_j_compress_ptr cinfo)
 		    CONST_BITS-3);
 	}
       }
-      fdct->pub.forward_DCT[ci] = forward_DCT;
+      fdct->pub.LJPEG_forward_DCT[ci] = LJPEG_forward_DCT;
       break;
 #endif
 #ifdef DCT_FLOAT_SUPPORTED
@@ -445,7 +445,7 @@ LJPEG_start_pass_fdctmgr (LJPEG_j_compress_ptr cinfo)
 	  }
 	}
       }
-      fdct->pub.forward_DCT[ci] = forward_DCT_float;
+      fdct->pub.LJPEG_forward_DCT[ci] = LJPEG_forward_DCT_float;
       break;
 #endif
     default:
@@ -461,15 +461,15 @@ LJPEG_start_pass_fdctmgr (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(void)
-jinit_forward_dct (LJPEG_j_compress_ptr cinfo)
+LJPEG_jinit_forward_dct (LJPEG_j_compress_ptr cinfo)
 {
-  my_fdct_ptr fdct;
+  LJPEG_my_fdct_ptr fdct;
   int i;
 
-  fdct = (my_fdct_ptr)
+  fdct = (LJPEG_my_fdct_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(my_fdct_controller));
-  cinfo->fdct = (struct jpeg_forward_dct *) fdct;
+				SIZEOF(LJPEG_my_fdct_controller));
+  cinfo->fdct = (struct LJPEG_jpeg_forward_dct *) fdct;
   fdct->pub.LJPEG_start_pass = LJPEG_start_pass_fdctmgr;
 
   /* Mark divisor tables unallocated */

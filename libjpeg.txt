@@ -159,12 +159,12 @@ can be obtained with a custom source manager.  Decompressed data is delivered
 into in-memory buffers passed to jpeg_read_scanlines().
 
 It is possible to abort an incomplete compression or decompression operation
-by calling jpeg_abort(); or, if you do not need to retain the JPEG object,
-simply release it by calling jpeg_destroy().
+by calling LJPEG_jpeg_abort(); or, if you do not need to retain the JPEG object,
+simply release it by calling LJPEG_jpeg_destroy().
 
 JPEG compression and decompression objects are two separate struct types.
 However, they share some common fields, and certain routines such as
-jpeg_destroy() can work on either type of object.
+LJPEG_jpeg_destroy() can work on either type of object.
 
 The JPEG library has no static variables: all state is in the compression
 or decompression object.  Therefore it is possible to process multiple
@@ -447,7 +447,7 @@ not happen.
 
 It is an error to call LJPEG_jpeg_finish_compress() before writing the necessary
 total number of scanlines.  If you wish to abort compression, call
-jpeg_abort() as discussed below.
+LJPEG_jpeg_abort() as discussed below.
 
 After completing a compression cycle, you may dispose of the JPEG object
 as discussed next, or you may use it to compress another image.  In that case
@@ -464,15 +464,15 @@ you'll need to repeat all of step 3.
 
 When you are done with a JPEG compression object, destroy it by calling
 LJPEG_jpeg_destroy_compress().  This will free all subsidiary memory (regardless of
-the previous state of the object).  Or you can call jpeg_destroy(), which
+the previous state of the object).  Or you can call LJPEG_jpeg_destroy(), which
 works for either compression or decompression objects --- this may be more
 convenient if you are sharing code between compression and decompression
 cases.  (Actually, these routines are equivalent except for the declared type
-of the passed pointer.  To avoid gripes from ANSI C compilers, jpeg_destroy()
+of the passed pointer.  To avoid gripes from ANSI C compilers, LJPEG_jpeg_destroy()
 should be passed a LJPEG_j_common_ptr.)
 
 If you allocated the LJPEG_jpeg_compress_struct structure from malloc(), freeing
-it is your responsibility --- jpeg_destroy() won't.  Ditto for the error
+it is your responsibility --- LJPEG_jpeg_destroy() won't.  Ditto for the error
 handler structure.
 
 Typical code:
@@ -486,20 +486,20 @@ If you decide to abort a compression cycle before finishing, you can clean up
 in either of two ways:
 
 * If you don't need the JPEG object any more, just call
-  LJPEG_jpeg_destroy_compress() or jpeg_destroy() to release memory.  This is
+  LJPEG_jpeg_destroy_compress() or LJPEG_jpeg_destroy() to release memory.  This is
   legitimate at any point after calling LJPEG_jpeg_create_compress() --- in fact,
   it's safe even if LJPEG_jpeg_create_compress() fails.
 
-* If you want to re-use the JPEG object, call LJPEG_jpeg_abort_compress(), or call
-  jpeg_abort() which works on both compression and decompression objects.
+* If you want to re-use the JPEG object, call LJPEG_LJPEG_jpeg_abort_compress(), or call
+  LJPEG_jpeg_abort() which works on both compression and decompression objects.
   This will return the object to an idle state, releasing any working memory.
-  jpeg_abort() is allowed at any time after successful object creation.
+  LJPEG_jpeg_abort() is allowed at any time after successful object creation.
 
 Note that cleaning up the data destination, if required, is your
 responsibility; neither of these routines will call term_destination().
 (See "Compressed data handling", below, for more about that.)
 
-jpeg_destroy() and jpeg_abort() are the only safe calls to make on a JPEG
+LJPEG_jpeg_destroy() and LJPEG_jpeg_abort() are the only safe calls to make on a JPEG
 object that has reported an error by calling error_exit (see "Error handling"
 for more info).  The internal state of such an object is likely to be out of
 whack.  Either of these two routines will return the object to a known state.
@@ -584,8 +584,8 @@ More complex code is necessary if
 
 It is permissible to stop at this point if you just wanted to find out the
 image dimensions and other header info for a JPEG file.  In that case,
-call jpeg_destroy() when you are done with the JPEG object, or call
-jpeg_abort() to return it to an idle state before selecting a new data
+call LJPEG_jpeg_destroy() when you are done with the JPEG object, or call
+LJPEG_jpeg_abort() to return it to an idle state before selecting a new data
 source and reading another header.
 
 
@@ -701,7 +701,7 @@ stream if necessary.
 
 It is an error to call LJPEG_jpeg_finish_decompress() before reading the correct
 total number of scanlines.  If you wish to abort decompression, call
-jpeg_abort() as discussed below.
+LJPEG_jpeg_abort() as discussed below.
 
 After completing a decompression cycle, you may dispose of the JPEG object as
 discussed next, or you may use it to decompress another image.  In that case
@@ -712,7 +712,7 @@ manager, the next image will be read from the same source.
 8. Release the JPEG decompression object.
 
 When you are done with a JPEG decompression object, destroy it by calling
-LJPEG_jpeg_destroy_decompress() or jpeg_destroy().  The previous discussion of
+LJPEG_jpeg_destroy_decompress() or LJPEG_jpeg_destroy().  The previous discussion of
 destroying compression objects applies here too.
 
 Typical code:
@@ -723,8 +723,8 @@ Typical code:
 9. Aborting.
 
 You can abort a decompression cycle by calling LJPEG_jpeg_destroy_decompress() or
-jpeg_destroy() if you don't need the JPEG object any more, or
-jpeg_abort_decompress() or jpeg_abort() if you want to reuse the object.
+LJPEG_jpeg_destroy() if you don't need the JPEG object any more, or
+LJPEG_jpeg_abort_decompress() or LJPEG_jpeg_abort() if you want to reuse the object.
 The previous discussion of aborting compression cycles applies here too.
 
 
@@ -1046,7 +1046,7 @@ JHUFF_TBL * ac_huff_tbl_ptrs[NUM_HUFF_TBLS]
 	Pointers to Huffman coding tables, one per table slot, or NULL if
 	no table is defined for a slot.  Slots 0 and 1 are filled with the
 	JPEG sample tables by LJPEG_jpeg_set_defaults().  If you need to allocate
-	more table structures, jpeg_alloc_huff_table() may be used.
+	more table structures, LJPEG_jpeg_alloc_huff_table() may be used.
 	Note that optimal Huffman tables can be computed for an image
 	by setting optimize_coding, as discussed above; there's seldom
 	any need to mess with providing your own Huffman tables.
@@ -1055,7 +1055,7 @@ JHUFF_TBL * ac_huff_tbl_ptrs[NUM_HUFF_TBLS]
 The actual dimensions of the JPEG image that will be written to the file are
 given by the following fields.  These are computed from the input image
 dimensions and the compression parameters by LJPEG_jpeg_start_compress().  You can
-also call jpeg_calc_jpeg_dimensions() to obtain the values that will result
+also call LJPEG_jpeg_calc_jpeg_dimensions() to obtain the values that will result
 from the current parameter settings.  This can be useful if you are trying
 to pick a scaling ratio that will get close to a desired target size.
 
@@ -1403,7 +1403,7 @@ error_exit (LJPEG_j_common_ptr cinfo)
 	generally this routine will exit() or longjmp() somewhere.
 	Typically you would override this routine to get rid of the exit()
 	default behavior.  Note that if you continue processing, you should
-	clean up the JPEG object with jpeg_abort() or jpeg_destroy().
+	clean up the JPEG object with LJPEG_jpeg_abort() or LJPEG_jpeg_destroy().
 
 output_message (LJPEG_j_common_ptr cinfo)
 	Actual output of any JPEG message.  Override this to send messages
@@ -1520,7 +1520,7 @@ term_destination (LJPEG_j_compress_ptr cinfo)
 	data remaining in the buffer.  Use either next_output_byte or
 	free_in_buffer to determine how much data is in the buffer.
 
-term_destination() is NOT called by jpeg_abort() or jpeg_destroy().  If you
+term_destination() is NOT called by LJPEG_jpeg_abort() or LJPEG_jpeg_destroy().  If you
 want the destination manager to be cleaned up during an abort, you must do it
 yourself.
 
@@ -1598,7 +1598,7 @@ however much of the image is there.  In pathological cases, the decompressor
 may swallow the EOI and again demand data ... just keep feeding it fake EOIs.
 jdatasrc.c illustrates the recommended error recovery behavior.
 
-term_source() is NOT called by jpeg_abort() or jpeg_destroy().  If you want
+term_source() is NOT called by LJPEG_jpeg_abort() or LJPEG_jpeg_destroy().  If you want
 the source manager to be cleaned up during an abort, you must do it yourself.
 
 You will also need code to create a jpeg_source_mgr struct, fill in its method
@@ -2216,7 +2216,7 @@ it'll just keep returning JPEG_REACHED_SOS until you do.  If you read a
 tables-only file this way, jpeg_consume_input() will return JPEG_REACHED_EOI
 without ever returning JPEG_REACHED_SOS; be sure to check for this case.
 If this happens, the decompressor will not read any more input until you call
-jpeg_abort() to reset it.  It is OK to call jpeg_consume_input() even when not
+LJPEG_jpeg_abort() to reset it.  It is OK to call jpeg_consume_input() even when not
 using buffered-image mode, but in that case it's basically a no-op after the
 initial markers have been read: it will just return JPEG_SUSPENDED.
 
@@ -2328,7 +2328,7 @@ allocate the table structs and fill in their contents directly.  For example,
 to load a fixed quantization table into table slot "n":
 
     if (cinfo.quant_tbl_ptrs[n] == NULL)
-      cinfo.quant_tbl_ptrs[n] = jpeg_alloc_quant_table((LJPEG_j_common_ptr) &cinfo);
+      cinfo.quant_tbl_ptrs[n] = LJPEG_jpeg_alloc_quant_table((LJPEG_j_common_ptr) &cinfo);
     quant_ptr = cinfo.quant_tbl_ptrs[n];	/* quant_ptr is JQUANT_TBL* */
     for (i = 0; i < 64; i++) {
       /* Qtable[] is desired quantization table, in natural array order */
@@ -2338,7 +2338,7 @@ to load a fixed quantization table into table slot "n":
 Code to load a fixed Huffman table is typically (for AC table "n"):
 
     if (cinfo.ac_huff_tbl_ptrs[n] == NULL)
-      cinfo.ac_huff_tbl_ptrs[n] = jpeg_alloc_huff_table((LJPEG_j_common_ptr) &cinfo);
+      cinfo.ac_huff_tbl_ptrs[n] = LJPEG_jpeg_alloc_huff_table((LJPEG_j_common_ptr) &cinfo);
     huff_ptr = cinfo.ac_huff_tbl_ptrs[n];	/* huff_ptr is JHUFF_TBL* */
     for (i = 1; i <= 16; i++) {
       /* counts[i] is number of Huffman codes of length i bits, i=1..16 */
@@ -2518,8 +2518,8 @@ ensure that the max_memory_to_use setting cannot be exceeded due to addition
 of later markers.
 
 The marker list remains stored until you call LJPEG_jpeg_finish_decompress or
-jpeg_abort, at which point the memory is freed and the list is set to empty.
-(jpeg_destroy also releases the storage, of course.)
+LJPEG_jpeg_abort, at which point the memory is freed and the list is set to empty.
+(LJPEG_jpeg_destroy also releases the storage, of course.)
 
 Note that the library is internally interested in APP0 and APP14 markers;
 if you try to set a small nonzero length limit on these types, the library
@@ -2715,7 +2715,7 @@ expected by jpeg_write_coefficients().
 
 When you are done using the virtual arrays, call LJPEG_jpeg_finish_decompress()
 to release the array storage and return the decompression object to an idle
-state; or just call jpeg_destroy() if you don't need to reuse the object.
+state; or just call LJPEG_jpeg_destroy() if you don't need to reuse the object.
 
 If you use a suspending data source, jpeg_read_coefficients() will return
 NULL if it is forced to suspend; a non-NULL return value indicates successful
@@ -2854,7 +2854,7 @@ library to use malloc() and free() for some reason).
 
 Some data is allocated "permanently" and will not be freed until the JPEG
 object is destroyed.  Most data is allocated "per image" and is freed by
-LJPEG_jpeg_finish_compress, LJPEG_jpeg_finish_decompress, or jpeg_abort.  You can call the
+LJPEG_jpeg_finish_compress, LJPEG_jpeg_finish_decompress, or LJPEG_jpeg_abort.  You can call the
 memory manager yourself to allocate structures that will automatically be
 freed at these times.  Typical code for this is
   ptr = (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, size);
@@ -2895,8 +2895,8 @@ files get deleted.  (This is especially crucial with jmemdos.c, where the
 "temporary files" may be extended-memory segments; if they are not freed,
 DOS will require a reboot to recover the memory.)  Thus, with these memory
 managers, it's a good idea to provide a signal handler that will trap any
-early exit from your program.  The handler should call either jpeg_abort()
-or jpeg_destroy() for any active JPEG objects.  A handler is not needed with
+early exit from your program.  The handler should call either LJPEG_jpeg_abort()
+or LJPEG_jpeg_destroy() for any active JPEG objects.  A handler is not needed with
 jmemnobs.c, and shouldn't be necessary with jmemansi.c or jmemmac.c either,
 since the C library is supposed to take care of deleting files made with
 tmpfile().

@@ -52,7 +52,7 @@ typedef struct _tga_source_struct {
 
   LJPEG_JSAMPARRAY colormap;		/* Targa colormap (converted to my format) */
 
-  jvirt_sarray_ptr whole_image;	/* Needed if funny input row order */
+  LJPEG_jvirt_sarray_ptr whole_image;	/* Needed if funny input row order */
   LJPEG_JDIMENSION current_row;	/* Current logical row number to read */
 
   /* Pointer to routine to extract next Targa pixel from input file */

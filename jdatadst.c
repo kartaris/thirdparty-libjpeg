@@ -154,7 +154,7 @@ empty_mem_output_buffer (LJPEG_j_compress_ptr cinfo)
  * Terminate destination --- called by LJPEG_jpeg_finish_compress
  * after all data has been written.  Usually needs to flush buffer.
  *
- * NB: *not* called by jpeg_abort or jpeg_destroy; surrounding
+ * NB: *not* called by LJPEG_jpeg_abort or LJPEG_jpeg_destroy; surrounding
  * application must deal with any cleanup that should happen even
  * for error exit.
  */

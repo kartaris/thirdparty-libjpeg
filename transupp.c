@@ -85,7 +85,7 @@ do_crop (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
   LJPEG_JDIMENSION dst_blk_y, x_crop_blocks, y_crop_blocks;
   int ci, offset_y;
   JBLOCKARRAY src_buffer, dst_buffer;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
 
   /* We simply have to copy the right amount of data (the destination's
    * image size) starting at the given X and Y offsets in the source.
@@ -124,9 +124,9 @@ do_flip_h_no_crop (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
   LJPEG_JDIMENSION MCU_cols, comp_width, blk_x, blk_y, x_crop_blocks;
   int ci, k, offset_y;
   JBLOCKARRAY buffer;
-  JCOEFPTR ptr1, ptr2;
+  LJPEG_JCOEFPTR ptr1, ptr2;
   JCOEF temp1, temp2;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
 
   /* Horizontal mirroring of DCT blocks is accomplished by swapping
    * pairs of blocks in-place.  Within a DCT block, we perform horizontal
@@ -192,8 +192,8 @@ do_flip_h (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
   int ci, k, offset_y;
   JBLOCKARRAY src_buffer, dst_buffer;
   LJPEG_JBLOCKROW src_row_ptr, dst_row_ptr;
-  JCOEFPTR src_ptr, dst_ptr;
-  jpeg_component_info *compptr;
+  LJPEG_JCOEFPTR src_ptr, dst_ptr;
+  LJPEG_jpeg_component_info *compptr;
 
   /* Here we must output into a separate array because we can't touch
    * different rows of a single virtual array simultaneously.  Otherwise,
@@ -254,8 +254,8 @@ do_flip_v (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
   int ci, i, j, offset_y;
   JBLOCKARRAY src_buffer, dst_buffer;
   LJPEG_JBLOCKROW src_row_ptr, dst_row_ptr;
-  JCOEFPTR src_ptr, dst_ptr;
-  jpeg_component_info *compptr;
+  LJPEG_JCOEFPTR src_ptr, dst_ptr;
+  LJPEG_jpeg_component_info *compptr;
 
   /* We output into a separate array because we can't touch different
    * rows of the source virtual array simultaneously.  Otherwise, this
@@ -332,8 +332,8 @@ do_transpose (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
   LJPEG_JDIMENSION dst_blk_x, dst_blk_y, x_crop_blocks, y_crop_blocks;
   int ci, i, j, offset_x, offset_y;
   JBLOCKARRAY src_buffer, dst_buffer;
-  JCOEFPTR src_ptr, dst_ptr;
-  jpeg_component_info *compptr;
+  LJPEG_JCOEFPTR src_ptr, dst_ptr;
+  LJPEG_jpeg_component_info *compptr;
 
   /* Transposing pixels within a block just requires transposing the
    * DCT coefficients.
@@ -385,8 +385,8 @@ do_rot_90 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
   LJPEG_JDIMENSION x_crop_blocks, y_crop_blocks;
   int ci, i, j, offset_x, offset_y;
   JBLOCKARRAY src_buffer, dst_buffer;
-  JCOEFPTR src_ptr, dst_ptr;
-  jpeg_component_info *compptr;
+  LJPEG_JCOEFPTR src_ptr, dst_ptr;
+  LJPEG_jpeg_component_info *compptr;
 
   /* Because of the horizontal mirror step, we can't process partial iMCUs
    * at the (output) right edge properly.  They just get transposed and
@@ -466,8 +466,8 @@ do_rot_270 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
   LJPEG_JDIMENSION x_crop_blocks, y_crop_blocks;
   int ci, i, j, offset_x, offset_y;
   JBLOCKARRAY src_buffer, dst_buffer;
-  JCOEFPTR src_ptr, dst_ptr;
-  jpeg_component_info *compptr;
+  LJPEG_JCOEFPTR src_ptr, dst_ptr;
+  LJPEG_jpeg_component_info *compptr;
 
   /* Because of the horizontal mirror step, we can't process partial iMCUs
    * at the (output) bottom edge properly.  They just get transposed and
@@ -538,8 +538,8 @@ do_rot_180 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
   int ci, i, j, offset_y;
   JBLOCKARRAY src_buffer, dst_buffer;
   LJPEG_JBLOCKROW src_row_ptr, dst_row_ptr;
-  JCOEFPTR src_ptr, dst_ptr;
-  jpeg_component_info *compptr;
+  LJPEG_JCOEFPTR src_ptr, dst_ptr;
+  LJPEG_jpeg_component_info *compptr;
 
   MCU_cols = srcinfo->output_width /
     (dstinfo->max_h_samp_factor * dstinfo->min_DCT_h_scaled_size);
@@ -649,8 +649,8 @@ do_transverse (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
   LJPEG_JDIMENSION x_crop_blocks, y_crop_blocks;
   int ci, i, j, offset_x, offset_y;
   JBLOCKARRAY src_buffer, dst_buffer;
-  JCOEFPTR src_ptr, dst_ptr;
-  jpeg_component_info *compptr;
+  LJPEG_JCOEFPTR src_ptr, dst_ptr;
+  LJPEG_jpeg_component_info *compptr;
 
   MCU_cols = srcinfo->output_height /
     (dstinfo->max_h_samp_factor * dstinfo->min_DCT_h_scaled_size);
@@ -880,7 +880,7 @@ jtransform_request_workspace (LJPEG_j_decompress_ptr srcinfo,
 {
   jvirt_barray_ptr *coef_arrays;
   boolean need_workspace, transpose_it;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   LJPEG_JDIMENSION xoffset, yoffset;
   LJPEG_JDIMENSION width_in_iMCUs, height_in_iMCUs;
   LJPEG_JDIMENSION width_in_blocks, height_in_blocks;
@@ -1115,7 +1115,7 @@ LOCAL(void)
 transpose_critical_parameters (LJPEG_j_compress_ptr dstinfo)
 {
   int tblno, i, j, ci, itemp;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   JQUANT_TBL *qtblptr;
   LJPEG_JDIMENSION jtemp;
   UINT16 qtemp;

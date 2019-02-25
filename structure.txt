@@ -878,7 +878,7 @@ It may be necessary to ensure that backing store objects are explicitly
 released upon abnormal program termination.  For example, MS-DOS won't free
 extended memory by itself.  To support this, we will expect the main program
 or surrounding application to arrange to call self_destruct (typically via
-jpeg_destroy) upon abnormal termination.  This may require a SIGINT signal
+LJPEG_jpeg_destroy) upon abnormal termination.  This may require a SIGINT signal
 handler or equivalent.  We don't want to have the back end module install its
 own signal handler, because that would pre-empt the surrounding application's
 ability to control signal handling.

@@ -37,7 +37,7 @@ typedef int DCTELEM;		/* 16 or 32 bits is fine */
 typedef INT32 DCTELEM;		/* must have 32 bits */
 #endif
 
-typedef LJPEG_JMETHOD(void, forward_DCT_method_ptr, (DCTELEM * data,
+typedef LJPEG_JMETHOD(void, LJPEG_forward_DCT_method_ptr, (DCTELEM * data,
 					       LJPEG_JSAMPARRAY sample_data,
 					       LJPEG_JDIMENSION start_col));
 typedef LJPEG_JMETHOD(void, float_DCT_method_ptr, (FAST_FLOAT * data,
@@ -232,107 +232,107 @@ EXTERN(void) jpeg_fdct_1x2
     LJPEG_JPP((DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION start_col));
 
 EXTERN(void) jpeg_idct_islow
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_ifast
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_float
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_7x7
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_6x6
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_5x5
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_4x4
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_3x3
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_2x2
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_1x1
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_9x9
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_10x10
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_11x11
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_12x12
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_13x13
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_14x14
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_15x15
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_16x16
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_16x8
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_14x7
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_12x6
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_10x5
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_8x4
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_6x3
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_4x2
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_2x1
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_8x16
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_7x14
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_6x12
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_5x10
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_4x8
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_3x6
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_2x4
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 EXTERN(void) jpeg_idct_1x2
-    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-	 JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+	 LJPEG_JCOEFPTR coef_block, LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 
 
 /*

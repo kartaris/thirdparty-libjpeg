@@ -57,7 +57,7 @@ typedef struct _bmp_source_struct {
 
   LJPEG_JSAMPARRAY colormap;		/* BMP colormap (converted to my format) */
 
-  jvirt_sarray_ptr whole_image;	/* Needed to reverse row order */
+  LJPEG_jvirt_sarray_ptr whole_image;	/* Needed to reverse row order */
   LJPEG_JDIMENSION source_row;	/* Current source row number */
   LJPEG_JDIMENSION row_width;		/* Physical width of scanlines in file */
 

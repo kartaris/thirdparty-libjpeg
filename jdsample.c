@@ -26,7 +26,7 @@
 
 /* Pointer to routine to upsample a single component */
 typedef LJPEG_JMETHOD(void, upsample1_ptr,
-		(LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
+		(LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		 LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr));
 
 /* Private subobject */
@@ -95,7 +95,7 @@ sep_upsample (LJPEG_j_decompress_ptr cinfo,
 {
   my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
   int ci;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
   LJPEG_JDIMENSION num_rows;
 
   /* Fill the conversion buffer, if it's empty */
@@ -155,7 +155,7 @@ sep_upsample (LJPEG_j_decompress_ptr cinfo,
  */
 
 LJPEG_METHODDEF(void)
-fullsize_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
+fullsize_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		   LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
   *output_data_ptr = input_data;
@@ -168,7 +168,7 @@ fullsize_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
  */
 
 LJPEG_METHODDEF(void)
-noop_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
+noop_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
   *output_data_ptr = NULL;	/* safety check */
@@ -187,7 +187,7 @@ noop_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
  */
 
 LJPEG_METHODDEF(void)
-int_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
+int_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	      LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
   my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
@@ -231,7 +231,7 @@ int_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
  */
 
 LJPEG_METHODDEF(void)
-h2v1_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
+h2v1_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
   LJPEG_JSAMPARRAY output_data = *output_data_ptr;
@@ -259,7 +259,7 @@ h2v1_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
  */
 
 LJPEG_METHODDEF(void)
-h2v2_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
+h2v2_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
   LJPEG_JSAMPARRAY output_data = *output_data_ptr;
@@ -295,7 +295,7 @@ jinit_upsampler (LJPEG_j_decompress_ptr cinfo)
 {
   my_upsample_ptr upsample;
   int ci;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
   boolean need_buffer;
   int h_in_group, v_in_group, h_out_group, v_out_group;
 

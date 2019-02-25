@@ -98,7 +98,7 @@ LJPEG_start_iMCU_row (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-LJPEG_start_pass_coef (LJPEG_j_compress_ptr cinfo, J_BUF_MODE pass_mode)
+LJPEG_start_pass_coef (LJPEG_j_compress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode)
 {
   LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
 
@@ -106,18 +106,18 @@ LJPEG_start_pass_coef (LJPEG_j_compress_ptr cinfo, J_BUF_MODE pass_mode)
   LJPEG_start_iMCU_row(cinfo);
 
   switch (pass_mode) {
-  case JBUF_PASS_THRU:
+  case LJPEG_JBUF_PASS_THRU:
     if (coef->whole_image[0] != NULL)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
     coef->pub.LJPEG_compress_data = LJPEG_compress_data;
     break;
 #ifdef FULL_COEF_BUFFER_SUPPORTED
-  case JBUF_SAVE_AND_PASS:
+  case LJPEG_JBUF_SAVE_AND_PASS:
     if (coef->whole_image[0] == NULL)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
     coef->pub.LJPEG_compress_data = LJPEG_compress_first_pass;
     break;
-  case JBUF_CRANK_DEST:
+  case LJPEG_JBUF_CRANK_DEST:
     if (coef->whole_image[0] == NULL)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
     coef->pub.LJPEG_compress_data = LJPEG_compress_output;
@@ -149,8 +149,8 @@ LJPEG_compress_data (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_buf)
   LJPEG_JDIMENSION last_iMCU_row = cinfo->total_iMCU_rows - 1;
   int blkn, bi, ci, yindex, yoffset, blockcnt;
   LJPEG_JDIMENSION ypos, xpos;
-  jpeg_component_info *compptr;
-  forward_DCT_ptr forward_DCT;
+  LJPEG_jpeg_component_info *compptr;
+  LJPEG_forward_DCT_ptr LJPEG_forward_DCT;
 
   /* Loop to write as much as one whole iMCU row */
   for (yoffset = coef->MCU_vert_offset; yoffset < coef->MCU_rows_per_iMCU_row;
@@ -158,7 +158,7 @@ LJPEG_compress_data (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_buf)
     for (MCU_col_num = coef->mcu_ctr; MCU_col_num <= last_MCU_col;
 	 MCU_col_num++) {
       /* Determine where data comes from in input_buf and do the DCT thing.
-       * Each call on forward_DCT processes a horizontal row of DCT blocks
+       * Each call on LJPEG_forward_DCT processes a horizontal row of DCT blocks
        * as wide as an MCU; we rely on having allocated the MCU_buffer[] blocks
        * sequentially.  Dummy blocks at the right or bottom edge are filled in
        * specially.  The data in them does not matter for image reconstruction,
@@ -169,7 +169,7 @@ LJPEG_compress_data (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_buf)
       blkn = 0;
       for (ci = 0; ci < cinfo->comps_in_scan; ci++) {
 	compptr = cinfo->cur_comp_info[ci];
-	forward_DCT = cinfo->fdct->forward_DCT[compptr->component_index];
+	LJPEG_forward_DCT = cinfo->fdct->LJPEG_forward_DCT[compptr->component_index];
 	blockcnt = (MCU_col_num < last_MCU_col) ? compptr->MCU_width
 						: compptr->last_col_width;
 	xpos = MCU_col_num * compptr->MCU_sample_width;
@@ -178,7 +178,7 @@ LJPEG_compress_data (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_buf)
 	for (yindex = 0; yindex < compptr->MCU_height; yindex++) {
 	  if (coef->iMCU_row_num < last_iMCU_row ||
 	      yoffset+yindex < compptr->last_row_height) {
-	    (*forward_DCT) (cinfo, compptr,
+	    (*LJPEG_forward_DCT) (cinfo, compptr,
 			    input_buf[compptr->component_index],
 			    coef->MCU_buffer[blkn],
 			    ypos, xpos, (LJPEG_JDIMENSION) blockcnt);
@@ -253,10 +253,10 @@ LJPEG_compress_first_pass (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_bu
   LJPEG_JDIMENSION blocks_across, MCUs_across, MCUindex;
   int bi, ci, h_samp_factor, block_row, block_rows, ndummy;
   JCOEF lastDC;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   JBLOCKARRAY buffer;
   LJPEG_JBLOCKROW thisblockrow, lastblockrow;
-  forward_DCT_ptr forward_DCT;
+  LJPEG_forward_DCT_ptr LJPEG_forward_DCT;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
        ci++, compptr++) {
@@ -279,13 +279,13 @@ LJPEG_compress_first_pass (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_bu
     ndummy = (int) (blocks_across % h_samp_factor);
     if (ndummy > 0)
       ndummy = h_samp_factor - ndummy;
-    forward_DCT = cinfo->fdct->forward_DCT[ci];
+    LJPEG_forward_DCT = cinfo->fdct->LJPEG_forward_DCT[ci];
     /* Perform DCT for all non-dummy blocks in this iMCU row.  Each call
-     * on forward_DCT processes a complete horizontal row of DCT blocks.
+     * on LJPEG_forward_DCT processes a complete horizontal row of DCT blocks.
      */
     for (block_row = 0; block_row < block_rows; block_row++) {
       thisblockrow = buffer[block_row];
-      (*forward_DCT) (cinfo, compptr, input_buf[ci], thisblockrow,
+      (*LJPEG_forward_DCT) (cinfo, compptr, input_buf[ci], thisblockrow,
 		      (LJPEG_JDIMENSION) (block_row * compptr->DCT_v_scaled_size),
 		      (LJPEG_JDIMENSION) 0, blocks_across);
       if (ndummy > 0) {
@@ -351,7 +351,7 @@ LJPEG_compress_output (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_buf)
   LJPEG_JDIMENSION start_col;
   JBLOCKARRAY buffer[MAX_COMPS_IN_SCAN];
   LJPEG_JBLOCKROW buffer_ptr;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
 
   /* Align the virtual buffers for the components used in this scan.
    * NB: during first pass, this is safe only because the buffers will
@@ -423,7 +423,7 @@ LJPEG_jinit_c_coef_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buf
     /* Allocate a full-image virtual array for each component, */
     /* padded to a multiple of samp_factor DCT blocks in each direction. */
     int ci;
-    jpeg_component_info *compptr;
+    LJPEG_jpeg_component_info *compptr;
 
     for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
 	 ci++, compptr++) {

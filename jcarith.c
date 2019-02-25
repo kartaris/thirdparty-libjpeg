@@ -320,7 +320,7 @@ LJPEG_emit_restart (LJPEG_j_compress_ptr cinfo, int restart_num)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   int ci;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
 
   LJPEG_finish_pass(cinfo);
 
@@ -359,7 +359,7 @@ LJPEG_emit_restart (LJPEG_j_compress_ptr cinfo, int restart_num)
  */
 
 LJPEG_METHODDEF(boolean)
-LJPEG_LJPEG_encode_mcu_DC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_encode_mcu_DC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   LJPEG_JBLOCKROW block;
@@ -450,7 +450,7 @@ LJPEG_LJPEG_encode_mcu_DC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MC
  */
 
 LJPEG_METHODDEF(boolean)
-LJPEG_LJPEG_encode_mcu_AC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_encode_mcu_AC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   LJPEG_JBLOCKROW block;
@@ -555,7 +555,7 @@ LJPEG_LJPEG_encode_mcu_AC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MC
  */
 
 LJPEG_METHODDEF(boolean)
-LJPEG_LJPEG_encode_mcu_DC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_encode_mcu_DC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   unsigned char *st;
@@ -590,7 +590,7 @@ LJPEG_LJPEG_encode_mcu_DC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *M
  */
 
 LJPEG_METHODDEF(boolean)
-LJPEG_LJPEG_encode_mcu_AC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_encode_mcu_AC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   LJPEG_JBLOCKROW block;
@@ -692,7 +692,7 @@ LJPEG_METHODDEF(boolean)
 LJPEG_encode_mcu (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
   LJPEG_JBLOCKROW block;
   unsigned char *st;
   int blkn, ci, tbl, k, ke;
@@ -841,7 +841,7 @@ LJPEG_start_pass (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   int ci, tbl;
-  jpeg_component_info * compptr;
+  LJPEG_jpeg_component_info * compptr;
 
   if (gather_statistics)
     /* Make sure to avoid that in the master control logic!
@@ -856,14 +856,14 @@ LJPEG_start_pass (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
   if (cinfo->progressive_mode) {
     if (cinfo->Ah == 0) {
       if (cinfo->Ss == 0)
-	entropy->pub.LJPEG_encode_mcu = LJPEG_LJPEG_encode_mcu_DC_first;
+	entropy->pub.LJPEG_encode_mcu = LJPEG_encode_mcu_DC_first;
       else
-	entropy->pub.LJPEG_encode_mcu = LJPEG_LJPEG_encode_mcu_AC_first;
+	entropy->pub.LJPEG_encode_mcu = LJPEG_encode_mcu_AC_first;
     } else {
       if (cinfo->Ss == 0)
-	entropy->pub.LJPEG_encode_mcu = LJPEG_LJPEG_encode_mcu_DC_refine;
+	entropy->pub.LJPEG_encode_mcu = LJPEG_encode_mcu_DC_refine;
       else
-	entropy->pub.LJPEG_encode_mcu = LJPEG_LJPEG_encode_mcu_AC_refine;
+	entropy->pub.LJPEG_encode_mcu = LJPEG_encode_mcu_AC_refine;
     }
   } else
     entropy->pub.LJPEG_encode_mcu = LJPEG_encode_mcu;

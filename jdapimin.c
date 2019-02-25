@@ -33,7 +33,7 @@ jpeg_CreateDecompress (LJPEG_j_decompress_ptr cinfo, int version, size_t structs
   int i;
 
   /* Guard against version mismatches between library and caller. */
-  cinfo->mem = NULL;		/* so jpeg_destroy knows mem mgr not called */
+  cinfo->mem = NULL;		/* so LJPEG_jpeg_destroy knows mem mgr not called */
   if (version != JPEG_LIB_VERSION)
     ERREXIT2(cinfo, JERR_BAD_LIB_VERSION, JPEG_LIB_VERSION, version);
   if (structsize != SIZEOF(struct LJPEG_jpeg_decompress_struct))
@@ -91,7 +91,7 @@ jpeg_CreateDecompress (LJPEG_j_decompress_ptr cinfo, int version, size_t structs
 LJPEG_GLOBAL(void)
 LJPEG_jpeg_destroy_decompress (LJPEG_j_decompress_ptr cinfo)
 {
-  jpeg_destroy((LJPEG_j_common_ptr) cinfo); /* use common routine */
+  LJPEG_jpeg_destroy((LJPEG_j_common_ptr) cinfo); /* use common routine */
 }
 
 
@@ -101,9 +101,9 @@ LJPEG_jpeg_destroy_decompress (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(void)
-jpeg_abort_decompress (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jpeg_abort_decompress (LJPEG_j_decompress_ptr cinfo)
 {
-  jpeg_abort((LJPEG_j_common_ptr) cinfo); /* use common routine */
+  LJPEG_jpeg_abort((LJPEG_j_common_ptr) cinfo); /* use common routine */
 }
 
 
@@ -221,12 +221,12 @@ default_decompress_parms (LJPEG_j_decompress_ptr cinfo)
  * values, and finally return JPEG_HEADER_OK.  On return, the application may
  * adjust the decompression parameters and then call LJPEG_jpeg_start_decompress.
  * (Or, if the application only wanted to determine the image parameters,
- * the data need not be decompressed.  In that case, call jpeg_abort or
- * jpeg_destroy to release any temporary space.)
+ * the data need not be decompressed.  In that case, call LJPEG_jpeg_abort or
+ * LJPEG_jpeg_destroy to release any temporary space.)
  * If an abbreviated (tables only) datastream is presented, the routine will
  * return JPEG_HEADER_TABLES_ONLY upon reaching EOI.  The application may then
  * re-use the JPEG object to read the abbreviated image datastream(s).
- * It is unnecessary (but OK) to call jpeg_abort in this case.
+ * It is unnecessary (but OK) to call LJPEG_jpeg_abort in this case.
  * The JPEG_SUSPENDED return code only occurs if the data source module
  * requests suspension of the decompressor.  In this case the application
  * should load more source data and then re-call LJPEG_jpeg_read_header to resume
@@ -257,10 +257,10 @@ LJPEG_jpeg_read_header (LJPEG_j_decompress_ptr cinfo, boolean require_image)
     if (require_image)		/* Complain if application wanted an image */
       ERREXIT(cinfo, JERR_NO_IMAGE);
     /* Reset to start state; it would be safer to require the application to
-     * call jpeg_abort, but we can't change it now for compatibility reasons.
+     * call LJPEG_jpeg_abort, but we can't change it now for compatibility reasons.
      * A side effect is to free any temporary memory (there shouldn't be any).
      */
-    jpeg_abort((LJPEG_j_common_ptr) cinfo); /* sets state = DSTATE_START */
+    LJPEG_jpeg_abort((LJPEG_j_common_ptr) cinfo); /* sets state = DSTATE_START */
     retcode = JPEG_HEADER_TABLES_ONLY;
     break;
   case JPEG_SUSPENDED:
@@ -390,7 +390,7 @@ LJPEG_jpeg_finish_decompress (LJPEG_j_decompress_ptr cinfo)
   }
   /* Do final cleanup */
   (*cinfo->src->term_source) (cinfo);
-  /* We can use jpeg_abort to release memory and reset global_state */
-  jpeg_abort((LJPEG_j_common_ptr) cinfo);
+  /* We can use LJPEG_jpeg_abort to release memory and reset global_state */
+  LJPEG_jpeg_abort((LJPEG_j_common_ptr) cinfo);
   return TRUE;
 }

@@ -47,9 +47,9 @@ LJPEG_jpeg_start_compress (LJPEG_j_compress_ptr cinfo, boolean write_all_tables)
   (*cinfo->err->reset_error_mgr) ((LJPEG_j_common_ptr) cinfo);
   (*cinfo->dest->init_destination) (cinfo);
   /* Perform master selection of active modules */
-  jinit_compress_master(cinfo);
+  LJPEG_jinit_compress_master(cinfo);
   /* Set up for the first pass */
-  (*cinfo->master->prepare_for_pass) (cinfo);
+  (*cinfo->master->LJPEG_prepare_for_pass) (cinfo);
   /* Ready for application to drive first pass through LJPEG_jpeg_write_scanlines
    * or LJPEG_jpeg_write_raw_data.
    */
@@ -96,8 +96,8 @@ LJPEG_jpeg_write_scanlines (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPARRAY scanlin
    * delayed so that application can write COM, etc, markers between
    * LJPEG_jpeg_start_compress and LJPEG_jpeg_write_scanlines.
    */
-  if (cinfo->master->call_pass_startup)
-    (*cinfo->master->pass_startup) (cinfo);
+  if (cinfo->master->call_LJPEG_pass_startup)
+    (*cinfo->master->LJPEG_pass_startup) (cinfo);
 
   /* Ignore any extra scanlines at bottom of image. */
   rows_left = cinfo->image_height - cinfo->next_scanline;
@@ -141,8 +141,8 @@ LJPEG_jpeg_write_raw_data (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE data,
    * delayed so that application can write COM, etc, markers between
    * LJPEG_jpeg_start_compress and LJPEG_jpeg_write_raw_data.
    */
-  if (cinfo->master->call_pass_startup)
-    (*cinfo->master->pass_startup) (cinfo);
+  if (cinfo->master->call_LJPEG_pass_startup)
+    (*cinfo->master->LJPEG_pass_startup) (cinfo);
 
   /* Verify that at least one iMCU row has been passed. */
   lines_per_iMCU_row = cinfo->max_v_samp_factor * DCTSIZE;

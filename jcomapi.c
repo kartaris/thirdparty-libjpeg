@@ -26,7 +26,7 @@
  */
 
 LJPEG_GLOBAL(void)
-jpeg_abort (LJPEG_j_common_ptr cinfo)
+LJPEG_jpeg_abort (LJPEG_j_common_ptr cinfo)
 {
   int pool;
 
@@ -66,13 +66,13 @@ jpeg_abort (LJPEG_j_common_ptr cinfo)
  */
 
 LJPEG_GLOBAL(void)
-jpeg_destroy (LJPEG_j_common_ptr cinfo)
+LJPEG_jpeg_destroy (LJPEG_j_common_ptr cinfo)
 {
   /* We need only tell the memory manager to release everything. */
   /* NB: mem pointer is NULL if memory mgr failed to initialize. */
   if (cinfo->mem != NULL)
     (*cinfo->mem->self_destruct) (cinfo);
-  cinfo->mem = NULL;		/* be safe if jpeg_destroy is called twice */
+  cinfo->mem = NULL;		/* be safe if LJPEG_jpeg_destroy is called twice */
   cinfo->global_state = 0;	/* mark it destroyed */
 }
 
@@ -83,7 +83,7 @@ jpeg_destroy (LJPEG_j_common_ptr cinfo)
  */
 
 LJPEG_GLOBAL(JQUANT_TBL *)
-jpeg_alloc_quant_table (LJPEG_j_common_ptr cinfo)
+LJPEG_jpeg_alloc_quant_table (LJPEG_j_common_ptr cinfo)
 {
   JQUANT_TBL *tbl;
 
@@ -95,7 +95,7 @@ jpeg_alloc_quant_table (LJPEG_j_common_ptr cinfo)
 
 
 LJPEG_GLOBAL(JHUFF_TBL *)
-jpeg_alloc_huff_table (LJPEG_j_common_ptr cinfo)
+LJPEG_jpeg_alloc_huff_table (LJPEG_j_common_ptr cinfo)
 {
   JHUFF_TBL *tbl;
 

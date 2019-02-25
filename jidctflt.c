@@ -65,14 +65,14 @@
  * Perform dequantization and inverse DCT on one block of coefficients.
  */
 LJPEG_GLOBAL(void)
-jpeg_idct_float (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-		 JCOEFPTR coef_block,
+jpeg_idct_float (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+		 LJPEG_JCOEFPTR coef_block,
 		 LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
   FAST_FLOAT tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;
   FAST_FLOAT tmp10, tmp11, tmp12, tmp13;
   FAST_FLOAT z5, z10, z11, z12, z13;
-  JCOEFPTR inptr;
+  LJPEG_JCOEFPTR inptr;
   FLOAT_MULT_TYPE * quantptr;
   FAST_FLOAT * wsptr;
   LJPEG_JSAMPROW outptr;

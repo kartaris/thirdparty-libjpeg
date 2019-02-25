@@ -154,7 +154,7 @@ decompress_onepass (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf)
   int blkn, ci, xindex, yindex, yoffset, useful_width;
   LJPEG_JSAMPARRAY output_ptr;
   LJPEG_JDIMENSION start_col, output_col;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   inverse_DCT_method_ptr inverse_DCT;
 
   /* Loop to process as much as one whole iMCU row */
@@ -197,7 +197,7 @@ decompress_onepass (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf)
 	    output_col = start_col;
 	    for (xindex = 0; xindex < useful_width; xindex++) {
 	      (*inverse_DCT) (cinfo, compptr,
-			      (JCOEFPTR) coef->MCU_buffer[blkn+xindex],
+			      (LJPEG_JCOEFPTR) coef->MCU_buffer[blkn+xindex],
 			      output_ptr, output_col);
 	      output_col += compptr->DCT_h_scaled_size;
 	    }
@@ -251,7 +251,7 @@ consume_data (LJPEG_j_decompress_ptr cinfo)
   LJPEG_JDIMENSION start_col;
   JBLOCKARRAY buffer[MAX_COMPS_IN_SCAN];
   LJPEG_JBLOCKROW buffer_ptr;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
 
   /* Align the virtual buffers for the components used in this scan. */
   for (ci = 0; ci < cinfo->comps_in_scan; ci++) {
@@ -324,7 +324,7 @@ decompress_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf)
   LJPEG_JBLOCKROW buffer_ptr;
   LJPEG_JSAMPARRAY output_ptr;
   LJPEG_JDIMENSION output_col;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   inverse_DCT_method_ptr inverse_DCT;
 
   /* Force some input to be done if we are getting ahead of the input. */
@@ -361,7 +361,7 @@ decompress_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf)
       buffer_ptr = buffer[block_row];
       output_col = 0;
       for (block_num = 0; block_num < compptr->width_in_blocks; block_num++) {
-	(*inverse_DCT) (cinfo, compptr, (JCOEFPTR) buffer_ptr,
+	(*inverse_DCT) (cinfo, compptr, (LJPEG_JCOEFPTR) buffer_ptr,
 			output_ptr, output_col);
 	buffer_ptr++;
 	output_col += compptr->DCT_h_scaled_size;
@@ -409,7 +409,7 @@ smoothing_ok (LJPEG_j_decompress_ptr cinfo)
   LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
   boolean smoothing_useful = FALSE;
   int ci, coefi;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   JQUANT_TBL * qtable;
   int * coef_bits;
   int * coef_bits_latch;
@@ -470,7 +470,7 @@ decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_bu
   LJPEG_JBLOCKROW buffer_ptr, prev_block_row, next_block_row;
   LJPEG_JSAMPARRAY output_ptr;
   LJPEG_JDIMENSION output_col;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   inverse_DCT_method_ptr inverse_DCT;
   boolean first_row, last_row;
   JBLOCK workspace;
@@ -649,7 +649,7 @@ decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_bu
 	  workspace[2] = (JCOEF) pred;
 	}
 	/* OK, do the IDCT */
-	(*inverse_DCT) (cinfo, compptr, (JCOEFPTR) workspace,
+	(*inverse_DCT) (cinfo, compptr, (LJPEG_JCOEFPTR) workspace,
 			output_ptr, output_col);
 	/* Advance for next column */
 	DC1 = DC2; DC2 = DC3;
@@ -696,7 +696,7 @@ jinit_d_coef_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
     /* padded to a multiple of samp_factor DCT blocks in each direction. */
     /* Note we ask for a pre-zeroed array. */
     int ci, access_rows;
-    jpeg_component_info *compptr;
+    LJPEG_jpeg_component_info *compptr;
 
     for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
 	 ci++, compptr++) {

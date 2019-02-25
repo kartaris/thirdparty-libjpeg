@@ -126,7 +126,7 @@ typedef struct {
    * array control blocks being linked together are actually stored somewhere
    * in the small-pool list.
    */
-  jvirt_sarray_ptr virt_sarray_list;
+  LJPEG_jvirt_sarray_ptr virt_sarray_list;
   jvirt_barray_ptr virt_barray_list;
 
   /* This counts total space obtained from jpeg_get_small/large */
@@ -160,7 +160,7 @@ struct jvirt_sarray_control {
   boolean pre_zero;		/* pre-zero mode requested? */
   boolean dirty;		/* do current buffer contents need written? */
   boolean b_s_open;		/* is backing-store data valid? */
-  jvirt_sarray_ptr next;	/* link to next virtual sarray control block */
+  LJPEG_jvirt_sarray_ptr next;	/* link to next virtual sarray control block */
   backing_store_info b_s_info;	/* System-dependent control info */
 };
 
@@ -520,21 +520,21 @@ alloc_barray (LJPEG_j_common_ptr cinfo, int pool_id,
  */
 
 
-LJPEG_METHODDEF(jvirt_sarray_ptr)
+LJPEG_METHODDEF(LJPEG_jvirt_sarray_ptr)
 request_virt_sarray (LJPEG_j_common_ptr cinfo, int pool_id, boolean pre_zero,
 		     LJPEG_JDIMENSION samplesperrow, LJPEG_JDIMENSION numrows,
 		     LJPEG_JDIMENSION maxaccess)
 /* Request a virtual 2-D sample array */
 {
   my_mem_ptr mem = (my_mem_ptr) cinfo->mem;
-  jvirt_sarray_ptr result;
+  LJPEG_jvirt_sarray_ptr result;
 
   /* Only IMAGE-lifetime virtual arrays are currently supported */
   if (pool_id != JPOOL_IMAGE)
     ERREXIT1(cinfo, JERR_BAD_POOL_ID, pool_id);	/* safety check */
 
   /* get control block */
-  result = (jvirt_sarray_ptr) alloc_small(cinfo, pool_id,
+  result = (LJPEG_jvirt_sarray_ptr) alloc_small(cinfo, pool_id,
 					  SIZEOF(struct jvirt_sarray_control));
 
   result->mem_buffer = NULL;	/* marks array not yet realized */
@@ -587,7 +587,7 @@ realize_virt_arrays (LJPEG_j_common_ptr cinfo)
   my_mem_ptr mem = (my_mem_ptr) cinfo->mem;
   long space_per_minheight, maximum_space, avail_mem;
   long minheights, max_minheights;
-  jvirt_sarray_ptr sptr;
+  LJPEG_jvirt_sarray_ptr sptr;
   jvirt_barray_ptr bptr;
 
   /* Compute the minimum space needed (maxaccess rows in each buffer)
@@ -688,7 +688,7 @@ realize_virt_arrays (LJPEG_j_common_ptr cinfo)
 
 
 LOCAL(void)
-do_sarray_io (LJPEG_j_common_ptr cinfo, jvirt_sarray_ptr ptr, boolean writing)
+do_sarray_io (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_sarray_ptr ptr, boolean writing)
 /* Do backing store read or write of a virtual sample array */
 {
   long bytesperrow, file_offset, byte_count, rows, thisrow, i;
@@ -754,7 +754,7 @@ do_barray_io (LJPEG_j_common_ptr cinfo, jvirt_barray_ptr ptr, boolean writing)
 
 
 LJPEG_METHODDEF(LJPEG_JSAMPARRAY)
-access_virt_sarray (LJPEG_j_common_ptr cinfo, jvirt_sarray_ptr ptr,
+access_virt_sarray (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_sarray_ptr ptr,
 		    LJPEG_JDIMENSION start_row, LJPEG_JDIMENSION num_rows,
 		    boolean writable)
 /* Access the part of a virtual sample array starting at start_row */
@@ -945,7 +945,7 @@ free_pool (LJPEG_j_common_ptr cinfo, int pool_id)
 
   /* If freeing IMAGE pool, close any virtual arrays first */
   if (pool_id == JPOOL_IMAGE) {
-    jvirt_sarray_ptr sptr;
+    LJPEG_jvirt_sarray_ptr sptr;
     jvirt_barray_ptr bptr;
 
     for (sptr = mem->virt_sarray_list; sptr != NULL; sptr = sptr->next) {

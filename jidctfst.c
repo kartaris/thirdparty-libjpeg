@@ -165,14 +165,14 @@
  */
 
 LJPEG_GLOBAL(void)
-jpeg_idct_ifast (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
-		 JCOEFPTR coef_block,
+jpeg_idct_ifast (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+		 LJPEG_JCOEFPTR coef_block,
 		 LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col)
 {
   DCTELEM tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;
   DCTELEM tmp10, tmp11, tmp12, tmp13;
   DCTELEM z5, z10, z11, z12, z13;
-  JCOEFPTR inptr;
+  LJPEG_JCOEFPTR inptr;
   IFAST_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;

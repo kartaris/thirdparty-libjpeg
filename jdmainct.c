@@ -130,9 +130,9 @@ typedef struct {
   int context_state;		/* process_data state machine status */
   LJPEG_JDIMENSION rowgroups_avail;	/* row groups available to postprocessor */
   LJPEG_JDIMENSION iMCU_row_ctr;	/* counts iMCU rows to detect image top/bot */
-} my_main_controller;
+} LJPEG_my_main_controller;
 
-typedef my_main_controller * my_main_ptr;
+typedef LJPEG_my_main_controller * LJPEG_my_main_ptr;
 
 /* context_state values: */
 #define CTX_PREPARE_FOR_IMCU	0	/* need to prepare for MCU row */
@@ -141,7 +141,7 @@ typedef my_main_controller * my_main_ptr;
 
 
 /* Forward declarations */
-LJPEG_METHODDEF(void) process_data_simple_main
+LJPEG_METHODDEF(void) LJPEG_process_data_simple_main
 	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY output_buf,
 	     LJPEG_JDIMENSION *out_row_ctr, LJPEG_JDIMENSION out_rows_avail));
 LJPEG_METHODDEF(void) process_data_context_main
@@ -160,10 +160,10 @@ alloc_funny_pointers (LJPEG_j_decompress_ptr cinfo)
  * This is done only once, not once per pass.
  */
 {
-  my_main_ptr mainp = (my_main_ptr) cinfo->main;
+  LJPEG_my_main_ptr mainp = (LJPEG_my_main_ptr) cinfo->main;
   int ci, rgroup;
   int M = cinfo->min_DCT_v_scaled_size;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   LJPEG_JSAMPARRAY xbuf;
 
   /* Get top-level space for component array pointers.
@@ -201,10 +201,10 @@ make_funny_pointers (LJPEG_j_decompress_ptr cinfo)
  * This will be repeated at the beginning of each pass.
  */
 {
-  my_main_ptr mainp = (my_main_ptr) cinfo->main;
+  LJPEG_my_main_ptr mainp = (LJPEG_my_main_ptr) cinfo->main;
   int ci, i, rgroup;
   int M = cinfo->min_DCT_v_scaled_size;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   LJPEG_JSAMPARRAY buf, xbuf0, xbuf1;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
@@ -241,10 +241,10 @@ set_wraparound_pointers (LJPEG_j_decompress_ptr cinfo)
  * This changes the pointer list state from top-of-image to the normal state.
  */
 {
-  my_main_ptr mainp = (my_main_ptr) cinfo->main;
+  LJPEG_my_main_ptr mainp = (LJPEG_my_main_ptr) cinfo->main;
   int ci, i, rgroup;
   int M = cinfo->min_DCT_v_scaled_size;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   LJPEG_JSAMPARRAY xbuf0, xbuf1;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
@@ -270,9 +270,9 @@ set_bottom_pointers (LJPEG_j_decompress_ptr cinfo)
  * Also sets rowgroups_avail to indicate number of nondummy row groups in row.
  */
 {
-  my_main_ptr mainp = (my_main_ptr) cinfo->main;
+  LJPEG_my_main_ptr mainp = (LJPEG_my_main_ptr) cinfo->main;
   int ci, i, rgroup, iMCUheight, rows_left;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
   LJPEG_JSAMPARRAY xbuf;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
@@ -305,12 +305,12 @@ set_bottom_pointers (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-LJPEG_start_pass_main (LJPEG_j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
+LJPEG_start_pass_main (LJPEG_j_decompress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode)
 {
-  my_main_ptr mainp = (my_main_ptr) cinfo->main;
+  LJPEG_my_main_ptr mainp = (LJPEG_my_main_ptr) cinfo->main;
 
   switch (pass_mode) {
-  case JBUF_PASS_THRU:
+  case LJPEG_JBUF_PASS_THRU:
     if (cinfo->upsample->need_context_rows) {
       mainp->pub.process_data = process_data_context_main;
       make_funny_pointers(cinfo); /* Create the xbuffer[] lists */
@@ -319,13 +319,13 @@ LJPEG_start_pass_main (LJPEG_j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
       mainp->iMCU_row_ctr = 0;
     } else {
       /* Simple case with no context needed */
-      mainp->pub.process_data = process_data_simple_main;
+      mainp->pub.process_data = LJPEG_process_data_simple_main;
     }
     mainp->buffer_full = FALSE;	/* Mark buffer empty */
     mainp->rowgroup_ctr = 0;
     break;
 #ifdef QUANT_2PASS_SUPPORTED
-  case JBUF_CRANK_DEST:
+  case LJPEG_JBUF_CRANK_DEST:
     /* For last pass of 2-pass quantization, just crank the postprocessor */
     mainp->pub.process_data = process_data_crank_post;
     break;
@@ -343,11 +343,11 @@ LJPEG_start_pass_main (LJPEG_j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
  */
 
 LJPEG_METHODDEF(void)
-process_data_simple_main (LJPEG_j_decompress_ptr cinfo,
+LJPEG_process_data_simple_main (LJPEG_j_decompress_ptr cinfo,
 			  LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
 			  LJPEG_JDIMENSION out_rows_avail)
 {
-  my_main_ptr mainp = (my_main_ptr) cinfo->main;
+  LJPEG_my_main_ptr mainp = (LJPEG_my_main_ptr) cinfo->main;
   LJPEG_JDIMENSION rowgroups_avail;
 
   /* Read input data if we haven't filled the main buffer yet */
@@ -387,7 +387,7 @@ process_data_context_main (LJPEG_j_decompress_ptr cinfo,
 			   LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
 			   LJPEG_JDIMENSION out_rows_avail)
 {
-  my_main_ptr mainp = (my_main_ptr) cinfo->main;
+  LJPEG_my_main_ptr mainp = (LJPEG_my_main_ptr) cinfo->main;
 
   /* Read input data if we haven't filled the main buffer yet */
   if (! mainp->buffer_full) {
@@ -475,13 +475,13 @@ process_data_crank_post (LJPEG_j_decompress_ptr cinfo,
 LJPEG_GLOBAL(void)
 jinit_d_main_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
 {
-  my_main_ptr mainp;
+  LJPEG_my_main_ptr mainp;
   int ci, rgroup, ngroups;
-  jpeg_component_info *compptr;
+  LJPEG_jpeg_component_info *compptr;
 
-  mainp = (my_main_ptr)
+  mainp = (LJPEG_my_main_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(my_main_controller));
+				SIZEOF(LJPEG_my_main_controller));
   cinfo->main = &mainp->pub;
   mainp->pub.LJPEG_start_pass = LJPEG_start_pass_main;
 
