@@ -315,7 +315,7 @@ typedef enum { FALSE = 0, TRUE = 1 } boolean;
 #define D_MULTISCAN_FILES_SUPPORTED /* Multiple-scan JPEG files? */
 #define D_PROGRESSIVE_SUPPORTED	    /* Progressive JPEG? (Requires MULTISCAN)*/
 #define IDCT_SCALING_SUPPORTED	    /* Output rescaling via IDCT? */
-#define SAVE_MARKERS_SUPPORTED	    /* jpeg_save_markers() needed? */
+#define SAVE_MARKERS_SUPPORTED	    /* LJPEG_jpeg_save_markers() needed? */
 #define BLOCK_SMOOTHING_SUPPORTED   /* Block smoothing? (Progressive only) */
 #undef  UPSAMPLE_SCALING_SUPPORTED  /* Output rescaling at upsample stage? */
 #define UPSAMPLE_MERGING_SUPPORTED  /* Fast path for sloppy upsampling? */

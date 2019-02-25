@@ -79,7 +79,7 @@ typedef FAST_FLOAT FLOAT_MULT_TYPE; /* preferred floating type */
  * be quite far out of range if the input data is corrupt, so a bulletproof
  * range-limiting step is required.  We use a mask-and-table-lookup method
  * to do the combined operations quickly.  See the comments with
- * prepare_range_limit_table (in jdmaster.c) for more info.
+ * LJPEG_prepare_range_limit_table (in jdmaster.c) for more info.
  */
 
 #define IDCT_range_limit(cinfo)  ((cinfo)->sample_range_limit + CENTERJSAMPLE)

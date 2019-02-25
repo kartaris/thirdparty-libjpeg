@@ -144,18 +144,18 @@ typedef LJPEG_my_main_controller * LJPEG_my_main_ptr;
 LJPEG_METHODDEF(void) LJPEG_process_data_simple_main
 	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY output_buf,
 	     LJPEG_JDIMENSION *out_row_ctr, LJPEG_JDIMENSION out_rows_avail));
-LJPEG_METHODDEF(void) process_data_context_main
+LJPEG_METHODDEF(void) LJPEG_process_data_context_main
 	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY output_buf,
 	     LJPEG_JDIMENSION *out_row_ctr, LJPEG_JDIMENSION out_rows_avail));
 #ifdef QUANT_2PASS_SUPPORTED
-LJPEG_METHODDEF(void) process_data_crank_post
+LJPEG_METHODDEF(void) LJPEG_process_data_crank_post
 	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY output_buf,
 	     LJPEG_JDIMENSION *out_row_ctr, LJPEG_JDIMENSION out_rows_avail));
 #endif
 
 
 LOCAL(void)
-alloc_funny_pointers (LJPEG_j_decompress_ptr cinfo)
+LJPEG_alloc_funny_pointers (LJPEG_j_decompress_ptr cinfo)
 /* Allocate space for the funny pointer lists.
  * This is done only once, not once per pass.
  */
@@ -193,7 +193,7 @@ alloc_funny_pointers (LJPEG_j_decompress_ptr cinfo)
 
 
 LOCAL(void)
-make_funny_pointers (LJPEG_j_decompress_ptr cinfo)
+LJPEG_make_funny_pointers (LJPEG_j_decompress_ptr cinfo)
 /* Create the funny pointer lists discussed in the comments above.
  * The actual workspace is already allocated (in main->buffer),
  * and the space for the pointer lists is allocated too.
@@ -224,7 +224,7 @@ make_funny_pointers (LJPEG_j_decompress_ptr cinfo)
       xbuf1[rgroup*M + i] = buf[rgroup*(M-2) + i];
     }
     /* The wraparound pointers at top and bottom will be filled later
-     * (see set_wraparound_pointers, below).  Initially we want the "above"
+     * (see LJPEG_set_wraparound_pointers, below).  Initially we want the "above"
      * pointers to duplicate the first actual data line.  This only needs
      * to happen in xbuffer[0].
      */
@@ -236,7 +236,7 @@ make_funny_pointers (LJPEG_j_decompress_ptr cinfo)
 
 
 LOCAL(void)
-set_wraparound_pointers (LJPEG_j_decompress_ptr cinfo)
+LJPEG_set_wraparound_pointers (LJPEG_j_decompress_ptr cinfo)
 /* Set up the "wraparound" pointers at top and bottom of the pointer lists.
  * This changes the pointer list state from top-of-image to the normal state.
  */
@@ -264,7 +264,7 @@ set_wraparound_pointers (LJPEG_j_decompress_ptr cinfo)
 
 
 LOCAL(void)
-set_bottom_pointers (LJPEG_j_decompress_ptr cinfo)
+LJPEG_set_bottom_pointers (LJPEG_j_decompress_ptr cinfo)
 /* Change the pointer lists to duplicate the last sample row at the bottom
  * of the image.  whichptr indicates which xbuffer holds the final iMCU row.
  * Also sets rowgroups_avail to indicate number of nondummy row groups in row.
@@ -312,8 +312,8 @@ LJPEG_start_pass_main (LJPEG_j_decompress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode)
   switch (pass_mode) {
   case LJPEG_JBUF_PASS_THRU:
     if (cinfo->upsample->need_context_rows) {
-      mainp->pub.process_data = process_data_context_main;
-      make_funny_pointers(cinfo); /* Create the xbuffer[] lists */
+      mainp->pub.process_data = LJPEG_process_data_context_main;
+      LJPEG_make_funny_pointers(cinfo); /* Create the xbuffer[] lists */
       mainp->whichptr = 0;	/* Read first iMCU row into xbuffer[0] */
       mainp->context_state = CTX_PREPARE_FOR_IMCU;
       mainp->iMCU_row_ctr = 0;
@@ -327,7 +327,7 @@ LJPEG_start_pass_main (LJPEG_j_decompress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode)
 #ifdef QUANT_2PASS_SUPPORTED
   case LJPEG_JBUF_CRANK_DEST:
     /* For last pass of 2-pass quantization, just crank the postprocessor */
-    mainp->pub.process_data = process_data_crank_post;
+    mainp->pub.process_data = LJPEG_process_data_crank_post;
     break;
 #endif
   default:
@@ -383,7 +383,7 @@ LJPEG_process_data_simple_main (LJPEG_j_decompress_ptr cinfo,
  */
 
 LJPEG_METHODDEF(void)
-process_data_context_main (LJPEG_j_decompress_ptr cinfo,
+LJPEG_process_data_context_main (LJPEG_j_decompress_ptr cinfo,
 			   LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
 			   LJPEG_JDIMENSION out_rows_avail)
 {
@@ -423,7 +423,7 @@ process_data_context_main (LJPEG_j_decompress_ptr cinfo,
      * the last sample row, and adjust rowgroups_avail to ignore padding rows.
      */
     if (mainp->iMCU_row_ctr == cinfo->total_iMCU_rows)
-      set_bottom_pointers(cinfo);
+      LJPEG_set_bottom_pointers(cinfo);
     mainp->context_state = CTX_PROCESS_IMCU;
     /*FALLTHROUGH*/
   case CTX_PROCESS_IMCU:
@@ -435,7 +435,7 @@ process_data_context_main (LJPEG_j_decompress_ptr cinfo,
       return;			/* Need to suspend */
     /* After the first iMCU, change wraparound pointers to normal state */
     if (mainp->iMCU_row_ctr == 1)
-      set_wraparound_pointers(cinfo);
+      LJPEG_set_wraparound_pointers(cinfo);
     /* Prepare to load new iMCU row using other xbuffer list */
     mainp->whichptr ^= 1;	/* 0=>1 or 1=>0 */
     mainp->buffer_full = FALSE;
@@ -457,7 +457,7 @@ process_data_context_main (LJPEG_j_decompress_ptr cinfo,
 #ifdef QUANT_2PASS_SUPPORTED
 
 LJPEG_METHODDEF(void)
-process_data_crank_post (LJPEG_j_decompress_ptr cinfo,
+LJPEG_process_data_crank_post (LJPEG_j_decompress_ptr cinfo,
 			 LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
 			 LJPEG_JDIMENSION out_rows_avail)
 {
@@ -473,7 +473,7 @@ process_data_crank_post (LJPEG_j_decompress_ptr cinfo,
  * Initialize main buffer controller.
  */
 LJPEG_GLOBAL(void)
-jinit_d_main_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
+LJPEG_jinit_d_main_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
 {
   LJPEG_my_main_ptr mainp;
   int ci, rgroup, ngroups;
@@ -494,7 +494,7 @@ jinit_d_main_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
   if (cinfo->upsample->need_context_rows) {
     if (cinfo->min_DCT_v_scaled_size < 2) /* unsupported, see comments above */
       ERREXIT(cinfo, JERR_NOTIMPL);
-    alloc_funny_pointers(cinfo); /* Alloc space for xbuffer[] lists */
+    LJPEG_alloc_funny_pointers(cinfo); /* Alloc space for xbuffer[] lists */
     ngroups = cinfo->min_DCT_v_scaled_size + 2;
   } else {
     ngroups = cinfo->min_DCT_v_scaled_size;

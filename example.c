@@ -420,7 +420,7 @@ LJPEG_read_JPEG_file (char * filename)
  * counted against the JPEG max_memory setting.  In some systems the above
  * code would risk an out-of-memory error.  However, in general we don't
  * know the output image dimensions before LJPEG_jpeg_start_decompress(), unless we
- * call jpeg_calc_output_dimensions().  See libjpeg.txt for more about this.
+ * call LJPEG_jpeg_calc_output_dimensions().  See libjpeg.txt for more about this.
  *
  * Scanlines are returned in the same order as they appear in the JPEG file,
  * which is standardly top-to-bottom.  If you must emit data bottom-to-top,

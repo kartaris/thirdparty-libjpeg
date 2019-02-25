@@ -23,13 +23,13 @@ typedef struct {
   struct jpeg_input_controller pub; /* public fields */
 
   int inheaders;		/* Nonzero until first SOS is reached */
-} my_input_controller;
+} LJPEG_my_input_controller;
 
-typedef my_input_controller * my_inputctl_ptr;
+typedef LJPEG_my_input_controller * LJPEG_my_inputctl_ptr;
 
 
 /* Forward declarations */
-LJPEG_METHODDEF(int) consume_markers LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+LJPEG_METHODDEF(int) LJPEG_consume_markers LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 
 
 /*
@@ -44,7 +44,7 @@ LJPEG_METHODDEF(int) consume_markers LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
  */
 
 LJPEG_GLOBAL(void)
-jpeg_core_output_dimensions (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jpeg_core_output_dimensions (LJPEG_j_decompress_ptr cinfo)
 /* Do computations that are needed before master selection phase.
  * This function is used for transcoding and full decompression.
  */
@@ -335,9 +335,9 @@ LJPEG_initial_setup (LJPEG_j_decompress_ptr cinfo)
 
   /* We initialize DCT_scaled_size and min_DCT_scaled_size to block_size.
    * In the full decompressor,
-   * this will be overridden by jpeg_calc_output_dimensions in jdmaster.c;
+   * this will be overridden by LJPEG_jpeg_calc_output_dimensions in jdmaster.c;
    * but in the transcoder,
-   * jpeg_calc_output_dimensions is not used, so we must do it here.
+   * LJPEG_jpeg_calc_output_dimensions is not used, so we must do it here.
    */
   cinfo->min_DCT_h_scaled_size = cinfo->block_size;
   cinfo->min_DCT_v_scaled_size = cinfo->block_size;
@@ -484,7 +484,7 @@ LJPEG_per_scan_setup (LJPEG_j_decompress_ptr cinfo)
  */
 
 LOCAL(void)
-latch_quant_tables (LJPEG_j_decompress_ptr cinfo)
+LJPEG_latch_quant_tables (LJPEG_j_decompress_ptr cinfo)
 {
   int ci, qtblno;
   LJPEG_jpeg_component_info *compptr;
@@ -514,14 +514,14 @@ latch_quant_tables (LJPEG_j_decompress_ptr cinfo)
  * Initialize the input modules to read a scan of compressed data.
  * The first call to this is done by jdmaster.c after initializing
  * the entire decompressor (during LJPEG_jpeg_start_decompress).
- * Subsequent calls come from consume_markers, below.
+ * Subsequent calls come from LJPEG_consume_markers, below.
  */
 
 LJPEG_METHODDEF(void)
 LJPEG_start_input_pass (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_per_scan_setup(cinfo);
-  latch_quant_tables(cinfo);
+  LJPEG_latch_quant_tables(cinfo);
   (*cinfo->entropy->LJPEG_start_pass) (cinfo);
   (*cinfo->coef->LJPEG_start_input_pass) (cinfo);
   cinfo->inputctl->consume_input = cinfo->coef->LJPEG_consume_data;
@@ -535,9 +535,9 @@ LJPEG_start_input_pass (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-finish_input_pass (LJPEG_j_decompress_ptr cinfo)
+LJPEG_finish_input_pass (LJPEG_j_decompress_ptr cinfo)
 {
-  cinfo->inputctl->consume_input = consume_markers;
+  cinfo->inputctl->consume_input = LJPEG_consume_markers;
 }
 
 
@@ -552,20 +552,20 @@ finish_input_pass (LJPEG_j_decompress_ptr cinfo)
  *
  * Note: This function should NOT return a pseudo SOS marker (with zero
  * component number) to the caller.  A pseudo marker received by
- * read_markers is processed and then skipped for other markers.
+ * LJPEG_read_markers is processed and then skipped for other markers.
  */
 
 LJPEG_METHODDEF(int)
-consume_markers (LJPEG_j_decompress_ptr cinfo)
+LJPEG_consume_markers (LJPEG_j_decompress_ptr cinfo)
 {
-  my_inputctl_ptr inputctl = (my_inputctl_ptr) cinfo->inputctl;
+  LJPEG_my_inputctl_ptr inputctl = (LJPEG_my_inputctl_ptr) cinfo->inputctl;
   int val;
 
   if (inputctl->pub.eoi_reached) /* After hitting EOI, read no further */
     return JPEG_REACHED_EOI;
 
   for (;;) {			/* Loop to pass pseudo SOS marker */
-    val = (*cinfo->marker->read_markers) (cinfo);
+    val = (*cinfo->marker->LJPEG_read_markers) (cinfo);
 
     switch (val) {
     case JPEG_REACHED_SOS:	/* Found SOS */
@@ -616,17 +616,17 @@ consume_markers (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-reset_input_controller (LJPEG_j_decompress_ptr cinfo)
+LJPEG_reset_input_controller (LJPEG_j_decompress_ptr cinfo)
 {
-  my_inputctl_ptr inputctl = (my_inputctl_ptr) cinfo->inputctl;
+  LJPEG_my_inputctl_ptr inputctl = (LJPEG_my_inputctl_ptr) cinfo->inputctl;
 
-  inputctl->pub.consume_input = consume_markers;
+  inputctl->pub.consume_input = LJPEG_consume_markers;
   inputctl->pub.has_multiple_scans = FALSE; /* "unknown" would be better */
   inputctl->pub.eoi_reached = FALSE;
   inputctl->inheaders = 1;
   /* Reset other modules */
   (*cinfo->err->reset_error_mgr) ((LJPEG_j_common_ptr) cinfo);
-  (*cinfo->marker->reset_marker_reader) (cinfo);
+  (*cinfo->marker->LJPEG_reset_marker_reader) (cinfo);
   /* Reset progression state -- would be cleaner if entropy decoder did this */
   cinfo->coef_bits = NULL;
 }
@@ -638,21 +638,21 @@ reset_input_controller (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(void)
-jinit_input_controller (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jinit_input_controller (LJPEG_j_decompress_ptr cinfo)
 {
-  my_inputctl_ptr inputctl;
+  LJPEG_my_inputctl_ptr inputctl;
 
   /* Create subobject in permanent pool */
-  inputctl = (my_inputctl_ptr)
+  inputctl = (LJPEG_my_inputctl_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
-				SIZEOF(my_input_controller));
+				SIZEOF(LJPEG_my_input_controller));
   cinfo->inputctl = (struct jpeg_input_controller *) inputctl;
   /* Initialize method pointers */
-  inputctl->pub.consume_input = consume_markers;
-  inputctl->pub.reset_input_controller = reset_input_controller;
+  inputctl->pub.consume_input = LJPEG_consume_markers;
+  inputctl->pub.LJPEG_reset_input_controller = LJPEG_reset_input_controller;
   inputctl->pub.LJPEG_start_input_pass = LJPEG_start_input_pass;
-  inputctl->pub.finish_input_pass = finish_input_pass;
-  /* Initialize state: can't use reset_input_controller since we don't
+  inputctl->pub.LJPEG_finish_input_pass = LJPEG_finish_input_pass;
+  /* Initialize state: can't use LJPEG_reset_input_controller since we don't
    * want to try to reset other modules yet.
    */
   inputctl->pub.has_multiple_scans = FALSE; /* "unknown" would be better */

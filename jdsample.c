@@ -291,7 +291,7 @@ h2v2_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_GLOBAL(void)
-jinit_upsampler (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jinit_upsampler (LJPEG_j_decompress_ptr cinfo)
 {
   my_upsample_ptr upsample;
   int ci;

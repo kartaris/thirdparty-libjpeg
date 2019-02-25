@@ -93,8 +93,8 @@ typedef struct {
   struct jpeg_marker_reader pub; /* public fields */
 
   /* Application-overridable marker processing methods */
-  jpeg_marker_parser_method process_COM;
-  jpeg_marker_parser_method process_APPn[16];
+  LJPEG_jpeg_marker_parser_method process_COM;
+  LJPEG_jpeg_marker_parser_method process_APPn[16];
 
   /* Limit on marker data length to save for each marker type */
   unsigned int length_limit_COM;
@@ -104,9 +104,9 @@ typedef struct {
   jpeg_saved_marker_ptr cur_marker;	/* NULL if not processing a marker */
   unsigned int bytes_read;		/* data bytes read so far in marker */
   /* Note: cur_marker is not linked into marker_list until it's all read. */
-} my_marker_reader;
+} LJPEG_my_marker_reader;
 
-typedef my_marker_reader * LJPEG_my_marker_ptr;
+typedef LJPEG_my_marker_reader * LJPEG_my_marker_ptr;
 
 
 /*
@@ -196,7 +196,7 @@ typedef my_marker_reader * LJPEG_my_marker_ptr;
 
 
 LOCAL(boolean)
-get_soi (LJPEG_j_decompress_ptr cinfo)
+LJPEG_get_soi (LJPEG_j_decompress_ptr cinfo)
 /* Process an SOI marker */
 {
   int i;
@@ -237,7 +237,7 @@ get_soi (LJPEG_j_decompress_ptr cinfo)
 
 
 LOCAL(boolean)
-get_sof (LJPEG_j_decompress_ptr cinfo, boolean is_baseline, boolean is_prog,
+LJPEG_get_sof (LJPEG_j_decompress_ptr cinfo, boolean is_baseline, boolean is_prog,
 	 boolean is_arith)
 /* Process a SOFn marker */
 {
@@ -319,7 +319,7 @@ get_sof (LJPEG_j_decompress_ptr cinfo, boolean is_baseline, boolean is_prog,
 
 
 LOCAL(boolean)
-get_sos (LJPEG_j_decompress_ptr cinfo)
+LJPEG_get_sos (LJPEG_j_decompress_ptr cinfo)
 /* Process a SOS marker */
 {
   INT32 length;
@@ -349,7 +349,7 @@ get_sos (LJPEG_j_decompress_ptr cinfo)
     INPUT_BYTE(cinfo, c, return FALSE);
 
     /* Detect the case where component id's are not unique, and, if so, */
-    /* create a fake component id using the same logic as in get_sof.   */
+    /* create a fake component id using the same logic as in LJPEG_get_sof.   */
     for (ci = 0; ci < i; ci++) {
       if (c == cinfo->cur_comp_info[ci]->component_id) {
 	c = cinfo->cur_comp_info[0]->component_id;
@@ -407,7 +407,7 @@ get_sos (LJPEG_j_decompress_ptr cinfo)
 #ifdef D_ARITH_CODING_SUPPORTED
 
 LOCAL(boolean)
-get_dac (LJPEG_j_decompress_ptr cinfo)
+LJPEG_get_dac (LJPEG_j_decompress_ptr cinfo)
 /* Process a DAC marker */
 {
   INT32 length;
@@ -447,13 +447,13 @@ get_dac (LJPEG_j_decompress_ptr cinfo)
 
 #else /* ! D_ARITH_CODING_SUPPORTED */
 
-#define get_dac(cinfo)  skip_variable(cinfo)
+#define LJPEG_get_dac(cinfo)  LJPEG_skip_variable(cinfo)
 
 #endif /* D_ARITH_CODING_SUPPORTED */
 
 
 LOCAL(boolean)
-get_dht (LJPEG_j_decompress_ptr cinfo)
+LJPEG_get_dht (LJPEG_j_decompress_ptr cinfo)
 /* Process a DHT marker */
 {
   INT32 length;
@@ -524,7 +524,7 @@ get_dht (LJPEG_j_decompress_ptr cinfo)
 
 
 LOCAL(boolean)
-get_dqt (LJPEG_j_decompress_ptr cinfo)
+LJPEG_get_dqt (LJPEG_j_decompress_ptr cinfo)
 /* Process a DQT marker */
 {
   INT32 length, count, i;
@@ -614,7 +614,7 @@ get_dqt (LJPEG_j_decompress_ptr cinfo)
 
 
 LOCAL(boolean)
-get_dri (LJPEG_j_decompress_ptr cinfo)
+LJPEG_get_dri (LJPEG_j_decompress_ptr cinfo)
 /* Process a DRI marker */
 {
   INT32 length;
@@ -638,7 +638,7 @@ get_dri (LJPEG_j_decompress_ptr cinfo)
 
 
 LOCAL(boolean)
-get_lse (LJPEG_j_decompress_ptr cinfo)
+LJPEG_get_lse (LJPEG_j_decompress_ptr cinfo)
 /* Process an LSE marker */
 {
   INT32 length;
@@ -712,7 +712,7 @@ get_lse (LJPEG_j_decompress_ptr cinfo)
 
 
 LOCAL(void)
-examine_app0 (LJPEG_j_decompress_ptr cinfo, JOCTET FAR * data,
+LJPEG_examine_app0 (LJPEG_j_decompress_ptr cinfo, JOCTET FAR * data,
 	      unsigned int datalen, INT32 remaining)
 /* Examine first few bytes from an APP0.
  * Take appropriate action if it is a JFIF marker.
@@ -788,7 +788,7 @@ examine_app0 (LJPEG_j_decompress_ptr cinfo, JOCTET FAR * data,
 
 
 LOCAL(void)
-examine_app14 (LJPEG_j_decompress_ptr cinfo, JOCTET FAR * data,
+LJPEG_examine_app14 (LJPEG_j_decompress_ptr cinfo, JOCTET FAR * data,
 	       unsigned int datalen, INT32 remaining)
 /* Examine first few bytes from an APP14.
  * Take appropriate action if it is an Adobe marker.
@@ -819,7 +819,7 @@ examine_app14 (LJPEG_j_decompress_ptr cinfo, JOCTET FAR * data,
 
 
 LJPEG_METHODDEF(boolean)
-get_interesting_appn (LJPEG_j_decompress_ptr cinfo)
+LJPEG_get_interesting_appn (LJPEG_j_decompress_ptr cinfo)
 /* Process an APP0 or APP14 marker without saving it */
 {
   INT32 length;
@@ -844,13 +844,13 @@ get_interesting_appn (LJPEG_j_decompress_ptr cinfo)
   /* process it */
   switch (cinfo->unread_marker) {
   case M_APP0:
-    examine_app0(cinfo, (JOCTET FAR *) b, numtoread, length);
+    LJPEG_examine_app0(cinfo, (JOCTET FAR *) b, numtoread, length);
     break;
   case M_APP14:
-    examine_app14(cinfo, (JOCTET FAR *) b, numtoread, length);
+    LJPEG_examine_app14(cinfo, (JOCTET FAR *) b, numtoread, length);
     break;
   default:
-    /* can't get here unless jpeg_save_markers chooses wrong processor */
+    /* can't get here unless LJPEG_jpeg_save_markers chooses wrong processor */
     ERREXIT1(cinfo, JERR_UNKNOWN_MARKER, cinfo->unread_marker);
     break;
   }
@@ -867,7 +867,7 @@ get_interesting_appn (LJPEG_j_decompress_ptr cinfo)
 #ifdef SAVE_MARKERS_SUPPORTED
 
 LJPEG_METHODDEF(boolean)
-save_marker (LJPEG_j_decompress_ptr cinfo)
+LJPEG_save_marker (LJPEG_j_decompress_ptr cinfo)
 /* Save an APPn or COM marker into the marker list */
 {
   LJPEG_my_marker_ptr marker = (LJPEG_my_marker_ptr) cinfo->marker;
@@ -950,10 +950,10 @@ save_marker (LJPEG_j_decompress_ptr cinfo)
   /* Process the marker if interesting; else just make a generic trace msg */
   switch (cinfo->unread_marker) {
   case M_APP0:
-    examine_app0(cinfo, data, data_length, length);
+    LJPEG_examine_app0(cinfo, data, data_length, length);
     break;
   case M_APP14:
-    examine_app14(cinfo, data, data_length, length);
+    LJPEG_examine_app14(cinfo, data, data_length, length);
     break;
   default:
     TRACEMS2(cinfo, 1, JTRC_MISC_MARKER, cinfo->unread_marker,
@@ -973,7 +973,7 @@ save_marker (LJPEG_j_decompress_ptr cinfo)
 
 
 LJPEG_METHODDEF(boolean)
-skip_variable (LJPEG_j_decompress_ptr cinfo)
+LJPEG_skip_variable (LJPEG_j_decompress_ptr cinfo)
 /* Skip over an unknown or uninteresting variable-length marker */
 {
   INT32 length;
@@ -1002,7 +1002,7 @@ skip_variable (LJPEG_j_decompress_ptr cinfo)
  */
 
 LOCAL(boolean)
-next_marker (LJPEG_j_decompress_ptr cinfo)
+LJPEG_next_marker (LJPEG_j_decompress_ptr cinfo)
 {
   int c;
   INPUT_VARS(cinfo);
@@ -1049,8 +1049,8 @@ next_marker (LJPEG_j_decompress_ptr cinfo)
 
 
 LOCAL(boolean)
-first_marker (LJPEG_j_decompress_ptr cinfo)
-/* Like next_marker, but used to obtain the initial SOI marker. */
+LJPEG_first_marker (LJPEG_j_decompress_ptr cinfo)
+/* Like LJPEG_next_marker, but used to obtain the initial SOI marker. */
 /* For this marker, we do not allow preceding garbage or fill; otherwise,
  * we might well scan an entire input file before realizing it ain't JPEG.
  * If an application wants to process non-JFIF files, it must seek to the
@@ -1085,18 +1085,18 @@ first_marker (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(int)
-read_markers (LJPEG_j_decompress_ptr cinfo)
+LJPEG_read_markers (LJPEG_j_decompress_ptr cinfo)
 {
   /* Outer loop repeats once for each marker. */
   for (;;) {
     /* Collect the marker proper, unless we already did. */
-    /* NB: first_marker() enforces the requirement that SOI appear first. */
+    /* NB: LJPEG_first_marker() enforces the requirement that SOI appear first. */
     if (cinfo->unread_marker == 0) {
       if (! cinfo->marker->saw_SOI) {
-	if (! first_marker(cinfo))
+	if (! LJPEG_first_marker(cinfo))
 	  return JPEG_SUSPENDED;
       } else {
-	if (! next_marker(cinfo))
+	if (! LJPEG_next_marker(cinfo))
 	  return JPEG_SUSPENDED;
       }
     }
@@ -1106,32 +1106,32 @@ read_markers (LJPEG_j_decompress_ptr cinfo)
      */
     switch (cinfo->unread_marker) {
     case M_SOI:
-      if (! get_soi(cinfo))
+      if (! LJPEG_get_soi(cinfo))
 	return JPEG_SUSPENDED;
       break;
 
     case M_SOF0:		/* Baseline */
-      if (! get_sof(cinfo, TRUE, FALSE, FALSE))
+      if (! LJPEG_get_sof(cinfo, TRUE, FALSE, FALSE))
 	return JPEG_SUSPENDED;
       break;
 
     case M_SOF1:		/* Extended sequential, Huffman */
-      if (! get_sof(cinfo, FALSE, FALSE, FALSE))
+      if (! LJPEG_get_sof(cinfo, FALSE, FALSE, FALSE))
 	return JPEG_SUSPENDED;
       break;
 
     case M_SOF2:		/* Progressive, Huffman */
-      if (! get_sof(cinfo, FALSE, TRUE, FALSE))
+      if (! LJPEG_get_sof(cinfo, FALSE, TRUE, FALSE))
 	return JPEG_SUSPENDED;
       break;
 
     case M_SOF9:		/* Extended sequential, arithmetic */
-      if (! get_sof(cinfo, FALSE, FALSE, TRUE))
+      if (! LJPEG_get_sof(cinfo, FALSE, FALSE, TRUE))
 	return JPEG_SUSPENDED;
       break;
 
     case M_SOF10:		/* Progressive, arithmetic */
-      if (! get_sof(cinfo, FALSE, TRUE, TRUE))
+      if (! LJPEG_get_sof(cinfo, FALSE, TRUE, TRUE))
 	return JPEG_SUSPENDED;
       break;
 
@@ -1149,7 +1149,7 @@ read_markers (LJPEG_j_decompress_ptr cinfo)
       break;
 
     case M_SOS:
-      if (! get_sos(cinfo))
+      if (! LJPEG_get_sos(cinfo))
 	return JPEG_SUSPENDED;
       cinfo->unread_marker = 0;	/* processed the marker */
       return JPEG_REACHED_SOS;
@@ -1160,27 +1160,27 @@ read_markers (LJPEG_j_decompress_ptr cinfo)
       return JPEG_REACHED_EOI;
 
     case M_DAC:
-      if (! get_dac(cinfo))
+      if (! LJPEG_get_dac(cinfo))
 	return JPEG_SUSPENDED;
       break;
 
     case M_DHT:
-      if (! get_dht(cinfo))
+      if (! LJPEG_get_dht(cinfo))
 	return JPEG_SUSPENDED;
       break;
 
     case M_DQT:
-      if (! get_dqt(cinfo))
+      if (! LJPEG_get_dqt(cinfo))
 	return JPEG_SUSPENDED;
       break;
 
     case M_DRI:
-      if (! get_dri(cinfo))
+      if (! LJPEG_get_dri(cinfo))
 	return JPEG_SUSPENDED;
       break;
 
     case M_JPG8:
-      if (! get_lse(cinfo))
+      if (! LJPEG_get_lse(cinfo))
 	return JPEG_SUSPENDED;
       break;
 
@@ -1223,7 +1223,7 @@ read_markers (LJPEG_j_decompress_ptr cinfo)
       break;
 
     case M_DNL:			/* Ignore DNL ... perhaps the wrong thing */
-      if (! skip_variable(cinfo))
+      if (! LJPEG_skip_variable(cinfo))
 	return JPEG_SUSPENDED;
       break;
 
@@ -1255,12 +1255,12 @@ read_markers (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(boolean)
-read_restart_marker (LJPEG_j_decompress_ptr cinfo)
+LJPEG_read_restart_marker (LJPEG_j_decompress_ptr cinfo)
 {
   /* Obtain a marker unless we already did. */
-  /* Note that next_marker will complain if it skips any data. */
+  /* Note that LJPEG_next_marker will complain if it skips any data. */
   if (cinfo->unread_marker == 0) {
-    if (! next_marker(cinfo))
+    if (! LJPEG_next_marker(cinfo))
       return FALSE;
   }
 
@@ -1291,7 +1291,7 @@ read_restart_marker (LJPEG_j_decompress_ptr cinfo)
  * which permits a more intelligent recovery strategy; such managers would
  * presumably supply their own resync method.
  *
- * read_restart_marker calls resync_to_restart if it finds a marker other than
+ * LJPEG_read_restart_marker calls resync_to_restart if it finds a marker other than
  * the restart marker it was expecting.  (This code is *not* used unless
  * a nonzero restart interval has been declared.)  cinfo->unread_marker is
  * the marker code actually found (might be anything, except 0 or FF).
@@ -1334,7 +1334,7 @@ read_restart_marker (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(boolean)
-jpeg_resync_to_restart (LJPEG_j_decompress_ptr cinfo, int desired)
+LJPEG_jpeg_resync_to_restart (LJPEG_j_decompress_ptr cinfo, int desired)
 {
   int marker = cinfo->unread_marker;
   int action = 1;
@@ -1366,7 +1366,7 @@ jpeg_resync_to_restart (LJPEG_j_decompress_ptr cinfo, int desired)
       return TRUE;
     case 2:
       /* Scan to the next marker, and repeat the decision loop. */
-      if (! next_marker(cinfo))
+      if (! LJPEG_next_marker(cinfo))
 	return FALSE;
       marker = cinfo->unread_marker;
       break;
@@ -1384,11 +1384,11 @@ jpeg_resync_to_restart (LJPEG_j_decompress_ptr cinfo, int desired)
  */
 
 LJPEG_METHODDEF(void)
-reset_marker_reader (LJPEG_j_decompress_ptr cinfo)
+LJPEG_reset_marker_reader (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_marker_ptr marker = (LJPEG_my_marker_ptr) cinfo->marker;
 
-  cinfo->comp_info = NULL;		/* until allocated by get_sof */
+  cinfo->comp_info = NULL;		/* until allocated by LJPEG_get_sof */
   cinfo->input_scan_number = 0;		/* no SOS seen yet */
   cinfo->unread_marker = 0;		/* no pending marker */
   marker->pub.saw_SOI = FALSE;		/* set internal state too */
@@ -1404,7 +1404,7 @@ reset_marker_reader (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(void)
-jinit_marker_reader (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jinit_marker_reader (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_marker_ptr marker;
   int i;
@@ -1412,26 +1412,26 @@ jinit_marker_reader (LJPEG_j_decompress_ptr cinfo)
   /* Create subobject in permanent pool */
   marker = (LJPEG_my_marker_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
-				SIZEOF(my_marker_reader));
+				SIZEOF(LJPEG_my_marker_reader));
   cinfo->marker = &marker->pub;
   /* Initialize public method pointers */
-  marker->pub.reset_marker_reader = reset_marker_reader;
-  marker->pub.read_markers = read_markers;
-  marker->pub.read_restart_marker = read_restart_marker;
+  marker->pub.LJPEG_reset_marker_reader = LJPEG_reset_marker_reader;
+  marker->pub.LJPEG_read_markers = LJPEG_read_markers;
+  marker->pub.LJPEG_read_restart_marker = LJPEG_read_restart_marker;
   /* Initialize COM/APPn processing.
    * By default, we examine and then discard APP0 and APP14,
    * but simply discard COM and all other APPn.
    */
-  marker->process_COM = skip_variable;
+  marker->process_COM = LJPEG_skip_variable;
   marker->length_limit_COM = 0;
   for (i = 0; i < 16; i++) {
-    marker->process_APPn[i] = skip_variable;
+    marker->process_APPn[i] = LJPEG_skip_variable;
     marker->length_limit_APPn[i] = 0;
   }
-  marker->process_APPn[0] = get_interesting_appn;
-  marker->process_APPn[14] = get_interesting_appn;
+  marker->process_APPn[0] = LJPEG_get_interesting_appn;
+  marker->process_APPn[14] = LJPEG_get_interesting_appn;
   /* Reset marker processing state */
-  reset_marker_reader(cinfo);
+  LJPEG_reset_marker_reader(cinfo);
 }
 
 
@@ -1442,12 +1442,12 @@ jinit_marker_reader (LJPEG_j_decompress_ptr cinfo)
 #ifdef SAVE_MARKERS_SUPPORTED
 
 LJPEG_GLOBAL(void)
-jpeg_save_markers (LJPEG_j_decompress_ptr cinfo, int marker_code,
+LJPEG_jpeg_save_markers (LJPEG_j_decompress_ptr cinfo, int marker_code,
 		   unsigned int length_limit)
 {
   LJPEG_my_marker_ptr marker = (LJPEG_my_marker_ptr) cinfo->marker;
   long maxlength;
-  jpeg_marker_parser_method processor;
+  LJPEG_jpeg_marker_parser_method processor;
 
   /* Length limit mustn't be larger than what we can allocate
    * (should only be a concern in a 16-bit environment).
@@ -1460,17 +1460,17 @@ jpeg_save_markers (LJPEG_j_decompress_ptr cinfo, int marker_code,
    * APP0/APP14 have special requirements.
    */
   if (length_limit) {
-    processor = save_marker;
+    processor = LJPEG_save_marker;
     /* If saving APP0/APP14, save at least enough for our internal use. */
     if (marker_code == (int) M_APP0 && length_limit < APP0_DATA_LEN)
       length_limit = APP0_DATA_LEN;
     else if (marker_code == (int) M_APP14 && length_limit < APP14_DATA_LEN)
       length_limit = APP14_DATA_LEN;
   } else {
-    processor = skip_variable;
+    processor = LJPEG_skip_variable;
     /* If discarding APP0/APP14, use our regular on-the-fly processor. */
     if (marker_code == (int) M_APP0 || marker_code == (int) M_APP14)
-      processor = get_interesting_appn;
+      processor = LJPEG_get_interesting_appn;
   }
 
   if (marker_code == (int) M_COM) {
@@ -1492,7 +1492,7 @@ jpeg_save_markers (LJPEG_j_decompress_ptr cinfo, int marker_code,
 
 LJPEG_GLOBAL(void)
 LJPEG_jpeg_set_marker_processor (LJPEG_j_decompress_ptr cinfo, int marker_code,
-			   jpeg_marker_parser_method routine)
+			   LJPEG_jpeg_marker_parser_method routine)
 {
   LJPEG_my_marker_ptr marker = (LJPEG_my_marker_ptr) cinfo->marker;
 

@@ -233,7 +233,7 @@ LJPEG_jinit_write_targa (LJPEG_j_decompress_ptr cinfo)
   dest->pub.finish_output = finish_output_tga;
 
   /* Calculate output image dimensions so we can allocate space */
-  jpeg_calc_output_dimensions(cinfo);
+  LJPEG_jpeg_calc_output_dimensions(cinfo);
 
   /* Create I/O buffer.  Note we make this near on a PC. */
   dest->buffer_width = cinfo->output_width * cinfo->output_components;

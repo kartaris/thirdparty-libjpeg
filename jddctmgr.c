@@ -50,9 +50,9 @@ typedef struct {
    * per-component comp_info structures.
    */
   int cur_method[MAX_COMPONENTS];
-} my_idct_controller;
+} LJPEG_my_idct_controller;
 
-typedef my_idct_controller * my_idct_ptr;
+typedef LJPEG_my_idct_controller * LJPEG_my_idct_ptr;
 
 
 /* Allocated multiplier tables: big enough for any supported variant */
@@ -65,7 +65,7 @@ typedef union {
 #ifdef DCT_FLOAT_SUPPORTED
   FLOAT_MULT_TYPE float_array[DCTSIZE2];
 #endif
-} multiplier_table;
+} LJPEG_multiplier_table;
 
 
 /* The current scaled-IDCT routines require ISLOW-style multiplier tables,
@@ -89,7 +89,7 @@ typedef union {
 LJPEG_METHODDEF(void)
 LJPEG_start_pass (LJPEG_j_decompress_ptr cinfo)
 {
-  my_idct_ptr idct = (my_idct_ptr) cinfo->idct;
+  LJPEG_my_idct_ptr idct = (LJPEG_my_idct_ptr) cinfo->idct;
   int ci, i;
   LJPEG_jpeg_component_info *compptr;
   int method = 0;
@@ -359,15 +359,15 @@ LJPEG_start_pass (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(void)
-jinit_inverse_dct (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jinit_inverse_dct (LJPEG_j_decompress_ptr cinfo)
 {
-  my_idct_ptr idct;
+  LJPEG_my_idct_ptr idct;
   int ci;
   LJPEG_jpeg_component_info *compptr;
 
-  idct = (my_idct_ptr)
+  idct = (LJPEG_my_idct_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(my_idct_controller));
+				SIZEOF(LJPEG_my_idct_controller));
   cinfo->idct = (struct jpeg_inverse_dct *) idct;
   idct->pub.LJPEG_start_pass = LJPEG_start_pass;
 
@@ -376,8 +376,8 @@ jinit_inverse_dct (LJPEG_j_decompress_ptr cinfo)
     /* Allocate and pre-zero a multiplier table for each component */
     compptr->dct_table =
       (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				  SIZEOF(multiplier_table));
-    MEMZERO(compptr->dct_table, SIZEOF(multiplier_table));
+				  SIZEOF(LJPEG_multiplier_table));
+    MEMZERO(compptr->dct_table, SIZEOF(LJPEG_multiplier_table));
     /* Mark multiplier table not yet set up for any method */
     idct->cur_method[ci] = -1;
   }

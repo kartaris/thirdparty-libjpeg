@@ -184,7 +184,7 @@ copy_rest_of_file (void)
  */
 
 static int
-next_marker (void)
+LJPEG_next_marker (void)
 {
   int c;
   int discarded_bytes = 0;
@@ -213,13 +213,13 @@ next_marker (void)
 /*
  * Read the initial marker, which should be SOI.
  * For a JFIF file, the first two bytes of the file should be literally
- * 0xFF M_SOI.  To be more general, we could use next_marker, but if the
- * input file weren't actually JPEG at all, next_marker might read the whole
+ * 0xFF M_SOI.  To be more general, we could use LJPEG_next_marker, but if the
+ * input file weren't actually JPEG at all, LJPEG_next_marker might read the whole
  * file and then return a misleading error message...
  */
 
 static int
-first_marker (void)
+LJPEG_first_marker (void)
 {
   int c1, c2;
 
@@ -261,7 +261,7 @@ copy_variable (void)
 }
 
 static void
-skip_variable (void)
+LJPEG_skip_variable (void)
 /* Skip over an unknown or uninteresting variable-length marker */
 {
   unsigned int length;
@@ -291,13 +291,13 @@ scan_JPEG_header (int keep_COM)
   int marker;
 
   /* Expect SOI at start of file */
-  if (first_marker() != M_SOI)
+  if (LJPEG_first_marker() != M_SOI)
     ERREXIT("Expected SOI marker first");
   write_marker(M_SOI);
 
   /* Scan miscellaneous markers until we reach SOFn. */
   for (;;) {
-    marker = next_marker();
+    marker = LJPEG_next_marker();
     switch (marker) {
       /* Note that marker codes 0xC4, 0xC8, 0xCC are not, and must not be,
        * treated as SOFn.  C4 in particular is actually DHT.
@@ -329,7 +329,7 @@ scan_JPEG_header (int keep_COM)
 	write_marker(marker);
 	copy_variable();
       } else {
-	skip_variable();
+	LJPEG_skip_variable();
       }
       break;
 

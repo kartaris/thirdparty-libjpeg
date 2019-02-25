@@ -493,7 +493,7 @@ struct LJPEG_jpeg_decompress_struct {
 
   /* Description of actual output image that will be returned to application.
    * These fields are computed by LJPEG_jpeg_start_decompress().
-   * You can also use jpeg_calc_output_dimensions() to determine these values
+   * You can also use LJPEG_jpeg_calc_output_dimensions() to determine these values
    * in advance of calling LJPEG_jpeg_start_decompress().
    */
 
@@ -858,7 +858,7 @@ struct jpeg_memory_mgr {
 /* Routine signature for application-supplied marker processing methods.
  * Need not pass marker code since it is stored in cinfo->unread_marker.
  */
-typedef LJPEG_JMETHOD(boolean, jpeg_marker_parser_method, (LJPEG_j_decompress_ptr cinfo));
+typedef LJPEG_JMETHOD(boolean, LJPEG_jpeg_marker_parser_method, (LJPEG_j_decompress_ptr cinfo));
 
 
 /* Declarations for routines called by application.
@@ -920,11 +920,11 @@ typedef LJPEG_JMETHOD(boolean, jpeg_marker_parser_method, (LJPEG_j_decompress_pt
 #define LJPEG_jpeg_start_output	jStrtOutput
 #define LJPEG_jpeg_finish_output	jFinOutput
 #define LJPEG_jpeg_input_complete	jInComplete
-#define jpeg_new_colormap	jNewCMap
+#define LJPEG_jpeg_new_colormap	jNewCMap
 #define LJPEG_jpeg_consume_input	jConsumeInput
-#define jpeg_core_output_dimensions	jCoreDimensions
-#define jpeg_calc_output_dimensions	jCalcDimensions
-#define jpeg_save_markers	jSaveMarkers
+#define LJPEG_jpeg_core_output_dimensions	jCoreDimensions
+#define LJPEG_jpeg_calc_output_dimensions	jCalcDimensions
+#define LJPEG_jpeg_save_markers	jSaveMarkers
 #define LJPEG_jpeg_set_marker_processor	jSetMarker
 #define jpeg_read_coefficients	jReadCoefs
 #define LJPEG_jpeg_write_coefficients	jWrtCoefs
@@ -933,7 +933,7 @@ typedef LJPEG_JMETHOD(boolean, jpeg_marker_parser_method, (LJPEG_j_decompress_pt
 #define LJPEG_jpeg_abort_decompress	jAbrtDecompress
 #define LJPEG_jpeg_abort		jAbort
 #define LJPEG_jpeg_destroy		jDestroy
-#define jpeg_resync_to_restart	jResyncRestart
+#define LJPEG_jpeg_resync_to_restart	jResyncRestart
 #endif /* NEED_SHORT_EXTERNAL_NAMES */
 
 
@@ -1059,7 +1059,7 @@ EXTERN(boolean) LJPEG_jpeg_start_output LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
 				       int scan_number));
 EXTERN(boolean) LJPEG_jpeg_finish_output LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(boolean) LJPEG_jpeg_input_complete LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
-EXTERN(void) jpeg_new_colormap LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(void) LJPEG_jpeg_new_colormap LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(int) LJPEG_jpeg_consume_input LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 /* Return value is one of: */
 /* #define JPEG_SUSPENDED	0    Suspended due to lack of input data */
@@ -1069,18 +1069,18 @@ EXTERN(int) LJPEG_jpeg_consume_input LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 #define JPEG_SCAN_COMPLETED	4 /* Completed last iMCU row of a scan */
 
 /* Precalculate output dimensions for current decompression parameters. */
-EXTERN(void) jpeg_core_output_dimensions LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
-EXTERN(void) jpeg_calc_output_dimensions LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(void) LJPEG_jpeg_core_output_dimensions LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(void) LJPEG_jpeg_calc_output_dimensions LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 
 /* Control saving of COM and APPn markers into marker_list. */
-EXTERN(void) jpeg_save_markers
+EXTERN(void) LJPEG_jpeg_save_markers
 	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, int marker_code,
 	     unsigned int length_limit));
 
 /* Install a special processing method for COM or APPn markers. */
 EXTERN(void) LJPEG_jpeg_set_marker_processor
 	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, int marker_code,
-	     jpeg_marker_parser_method routine));
+	     LJPEG_jpeg_marker_parser_method routine));
 
 /* Read or write raw DCT coefficients --- useful for lossless transcoding. */
 EXTERN(LJPEG_jvirt_barray_ptr *) jpeg_read_coefficients LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
@@ -1105,7 +1105,7 @@ EXTERN(void) LJPEG_jpeg_abort LJPEG_JPP((LJPEG_j_common_ptr cinfo));
 EXTERN(void) LJPEG_jpeg_destroy LJPEG_JPP((LJPEG_j_common_ptr cinfo));
 
 /* Default restart-marker-resync procedure for use by data source modules */
-EXTERN(boolean) jpeg_resync_to_restart LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
+EXTERN(boolean) LJPEG_jpeg_resync_to_restart LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
 					    int desired));
 
 

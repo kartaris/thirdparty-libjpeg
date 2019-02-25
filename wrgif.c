@@ -383,7 +383,7 @@ LJPEG_jinit_write_gif (LJPEG_j_decompress_ptr cinfo)
   }
 
   /* Calculate output image dimensions so we can allocate space */
-  jpeg_calc_output_dimensions(cinfo);
+  LJPEG_jpeg_calc_output_dimensions(cinfo);
 
   if (cinfo->output_components != 1) /* safety check: just one component? */
     ERREXIT(cinfo, JERR_GIF_BUG);

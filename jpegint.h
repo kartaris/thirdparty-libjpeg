@@ -138,8 +138,8 @@ struct jpeg_marker_writer {
 
 /* Master control module */
 struct jpeg_decomp_master {
-  LJPEG_JMETHOD(void, prepare_for_output_pass, (LJPEG_j_decompress_ptr cinfo));
-  LJPEG_JMETHOD(void, finish_output_pass, (LJPEG_j_decompress_ptr cinfo));
+  LJPEG_JMETHOD(void, LJPEG_prepare_for_output_pass, (LJPEG_j_decompress_ptr cinfo));
+  LJPEG_JMETHOD(void, LJPEG_finish_output_pass, (LJPEG_j_decompress_ptr cinfo));
 
   /* State variables made visible to other modules */
   boolean is_dummy_pass;	/* True during 1st pass for 2-pass quant */
@@ -148,9 +148,9 @@ struct jpeg_decomp_master {
 /* Input control module */
 struct jpeg_input_controller {
   LJPEG_JMETHOD(int, consume_input, (LJPEG_j_decompress_ptr cinfo));
-  LJPEG_JMETHOD(void, reset_input_controller, (LJPEG_j_decompress_ptr cinfo));
+  LJPEG_JMETHOD(void, LJPEG_reset_input_controller, (LJPEG_j_decompress_ptr cinfo));
   LJPEG_JMETHOD(void, LJPEG_start_input_pass, (LJPEG_j_decompress_ptr cinfo));
-  LJPEG_JMETHOD(void, finish_input_pass, (LJPEG_j_decompress_ptr cinfo));
+  LJPEG_JMETHOD(void, LJPEG_finish_input_pass, (LJPEG_j_decompress_ptr cinfo));
 
   /* State variables made visible to other modules */
   boolean has_multiple_scans;	/* True if file has multiple scans */
@@ -190,14 +190,14 @@ struct jpeg_d_post_controller {
 
 /* Marker reading & parsing */
 struct jpeg_marker_reader {
-  LJPEG_JMETHOD(void, reset_marker_reader, (LJPEG_j_decompress_ptr cinfo));
+  LJPEG_JMETHOD(void, LJPEG_reset_marker_reader, (LJPEG_j_decompress_ptr cinfo));
   /* Read markers until SOS or EOI.
    * Returns same codes as are defined for LJPEG_jpeg_consume_input:
    * JPEG_SUSPENDED, JPEG_REACHED_SOS, or JPEG_REACHED_EOI.
    */
-  LJPEG_JMETHOD(int, read_markers, (LJPEG_j_decompress_ptr cinfo));
+  LJPEG_JMETHOD(int, LJPEG_read_markers, (LJPEG_j_decompress_ptr cinfo));
   /* Read a restart marker --- exported for use by entropy decoder only */
-  jpeg_marker_parser_method read_restart_marker;
+  LJPEG_jpeg_marker_parser_method LJPEG_read_restart_marker;
 
   /* State of marker reader --- nominally internal, but applications
    * supplying COM or APPn handlers might like to know the state.
@@ -304,16 +304,16 @@ struct jpeg_color_quantizer {
 #define LJPEG_jinit_huff_encoder	jIHEncoder
 #define LJPEG_jinit_LJPEG_arith_encoder	jIAEncoder
 #define LJPEG_jinit_marker_writer	jIMWriter
-#define jinit_master_decompress	jIDMaster
-#define jinit_d_main_controller	jIDMainC
+#define LJPEG_jinit_master_decompress	jIDMaster
+#define LJPEG_jinit_d_main_controller	jIDMainC
 #define LJPEG_jinit_d_coef_controller	jIDCoefC
-#define jinit_d_post_controller	jIDPostC
-#define jinit_input_controller	jIInCtlr
-#define jinit_marker_reader	jIMReader
-#define jinit_huff_decoder	jIHDecoder
+#define LJPEG_jinit_d_post_controller	jIDPostC
+#define LJPEG_jinit_input_controller	jIInCtlr
+#define LJPEG_jinit_marker_reader	jIMReader
+#define LJPEG_jinit_huff_decoder	jIHDecoder
 #define LJPEG_jinit_arith_decoder	jIADecoder
-#define jinit_inverse_dct	jIIDCT
-#define jinit_upsampler		jIUpsampler
+#define LJPEG_jinit_inverse_dct	jIIDCT
+#define LJPEG_jinit_upsampler		jIUpsampler
 #define LJPEG_jinit_color_deconverter	jIDColor
 #define jinit_1pass_quantizer	jI1Quant
 #define jinit_2pass_quantizer	jI2Quant
@@ -324,7 +324,7 @@ struct jpeg_color_quantizer {
 #define jzero_far		jZeroFar
 #define jcopy_sample_rows	jCopySamples
 #define jcopy_block_row		jCopyBlocks
-#define jpeg_zigzag_order	jZIGTable
+#define LJPEG_jpeg_zigzag_order	jZIGTable
 #define jpeg_natural_order	jZAGTable
 #define jpeg_natural_order7	jZAG7Table
 #define jpeg_natural_order6	jZAG6Table
@@ -373,19 +373,19 @@ EXTERN(void) LJPEG_jinit_huff_encoder LJPEG_JPP((LJPEG_j_compress_ptr cinfo));
 EXTERN(void) LJPEG_jinit_LJPEG_arith_encoder LJPEG_JPP((LJPEG_j_compress_ptr cinfo));
 EXTERN(void) LJPEG_jinit_marker_writer LJPEG_JPP((LJPEG_j_compress_ptr cinfo));
 /* Decompression module initialization routines */
-EXTERN(void) jinit_master_decompress LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
-EXTERN(void) jinit_d_main_controller LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
+EXTERN(void) LJPEG_jinit_master_decompress LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(void) LJPEG_jinit_d_main_controller LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
 					  boolean need_full_buffer));
 EXTERN(void) LJPEG_jinit_d_coef_controller LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
 					  boolean need_full_buffer));
-EXTERN(void) jinit_d_post_controller LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
+EXTERN(void) LJPEG_jinit_d_post_controller LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
 					  boolean need_full_buffer));
-EXTERN(void) jinit_input_controller LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
-EXTERN(void) jinit_marker_reader LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
-EXTERN(void) jinit_huff_decoder LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(void) LJPEG_jinit_input_controller LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(void) LJPEG_jinit_marker_reader LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(void) LJPEG_jinit_huff_decoder LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) LJPEG_jinit_arith_decoder LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
-EXTERN(void) jinit_inverse_dct LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
-EXTERN(void) jinit_upsampler LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(void) LJPEG_jinit_inverse_dct LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(void) LJPEG_jinit_upsampler LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) LJPEG_jinit_color_deconverter LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) jinit_1pass_quantizer LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) jinit_2pass_quantizer LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
@@ -403,7 +403,7 @@ EXTERN(void) jcopy_block_row LJPEG_JPP((LJPEG_JBLOCKROW input_row, LJPEG_JBLOCKR
 				  LJPEG_JDIMENSION num_blocks));
 /* Constant tables in jutils.c */
 #if 0				/* This table is not actually needed in v6a */
-extern const int jpeg_zigzag_order[]; /* natural coef order to zigzag order */
+extern const int LJPEG_jpeg_zigzag_order[]; /* natural coef order to zigzag order */
 #endif
 extern const int jpeg_natural_order[]; /* zigzag coef order to natural order */
 extern const int jpeg_natural_order7[]; /* zz to natural order for 7x7 block */

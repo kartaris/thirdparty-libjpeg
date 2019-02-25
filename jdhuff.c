@@ -28,14 +28,14 @@
 typedef struct {
   /* Basic tables: (element [0] of each array is unused) */
   INT32 maxcode[18];		/* largest code of length k (-1 if none) */
-  /* (maxcode[17] is a sentinel to ensure jpeg_huff_decode terminates) */
+  /* (maxcode[17] is a sentinel to ensure LJPEG_jpeg_huff_decode terminates) */
   INT32 valoffset[17];		/* huffval[] offset for codes of length k */
   /* valoffset[k] = huffval[] index of 1st symbol of code length k, less
    * the smallest code of length k; so given a code of length k, the
    * corresponding symbol is huffval[code + valoffset[k]]
    */
 
-  /* Link to public Huffman table (needed only in jpeg_huff_decode) */
+  /* Link to public Huffman table (needed only in LJPEG_jpeg_huff_decode) */
   LJPEG_JHUFF_TBL *pub;
 
   /* Lookahead tables: indexed by the next HUFF_LOOKAHEAD bits of
@@ -45,7 +45,7 @@ typedef struct {
    */
   int look_nbits[1<<HUFF_LOOKAHEAD]; /* # bits, or 0 if too long */
   UINT8 look_sym[1<<HUFF_LOOKAHEAD]; /* symbol, or unused */
-} d_derived_tbl;
+} LJPEG_d_derived_tbl;
 
 
 /*
@@ -57,11 +57,11 @@ typedef struct {
  * We read source bytes into get_buffer and dole out bits as needed.
  * If get_buffer already contains enough bits, they are fetched in-line
  * by the macros CHECK_BIT_BUFFER and GET_BITS.  When there aren't enough
- * bits, jpeg_fill_bit_buffer is called; it will attempt to fill get_buffer
+ * bits, LJPEG_jpeg_fill_bit_buffer is called; it will attempt to fill get_buffer
  * as full as possible (not just to the number of bits needed; this
- * prefetching reduces the overhead cost of calling jpeg_fill_bit_buffer).
- * Note that jpeg_fill_bit_buffer may return FALSE to indicate suspension.
- * On TRUE return, jpeg_fill_bit_buffer guarantees that get_buffer contains
+ * prefetching reduces the overhead cost of calling LJPEG_jpeg_fill_bit_buffer).
+ * Note that LJPEG_jpeg_fill_bit_buffer may return FALSE to indicate suspension.
+ * On TRUE return, LJPEG_jpeg_fill_bit_buffer guarantees that get_buffer contains
  * at least the requested number of bits --- dummy zeroes are inserted if
  * necessary.
  */
@@ -79,7 +79,7 @@ typedef INT32 bit_buf_type;	/* type of bit-extraction buffer */
 typedef struct {		/* Bitreading state saved across MCUs */
   bit_buf_type get_buffer;	/* current bit-extraction buffer */
   int bits_left;		/* # of unused bits in it */
-} bitread_perm_state;
+} LJPEG_bitread_perm_state;
 
 typedef struct {		/* Bitreading working state within an MCU */
   /* Current data source location */
@@ -91,15 +91,15 @@ typedef struct {		/* Bitreading working state within an MCU */
    */
   bit_buf_type get_buffer;	/* current bit-extraction buffer */
   int bits_left;		/* # of unused bits in it */
-  /* Pointer needed by jpeg_fill_bit_buffer. */
+  /* Pointer needed by LJPEG_jpeg_fill_bit_buffer. */
   LJPEG_j_decompress_ptr cinfo;	/* back link to decompress master record */
-} bitread_LJPEG_working_state;
+} LJPEG_bitread_working_state;
 
 /* Macros to declare and load/save bitread local variables. */
 #define BITREAD_STATE_VARS  \
 	register bit_buf_type get_buffer;  \
 	register int bits_left;  \
-	bitread_LJPEG_working_state br_state
+	LJPEG_bitread_working_state br_state
 
 #define BITREAD_LOAD_STATE(cinfop,permstate)  \
 	br_state.cinfo = cinfop; \
@@ -119,7 +119,7 @@ typedef struct {		/* Bitreading working state within an MCU */
  * Use CHECK_BIT_BUFFER to ensure there are N bits in get_buffer
  * before using GET_BITS, PEEK_BITS, or DROP_BITS.
  * The variables get_buffer and bits_left are assumed to be locals,
- * but the state struct might not be (jpeg_huff_decode needs this).
+ * but the state struct might not be (LJPEG_jpeg_huff_decode needs this).
  *	CHECK_BIT_BUFFER(state,n,action);
  *		Ensure there are N bits in get_buffer; if suspend, take action.
  *      val = GET_BITS(n);
@@ -134,7 +134,7 @@ typedef struct {		/* Bitreading working state within an MCU */
 
 #define CHECK_BIT_BUFFER(state,nbits,action) \
 	{ if (bits_left < (nbits)) {  \
-	    if (! jpeg_fill_bit_buffer(&(state),get_buffer,bits_left,nbits))  \
+	    if (! LJPEG_jpeg_fill_bit_buffer(&(state),get_buffer,bits_left,nbits))  \
 	      { action; }  \
 	    get_buffer = (state).get_buffer; bits_left = (state).bits_left; } }
 
@@ -162,13 +162,13 @@ typedef struct {		/* Bitreading working state within an MCU */
  *    for a lookahead.  In that case, we do it the hard way.
  * 2. If the lookahead table contains no entry, the next code must be
  *    more than HUFF_LOOKAHEAD bits long.
- * 3. jpeg_huff_decode returns -1 if forced to suspend.
+ * 3. LJPEG_jpeg_huff_decode returns -1 if forced to suspend.
  */
 
 #define HUFF_DECODE(result,state,htbl,failaction,slowlabel) \
 { register int nb, look; \
   if (bits_left < HUFF_LOOKAHEAD) { \
-    if (! jpeg_fill_bit_buffer(&state,get_buffer,bits_left, 0)) {failaction;} \
+    if (! LJPEG_jpeg_fill_bit_buffer(&state,get_buffer,bits_left, 0)) {failaction;} \
     get_buffer = state.get_buffer; bits_left = state.bits_left; \
     if (bits_left < HUFF_LOOKAHEAD) { \
       nb = 1; goto slowlabel; \
@@ -181,7 +181,7 @@ typedef struct {		/* Bitreading working state within an MCU */
   } else { \
     nb = HUFF_LOOKAHEAD+1; \
 slowlabel: \
-    if ((result=jpeg_huff_decode(&state,get_buffer,bits_left,htbl,nb)) < 0) \
+    if ((result=LJPEG_jpeg_huff_decode(&state,get_buffer,bits_left,htbl,nb)) < 0) \
 	{ failaction; } \
     get_buffer = state.get_buffer; bits_left = state.bits_left; \
   } \
@@ -225,7 +225,7 @@ typedef struct {
   /* These fields are loaded into local variables at start of each MCU.
    * In case of suspension, we exit WITHOUT updating them.
    */
-  bitread_perm_state bitstate;	/* Bit buffer at start of MCU */
+  LJPEG_bitread_perm_state bitstate;	/* Bit buffer at start of MCU */
   LJPEG_savable_state saved;		/* Other state at start of MCU */
 
   /* These fields are NOT loaded into local working state. */
@@ -235,29 +235,29 @@ typedef struct {
   /* Following two fields used only in progressive mode */
 
   /* Pointers to derived tables (these workspaces have image lifespan) */
-  d_derived_tbl * derived_tbls[NUM_HUFF_TBLS];
+  LJPEG_d_derived_tbl * derived_tbls[NUM_HUFF_TBLS];
 
-  d_derived_tbl * ac_derived_tbl; /* active table during an AC scan */
+  LJPEG_d_derived_tbl * ac_derived_tbl; /* active table during an AC scan */
 
   /* Following fields used only in sequential mode */
 
   /* Pointers to derived tables (these workspaces have image lifespan) */
-  d_derived_tbl * dc_derived_tbls[NUM_HUFF_TBLS];
-  d_derived_tbl * ac_derived_tbls[NUM_HUFF_TBLS];
+  LJPEG_d_derived_tbl * dc_derived_tbls[NUM_HUFF_TBLS];
+  LJPEG_d_derived_tbl * ac_derived_tbls[NUM_HUFF_TBLS];
 
   /* Precalculated info set up by LJPEG_start_pass for use in LJPEG_decode_mcu: */
 
   /* Pointers to derived tables to be used for each block within an MCU */
-  d_derived_tbl * dc_cur_tbls[D_MAX_BLOCKS_IN_MCU];
-  d_derived_tbl * ac_cur_tbls[D_MAX_BLOCKS_IN_MCU];
+  LJPEG_d_derived_tbl * dc_cur_tbls[D_MAX_BLOCKS_IN_MCU];
+  LJPEG_d_derived_tbl * ac_cur_tbls[D_MAX_BLOCKS_IN_MCU];
   /* Whether we care about the DC and AC coefficient values for each block */
   int coef_limit[D_MAX_BLOCKS_IN_MCU];
-} huff_entropy_decoder;
+} LJPEG_huff_entropy_decoder;
 
-typedef huff_entropy_decoder * LJPEG_huff_entropy_ptr;
+typedef LJPEG_huff_entropy_decoder * LJPEG_huff_entropy_ptr;
 
 
-static const int jpeg_zigzag_order[8][8] = {
+static const int LJPEG_jpeg_zigzag_order[8][8] = {
   {  0,  1,  5,  6, 14, 15, 27, 28 },
   {  2,  4,  7, 13, 16, 26, 29, 42 },
   {  3,  8, 12, 17, 25, 30, 41, 43 },
@@ -268,7 +268,7 @@ static const int jpeg_zigzag_order[8][8] = {
   { 35, 36, 48, 49, 57, 58, 62, 63 }
 };
 
-static const int jpeg_zigzag_order7[7][7] = {
+static const int LJPEG_jpeg_zigzag_order7[7][7] = {
   {  0,  1,  5,  6, 14, 15, 27 },
   {  2,  4,  7, 13, 16, 26, 28 },
   {  3,  8, 12, 17, 25, 29, 38 },
@@ -278,7 +278,7 @@ static const int jpeg_zigzag_order7[7][7] = {
   { 21, 33, 34, 42, 43, 47, 48 }
 };
 
-static const int jpeg_zigzag_order6[6][6] = {
+static const int LJPEG_jpeg_zigzag_order6[6][6] = {
   {  0,  1,  5,  6, 14, 15 },
   {  2,  4,  7, 13, 16, 25 },
   {  3,  8, 12, 17, 24, 26 },
@@ -287,7 +287,7 @@ static const int jpeg_zigzag_order6[6][6] = {
   { 20, 21, 29, 30, 34, 35 }
 };
 
-static const int jpeg_zigzag_order5[5][5] = {
+static const int LJPEG_jpeg_zigzag_order5[5][5] = {
   {  0,  1,  5,  6, 14 },
   {  2,  4,  7, 13, 15 },
   {  3,  8, 12, 16, 21 },
@@ -295,20 +295,20 @@ static const int jpeg_zigzag_order5[5][5] = {
   { 10, 18, 19, 23, 24 }
 };
 
-static const int jpeg_zigzag_order4[4][4] = {
+static const int LJPEG_jpeg_zigzag_order4[4][4] = {
   { 0,  1,  5,  6 },
   { 2,  4,  7, 12 },
   { 3,  8, 11, 13 },
   { 9, 10, 14, 15 }
 };
 
-static const int jpeg_zigzag_order3[3][3] = {
+static const int LJPEG_jpeg_zigzag_order3[3][3] = {
   { 0, 1, 5 },
   { 2, 4, 6 },
   { 3, 7, 8 }
 };
 
-static const int jpeg_zigzag_order2[2][2] = {
+static const int LJPEG_jpeg_zigzag_order2[2][2] = {
   { 0, 1 },
   { 2, 3 }
 };
@@ -320,11 +320,11 @@ static const int jpeg_zigzag_order2[2][2] = {
  */
 
 LOCAL(void)
-jpeg_make_d_derived_tbl (LJPEG_j_decompress_ptr cinfo, boolean isDC, int tblno,
-			 d_derived_tbl ** pdtbl)
+LJPEG_jpeg_make_d_derived_tbl (LJPEG_j_decompress_ptr cinfo, boolean isDC, int tblno,
+			 LJPEG_d_derived_tbl ** pdtbl)
 {
   LJPEG_JHUFF_TBL *htbl;
-  d_derived_tbl *dtbl;
+  LJPEG_d_derived_tbl *dtbl;
   int p, i, l, si, numsymbols;
   int lookbits, ctr;
   char huffsize[257];
@@ -345,9 +345,9 @@ jpeg_make_d_derived_tbl (LJPEG_j_decompress_ptr cinfo, boolean isDC, int tblno,
 
   /* Allocate a workspace if we haven't already done so. */
   if (*pdtbl == NULL)
-    *pdtbl = (d_derived_tbl *)
+    *pdtbl = (LJPEG_d_derived_tbl *)
       (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				  SIZEOF(d_derived_tbl));
+				  SIZEOF(LJPEG_d_derived_tbl));
   dtbl = *pdtbl;
   dtbl->pub = htbl;		/* fill in back link */
   
@@ -399,7 +399,7 @@ jpeg_make_d_derived_tbl (LJPEG_j_decompress_ptr cinfo, boolean isDC, int tblno,
       dtbl->maxcode[l] = -1;	/* -1 if no codes of this length */
     }
   }
-  dtbl->maxcode[17] = 0xFFFFFL; /* ensures jpeg_huff_decode terminates */
+  dtbl->maxcode[17] = 0xFFFFFL; /* ensures LJPEG_jpeg_huff_decode terminates */
 
   /* Compute lookahead tables to speed up decoding.
    * First we set all the table entries to 0, indicating "too long";
@@ -451,7 +451,7 @@ jpeg_make_d_derived_tbl (LJPEG_j_decompress_ptr cinfo, boolean isDC, int tblno,
  * quite slow and take time proportional to the number of places shifted.
  * (This is true with most PC compilers, for instance.)  In this case it may
  * be a win to set MIN_GET_BITS to the minimum value of 15.  This reduces the
- * average shift distance at the cost of more calls to jpeg_fill_bit_buffer.
+ * average shift distance at the cost of more calls to LJPEG_jpeg_fill_bit_buffer.
  */
 
 #ifdef SLOW_SHIFT_32
@@ -462,7 +462,7 @@ jpeg_make_d_derived_tbl (LJPEG_j_decompress_ptr cinfo, boolean isDC, int tblno,
 
 
 LOCAL(boolean)
-jpeg_fill_bit_buffer (bitread_LJPEG_working_state * state,
+LJPEG_jpeg_fill_bit_buffer (LJPEG_bitread_working_state * state,
 		      register bit_buf_type get_buffer, register int bits_left,
 		      int nbits)
 /* Load up the bit buffer to a depth of at least nbits */
@@ -574,10 +574,10 @@ jpeg_fill_bit_buffer (bitread_LJPEG_working_state * state,
 
 #else
 
-#define BIT_MASK(nbits)   bmask[nbits]
-#define HUFF_EXTEND(x,s)  ((x) <= bmask[(s) - 1] ? (x) - bmask[s] : (x))
+#define BIT_MASK(nbits)   LJPEG_bmask[nbits]
+#define HUFF_EXTEND(x,s)  ((x) <= LJPEG_bmask[(s) - 1] ? (x) - LJPEG_bmask[s] : (x))
 
-static const int bmask[16] =	/* bmask[n] is mask for n rightmost bits */
+static const int LJPEG_bmask[16] =	/* LJPEG_bmask[n] is mask for n rightmost bits */
   { 0, 0x0001, 0x0003, 0x0007, 0x000F, 0x001F, 0x003F, 0x007F, 0x00FF,
     0x01FF, 0x03FF, 0x07FF, 0x0FFF, 0x1FFF, 0x3FFF, 0x7FFF };
 
@@ -589,9 +589,9 @@ static const int bmask[16] =	/* bmask[n] is mask for n rightmost bits */
  */
 
 LOCAL(int)
-jpeg_huff_decode (bitread_LJPEG_working_state * state,
+LJPEG_jpeg_huff_decode (LJPEG_bitread_working_state * state,
 		  register bit_buf_type get_buffer, register int bits_left,
-		  d_derived_tbl * htbl, int min_bits)
+		  LJPEG_d_derived_tbl * htbl, int min_bits)
 {
   register int l = min_bits;
   register INT32 code;
@@ -639,12 +639,12 @@ LJPEG_process_restart (LJPEG_j_decompress_ptr cinfo)
   int ci;
 
   /* Throw away any unused bits remaining in bit buffer; */
-  /* include any full bytes in next_marker's count of discarded bytes */
+  /* include any full bytes in LJPEG_next_marker's count of discarded bytes */
   cinfo->marker->discarded_bytes += entropy->bitstate.bits_left / 8;
   entropy->bitstate.bits_left = 0;
 
   /* Advance past the RSTn marker */
-  if (! (*cinfo->marker->read_restart_marker) (cinfo))
+  if (! (*cinfo->marker->LJPEG_read_restart_marker) (cinfo))
     return FALSE;
 
   /* Re-initialize DC predictions to 0 */
@@ -656,7 +656,7 @@ LJPEG_process_restart (LJPEG_j_decompress_ptr cinfo)
   /* Reset restart counter */
   entropy->restarts_to_go = cinfo->restart_interval;
 
-  /* Reset out-of-data flag, unless read_restart_marker left us smack up
+  /* Reset out-of-data flag, unless LJPEG_read_restart_marker left us smack up
    * against a marker.  In that case we will end up treating the next data
    * segment as empty, and we can avoid producing bogus output pixels by
    * leaving the flag set.
@@ -701,7 +701,7 @@ LJPEG_decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_da
   LJPEG_JBLOCKROW block;
   BITREAD_STATE_VARS;
   LJPEG_savable_state state;
-  d_derived_tbl * tbl;
+  LJPEG_d_derived_tbl * tbl;
   LJPEG_jpeg_component_info * compptr;
 
   /* Process restart marker if needed; may have to suspend */
@@ -772,7 +772,7 @@ LJPEG_decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_da
   const int * natural_order;
   LJPEG_JBLOCKROW block;
   BITREAD_STATE_VARS;
-  d_derived_tbl * tbl;
+  LJPEG_d_derived_tbl * tbl;
 
   /* Process restart marker if needed; may have to suspend */
   if (cinfo->restart_interval) {
@@ -910,7 +910,7 @@ LJPEG_decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_d
   LJPEG_JBLOCKROW block;
   LJPEG_JCOEFPTR thiscoef;
   BITREAD_STATE_VARS;
-  d_derived_tbl * tbl;
+  LJPEG_d_derived_tbl * tbl;
   int num_newnz;
   int newnz_pos[DCTSIZE2];
 
@@ -1088,7 +1088,7 @@ decode_mcu_sub (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 
     for (blkn = 0; blkn < cinfo->blocks_in_MCU; blkn++) {
       LJPEG_JBLOCKROW block = MCU_data[blkn];
-      d_derived_tbl * htbl;
+      LJPEG_d_derived_tbl * htbl;
       register int s, k, r;
       int coef_limit, ci;
 
@@ -1212,7 +1212,7 @@ LJPEG_decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 
     for (blkn = 0; blkn < cinfo->blocks_in_MCU; blkn++) {
       LJPEG_JBLOCKROW block = MCU_data[blkn];
-      d_derived_tbl * htbl;
+      LJPEG_d_derived_tbl * htbl;
       register int s, k, r;
       int coef_limit, ci;
 
@@ -1381,12 +1381,12 @@ LJPEG_start_pass_huff_decoder (LJPEG_j_decompress_ptr cinfo)
       if (cinfo->Ss == 0) {
 	if (cinfo->Ah == 0) {	/* DC refinement needs no table */
 	  tbl = compptr->dc_tbl_no;
-	  jpeg_make_d_derived_tbl(cinfo, TRUE, tbl,
+	  LJPEG_jpeg_make_d_derived_tbl(cinfo, TRUE, tbl,
 				  & entropy->derived_tbls[tbl]);
 	}
       } else {
 	tbl = compptr->ac_tbl_no;
-	jpeg_make_d_derived_tbl(cinfo, FALSE, tbl,
+	LJPEG_jpeg_make_d_derived_tbl(cinfo, FALSE, tbl,
 				& entropy->derived_tbls[tbl]);
 	/* remember the single active table */
 	entropy->ac_derived_tbl = entropy->derived_tbls[tbl];
@@ -1424,11 +1424,11 @@ LJPEG_start_pass_huff_decoder (LJPEG_j_decompress_ptr cinfo)
       /* Compute derived values for Huffman tables */
       /* We may do this more than once for a table, but it's not expensive */
       tbl = compptr->dc_tbl_no;
-      jpeg_make_d_derived_tbl(cinfo, TRUE, tbl,
+      LJPEG_jpeg_make_d_derived_tbl(cinfo, TRUE, tbl,
 			      & entropy->dc_derived_tbls[tbl]);
       if (cinfo->lim_Se) {	/* AC needs no table when not present */
 	tbl = compptr->ac_tbl_no;
-	jpeg_make_d_derived_tbl(cinfo, FALSE, tbl,
+	LJPEG_jpeg_make_d_derived_tbl(cinfo, FALSE, tbl,
 				& entropy->ac_derived_tbls[tbl]);
       }
       /* Initialize DC predictions to 0 */
@@ -1453,37 +1453,37 @@ LJPEG_start_pass_huff_decoder (LJPEG_j_decompress_ptr cinfo)
 	case (2*2-1):
 	  if (ci <= 0 || ci > 2) ci = 2;
 	  if (i <= 0 || i > 2) i = 2;
-	  entropy->coef_limit[blkn] = 1 + jpeg_zigzag_order2[ci - 1][i - 1];
+	  entropy->coef_limit[blkn] = 1 + LJPEG_jpeg_zigzag_order2[ci - 1][i - 1];
 	  break;
 	case (3*3-1):
 	  if (ci <= 0 || ci > 3) ci = 3;
 	  if (i <= 0 || i > 3) i = 3;
-	  entropy->coef_limit[blkn] = 1 + jpeg_zigzag_order3[ci - 1][i - 1];
+	  entropy->coef_limit[blkn] = 1 + LJPEG_jpeg_zigzag_order3[ci - 1][i - 1];
 	  break;
 	case (4*4-1):
 	  if (ci <= 0 || ci > 4) ci = 4;
 	  if (i <= 0 || i > 4) i = 4;
-	  entropy->coef_limit[blkn] = 1 + jpeg_zigzag_order4[ci - 1][i - 1];
+	  entropy->coef_limit[blkn] = 1 + LJPEG_jpeg_zigzag_order4[ci - 1][i - 1];
 	  break;
 	case (5*5-1):
 	  if (ci <= 0 || ci > 5) ci = 5;
 	  if (i <= 0 || i > 5) i = 5;
-	  entropy->coef_limit[blkn] = 1 + jpeg_zigzag_order5[ci - 1][i - 1];
+	  entropy->coef_limit[blkn] = 1 + LJPEG_jpeg_zigzag_order5[ci - 1][i - 1];
 	  break;
 	case (6*6-1):
 	  if (ci <= 0 || ci > 6) ci = 6;
 	  if (i <= 0 || i > 6) i = 6;
-	  entropy->coef_limit[blkn] = 1 + jpeg_zigzag_order6[ci - 1][i - 1];
+	  entropy->coef_limit[blkn] = 1 + LJPEG_jpeg_zigzag_order6[ci - 1][i - 1];
 	  break;
 	case (7*7-1):
 	  if (ci <= 0 || ci > 7) ci = 7;
 	  if (i <= 0 || i > 7) i = 7;
-	  entropy->coef_limit[blkn] = 1 + jpeg_zigzag_order7[ci - 1][i - 1];
+	  entropy->coef_limit[blkn] = 1 + LJPEG_jpeg_zigzag_order7[ci - 1][i - 1];
 	  break;
 	default:
 	  if (ci <= 0 || ci > 8) ci = 8;
 	  if (i <= 0 || i > 8) i = 8;
-	  entropy->coef_limit[blkn] = 1 + jpeg_zigzag_order[ci - 1][i - 1];
+	  entropy->coef_limit[blkn] = 1 + LJPEG_jpeg_zigzag_order[ci - 1][i - 1];
 	  break;
 	}
       } else {
@@ -1507,14 +1507,14 @@ LJPEG_start_pass_huff_decoder (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBALvoid)
-jinit_huff_decoder (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jinit_huff_decoder (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_huff_entropy_ptr entropy;
   int i;
 
   entropy = (LJPEG_huff_entropy_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(huff_entropy_decoder));
+				SIZEOF(LJPEG_huff_entropy_decoder));
   cinfo->entropy = &entropy->pub;
   entropy->pub.LJPEG_start_pass = LJPEG_start_pass_huff_decoder;
 

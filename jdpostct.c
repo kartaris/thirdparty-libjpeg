@@ -80,7 +80,7 @@ LJPEG_start_pass_dpost (LJPEG_j_decompress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode
       /* Single-pass processing with color quantization. */
       post->pub.post_process_data = post_process_1pass;
       /* We could be doing buffered-image output before starting a 2-pass
-       * color quantization; in that case, jinit_d_post_controller did not
+       * color quantization; in that case, LJPEG_jinit_d_post_controller did not
        * allocate a strip buffer.  Use the virtual-array buffer as workspace.
        */
       if (post->buffer == NULL) {
@@ -247,7 +247,7 @@ post_process_2pass (LJPEG_j_decompress_ptr cinfo,
  */
 
 LJPEG_GLOBAL(void)
-jinit_d_post_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
+LJPEG_jinit_d_post_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
 {
   my_post_ptr post;
 

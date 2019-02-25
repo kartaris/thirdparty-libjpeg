@@ -411,7 +411,7 @@ LJPEG_jinit_write_bmp (LJPEG_j_decompress_ptr cinfo, boolean is_os2)
   }
 
   /* Calculate output image dimensions so we can allocate space */
-  jpeg_calc_output_dimensions(cinfo);
+  LJPEG_jpeg_calc_output_dimensions(cinfo);
 
   /* Determine width of rows in the BMP file (padded to 4-byte boundary). */
   row_width = cinfo->output_width * cinfo->output_components;

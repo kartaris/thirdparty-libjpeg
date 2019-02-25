@@ -100,13 +100,13 @@ transdecode_master_selection (LJPEG_j_decompress_ptr cinfo)
   cinfo->buffered_image = TRUE;
 
   /* Compute output image dimensions and related values. */
-  jpeg_core_output_dimensions(cinfo);
+  LJPEG_jpeg_core_output_dimensions(cinfo);
 
   /* Entropy decoding: either Huffman or arithmetic coding. */
   if (cinfo->arith_code)
     LJPEG_jinit_arith_decoder(cinfo);
   else {
-    jinit_huff_decoder(cinfo);
+    LJPEG_jinit_huff_decoder(cinfo);
   }
 
   /* Always get a full-image coefficient buffer. */

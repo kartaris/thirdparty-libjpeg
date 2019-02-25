@@ -38,7 +38,7 @@ LJPEG_jpeg_start_decompress (LJPEG_j_decompress_ptr cinfo)
 {
   if (cinfo->global_state == DSTATE_READY) {
     /* First call: initialize master control, select active modules */
-    jinit_master_decompress(cinfo);
+    LJPEG_jinit_master_decompress(cinfo);
     if (cinfo->buffered_image) {
       /* No more work here; expecting LJPEG_jpeg_start_output next */
       cinfo->global_state = DSTATE_BUFIMAGE;
@@ -95,7 +95,7 @@ LJPEG_output_pass_setup (LJPEG_j_decompress_ptr cinfo)
 {
   if (cinfo->global_state != DSTATE_PRESCAN) {
     /* First call: do pass setup */
-    (*cinfo->master->prepare_for_output_pass) (cinfo);
+    (*cinfo->master->LJPEG_prepare_for_output_pass) (cinfo);
     cinfo->output_scanline = 0;
     cinfo->global_state = DSTATE_PRESCAN;
   }
@@ -119,8 +119,8 @@ LJPEG_output_pass_setup (LJPEG_j_decompress_ptr cinfo)
 	return FALSE;		/* No progress made, must suspend */
     }
     /* Finish up dummy pass, and set up for another one */
-    (*cinfo->master->finish_output_pass) (cinfo);
-    (*cinfo->master->prepare_for_output_pass) (cinfo);
+    (*cinfo->master->LJPEG_finish_output_pass) (cinfo);
+    (*cinfo->master->LJPEG_prepare_for_output_pass) (cinfo);
     cinfo->output_scanline = 0;
 #else
     ERREXIT(cinfo, JERR_NOT_COMPILED);
@@ -251,7 +251,7 @@ LJPEG_jpeg_finish_output (LJPEG_j_decompress_ptr cinfo)
        cinfo->global_state == DSTATE_RAW_OK) && cinfo->buffered_image) {
     /* Terminate this pass. */
     /* We do not require the whole pass to have been completed. */
-    (*cinfo->master->finish_output_pass) (cinfo);
+    (*cinfo->master->LJPEG_finish_output_pass) (cinfo);
     cinfo->global_state = DSTATE_BUFPOST;
   } else if (cinfo->global_state != DSTATE_BUFPOST) {
     /* BUFPOST = repeat call after a suspension, anything else is error */

@@ -897,7 +897,7 @@ jtransform_request_workspace (LJPEG_j_decompress_ptr srcinfo,
     info->num_components = srcinfo->num_components;
 
   /* Compute output image dimensions and related values. */
-  jpeg_core_output_dimensions(srcinfo);
+  LJPEG_jpeg_core_output_dimensions(srcinfo);
 
   /* Return right away if -perfect is given and transformation is not perfect.
    */
@@ -1534,12 +1534,12 @@ jcopy_markers_setup (LJPEG_j_decompress_ptr srcinfo, JCOPY_OPTION option)
 
   /* Save comments except under NONE option */
   if (option != JCOPYOPT_NONE) {
-    jpeg_save_markers(srcinfo, JPEG_COM, 0xFFFF);
+    LJPEG_jpeg_save_markers(srcinfo, JPEG_COM, 0xFFFF);
   }
   /* Save all types of APPn markers iff ALL option */
   if (option == JCOPYOPT_ALL) {
     for (m = 0; m < 16; m++)
-      jpeg_save_markers(srcinfo, JPEG_APP0 + m, 0xFFFF);
+      LJPEG_jpeg_save_markers(srcinfo, JPEG_APP0 + m, 0xFFFF);
   }
 #endif /* SAVE_MARKERS_SUPPORTED */
 }

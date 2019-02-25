@@ -31,9 +31,9 @@ typedef struct {
    */
   struct jpeg_color_quantizer * quantizer_1pass;
   struct jpeg_color_quantizer * quantizer_2pass;
-} my_decomp_master;
+} LJPEG_my_decomp_master;
 
-typedef my_decomp_master * LJPEG_my_master_ptr;
+typedef LJPEG_my_decomp_master * LJPEG_my_master_ptr;
 
 
 /*
@@ -42,7 +42,7 @@ typedef my_decomp_master * LJPEG_my_master_ptr;
  */
 
 LOCAL(boolean)
-use_merged_upsample (LJPEG_j_decompress_ptr cinfo)
+LJPEG_use_merged_upsample (LJPEG_j_decompress_ptr cinfo)
 {
 #ifdef UPSAMPLE_MERGING_SUPPORTED
   /* Merging is the equivalent of plain box-filter upsampling */
@@ -84,7 +84,7 @@ use_merged_upsample (LJPEG_j_decompress_ptr cinfo)
  * Also note that it may be called before the master module is initialized!
  */
 LJPEG_GLOBAL(void)
-jpeg_calc_output_dimensions (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jpeg_calc_output_dimensions (LJPEG_j_decompress_ptr cinfo)
 /* Do computations that are needed before master selection phase.
  * This function is used for full decompression.
  */
@@ -99,7 +99,7 @@ jpeg_calc_output_dimensions (LJPEG_j_decompress_ptr cinfo)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
 
   /* Compute core output image dimensions and DCT scaling choices. */
-  jpeg_core_output_dimensions(cinfo);
+  LJPEG_jpeg_core_output_dimensions(cinfo);
 
 #ifdef IDCT_SCALING_SUPPORTED
 
@@ -174,7 +174,7 @@ jpeg_calc_output_dimensions (LJPEG_j_decompress_ptr cinfo)
 			      cinfo->out_color_components);
 
   /* See if upsampler will want to emit more than one row at a time */
-  if (use_merged_upsample(cinfo))
+  if (LJPEG_use_merged_upsample(cinfo))
     cinfo->rec_outbuf_height = cinfo->max_v_samp_factor;
   else
     cinfo->rec_outbuf_height = 1;
@@ -225,7 +225,7 @@ jpeg_calc_output_dimensions (LJPEG_j_decompress_ptr cinfo)
  */
 
 LOCAL(void)
-prepare_range_limit_table (LJPEG_j_decompress_ptr cinfo)
+LJPEG_prepare_range_limit_table (LJPEG_j_decompress_ptr cinfo)
 /* Allocate and fill in the sample_range_limit table */
 {
   JSAMPLE * table;
@@ -265,7 +265,7 @@ prepare_range_limit_table (LJPEG_j_decompress_ptr cinfo)
  */
 
 LOCAL(void)
-master_selection (LJPEG_j_decompress_ptr cinfo)
+LJPEG_master_selection (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_master_ptr master = (LJPEG_my_master_ptr) cinfo->master;
   boolean use_c_buffer;
@@ -273,8 +273,8 @@ master_selection (LJPEG_j_decompress_ptr cinfo)
   LJPEG_JDIMENSION jd_samplesperrow;
 
   /* Initialize dimensions and other stuff */
-  jpeg_calc_output_dimensions(cinfo);
-  prepare_range_limit_table(cinfo);
+  LJPEG_jpeg_calc_output_dimensions(cinfo);
+  LJPEG_prepare_range_limit_table(cinfo);
 
   /* Width of an output scanline must be representable as LJPEG_JDIMENSION. */
   samplesperrow = (long) cinfo->output_width * (long) cinfo->out_color_components;
@@ -284,7 +284,7 @@ master_selection (LJPEG_j_decompress_ptr cinfo)
 
   /* Initialize my private state */
   master->pass_number = 0;
-  master->using_merged_upsample = use_merged_upsample(cinfo);
+  master->using_merged_upsample = LJPEG_use_merged_upsample(cinfo);
 
   /* Color quantizer selection */
   master->quantizer_1pass = NULL;
@@ -345,17 +345,17 @@ master_selection (LJPEG_j_decompress_ptr cinfo)
 #endif
     } else {
       LJPEG_jinit_color_deconverter(cinfo);
-      jinit_upsampler(cinfo);
+      LJPEG_jinit_upsampler(cinfo);
     }
-    jinit_d_post_controller(cinfo, cinfo->enable_2pass_quant);
+    LJPEG_jinit_d_post_controller(cinfo, cinfo->enable_2pass_quant);
   }
   /* Inverse DCT */
-  jinit_inverse_dct(cinfo);
+  LJPEG_jinit_inverse_dct(cinfo);
   /* Entropy decoding: either Huffman or arithmetic coding. */
   if (cinfo->arith_code)
     LJPEG_jinit_arith_decoder(cinfo);
   else {
-    jinit_huff_decoder(cinfo);
+    LJPEG_jinit_huff_decoder(cinfo);
   }
 
   /* Initialize principal buffer controllers. */
@@ -363,7 +363,7 @@ master_selection (LJPEG_j_decompress_ptr cinfo)
   LJPEG_jinit_d_coef_controller(cinfo, use_c_buffer);
 
   if (! cinfo->raw_data_out)
-    jinit_d_main_controller(cinfo, FALSE /* never need full buffer here */);
+    LJPEG_jinit_d_main_controller(cinfo, FALSE /* never need full buffer here */);
 
   /* We can now tell the memory manager to allocate virtual arrays. */
   (*cinfo->mem->realize_virt_arrays) ((LJPEG_j_common_ptr) cinfo);
@@ -408,7 +408,7 @@ master_selection (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-prepare_for_output_pass (LJPEG_j_decompress_ptr cinfo)
+LJPEG_prepare_for_output_pass (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_master_ptr master = (LJPEG_my_master_ptr) cinfo->master;
 
@@ -468,7 +468,7 @@ prepare_for_output_pass (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-finish_output_pass (LJPEG_j_decompress_ptr cinfo)
+LJPEG_finish_output_pass (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_master_ptr master = (LJPEG_my_master_ptr) cinfo->master;
 
@@ -484,7 +484,7 @@ finish_output_pass (LJPEG_j_decompress_ptr cinfo)
  * Switch to a new external colormap between output passes.
  */
 LJPEG_GLOBAL(void)
-jpeg_new_colormap (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jpeg_new_colormap (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_master_ptr master = (LJPEG_my_master_ptr) cinfo->master;
 
@@ -511,18 +511,18 @@ jpeg_new_colormap (LJPEG_j_decompress_ptr cinfo)
  * This is performed at the start of LJPEG_jpeg_start_decompress.
  */
 LJPEG_GLOBAL(void)
-jinit_master_decompress (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jinit_master_decompress (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_master_ptr master;
 
   master = (LJPEG_my_master_ptr)
       (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				  SIZEOF(my_decomp_master));
+				  SIZEOF(LJPEG_my_decomp_master));
   cinfo->master = (struct jpeg_decomp_master *) master;
-  master->pub.prepare_for_output_pass = prepare_for_output_pass;
-  master->pub.finish_output_pass = finish_output_pass;
+  master->pub.LJPEG_prepare_for_output_pass = LJPEG_prepare_for_output_pass;
+  master->pub.LJPEG_finish_output_pass = LJPEG_finish_output_pass;
 
   master->pub.is_dummy_pass = FALSE;
 
-  master_selection(cinfo);
+  LJPEG_master_selection(cinfo);
 }

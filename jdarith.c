@@ -194,7 +194,7 @@ LJPEG_process_restart (LJPEG_j_decompress_ptr cinfo)
   LJPEG_jpeg_component_info * compptr;
 
   /* Advance past the RSTn marker */
-  if (! (*cinfo->marker->read_restart_marker) (cinfo))
+  if (! (*cinfo->marker->LJPEG_read_restart_marker) (cinfo))
     ERREXIT(cinfo, JERR_CANT_SUSPEND);
 
   /* Re-initialize statistics areas */

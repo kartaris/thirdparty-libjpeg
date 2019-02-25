@@ -647,7 +647,7 @@ Note: if you are using the JPEG library's internal memory manager to allocate
 data buffers (as djpeg does), then the manager's protocol requires that you
 request large buffers *before* calling LJPEG_jpeg_start_decompress().  This is a
 little tricky since the output_XXX fields are not normally valid then.  You
-can make them valid by calling jpeg_calc_output_dimensions() after setting the
+can make them valid by calling LJPEG_jpeg_calc_output_dimensions() after setting the
 relevant parameters (scaling, output color space, and quantization flag).
 
 
@@ -1239,7 +1239,7 @@ boolean enable_2pass_quant
 
 The output image dimensions are given by the following fields.  These are
 computed from the source image dimensions and the decompression parameters
-by LJPEG_jpeg_start_decompress().  You can also call jpeg_calc_output_dimensions()
+by LJPEG_jpeg_start_decompress().  You can also call LJPEG_jpeg_calc_output_dimensions()
 to obtain the values that will result from the current parameter settings.
 This can be useful if you are trying to pick a scaling ratio that will get
 close to a desired target size.  It's also important if you are using the
@@ -1578,10 +1578,10 @@ resync_to_restart (LJPEG_j_decompress_ptr cinfo, int desired)
 	a restart (RSTn) marker where one is expected.  Its mission is to
 	find a suitable point for resuming decompression.  For most
 	applications, we recommend that you just use the default resync
-	procedure, jpeg_resync_to_restart().  However, if you are able to back
+	procedure, LJPEG_jpeg_resync_to_restart().  However, if you are able to back
 	up in the input data stream, or if you have a-priori knowledge about
 	the likely location of restart markers, you may be able to do better.
-	Read the read_restart_marker() and jpeg_resync_to_restart() routines
+	Read the LJPEG_read_restart_marker() and LJPEG_jpeg_resync_to_restart() routines
 	in jdmarker.c if you think you'd like to implement your own resync
 	procedure.
 
@@ -2158,7 +2158,7 @@ special rules apply:
    quantizer to be re-run to generate a new colormap.
 2. To switch to an external colormap, or to change to a different external
    colormap than was used on the prior pass, you must call
-   jpeg_new_colormap() after setting cinfo.colormap.
+   LJPEG_jpeg_new_colormap() after setting cinfo.colormap.
 NOTE: if you want to use the same colormap as was used in the prior pass,
 you should not do either of these things.  This will save some nontrivial
 switchover costs.
@@ -2488,7 +2488,7 @@ determined separately for COM markers and for each APPn marker code.
 
 
 To save the contents of special markers in memory, call
-	jpeg_save_markers(cinfo, marker_code, length_limit)
+	LJPEG_jpeg_save_markers(cinfo, marker_code, length_limit)
 where marker_code is the marker type to save, JPEG_COM or JPEG_APP0+n.
 (To arrange to save all the special marker types, you need to call this
 routine 17 times, for COM and APP0-APP15.)  If the incoming marker is longer
@@ -2533,7 +2533,7 @@ effective length limit is exactly what you set it to be.
 If you want to supply your own marker-reading routine, you do it by calling
 LJPEG_jpeg_set_marker_processor().  A marker processor routine must have the
 signature
-	boolean jpeg_marker_parser_method (LJPEG_j_decompress_ptr cinfo)
+	boolean LJPEG_jpeg_marker_parser_method (LJPEG_j_decompress_ptr cinfo)
 Although the marker code is not explicitly passed, the routine can find it
 in cinfo->unread_marker.  At the time of call, the marker proper has been
 read from the data source module.  The processor routine is responsible for
@@ -2547,15 +2547,15 @@ If you override the default APP0 or APP14 processors, it is up to you to
 recognize JFIF and Adobe markers if you want colorspace recognition to occur
 properly.  We recommend copying and extending the default processors if you
 want to do that.  (A better idea is to save these marker types for later
-examination by calling jpeg_save_markers(); that method doesn't interfere
+examination by calling LJPEG_jpeg_save_markers(); that method doesn't interfere
 with the library's own processing of these markers.)
 
-LJPEG_jpeg_set_marker_processor() and jpeg_save_markers() are mutually exclusive
+LJPEG_jpeg_set_marker_processor() and LJPEG_jpeg_save_markers() are mutually exclusive
 --- if you call one it overrides any previous call to the other, for the
 particular marker type specified.
 
 A simple example of an external COM processor can be found in djpeg.c.
-Also, see jpegtran.c for an example of using jpeg_save_markers.
+Also, see jpegtran.c for an example of using LJPEG_jpeg_save_markers.
 
 
 Raw (downsampled) image data

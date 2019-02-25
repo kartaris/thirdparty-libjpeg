@@ -74,10 +74,10 @@ LJPEG_jpeg_CreateDecompress (LJPEG_j_decompress_ptr cinfo, int version, size_t s
    * for COM, APPn markers before calling LJPEG_jpeg_read_header.
    */
   cinfo->marker_list = NULL;
-  jinit_marker_reader(cinfo);
+  LJPEG_jinit_marker_reader(cinfo);
 
   /* And initialize the overall input controller. */
-  jinit_input_controller(cinfo);
+  LJPEG_jinit_input_controller(cinfo);
 
   /* OK, I'm ready */
   cinfo->global_state = DSTATE_START;
@@ -293,7 +293,7 @@ LJPEG_jpeg_consume_input (LJPEG_j_decompress_ptr cinfo)
   switch (cinfo->global_state) {
   case DSTATE_START:
     /* Start-of-datastream actions: reset appropriate modules */
-    (*cinfo->inputctl->reset_input_controller) (cinfo);
+    (*cinfo->inputctl->LJPEG_reset_input_controller) (cinfo);
     /* Initialize application's data source module */
     (*cinfo->src->LJPEG_init_source) (cinfo);
     cinfo->global_state = DSTATE_INHEADER;
@@ -374,7 +374,7 @@ LJPEG_jpeg_finish_decompress (LJPEG_j_decompress_ptr cinfo)
     /* Terminate final pass of non-buffered mode */
     if (cinfo->output_scanline < cinfo->output_height)
       ERREXIT(cinfo, JERR_TOO_LITTLE_DATA);
-    (*cinfo->master->finish_output_pass) (cinfo);
+    (*cinfo->master->LJPEG_finish_output_pass) (cinfo);
     cinfo->global_state = DSTATE_STOPPING;
   } else if (cinfo->global_state == DSTATE_BUFIMAGE) {
     /* Finishing after a buffered-image operation */

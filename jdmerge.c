@@ -361,7 +361,7 @@ h2v2_merged_upsample (LJPEG_j_decompress_ptr cinfo,
 /*
  * Module initialization routine for merged upsampling/color conversion.
  *
- * NB: this is called under the conditions determined by use_merged_upsample()
+ * NB: this is called under the conditions determined by LJPEG_use_merged_upsample()
  * in jdmaster.c.  That routine MUST correspond to the actual capabilities
  * of this module; no safety checks are made here.
  */

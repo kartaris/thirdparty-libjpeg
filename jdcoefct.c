@@ -217,7 +217,7 @@ LJPEG_decompress_onepass (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_
     return JPEG_ROW_COMPLETED;
   }
   /* Completed the scan */
-  (*cinfo->inputctl->finish_input_pass) (cinfo);
+  (*cinfo->inputctl->LJPEG_finish_input_pass) (cinfo);
   return JPEG_SCAN_COMPLETED;
 }
 
@@ -300,7 +300,7 @@ LJPEG_consume_data (LJPEG_j_decompress_ptr cinfo)
     return JPEG_ROW_COMPLETED;
   }
   /* Completed the scan */
-  (*cinfo->inputctl->finish_input_pass) (cinfo);
+  (*cinfo->inputctl->LJPEG_finish_input_pass) (cinfo);
   return JPEG_SCAN_COMPLETED;
 }
 
