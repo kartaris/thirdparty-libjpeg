@@ -287,10 +287,10 @@ reading and writing of JPEG files as DCT coefficient arrays.  This ability
 may be of use in other applications.
 
 Notes for programmers:
-* We changed jpeg_start_decompress() to be able to suspend; this makes all
+* We changed LJPEG_jpeg_start_decompress() to be able to suspend; this makes all
 decoding modes available to suspending-input applications.  However,
 existing applications that use suspending input will need to be changed
-to check the return value from jpeg_start_decompress().  You don't need to
+to check the return value from LJPEG_jpeg_start_decompress().  You don't need to
 do anything if you don't use a suspending data source.
 * We changed the interface to the virtual array routines: access_virt_array
 routines now take a count of the number of rows to access this time.  The

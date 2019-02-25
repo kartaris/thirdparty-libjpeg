@@ -9,7 +9,7 @@
  * of the JPEG library.  These are the "standard" API routines that are
  * used in the normal full-decompression case.  They are not used by a
  * transcoding-only application.  Note that if an application links in
- * jpeg_start_decompress, it will end up linking in the entire decompressor.
+ * LJPEG_jpeg_start_decompress, it will end up linking in the entire decompressor.
  * We thus must separate this file from jdapimin.c to avoid linking the
  * whole decompression library into a transcoder.
  */
@@ -25,7 +25,7 @@ LOCAL(boolean) output_pass_setup JPP((LJPEG_j_decompress_ptr cinfo));
 
 /*
  * Decompression initialization.
- * jpeg_read_header must be completed before calling this.
+ * LJPEG_jpeg_read_header must be completed before calling this.
  *
  * If a multipass operating mode was selected, this will do all but the
  * last pass, and thus may take a great deal of time.
@@ -34,7 +34,7 @@ LOCAL(boolean) output_pass_setup JPP((LJPEG_j_decompress_ptr cinfo));
  * a suspending data source is used.
  */
 LJPEG_GLOBAL(boolean)
-jpeg_start_decompress (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jpeg_start_decompress (LJPEG_j_decompress_ptr cinfo)
 {
   if (cinfo->global_state == DSTATE_READY) {
     /* First call: initialize master control, select active modules */
@@ -84,7 +84,7 @@ jpeg_start_decompress (LJPEG_j_decompress_ptr cinfo)
 
 /*
  * Set up for an output pass, and perform any dummy pass(es) needed.
- * Common subroutine for jpeg_start_decompress and jpeg_start_output.
+ * Common subroutine for LJPEG_jpeg_start_decompress and jpeg_start_output.
  * Entry: global_state = DSTATE_PRESCAN only if previously suspended.
  * Exit: If done, returns TRUE and sets global_state for proper output mode.
  *       If suspended, returns FALSE and sets global_state = DSTATE_PRESCAN.

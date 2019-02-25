@@ -507,7 +507,7 @@ int
 main (int argc, char **argv)
 {
   struct jpeg_compress_struct cinfo;
-  struct jpeg_error_mgr jerr;
+  struct LJPEG_jpeg_error_mgr jerr;
 #ifdef PROGRESS_REPORT
   struct LJPEG_cdjpeg_progress_mgr progress;
 #endif
@@ -527,7 +527,7 @@ main (int argc, char **argv)
     LJPEG_progname = "cjpeg";		/* in case C library doesn't provide it */
 
   /* Initialize the JPEG compression object with default error handling. */
-  cinfo.err = jpeg_std_error(&jerr);
+  cinfo.err = LJPEG_jpeg_std_error(&jerr);
   jpeg_create_compress(&cinfo);
   /* Add some application-specific error messages (from cderror.h) */
   jerr.addon_message_table = LJPEG_cdjpeg_message_table;

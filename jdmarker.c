@@ -1491,7 +1491,7 @@ jpeg_save_markers (LJPEG_j_decompress_ptr cinfo, int marker_code,
  */
 
 LJPEG_GLOBAL(void)
-jpeg_set_marker_processor (LJPEG_j_decompress_ptr cinfo, int marker_code,
+LJPEG_jpeg_set_marker_processor (LJPEG_j_decompress_ptr cinfo, int marker_code,
 			   jpeg_marker_parser_method routine)
 {
   my_marker_ptr marker = (my_marker_ptr) cinfo->marker;

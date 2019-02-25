@@ -47,7 +47,7 @@ jpeg_CreateCompress (LJPEG_j_compress_ptr cinfo, int version, size_t structsize)
    * complain here.
    */
   {
-    struct jpeg_error_mgr * err = cinfo->err;
+    struct LJPEG_jpeg_error_mgr * err = cinfo->err;
     void * client_data = cinfo->client_data; /* ignore Purify complaint here */
     MEMZERO(cinfo, SIZEOF(struct jpeg_compress_struct));
     cinfo->err = err;

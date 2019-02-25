@@ -513,7 +513,7 @@ latch_quant_tables (LJPEG_j_decompress_ptr cinfo)
 /*
  * Initialize the input modules to read a scan of compressed data.
  * The first call to this is done by jdmaster.c after initializing
- * the entire decompressor (during jpeg_start_decompress).
+ * the entire decompressor (during LJPEG_jpeg_start_decompress).
  * Subsequent calls come from consume_markers, below.
  */
 

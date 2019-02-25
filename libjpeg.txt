@@ -139,12 +139,12 @@ Similarly, the rough outline of a JPEG decompression operation is:
 
 	Allocate and initialize a JPEG decompression object
 	Specify the source of the compressed data (eg, a file)
-	Call jpeg_read_header() to obtain image info
+	Call LJPEG_jpeg_read_header() to obtain image info
 	Set parameters for decompression
-	jpeg_start_decompress(...);
+	LJPEG_jpeg_start_decompress(...);
 	while (scan lines remain to be read)
 		jpeg_read_scanlines(...);
-	jpeg_finish_decompress(...);
+	LJPEG_jpeg_finish_decompress(...);
 	Release the JPEG decompression object
 
 This is comparable to the compression outline except that reading the
@@ -257,9 +257,9 @@ whole JPEG compression sequence.  Otherwise it can be static or allocated
 from malloc().
 
 You will also need a structure representing a JPEG error handler.  The part
-of this that the library cares about is a "struct jpeg_error_mgr".  If you
+of this that the library cares about is a "struct LJPEG_jpeg_error_mgr".  If you
 are providing your own error handler, you'll typically want to embed the
-jpeg_error_mgr struct in a larger structure; this is discussed later under
+LJPEG_jpeg_error_mgr struct in a larger structure; this is discussed later under
 "Error handling".  For now we'll assume you are just using the default error
 handler.  The default error handler will print JPEG error/warning messages
 on stderr, and it will call exit() if a fatal error occurs.
@@ -271,9 +271,9 @@ initialize the rest of the JPEG object.
 Typical code for this step, if you are using the default error handler, is
 
 	struct jpeg_compress_struct cinfo;
-	struct jpeg_error_mgr jerr;
+	struct LJPEG_jpeg_error_mgr jerr;
 	...
-	cinfo.err = jpeg_std_error(&jerr);
+	cinfo.err = LJPEG_jpeg_std_error(&jerr);
 	jpeg_create_compress(&cinfo);
 
 jpeg_create_compress allocates a small amount of memory, so it could fail
@@ -513,16 +513,16 @@ Here we revisit the JPEG decompression outline given in the overview.
 1. Allocate and initialize a JPEG decompression object.
 
 This is just like initialization for compression, as discussed above,
-except that the object is a "struct jpeg_decompress_struct" and you
-call jpeg_create_decompress().  Error handling is exactly the same.
+except that the object is a "struct LJPEG_jpeg_decompress_struct" and you
+call LJPEG_jpeg_create_decompress().  Error handling is exactly the same.
 
 Typical code:
 
-	struct jpeg_decompress_struct cinfo;
-	struct jpeg_error_mgr jerr;
+	struct LJPEG_jpeg_decompress_struct cinfo;
+	struct LJPEG_jpeg_error_mgr jerr;
 	...
-	cinfo.err = jpeg_std_error(&jerr);
-	jpeg_create_decompress(&cinfo);
+	cinfo.err = LJPEG_jpeg_std_error(&jerr);
+	LJPEG_jpeg_create_decompress(&cinfo);
 
 (Both here and in the IJG code, we usually use variable name "cinfo" for
 both compression and decompression objects.)
@@ -544,7 +544,7 @@ beforehand.  Typical code for this step looks like:
 	    fprintf(stderr, "can't open %s\n", filename);
 	    exit(1);
 	}
-	jpeg_stdio_src(&cinfo, infile);
+	LJPEG_jpeg_stdio_src(&cinfo, infile);
 
 where the last line invokes the standard source module.
 
@@ -555,19 +555,19 @@ a "b" option to fopen (as shown above), or use setmode() or another routine to
 put the stdio stream in binary mode.  See cjpeg.c and djpeg.c for code that
 has been found to work on many systems.
 
-You may not change the data source between calling jpeg_read_header() and
-jpeg_finish_decompress().  If you wish to read a series of JPEG images from
-a single source file, you should repeat the jpeg_read_header() to
-jpeg_finish_decompress() sequence without reinitializing either the JPEG
+You may not change the data source between calling LJPEG_jpeg_read_header() and
+LJPEG_jpeg_finish_decompress().  If you wish to read a series of JPEG images from
+a single source file, you should repeat the LJPEG_jpeg_read_header() to
+LJPEG_jpeg_finish_decompress() sequence without reinitializing either the JPEG
 object or the data source module; this prevents buffered input data from
 being discarded.
 
 
-3. Call jpeg_read_header() to obtain image info.
+3. Call LJPEG_jpeg_read_header() to obtain image info.
 
 Typical code for this step is just
 
-	jpeg_read_header(&cinfo, TRUE);
+	LJPEG_jpeg_read_header(&cinfo, TRUE);
 
 This will read the source datastream header markers, up to the beginning
 of the compressed data proper.  On return, the image dimensions and other
@@ -575,7 +575,7 @@ info have been stored in the JPEG object.  The application may wish to
 consult this information before selecting decompression parameters.
 
 More complex code is necessary if
-  * A suspending data source is used --- in that case jpeg_read_header()
+  * A suspending data source is used --- in that case LJPEG_jpeg_read_header()
     may return before it has read all the header data.  See "I/O suspension",
     below.  The normal stdio source manager will NOT cause this to happen.
   * Abbreviated JPEG files are to be processed --- see the section on
@@ -591,7 +591,7 @@ source and reading another header.
 
 4. Set parameters for decompression.
 
-jpeg_read_header() sets appropriate default decompression parameters based on
+LJPEG_jpeg_read_header() sets appropriate default decompression parameters based on
 the properties of the image (in particular, its colorspace).  However, you
 may well want to alter these defaults before beginning the decompression.
 For example, the default is to produce full color output from a color file.
@@ -601,27 +601,27 @@ selected.  "Decompression parameter selection", below, gives details.
 
 If the defaults are appropriate, nothing need be done at this step.
 
-Note that all default values are set by each call to jpeg_read_header().
+Note that all default values are set by each call to LJPEG_jpeg_read_header().
 If you reuse a decompression object, you cannot expect your parameter
 settings to be preserved across cycles, as you can for compression.
 You must set desired parameter values each time.
 
 
-5. jpeg_start_decompress(...);
+5. LJPEG_jpeg_start_decompress(...);
 
-Once the parameter values are satisfactory, call jpeg_start_decompress() to
+Once the parameter values are satisfactory, call LJPEG_jpeg_start_decompress() to
 begin decompression.  This will initialize internal state, allocate working
 memory, and prepare for returning data.
 
 Typical code is just
 
-	jpeg_start_decompress(&cinfo);
+	LJPEG_jpeg_start_decompress(&cinfo);
 
 If you have requested a multi-pass operating mode, such as 2-pass color
-quantization, jpeg_start_decompress() will do everything needed before data
-output can begin.  In this case jpeg_start_decompress() may take quite a while
+quantization, LJPEG_jpeg_start_decompress() will do everything needed before data
+output can begin.  In this case LJPEG_jpeg_start_decompress() may take quite a while
 to complete.  With a single-scan (non progressive) JPEG file and default
-decompression parameters, this will not happen; jpeg_start_decompress() will
+decompression parameters, this will not happen; LJPEG_jpeg_start_decompress() will
 return quickly.
 
 After this call, the final output image dimensions, including any requested
@@ -645,7 +645,7 @@ output buffer, and a total of output_height scanlines will be returned.
 
 Note: if you are using the JPEG library's internal memory manager to allocate
 data buffers (as djpeg does), then the manager's protocol requires that you
-request large buffers *before* calling jpeg_start_decompress().  This is a
+request large buffers *before* calling LJPEG_jpeg_start_decompress().  This is a
 little tricky since the output_XXX fields are not normally valid then.  You
 can make them valid by calling jpeg_calc_output_dimensions() after setting the
 relevant parameters (scaling, output color space, and quantization flag).
@@ -686,20 +686,20 @@ always provide a loop that calls jpeg_read_scanlines() repeatedly until the
 whole image has been read.
 
 
-7. jpeg_finish_decompress(...);
+7. LJPEG_jpeg_finish_decompress(...);
 
-After all the image data has been read, call jpeg_finish_decompress() to
+After all the image data has been read, call LJPEG_jpeg_finish_decompress() to
 complete the decompression cycle.  This causes working memory associated
 with the JPEG object to be released.
 
 Typical code:
 
-	jpeg_finish_decompress(&cinfo);
+	LJPEG_jpeg_finish_decompress(&cinfo);
 
 If using the stdio source manager, don't forget to close the source stdio
 stream if necessary.
 
-It is an error to call jpeg_finish_decompress() before reading the correct
+It is an error to call LJPEG_jpeg_finish_decompress() before reading the correct
 total number of scanlines.  If you wish to abort decompression, call
 jpeg_abort() as discussed below.
 
@@ -712,17 +712,17 @@ manager, the next image will be read from the same source.
 8. Release the JPEG decompression object.
 
 When you are done with a JPEG decompression object, destroy it by calling
-jpeg_destroy_decompress() or jpeg_destroy().  The previous discussion of
+LJPEG_jpeg_destroy_decompress() or jpeg_destroy().  The previous discussion of
 destroying compression objects applies here too.
 
 Typical code:
 
-	jpeg_destroy_decompress(&cinfo);
+	LJPEG_jpeg_destroy_decompress(&cinfo);
 
 
 9. Aborting.
 
-You can abort a decompression cycle by calling jpeg_destroy_decompress() or
+You can abort a decompression cycle by calling LJPEG_jpeg_destroy_decompress() or
 jpeg_destroy() if you don't need the JPEG object any more, or
 jpeg_abort_decompress() or jpeg_abort() if you want to reuse the object.
 The previous discussion of aborting compression cycles applies here too.
@@ -1112,7 +1112,7 @@ tradeoffs, in which faster decompression may be obtained at the price of
 a poorer-quality image.  The defaults select the highest quality (slowest)
 processing.
 
-The following fields in the JPEG object are set by jpeg_read_header() and
+The following fields in the JPEG object are set by LJPEG_jpeg_read_header() and
 may be useful to the application in choosing decompression parameters:
 
 LJPEG_JDIMENSION image_width			Width and height of image
@@ -1138,7 +1138,7 @@ The decompression parameters that determine the basic properties of the
 returned image are:
 
 J_COLOR_SPACE out_color_space
-	Output color space.  jpeg_read_header() sets an appropriate default
+	Output color space.  LJPEG_jpeg_read_header() sets an appropriate default
 	based on jpeg_color_space; typically it will be RGB or grayscale.
 	The application can change this field to request output in a different
 	colorspace.  For example, set it to JCS_GRAYSCALE to get grayscale
@@ -1154,7 +1154,7 @@ unsigned int scale_num, scale_denom
 	N is the source DCT size, which is 8 for baseline JPEG.  (The library
 	design allows for arbitrary scaling ratios but this is not likely
 	to be implemented any time soon.)  The values are initialized by
-	jpeg_read_header() with the source DCT size.  For baseline JPEG
+	LJPEG_jpeg_read_header() with the source DCT size.  For baseline JPEG
 	this is 8/8.  If you change only the scale_num value while leaving
 	the other unchanged, then this specifies the DCT scaled size to be
 	applied on the given input.  For baseline JPEG this is equivalent
@@ -1190,9 +1190,9 @@ J_DITHER_MODE dither_mode
 	an external color map, you'll get F-S dithering.)
 
 When quantize_colors is TRUE, the target color map is described by the next
-two fields.  colormap is set to NULL by jpeg_read_header().  The application
+two fields.  colormap is set to NULL by LJPEG_jpeg_read_header().  The application
 can supply a color map by setting colormap non-NULL and setting
-actual_number_of_colors to the map size.  Otherwise, jpeg_start_decompress()
+actual_number_of_colors to the map size.  Otherwise, LJPEG_jpeg_start_decompress()
 selects a suitable color map and sets these two fields itself.
 [Implementation restriction: at present, an externally supplied colormap is
 only accepted for 3-component output color spaces.]
@@ -1201,7 +1201,7 @@ LJPEG_JSAMPARRAY colormap
 	The color map, represented as a 2-D pixel array of out_color_components
 	rows and actual_number_of_colors columns.  Ignored if not quantizing.
 	CAUTION: if the JPEG library creates its own colormap, the storage
-	pointed to by this field is released by jpeg_finish_decompress().
+	pointed to by this field is released by LJPEG_jpeg_finish_decompress().
 	Copy the colormap somewhere else first, if you want to save it.
 
 int actual_number_of_colors
@@ -1239,12 +1239,12 @@ boolean enable_2pass_quant
 
 The output image dimensions are given by the following fields.  These are
 computed from the source image dimensions and the decompression parameters
-by jpeg_start_decompress().  You can also call jpeg_calc_output_dimensions()
+by LJPEG_jpeg_start_decompress().  You can also call jpeg_calc_output_dimensions()
 to obtain the values that will result from the current parameter settings.
 This can be useful if you are trying to pick a scaling ratio that will get
 close to a desired target size.  It's also important if you are using the
 JPEG library's memory manager to allocate output buffer space, because you
-are supposed to request such buffers *before* jpeg_start_decompress().
+are supposed to request such buffers *before* LJPEG_jpeg_start_decompress().
 
 LJPEG_JDIMENSION output_width		Actual dimensions of output image.
 LJPEG_JDIMENSION output_height
@@ -1316,10 +1316,10 @@ jpeg_set_colorspace(), in jcparam.c, for details.
 
 For decompression, the JPEG file's color space is given in jpeg_color_space,
 and this is transformed to the output color space out_color_space.
-jpeg_read_header's setting of jpeg_color_space can be relied on if the file
+LJPEG_jpeg_read_header's setting of jpeg_color_space can be relied on if the file
 conforms to JFIF or Adobe conventions, but otherwise it is no better than a
 guess.  If you know the JPEG file's color space for certain, you can override
-jpeg_read_header's guess by setting jpeg_color_space.  jpeg_read_header also
+LJPEG_jpeg_read_header's guess by setting jpeg_color_space.  LJPEG_jpeg_read_header also
 selects a default output color space based on (its guess of) jpeg_color_space;
 set out_color_space to override this.  Again, you must select a supported
 transformation.  jdcolor.c currently supports
@@ -1376,18 +1376,18 @@ the error handling routines.  Three classes of messages are recognized:
 You may, if you wish, simply replace the entire JPEG error handling module
 (jerror.c) with your own code.  However, you can avoid code duplication by
 only replacing some of the routines depending on the behavior you need.
-This is accomplished by calling jpeg_std_error() as usual, but then overriding
-some of the method pointers in the jpeg_error_mgr struct, as illustrated by
+This is accomplished by calling LJPEG_jpeg_std_error() as usual, but then overriding
+some of the method pointers in the LJPEG_jpeg_error_mgr struct, as illustrated by
 example.c.
 
 All of the error handling routines will receive a pointer to the JPEG object
 (a LJPEG_j_common_ptr which points to either a jpeg_compress_struct or a
-jpeg_decompress_struct; if you need to tell which, test the is_decompressor
+LJPEG_jpeg_decompress_struct; if you need to tell which, test the is_decompressor
 field).  This struct includes a pointer to the error manager struct in its
 "err" field.  Frequently, custom error handler routines will need to access
 additional data which is not known to the JPEG library or the standard error
 handler.  The most convenient way to do this is to embed either the JPEG
-object or the jpeg_error_mgr struct in a larger structure that contains
+object or the LJPEG_jpeg_error_mgr struct in a larger structure that contains
 additional fields; then casting the passed pointer provides access to the
 additional fields.  Again, see example.c for one way to do it.  (Beginning
 with IJG version 6b, there is also a void pointer "client_data" in each
@@ -1547,7 +1547,7 @@ address and total size in private fields not visible to the library.
 A data source manager provides five methods:
 
 init_source (LJPEG_j_decompress_ptr cinfo)
-	Initialize source.  This is called by jpeg_read_header() before any
+	Initialize source.  This is called by LJPEG_jpeg_read_header() before any
 	data is actually read.  Unlike init_destination(), it may leave
 	bytes_in_buffer set to 0 (in which case a fill_input_buffer() call
 	will occur immediately).
@@ -1586,7 +1586,7 @@ resync_to_restart (LJPEG_j_decompress_ptr cinfo, int desired)
 	procedure.
 
 term_source (LJPEG_j_decompress_ptr cinfo)
-	Terminate source --- called by jpeg_finish_decompress() after all
+	Terminate source --- called by LJPEG_jpeg_finish_decompress() after all
 	data has been read.  Often a no-op.
 
 For both fill_input_buffer() and skip_input_data(), there is no such thing
@@ -1605,7 +1605,7 @@ You will also need code to create a jpeg_source_mgr struct, fill in its method
 pointers, and insert a pointer to the struct into the "src" field of the JPEG
 decompression object.  This can be done in-line in your setup code if you
 like, but it's probably cleaner to provide a separate routine similar to the
-jpeg_stdio_src() or jpeg_mem_src() routines of the supplied source managers.
+LJPEG_jpeg_stdio_src() or jpeg_mem_src() routines of the supplied source managers.
 
 For more information, consult the memory and stdio source and destination
 managers in jdatasrc.c and jdatadst.c.
@@ -1692,11 +1692,11 @@ For decompression suspension, use a fill_input_buffer() routine that simply
 returns FALSE (except perhaps during error recovery, as discussed below).
 This will cause the decompressor to return to its caller with an indication
 that suspension has occurred.  This can happen at four places:
-  * jpeg_read_header(): will return JPEG_SUSPENDED.
-  * jpeg_start_decompress(): will return FALSE, rather than its usual TRUE.
+  * LJPEG_jpeg_read_header(): will return JPEG_SUSPENDED.
+  * LJPEG_jpeg_start_decompress(): will return FALSE, rather than its usual TRUE.
   * jpeg_read_scanlines(): will return the number of scanlines already
 	completed (possibly 0).
-  * jpeg_finish_decompress(): will return FALSE, rather than its usual TRUE.
+  * LJPEG_jpeg_finish_decompress(): will return FALSE, rather than its usual TRUE.
 The surrounding application must recognize these cases, load more data into
 the input buffer, and repeat the call.  In the case of jpeg_read_scanlines(),
 increment the passed pointers past any scanlines successfully read.
@@ -1846,12 +1846,12 @@ tables are unsuitable for progressive files.
 Progressive decompression:
 
 When buffered-image mode is not used, the decoder library will read all of
-a multi-scan file during jpeg_start_decompress(), so that it can provide a
+a multi-scan file during LJPEG_jpeg_start_decompress(), so that it can provide a
 final decoded image.  (Here "multi-scan" means either progressive or
 multi-scan sequential.)  This makes multi-scan files transparent to the
 decoding application.  However, existing applications that used suspending
 input with version 5 of the IJG library will need to be modified to check
-for a suspension return from jpeg_start_decompress().
+for a suspension return from LJPEG_jpeg_start_decompress().
 
 To perform incremental display, an application must use the library's
 buffered-image mode.  This is described in the next section.
@@ -1873,12 +1873,12 @@ rates.
 
 The basic control flow for buffered-image decoding is
 
-	jpeg_create_decompress()
+	LJPEG_jpeg_create_decompress()
 	set data source
-	jpeg_read_header()
+	LJPEG_jpeg_read_header()
 	set overall decompression parameters
 	cinfo.buffered_image = TRUE;	/* select buffered-image mode */
-	jpeg_start_decompress()
+	LJPEG_jpeg_start_decompress()
 	for (each output pass) {
 	    adjust output decompression parameters if required
 	    jpeg_start_output()		/* start a new output pass */
@@ -1888,8 +1888,8 @@ The basic control flow for buffered-image decoding is
 	    }
 	    jpeg_finish_output()	/* terminate output pass */
 	}
-	jpeg_finish_decompress()
-	jpeg_destroy_decompress()
+	LJPEG_jpeg_finish_decompress()
+	LJPEG_jpeg_destroy_decompress()
 
 This differs from ordinary unbuffered decoding in that there is an additional
 level of looping.  The application can choose how many output passes to make
@@ -1924,8 +1924,8 @@ In general the last scan of a progressive file cannot be recognized as such
 until after it is read, so a post-input display pass is the best approach if
 you want special processing in the final pass.
 
-When done with the image, be sure to call jpeg_finish_decompress() to release
-the buffered image (or just use jpeg_destroy_decompress()).
+When done with the image, be sure to call LJPEG_jpeg_finish_decompress() to release
+the buffered image (or just use LJPEG_jpeg_destroy_decompress()).
 
 If input data arrives faster than it can be displayed, the application can
 cause the library to decode input data in advance of what's needed to produce
@@ -1983,7 +1983,7 @@ an infinite loop, the target scan number is automatically reset to the last
 scan number when the end of image is reached.  Thus, if you specify a large
 target scan number, the library will just absorb the entire input file and
 then perform an output pass.  This is effectively the same as what
-jpeg_start_decompress() does when you don't select buffered-image mode.)
+LJPEG_jpeg_start_decompress() does when you don't select buffered-image mode.)
 When you pass a target scan number equal to the current input scan number,
 the image is displayed no faster than the current input scan arrives.  The
 final possibility is to pass a target scan number less than the current input
@@ -2071,7 +2071,7 @@ number as the target scan for jpeg_start_output(); but that method doesn't
 let you inspect the next scan's parameters before deciding to display it.
 
 
-In buffered-image mode, jpeg_start_decompress() never performs input and
+In buffered-image mode, LJPEG_jpeg_start_decompress() never performs input and
 thus never suspends.  An application that uses input suspension with
 buffered-image mode must be prepared for suspension returns from these
 routines:
@@ -2083,10 +2083,10 @@ routines:
   up to the end of the file or the SOS marker that begins another scan.
   (But it reads no input if jpeg_consume_input() has already reached the
   end of the file or a SOS marker beyond the target output scan.)
-* jpeg_finish_decompress() will read until the end of file, and thus can
+* LJPEG_jpeg_finish_decompress() will read until the end of file, and thus can
   suspend if the end hasn't already been reached (as can be tested by
   calling jpeg_input_complete()).
-jpeg_start_output(), jpeg_finish_output(), and jpeg_finish_decompress()
+jpeg_start_output(), jpeg_finish_output(), and LJPEG_jpeg_finish_decompress()
 all return TRUE if they completed their tasks, FALSE if they had to suspend.
 In the event of a FALSE return, the application must load more input data
 and repeat the call.  Applications that use non-suspending data sources need
@@ -2096,7 +2096,7 @@ not check the return values of these three routines.
 It is possible to change decoding parameters between output passes in the
 buffered-image mode.  The decoder library currently supports only very
 limited changes of parameters.  ONLY THE FOLLOWING parameter changes are
-allowed after jpeg_start_decompress() is called:
+allowed after LJPEG_jpeg_start_decompress() is called:
 * dct_method can be changed before each call to jpeg_start_output().
   For example, one could use a fast DCT method for early scans, changing
   to a higher quality method for the final scan.
@@ -2131,25 +2131,25 @@ The library allows you to change among its three quantization methods:
    two_pass_quantize is ignored); also set cinfo.actual_number_of_colors.
 3. Two-pass quantization to a colormap chosen specifically for the image.
    Selected by cinfo.two_pass_quantize = TRUE and cinfo.colormap = NULL.
-   (This is the default setting selected by jpeg_read_header, but it is
+   (This is the default setting selected by LJPEG_jpeg_read_header, but it is
    probably NOT what you want for the first pass of progressive display!)
 These methods offer successively better quality and lesser speed.  However,
 only the first method is available for quantizing in non-RGB color spaces.
 
 IMPORTANT: because the different quantizer methods have very different
 working-storage requirements, the library requires you to indicate which
-one(s) you intend to use before you call jpeg_start_decompress().  (If we did
+one(s) you intend to use before you call LJPEG_jpeg_start_decompress().  (If we did
 not require this, the max_memory_to_use setting would be a complete fiction.)
 You do this by setting one or more of these three cinfo fields to TRUE:
 	enable_1pass_quant		Fixed color cube colormap
 	enable_external_quant		Externally-supplied colormap
 	enable_2pass_quant		Two-pass custom colormap
-All three are initialized FALSE by jpeg_read_header().  But
-jpeg_start_decompress() automatically sets TRUE the one selected by the
+All three are initialized FALSE by LJPEG_jpeg_read_header().  But
+LJPEG_jpeg_start_decompress() automatically sets TRUE the one selected by the
 current two_pass_quantize and colormap settings, so you only need to set the
 enable flags for any other quantization methods you plan to change to later.
 
-After setting the enable flags correctly at jpeg_start_decompress() time, you
+After setting the enable flags correctly at LJPEG_jpeg_start_decompress() time, you
 can change to any enabled quantization method by setting two_pass_quantize
 and colormap properly just before calling jpeg_start_output().  The following
 special rules apply:
@@ -2170,7 +2170,7 @@ Yup, it's a bit klugy, but it's necessary to do it this way for backwards
 compatibility.)
 
 Note that in buffered-image mode, the library generates any requested colormap
-during jpeg_start_output(), not during jpeg_start_decompress().
+during jpeg_start_output(), not during LJPEG_jpeg_start_decompress().
 
 When using two-pass quantization, jpeg_start_output() makes a pass over the
 buffered image to determine the optimum color map; it therefore may take a
@@ -2193,7 +2193,7 @@ to be swapped out or written to a temporary file.  If you are concerned about
 maximum performance on baseline JPEG files, you should use buffered-image
 mode only when the incoming file actually has multiple scans.  This can be
 tested by calling jpeg_has_multiple_scans(), which will return a correct
-result at any time after jpeg_read_header() completes.
+result at any time after LJPEG_jpeg_read_header() completes.
 
 It is also worth noting that when you use jpeg_consume_input() to let input
 processing get ahead of output processing, the resulting pattern of access to
@@ -2207,11 +2207,11 @@ around to it yet.)
 
 In some applications it may be convenient to use jpeg_consume_input() for all
 input processing, including reading the initial markers; that is, you may
-wish to call jpeg_consume_input() instead of jpeg_read_header() during
+wish to call jpeg_consume_input() instead of LJPEG_jpeg_read_header() during
 startup.  This works, but note that you must check for JPEG_REACHED_SOS and
-JPEG_REACHED_EOI return codes as the equivalent of jpeg_read_header's codes.
+JPEG_REACHED_EOI return codes as the equivalent of LJPEG_jpeg_read_header's codes.
 Once the first SOS marker has been reached, you must call
-jpeg_start_decompress() before jpeg_consume_input() will consume more input;
+LJPEG_jpeg_start_decompress() before jpeg_consume_input() will consume more input;
 it'll just keep returning JPEG_REACHED_SOS until you do.  If you read a
 tables-only file this way, jpeg_consume_input() will return JPEG_REACHED_EOI
 without ever returning JPEG_REACHED_SOS; be sure to check for this case.
@@ -2356,33 +2356,33 @@ overwritten!  Instead allocate a working table copy and copy the master table
 into it, as illustrated above.  Ditto for Huffman tables, of course.)
 
 You might want to read the tables from a tables-only file, rather than
-hard-wiring them into your application.  The jpeg_read_header() call is
+hard-wiring them into your application.  The LJPEG_jpeg_read_header() call is
 sufficient to read a tables-only file.  You must pass a second parameter of
 FALSE to indicate that you do not require an image to be present.  Thus, the
 typical scenario is
 
 	create JPEG decompression object
 	set source to tables-only file
-	jpeg_read_header(&cinfo, FALSE);
+	LJPEG_jpeg_read_header(&cinfo, FALSE);
 	set source to abbreviated image file
-	jpeg_read_header(&cinfo, TRUE);
+	LJPEG_jpeg_read_header(&cinfo, TRUE);
 	set decompression parameters
-	jpeg_start_decompress(&cinfo);
+	LJPEG_jpeg_start_decompress(&cinfo);
 	read data...
-	jpeg_finish_decompress(&cinfo);
+	LJPEG_jpeg_finish_decompress(&cinfo);
 
 In some cases, you may want to read a file without knowing whether it contains
 an image or just tables.  In that case, pass FALSE and check the return value
-from jpeg_read_header(): it will be JPEG_HEADER_OK if an image was found,
+from LJPEG_jpeg_read_header(): it will be JPEG_HEADER_OK if an image was found,
 JPEG_HEADER_TABLES_ONLY if only tables were found.  (A third return value,
 JPEG_SUSPENDED, is possible when using a suspending data source manager.)
-Note that jpeg_read_header() will not complain if you read an abbreviated
+Note that LJPEG_jpeg_read_header() will not complain if you read an abbreviated
 image for which you haven't loaded the missing tables; the missing-table check
-occurs later, in jpeg_start_decompress().
+occurs later, in LJPEG_jpeg_start_decompress().
 
 
 It is possible to read a series of images from a single source file by
-repeating the jpeg_read_header() ... jpeg_finish_decompress() sequence,
+repeating the LJPEG_jpeg_read_header() ... LJPEG_jpeg_finish_decompress() sequence,
 without releasing/recreating the JPEG object or the data source module.
 (If you did reinitialize, any partial bufferload left in the data source
 buffer at the end of one image would be discarded, causing you to lose the
@@ -2479,9 +2479,9 @@ input buffer).  However, the second method conserves memory since the marker
 data need not be kept around after it's been processed.
 
 For either method, you'd normally set up marker handling after creating a
-decompression object and before calling jpeg_read_header(), because the
+decompression object and before calling LJPEG_jpeg_read_header(), because the
 markers of interest will typically be near the head of the file and so will
-be scanned by jpeg_read_header.  Once you've established a marker handling
+be scanned by LJPEG_jpeg_read_header.  Once you've established a marker handling
 method, it will be used for the life of that decompression object
 (potentially many datastreams), unless you change it.  Marker handling is
 determined separately for COM markers and for each APPn marker code.
@@ -2499,7 +2499,7 @@ data, set length_limit to 0xFFFF; that is enough since marker lengths are only
 16 bits.  As a special case, setting length_limit to 0 prevents that marker
 type from being saved at all.  (That is the default behavior, in fact.)
 
-After jpeg_read_header() completes, you can examine the special markers by
+After LJPEG_jpeg_read_header() completes, you can examine the special markers by
 following the cinfo->marker_list pointer chain.  All the special markers in
 the file appear in this list, in order of their occurrence in the file (but
 omitting any markers of types you didn't ask for).  Both the original data
@@ -2510,14 +2510,14 @@ within the JPEG file includes it.  (Hence the maximum data length is really
 only 65533.)
 
 It is possible that additional special markers appear in the file beyond the
-SOS marker at which jpeg_read_header stops; if so, the marker list will be
+SOS marker at which LJPEG_jpeg_read_header stops; if so, the marker list will be
 extended during reading of the rest of the file.  This is not expected to be
 common, however.  If you are short on memory you may want to reset the length
-limit to zero for all marker types after finishing jpeg_read_header, to
+limit to zero for all marker types after finishing LJPEG_jpeg_read_header, to
 ensure that the max_memory_to_use setting cannot be exceeded due to addition
 of later markers.
 
-The marker list remains stored until you call jpeg_finish_decompress or
+The marker list remains stored until you call LJPEG_jpeg_finish_decompress or
 jpeg_abort, at which point the memory is freed and the list is set to empty.
 (jpeg_destroy also releases the storage, of course.)
 
@@ -2531,7 +2531,7 @@ effective length limit is exactly what you set it to be.
 
 
 If you want to supply your own marker-reading routine, you do it by calling
-jpeg_set_marker_processor().  A marker processor routine must have the
+LJPEG_jpeg_set_marker_processor().  A marker processor routine must have the
 signature
 	boolean jpeg_marker_parser_method (LJPEG_j_decompress_ptr cinfo)
 Although the marker code is not explicitly passed, the routine can find it
@@ -2550,7 +2550,7 @@ want to do that.  (A better idea is to save these marker types for later
 examination by calling jpeg_save_markers(); that method doesn't interfere
 with the library's own processing of these markers.)
 
-jpeg_set_marker_processor() and jpeg_save_markers() are mutually exclusive
+LJPEG_jpeg_set_marker_processor() and jpeg_save_markers() are mutually exclusive
 --- if you call one it overrides any previous call to the other, for the
 particular marker type specified.
 
@@ -2663,10 +2663,10 @@ you must check for and fail on other color spaces or other sampling factors.
 The library will not convert to a different color space for you.
 
 To obtain raw data output, set cinfo->raw_data_out = TRUE before
-jpeg_start_decompress() (it is set FALSE by jpeg_read_header()).  Be sure to
+LJPEG_jpeg_start_decompress() (it is set FALSE by LJPEG_jpeg_read_header()).  Be sure to
 verify that the color space and sampling factors are ones you can handle.
 Furthermore, set cinfo->do_fancy_upsampling = FALSE if you want to get real
-downsampled data (it is set TRUE by jpeg_read_header()).
+downsampled data (it is set TRUE by LJPEG_jpeg_read_header()).
 Then call jpeg_read_raw_data() in place of jpeg_read_scanlines().  The
 decompression process is otherwise the same as usual.
 
@@ -2694,7 +2694,7 @@ include lossless cropping of a JPEG image, lossless reassembly of a
 multi-strip or multi-tile TIFF/JPEG file into a single JPEG datastream, etc.
 
 To read the contents of a JPEG file as DCT coefficients, open the file and do
-jpeg_read_header() as usual.  But instead of calling jpeg_start_decompress()
+LJPEG_jpeg_read_header() as usual.  But instead of calling LJPEG_jpeg_start_decompress()
 and jpeg_read_scanlines(), call jpeg_read_coefficients().  This will read the
 entire image into a set of virtual coefficient-block arrays, one array per
 component.  The return value is a pointer to an array of virtual-array
@@ -2713,7 +2713,7 @@ block array can be determined from the width_in_blocks and height_in_blocks
 fields of the component's comp_info entry.)  This is also the data format
 expected by jpeg_write_coefficients().
 
-When you are done using the virtual arrays, call jpeg_finish_decompress()
+When you are done using the virtual arrays, call LJPEG_jpeg_finish_decompress()
 to release the array storage and return the decompression object to an idle
 state; or just call jpeg_destroy() if you don't need to reuse the object.
 
@@ -2728,7 +2728,7 @@ mode.  This frammish might be useful for progressively displaying an incoming
 image and then re-encoding it without loss.  To do this, decode in buffered-
 image mode as discussed previously, then call jpeg_read_coefficients() after
 the last jpeg_finish_output() call.  The arrays will be available for your use
-until you call jpeg_finish_decompress().
+until you call LJPEG_jpeg_finish_decompress().
 
 
 To write the contents of a JPEG file as DCT coefficients, you must provide
@@ -2762,7 +2762,7 @@ we recommend using jpeg_copy_critical_parameters().  This routine initializes
 all the compression parameters to default values (like jpeg_set_defaults()),
 then copies the critical information from a source decompression object.
 The decompression object should have just been used to read the entire
-JPEG input file --- that is, it should be awaiting jpeg_finish_decompress().
+JPEG input file --- that is, it should be awaiting LJPEG_jpeg_finish_decompress().
 
 jpeg_write_coefficients() marks all tables stored in the compression object
 as needing to be written to the output file (thus, it acts like
@@ -2781,7 +2781,7 @@ often.  The typical use of this feature is to produce a percent-done bar or
 other progress display.  (For a simple example, see cjpeg.c or djpeg.c.)
 Although you do get control back frequently during the data-transferring pass
 (the jpeg_read_scanlines or jpeg_write_scanlines loop), any additional passes
-will occur inside LJPEG_jpeg_finish_compress or jpeg_start_decompress; those
+will occur inside LJPEG_jpeg_finish_compress or LJPEG_jpeg_start_decompress; those
 routines may take a long time to execute, and you don't get control back
 until they are done.
 
@@ -2801,7 +2801,7 @@ To establish a progress-monitor callback, create a struct jpeg_progress_mgr,
 fill in its LJPEG_progress_monitor field with a pointer to your callback routine,
 and set cinfo->progress to point to the struct.  The callback will be called
 whenever cinfo->progress is non-NULL.  (This pointer is set to NULL by
-jpeg_create_compress or jpeg_create_decompress; the library will not change
+jpeg_create_compress or LJPEG_jpeg_create_decompress; the library will not change
 it thereafter.  So if you allocate dynamic storage for the progress struct,
 make sure it will live as long as the JPEG object does.  Allocating from the
 JPEG memory manager with lifetime JPOOL_PERMANENT will work nicely.)  You
@@ -2854,7 +2854,7 @@ library to use malloc() and free() for some reason).
 
 Some data is allocated "permanently" and will not be freed until the JPEG
 object is destroyed.  Most data is allocated "per image" and is freed by
-LJPEG_jpeg_finish_compress, jpeg_finish_decompress, or jpeg_abort.  You can call the
+LJPEG_jpeg_finish_compress, LJPEG_jpeg_finish_decompress, or jpeg_abort.  You can call the
 memory manager yourself to allocate structures that will automatically be
 freed at these times.  Typical code for this is
   ptr = (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, size);
@@ -2883,7 +2883,7 @@ Your application can set this limit by setting cinfo->mem->max_memory_to_use
 after creating the JPEG object.  (Of course, there is still a minimum size for
 the buffers, so the max-memory setting is effective only if it is bigger than
 the minimum space needed.)  If you allocate any large structures yourself, you
-must allocate them before LJPEG_jpeg_start_compress() or jpeg_start_decompress() in
+must allocate them before LJPEG_jpeg_start_compress() or LJPEG_jpeg_start_decompress() in
 order to have them counted against the max memory limit.  Also keep in mind
 that space allocated with alloc_small() is ignored, on the assumption that
 it's too small to be worth worrying about; so a reasonable safety margin

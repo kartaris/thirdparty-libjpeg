@@ -37,7 +37,7 @@ typedef my_source_mgr * my_src_ptr;
 
 
 /*
- * Initialize source --- called by jpeg_read_header
+ * Initialize source --- called by LJPEG_jpeg_read_header
  * before any data is actually read.
  */
 
@@ -185,7 +185,7 @@ skip_input_data (LJPEG_j_decompress_ptr cinfo, long num_bytes)
 
 
 /*
- * Terminate source --- called by jpeg_finish_decompress
+ * Terminate source --- called by LJPEG_jpeg_finish_decompress
  * after all data has been read.  Often a no-op.
  *
  * NB: *not* called by jpeg_abort or jpeg_destroy; surrounding
@@ -207,12 +207,12 @@ term_source (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBALvoid)
-jpeg_stdio_src (LJPEG_j_decompress_ptr cinfo, FILE * infile)
+LJPEG_jpeg_stdio_src (LJPEG_j_decompress_ptr cinfo, FILE * infile)
 {
   my_src_ptr src;
 
   /* The source object and input buffer are made permanent so that a series
-   * of JPEG images can be read from the same file by calling jpeg_stdio_src
+   * of JPEG images can be read from the same file by calling LJPEG_jpeg_stdio_src
    * only before the first one.  (If we discarded the buffer at the end of
    * one image, we'd likely lose the start of the next one.)
    * This makes it unsafe to use this manager and a different source

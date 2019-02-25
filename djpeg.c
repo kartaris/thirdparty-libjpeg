@@ -352,7 +352,7 @@ LJPEG_parse_switches (LJPEG_j_decompress_ptr cinfo, int argc, char **argv,
  */
 
 LOCAL(unsigned int)
-jpeg_getc (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jpeg_getc (LJPEG_j_decompress_ptr cinfo)
 /* Read next byte */
 {
   struct jpeg_source_mgr * datasrc = cinfo->src;
@@ -367,15 +367,15 @@ jpeg_getc (LJPEG_j_decompress_ptr cinfo)
 
 
 LJPEG_METHODDEF(boolean)
-print_text_marker (LJPEG_j_decompress_ptr cinfo)
+LJPEG_print_text_marker (LJPEG_j_decompress_ptr cinfo)
 {
   boolean traceit = (cinfo->err->trace_level >= 1);
   INT32 length;
   unsigned int ch;
   unsigned int lastch = 0;
 
-  length = jpeg_getc(cinfo) << 8;
-  length += jpeg_getc(cinfo);
+  length = LJPEG_jpeg_getc(cinfo) << 8;
+  length += LJPEG_jpeg_getc(cinfo);
   length -= 2;			/* discount the length word itself */
 
   if (traceit) {
@@ -387,7 +387,7 @@ print_text_marker (LJPEG_j_decompress_ptr cinfo)
   }
 
   while (--length >= 0) {
-    ch = jpeg_getc(cinfo);
+    ch = LJPEG_jpeg_getc(cinfo);
     if (traceit) {
       /* Emit the character in a readable form.
        * Nonprintables are converted to \nnn form,
@@ -424,8 +424,8 @@ print_text_marker (LJPEG_j_decompress_ptr cinfo)
 int
 main (int argc, char **argv)
 {
-  struct jpeg_decompress_struct cinfo;
-  struct jpeg_error_mgr jerr;
+  struct LJPEG_jpeg_decompress_struct cinfo;
+  struct LJPEG_jpeg_error_mgr jerr;
 #ifdef PROGRESS_REPORT
   struct LJPEG_cdjpeg_progress_mgr progress;
 #endif
@@ -445,8 +445,8 @@ main (int argc, char **argv)
     LJPEG_progname = "djpeg";		/* in case C library doesn't provide it */
 
   /* Initialize the JPEG decompression object with default error handling. */
-  cinfo.err = jpeg_std_error(&jerr);
-  jpeg_create_decompress(&cinfo);
+  cinfo.err = LJPEG_jpeg_std_error(&jerr);
+  LJPEG_jpeg_create_decompress(&cinfo);
   /* Add some application-specific error messages (from cderror.h) */
   jerr.addon_message_table = LJPEG_cdjpeg_message_table;
   jerr.first_addon_message = JMSG_FIRSTADDONCODE;
@@ -458,8 +458,8 @@ main (int argc, char **argv)
    * If you like, additional APPn marker types can be selected for display,
    * but don't try to override APP0 or APP14 this way (see libjpeg.doc).
    */
-  jpeg_set_marker_processor(&cinfo, JPEG_COM, print_text_marker);
-  jpeg_set_marker_processor(&cinfo, JPEG_APP0+12, print_text_marker);
+  LJPEG_jpeg_set_marker_processor(&cinfo, JPEG_COM, LJPEG_print_text_marker);
+  LJPEG_jpeg_set_marker_processor(&cinfo, JPEG_APP0+12, LJPEG_print_text_marker);
 
   /* Now safe to enable signal catcher. */
 #ifdef NEED_SIGNAL_CATCHER
@@ -471,7 +471,7 @@ main (int argc, char **argv)
    * values read here are ignored; we will rescan the switches after opening
    * the input file.
    * (Exception: tracing level set here controls verbosity for COM markers
-   * found during jpeg_read_header...)
+   * found during LJPEG_jpeg_read_header...)
    */
 
   file_index = LJPEG_parse_switches(&cinfo, argc, argv, 0, FALSE);
@@ -527,10 +527,10 @@ main (int argc, char **argv)
 #endif
 
   /* Specify data source for decompression */
-  jpeg_stdio_src(&cinfo, input_file);
+  LJPEG_jpeg_stdio_src(&cinfo, input_file);
 
   /* Read file header, set default decompression parameters */
-  (void) jpeg_read_header(&cinfo, TRUE);
+  (void) LJPEG_jpeg_read_header(&cinfo, TRUE);
 
   /* Adjust default decompression parameters by re-parsing the options */
   file_index = LJPEG_parse_switches(&cinfo, argc, argv, 0, TRUE);
@@ -574,7 +574,7 @@ main (int argc, char **argv)
   dest_mgr->output_file = output_file;
 
   /* Start decompressor */
-  (void) jpeg_start_decompress(&cinfo);
+  (void) LJPEG_jpeg_start_decompress(&cinfo);
 
   /* Write output file header */
   (*dest_mgr->start_output) (&cinfo, dest_mgr);
@@ -598,8 +598,8 @@ main (int argc, char **argv)
    * of lifespan JPOOL_IMAGE; it needs to finish before releasing memory.
    */
   (*dest_mgr->finish_output) (&cinfo, dest_mgr);
-  (void) jpeg_finish_decompress(&cinfo);
-  jpeg_destroy_decompress(&cinfo);
+  (void) LJPEG_jpeg_finish_decompress(&cinfo);
+  LJPEG_jpeg_destroy_decompress(&cinfo);
 
   /* Close files, if we opened them */
   if (input_file != stdin)

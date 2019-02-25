@@ -128,7 +128,7 @@ output_message (LJPEG_j_common_ptr cinfo)
 LJPEG_METHODDEF(void)
 emit_message (LJPEG_j_common_ptr cinfo, int msg_level)
 {
-  struct jpeg_error_mgr * err = cinfo->err;
+  struct LJPEG_jpeg_error_mgr * err = cinfo->err;
 
   if (msg_level < 0) {
     /* It's a warning message.  Since corrupt files may generate many warnings,
@@ -157,7 +157,7 @@ emit_message (LJPEG_j_common_ptr cinfo, int msg_level)
 LJPEG_METHODDEF(void)
 format_message (LJPEG_j_common_ptr cinfo, char * buffer)
 {
-  struct jpeg_error_mgr * err = cinfo->err;
+  struct LJPEG_jpeg_error_mgr * err = cinfo->err;
   int msg_code = err->msg_code;
   const char * msgtext = NULL;
   const char * msgptr;
@@ -219,16 +219,16 @@ reset_error_mgr (LJPEG_j_common_ptr cinfo)
 
 
 /*
- * Fill in the standard error-handling methods in a jpeg_error_mgr object.
+ * Fill in the standard error-handling methods in a LJPEG_jpeg_error_mgr object.
  * Typical call is:
  *	struct jpeg_compress_struct cinfo;
- *	struct jpeg_error_mgr err;
+ *	struct LJPEG_jpeg_error_mgr err;
  *
- *	cinfo.err = jpeg_std_error(&err);
+ *	cinfo.err = LJPEG_jpeg_std_error(&err);
  * after which the application may override some of the methods.
  */
-LJPEG_GLOBAL(struct jpeg_error_mgr *)
-jpeg_std_error (struct jpeg_error_mgr * err)
+LJPEG_GLOBAL(struct LJPEG_jpeg_error_mgr *)
+LJPEG_jpeg_std_error (struct LJPEG_jpeg_error_mgr * err)
 {
   err->error_exit = error_exit;
   err->emit_message = emit_message;

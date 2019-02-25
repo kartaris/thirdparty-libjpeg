@@ -36,9 +36,9 @@ jpeg_CreateDecompress (LJPEG_j_decompress_ptr cinfo, int version, size_t structs
   cinfo->mem = NULL;		/* so jpeg_destroy knows mem mgr not called */
   if (version != JPEG_LIB_VERSION)
     ERREXIT2(cinfo, JERR_BAD_LIB_VERSION, JPEG_LIB_VERSION, version);
-  if (structsize != SIZEOF(struct jpeg_decompress_struct))
+  if (structsize != SIZEOF(struct LJPEG_jpeg_decompress_struct))
     ERREXIT2(cinfo, JERR_BAD_STRUCT_SIZE, 
-	     (int) SIZEOF(struct jpeg_decompress_struct), (int) structsize);
+	     (int) SIZEOF(struct LJPEG_jpeg_decompress_struct), (int) structsize);
 
   /* For debugging purposes, we zero the whole master structure.
    * But the application has already set the err pointer, and may have set
@@ -47,9 +47,9 @@ jpeg_CreateDecompress (LJPEG_j_decompress_ptr cinfo, int version, size_t structs
    * complain here.
    */
   {
-    struct jpeg_error_mgr * err = cinfo->err;
+    struct LJPEG_jpeg_error_mgr * err = cinfo->err;
     void * client_data = cinfo->client_data; /* ignore Purify complaint here */
-    MEMZERO(cinfo, SIZEOF(struct jpeg_decompress_struct));
+    MEMZERO(cinfo, SIZEOF(struct LJPEG_jpeg_decompress_struct));
     cinfo->err = err;
     cinfo->client_data = client_data;
   }
@@ -71,7 +71,7 @@ jpeg_CreateDecompress (LJPEG_j_decompress_ptr cinfo, int version, size_t structs
   }
 
   /* Initialize marker processor so application can override methods
-   * for COM, APPn markers before calling jpeg_read_header.
+   * for COM, APPn markers before calling LJPEG_jpeg_read_header.
    */
   cinfo->marker_list = NULL;
   jinit_marker_reader(cinfo);
@@ -89,7 +89,7 @@ jpeg_CreateDecompress (LJPEG_j_decompress_ptr cinfo, int version, size_t structs
  */
 
 LJPEG_GLOBAL(void)
-jpeg_destroy_decompress (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jpeg_destroy_decompress (LJPEG_j_decompress_ptr cinfo)
 {
   jpeg_destroy((LJPEG_j_common_ptr) cinfo); /* use common routine */
 }
@@ -219,7 +219,7 @@ default_decompress_parms (LJPEG_j_decompress_ptr cinfo)
  * compressed data), and will save all tables and parameters in the JPEG
  * object.  It will also initialize the decompression parameters to default
  * values, and finally return JPEG_HEADER_OK.  On return, the application may
- * adjust the decompression parameters and then call jpeg_start_decompress.
+ * adjust the decompression parameters and then call LJPEG_jpeg_start_decompress.
  * (Or, if the application only wanted to determine the image parameters,
  * the data need not be decompressed.  In that case, call jpeg_abort or
  * jpeg_destroy to release any temporary space.)
@@ -229,7 +229,7 @@ default_decompress_parms (LJPEG_j_decompress_ptr cinfo)
  * It is unnecessary (but OK) to call jpeg_abort in this case.
  * The JPEG_SUSPENDED return code only occurs if the data source module
  * requests suspension of the decompressor.  In this case the application
- * should load more source data and then re-call jpeg_read_header to resume
+ * should load more source data and then re-call LJPEG_jpeg_read_header to resume
  * processing.
  * If a non-suspending data source is used and require_image is TRUE, then the
  * return code need not be inspected since only JPEG_HEADER_OK is possible.
@@ -239,7 +239,7 @@ default_decompress_parms (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(int)
-jpeg_read_header (LJPEG_j_decompress_ptr cinfo, boolean require_image)
+LJPEG_jpeg_read_header (LJPEG_j_decompress_ptr cinfo, boolean require_image)
 {
   int retcode;
 
@@ -349,7 +349,7 @@ jpeg_input_complete (LJPEG_j_decompress_ptr cinfo)
 LJPEG_GLOBAL(boolean)
 jpeg_has_multiple_scans (LJPEG_j_decompress_ptr cinfo)
 {
-  /* Only valid after jpeg_read_header completes */
+  /* Only valid after LJPEG_jpeg_read_header completes */
   if (cinfo->global_state < DSTATE_READY ||
       cinfo->global_state > DSTATE_STOPPING)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
@@ -367,7 +367,7 @@ jpeg_has_multiple_scans (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(boolean)
-jpeg_finish_decompress (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jpeg_finish_decompress (LJPEG_j_decompress_ptr cinfo)
 {
   if ((cinfo->global_state == DSTATE_SCANNING ||
        cinfo->global_state == DSTATE_RAW_OK) && ! cinfo->buffered_image) {

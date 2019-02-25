@@ -45,7 +45,7 @@ struct LJPEG_cjpeg_source_struct {
 typedef struct LJPEG_djpeg_dest_struct * LJPEG_djpeg_dest_ptr;
 
 struct LJPEG_djpeg_dest_struct {
-  /* start_output is called after jpeg_start_decompress finishes.
+  /* start_output is called after LJPEG_jpeg_start_decompress finishes.
    * The color map will be ready at this time, if one is needed.
    */
   LJPEG_JMETHOD(void, start_output, (LJPEG_j_decompress_ptr cinfo,

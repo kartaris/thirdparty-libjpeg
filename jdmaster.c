@@ -255,11 +255,11 @@ prepare_range_limit_table (LJPEG_j_decompress_ptr cinfo)
 
 /*
  * Master selection of decompression modules.
- * This is done once at jpeg_start_decompress time.  We determine
+ * This is done once at LJPEG_jpeg_start_decompress time.  We determine
  * which modules will be used and give them appropriate initialization calls.
  * We also initialize the decompressor input side to begin consuming data.
  *
- * Since jpeg_read_header has finished, we know what is in the SOF
+ * Since LJPEG_jpeg_read_header has finished, we know what is in the SOF
  * and (first) SOS markers.  We also have all the application parameter
  * settings.
  */
@@ -372,7 +372,7 @@ master_selection (LJPEG_j_decompress_ptr cinfo)
   (*cinfo->inputctl->start_input_pass) (cinfo);
 
 #ifdef D_MULTISCAN_FILES_SUPPORTED
-  /* If jpeg_start_decompress will read the whole file, initialize
+  /* If LJPEG_jpeg_start_decompress will read the whole file, initialize
    * progress monitoring appropriately.  The input step is counted
    * as one pass.
    */
@@ -508,7 +508,7 @@ jpeg_new_colormap (LJPEG_j_decompress_ptr cinfo)
 
 /*
  * Initialize master decompression control and select active modules.
- * This is performed at the start of jpeg_start_decompress.
+ * This is performed at the start of LJPEG_jpeg_start_decompress.
  */
 LJPEG_GLOBAL(void)
 jinit_master_decompress (LJPEG_j_decompress_ptr cinfo)

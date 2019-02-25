@@ -368,9 +368,9 @@ LJPEG_parse_switches (LJPEG_j_compress_ptr cinfo, int argc, char **argv,
 int
 main (int argc, char **argv)
 {
-  struct jpeg_decompress_struct srcinfo;
+  struct LJPEG_jpeg_decompress_struct srcinfo;
   struct jpeg_compress_struct dstinfo;
-  struct jpeg_error_mgr jsrcerr, jdsterr;
+  struct LJPEG_jpeg_error_mgr jsrcerr, jdsterr;
 #ifdef PROGRESS_REPORT
   struct LJPEG_cdjpeg_progress_mgr progress;
 #endif
@@ -392,10 +392,10 @@ main (int argc, char **argv)
     LJPEG_progname = "jpegtran";	/* in case C library doesn't provide it */
 
   /* Initialize the JPEG decompression object with default error handling. */
-  srcinfo.err = jpeg_std_error(&jsrcerr);
-  jpeg_create_decompress(&srcinfo);
+  srcinfo.err = LJPEG_jpeg_std_error(&jsrcerr);
+  LJPEG_jpeg_create_decompress(&srcinfo);
   /* Initialize the JPEG compression object with default error handling. */
-  dstinfo.err = jpeg_std_error(&jdsterr);
+  dstinfo.err = LJPEG_jpeg_std_error(&jdsterr);
   jpeg_create_compress(&dstinfo);
 
   /* Now safe to enable signal catcher.
@@ -457,13 +457,13 @@ main (int argc, char **argv)
 #endif
 
   /* Specify data source for decompression */
-  jpeg_stdio_src(&srcinfo, fp);
+  LJPEG_jpeg_stdio_src(&srcinfo, fp);
 
   /* Enable saving of extra markers that we want to copy */
   jcopy_markers_setup(&srcinfo, copyoption);
 
   /* Read file header */
-  (void) jpeg_read_header(&srcinfo, TRUE);
+  (void) LJPEG_jpeg_read_header(&srcinfo, TRUE);
 
   /* Adjust default decompression parameters */
   if (scaleoption != NULL)
@@ -502,9 +502,9 @@ main (int argc, char **argv)
 
   /* Close input file, if we opened it.
    * Note: we assume that jpeg_read_coefficients consumed all input
-   * until JPEG_REACHED_EOI, and that jpeg_finish_decompress will
+   * until JPEG_REACHED_EOI, and that LJPEG_jpeg_finish_decompress will
    * only consume more while (! cinfo->inputctl->eoi_reached).
-   * We cannot call jpeg_finish_decompress here since we still need the
+   * We cannot call LJPEG_jpeg_finish_decompress here since we still need the
    * virtual arrays allocated from the source object for processing.
    */
   if (fp != stdin)
@@ -543,8 +543,8 @@ main (int argc, char **argv)
   /* Finish compression and release memory */
   LJPEG_jpeg_finish_compress(&dstinfo);
   LJPEG_jpeg_destroy_compress(&dstinfo);
-  (void) jpeg_finish_decompress(&srcinfo);
-  jpeg_destroy_decompress(&srcinfo);
+  (void) LJPEG_jpeg_finish_decompress(&srcinfo);
+  LJPEG_jpeg_destroy_decompress(&srcinfo);
 
   /* Close output file, if we opened it */
   if (fp != stdout)

@@ -866,7 +866,7 @@ trim_bottom_edge (jpeg_transform_info *info, LJPEG_JDIMENSION full_height)
  * We allocate the workspace virtual arrays from the source decompression
  * object, so that all the arrays (both the original data and the workspace)
  * will be taken into account while making memory management decisions.
- * Hence, this routine must be called after jpeg_read_header (which reads
+ * Hence, this routine must be called after LJPEG_jpeg_read_header (which reads
  * the image dimensions) and before jpeg_read_coefficients (which realizes
  * the source's virtual arrays).
  *
@@ -1523,7 +1523,7 @@ jtransform_perfect_transform(LJPEG_JDIMENSION image_width, LJPEG_JDIMENSION imag
 
 
 /* Setup decompression object to save desired markers in memory.
- * This must be called before jpeg_read_header() to have the desired effect.
+ * This must be called before LJPEG_jpeg_read_header() to have the desired effect.
  */
 
 LJPEG_GLOBALvoid)
