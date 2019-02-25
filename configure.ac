@@ -75,7 +75,7 @@ AC_CACHE_VAL([ijg_cv_have_prototypes],
 [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 int LJPEG_testfunction (int arg1, int * arg2); /* check prototypes */
 struct methods_struct {		/* check method-pointer declarations */
-  int (*error_exit) (char *msgtext);
+  int (*LJPEG_error_exit) (char *msgtext);
   int (*trace_message) (char *msgtext);
   int (*another_method) (void);
 };

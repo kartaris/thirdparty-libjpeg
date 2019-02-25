@@ -36,7 +36,7 @@ typedef enum {			/* Operating modes for buffer controllers */
 #define DSTATE_RAW_OK	206	/* start_decompress done, read_raw_data OK */
 #define DSTATE_BUFIMAGE	207	/* expecting LJPEG_jpeg_start_output */
 #define DSTATE_BUFPOST	208	/* looking for SOS/EOI in LJPEG_jpeg_finish_output */
-#define DSTATE_RDCOEFS	209	/* reading file in jpeg_read_coefficients */
+#define DSTATE_RDCOEFS	209	/* reading file in LJPEG_jpeg_read_coefficients */
 #define DSTATE_STOPPING	210	/* looking for EOI in LJPEG_jpeg_finish_decompress */
 
 
@@ -317,7 +317,7 @@ struct jpeg_color_quantizer {
 #define LJPEG_jinit_color_deconverter	jIDColor
 #define jinit_1pass_quantizer	jI1Quant
 #define jinit_2pass_quantizer	jI2Quant
-#define jinit_merged_upsampler	jIMUpsampler
+#define LJPEG_jinit_merged_upsampler	jIMUpsampler
 #define jinit_memory_mgr	jIMemMgr
 #define jdiv_round_up		jDivRound
 #define jround_up		jRound
@@ -389,7 +389,7 @@ EXTERN(void) LJPEG_jinit_upsampler LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) LJPEG_jinit_color_deconverter LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) jinit_1pass_quantizer LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) jinit_2pass_quantizer LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
-EXTERN(void) jinit_merged_upsampler LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(void) LJPEG_jinit_merged_upsampler LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 /* Memory manager initialization */
 EXTERN(void) jinit_memory_mgr LJPEG_JPP((LJPEG_j_common_ptr cinfo));
 

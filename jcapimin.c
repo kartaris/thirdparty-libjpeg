@@ -265,7 +265,7 @@ LJPEG_jpeg_write_tables (LJPEG_j_compress_ptr cinfo)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
 
   /* (Re)initialize error mgr and destination modules */
-  (*cinfo->err->reset_error_mgr) ((LJPEG_j_common_ptr) cinfo);
+  (*cinfo->err->LJPEG_reset_error_mgr) ((LJPEG_j_common_ptr) cinfo);
   (*cinfo->dest->LJPEG_init_destination) (cinfo);
   /* Initialize the marker writer ... bit of a crock to do it here. */
   LJPEG_jinit_marker_writer(cinfo);

@@ -68,10 +68,10 @@ const char * const jpeg_std_message_table[] = {
  */
 
 LJPEG_METHODDEF(noreturn_t)
-error_exit (LJPEG_j_common_ptr cinfo)
+LJPEG_error_exit (LJPEG_j_common_ptr cinfo)
 {
   /* Always display the message */
-  (*cinfo->err->output_message) (cinfo);
+  (*cinfo->err->LJPEG_output_message) (cinfo);
 
   /* Let the memory manager delete any temp files before we die */
   LJPEG_jpeg_destroy(cinfo);
@@ -96,12 +96,12 @@ error_exit (LJPEG_j_common_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-output_message (LJPEG_j_common_ptr cinfo)
+LJPEG_output_message (LJPEG_j_common_ptr cinfo)
 {
   char buffer[JMSG_LENGTH_MAX];
 
   /* Create the message */
-  (*cinfo->err->format_message) (cinfo, buffer);
+  (*cinfo->err->LJPEG_format_message) (cinfo, buffer);
 
 #ifdef USE_WINDOWS_MESSAGEBOX
   /* Display it in a message dialog box */
@@ -126,7 +126,7 @@ output_message (LJPEG_j_common_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-emit_message (LJPEG_j_common_ptr cinfo, int msg_level)
+LJPEG_emit_message (LJPEG_j_common_ptr cinfo, int msg_level)
 {
   struct LJPEG_jpeg_error_mgr * err = cinfo->err;
 
@@ -136,13 +136,13 @@ emit_message (LJPEG_j_common_ptr cinfo, int msg_level)
      * unless trace_level >= 3.
      */
     if (err->num_warnings == 0 || err->trace_level >= 3)
-      (*err->output_message) (cinfo);
+      (*err->LJPEG_output_message) (cinfo);
     /* Always count warnings in num_warnings. */
     err->num_warnings++;
   } else {
     /* It's a trace message.  Show it if trace_level >= msg_level. */
     if (err->trace_level >= msg_level)
-      (*err->output_message) (cinfo);
+      (*err->LJPEG_output_message) (cinfo);
   }
 }
 
@@ -155,7 +155,7 @@ emit_message (LJPEG_j_common_ptr cinfo, int msg_level)
  */
 
 LJPEG_METHODDEF(void)
-format_message (LJPEG_j_common_ptr cinfo, char * buffer)
+LJPEG_format_message (LJPEG_j_common_ptr cinfo, char * buffer)
 {
   struct LJPEG_jpeg_error_mgr * err = cinfo->err;
   int msg_code = err->msg_code;
@@ -210,7 +210,7 @@ format_message (LJPEG_j_common_ptr cinfo, char * buffer)
  */
 
 LJPEG_METHODDEF(void)
-reset_error_mgr (LJPEG_j_common_ptr cinfo)
+LJPEG_reset_error_mgr (LJPEG_j_common_ptr cinfo)
 {
   cinfo->err->num_warnings = 0;
   /* trace_level is not reset since it is an application-supplied parameter */
@@ -230,11 +230,11 @@ reset_error_mgr (LJPEG_j_common_ptr cinfo)
 LJPEG_GLOBAL(struct LJPEG_jpeg_error_mgr *)
 LJPEG_jpeg_std_error (struct LJPEG_jpeg_error_mgr * err)
 {
-  err->error_exit = error_exit;
-  err->emit_message = emit_message;
-  err->output_message = output_message;
-  err->format_message = format_message;
-  err->reset_error_mgr = reset_error_mgr;
+  err->LJPEG_error_exit = LJPEG_error_exit;
+  err->LJPEG_emit_message = LJPEG_emit_message;
+  err->LJPEG_output_message = LJPEG_output_message;
+  err->LJPEG_format_message = LJPEG_format_message;
+  err->LJPEG_reset_error_mgr = LJPEG_reset_error_mgr;
 
   err->trace_level = 0;		/* default = no tracing */
   err->num_warnings = 0;	/* no warnings emitted yet */

@@ -625,7 +625,7 @@ LJPEG_reset_input_controller (LJPEG_j_decompress_ptr cinfo)
   inputctl->pub.eoi_reached = FALSE;
   inputctl->inheaders = 1;
   /* Reset other modules */
-  (*cinfo->err->reset_error_mgr) ((LJPEG_j_common_ptr) cinfo);
+  (*cinfo->err->LJPEG_reset_error_mgr) ((LJPEG_j_common_ptr) cinfo);
   (*cinfo->marker->LJPEG_reset_marker_reader) (cinfo);
   /* Reset progression state -- would be cleaner if entropy decoder did this */
   cinfo->coef_bits = NULL;

@@ -867,7 +867,7 @@ trim_bottom_edge (jpeg_transform_info *info, LJPEG_JDIMENSION full_height)
  * object, so that all the arrays (both the original data and the workspace)
  * will be taken into account while making memory management decisions.
  * Hence, this routine must be called after LJPEG_jpeg_read_header (which reads
- * the image dimensions) and before jpeg_read_coefficients (which realizes
+ * the image dimensions) and before LJPEG_jpeg_read_coefficients (which realizes
  * the source's virtual arrays).
  *
  * This function returns FALSE right away if -perfect is given

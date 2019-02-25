@@ -41,7 +41,7 @@ extern char * getenv LJPEG_JPP((const char * name));
 /*
  * Some important notes:
  *   The allocation routines provided here must never return NULL.
- *   They should exit to error_exit if unsuccessful.
+ *   They should exit to LJPEG_error_exit if unsuccessful.
  *
  *   It's not a good idea to try to merge the sarray and barray routines,
  *   even though they are textually almost the same, because samples are

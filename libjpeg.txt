@@ -500,7 +500,7 @@ responsibility; neither of these routines will call LJPEG_term_destination().
 (See "Compressed data handling", below, for more about that.)
 
 LJPEG_jpeg_destroy() and LJPEG_jpeg_abort() are the only safe calls to make on a JPEG
-object that has reported an error by calling error_exit (see "Error handling"
+object that has reported an error by calling LJPEG_error_exit (see "Error handling"
 for more info).  The internal state of such an object is likely to be out of
 whack.  Either of these two routines will return the object to a known state.
 
@@ -1396,34 +1396,34 @@ The library does not touch client_data at all.)
 
 The individual methods that you might wish to override are:
 
-error_exit (LJPEG_j_common_ptr cinfo)
+LJPEG_error_exit (LJPEG_j_common_ptr cinfo)
 	Receives control for a fatal error.  Information sufficient to
 	generate the error message has been stored in cinfo->err; call
-	output_message to display it.  Control must NOT return to the caller;
+	LJPEG_output_message to display it.  Control must NOT return to the caller;
 	generally this routine will exit() or longjmp() somewhere.
 	Typically you would override this routine to get rid of the exit()
 	default behavior.  Note that if you continue processing, you should
 	clean up the JPEG object with LJPEG_jpeg_abort() or LJPEG_jpeg_destroy().
 
-output_message (LJPEG_j_common_ptr cinfo)
+LJPEG_output_message (LJPEG_j_common_ptr cinfo)
 	Actual output of any JPEG message.  Override this to send messages
 	somewhere other than stderr.  Note that this method does not know
 	how to generate a message, only where to send it.
 
-format_message (LJPEG_j_common_ptr cinfo, char * buffer)
+LJPEG_format_message (LJPEG_j_common_ptr cinfo, char * buffer)
 	Constructs a readable error message string based on the error info
-	stored in cinfo->err.  This method is called by output_message.  Few
+	stored in cinfo->err.  This method is called by LJPEG_output_message.  Few
 	applications should need to override this method.  One possible
 	reason for doing so is to implement dynamic switching of error message
 	language.
 
-emit_message (LJPEG_j_common_ptr cinfo, int msg_level)
+LJPEG_emit_message (LJPEG_j_common_ptr cinfo, int msg_level)
 	Decide whether or not to emit a warning or trace message; if so,
-	calls output_message.  The main reason for overriding this method
+	calls LJPEG_output_message.  The main reason for overriding this method
 	would be to abort on warnings.  msg_level is -1 for warnings,
 	0 and up for trace messages.
 
-Only error_exit() and emit_message() are called from the rest of the JPEG
+Only LJPEG_error_exit() and LJPEG_emit_message() are called from the rest of the JPEG
 library; the other two are internal to the error handler.
 
 The actual message texts are stored in an array of strings which is pointed to
@@ -1448,7 +1448,7 @@ Actual invocation of the error handler is done via macros defined in jerror.h:
 	WARNMSn(...)	for corrupt-data warnings
 	TRACEMSn(...)	for trace and informational messages.
 These macros store the message code and any additional parameters into the
-error handler struct, then invoke the error_exit() or emit_message() method.
+error handler struct, then invoke the LJPEG_error_exit() or LJPEG_emit_message() method.
 The variants of each macro are for varying numbers of additional parameters.
 The additional parameters are inserted into the generated message using
 standard printf() format codes.
@@ -2695,7 +2695,7 @@ multi-strip or multi-tile TIFF/JPEG file into a single JPEG datastream, etc.
 
 To read the contents of a JPEG file as DCT coefficients, open the file and do
 LJPEG_jpeg_read_header() as usual.  But instead of calling LJPEG_jpeg_start_decompress()
-and LJPEG_jpeg_read_scanlines(), call jpeg_read_coefficients().  This will read the
+and LJPEG_jpeg_read_scanlines(), call LJPEG_jpeg_read_coefficients().  This will read the
 entire image into a set of virtual coefficient-block arrays, one array per
 component.  The return value is a pointer to an array of virtual-array
 descriptors.  Each virtual array can be accessed directly using the JPEG
@@ -2717,23 +2717,23 @@ When you are done using the virtual arrays, call LJPEG_jpeg_finish_decompress()
 to release the array storage and return the decompression object to an idle
 state; or just call LJPEG_jpeg_destroy() if you don't need to reuse the object.
 
-If you use a suspending data source, jpeg_read_coefficients() will return
+If you use a suspending data source, LJPEG_jpeg_read_coefficients() will return
 NULL if it is forced to suspend; a non-NULL return value indicates successful
 completion.  You need not test for a NULL return value when using a
 non-suspending data source.
 
-It is also possible to call jpeg_read_coefficients() to obtain access to the
+It is also possible to call LJPEG_jpeg_read_coefficients() to obtain access to the
 decoder's coefficient arrays during a normal decode cycle in buffered-image
 mode.  This frammish might be useful for progressively displaying an incoming
 image and then re-encoding it without loss.  To do this, decode in buffered-
-image mode as discussed previously, then call jpeg_read_coefficients() after
+image mode as discussed previously, then call LJPEG_jpeg_read_coefficients() after
 the last LJPEG_jpeg_finish_output() call.  The arrays will be available for your use
 until you call LJPEG_jpeg_finish_decompress().
 
 
 To write the contents of a JPEG file as DCT coefficients, you must provide
 the DCT coefficients stored in virtual block arrays.  You can either pass
-block arrays read from an input JPEG file by jpeg_read_coefficients(), or
+block arrays read from an input JPEG file by LJPEG_jpeg_read_coefficients(), or
 allocate virtual arrays from the JPEG compression object and fill them
 yourself.  In either case, LJPEG_jpeg_write_coefficients() is substituted for
 LJPEG_jpeg_start_compress() and LJPEG_jpeg_write_scanlines().  Thus the sequence is
@@ -2994,7 +2994,7 @@ You can also save a few K by not having text error messages in the library;
 the standard error message table occupies about 5Kb.  This is particularly
 reasonable for embedded applications where there's no good way to display 
 a message anyway.  To do this, remove the creation of the message table
-(jpeg_std_message_table[]) from jerror.c, and alter format_message to do
+(jpeg_std_message_table[]) from jerror.c, and alter LJPEG_format_message to do
 something reasonable without it.  You could output the numeric value of the
 message code number, for example.  If you do this, you can also save a couple
 more K by modifying the TRACEMSn() macros in jerror.h to expand to nothing;

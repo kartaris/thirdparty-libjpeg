@@ -694,16 +694,16 @@ struct LJPEG_jpeg_decompress_struct {
 
 struct LJPEG_jpeg_error_mgr {
   /* Error exit handler: does not return to caller */
-  LJPEG_JMETHOD(noreturn_t, error_exit, (LJPEG_j_common_ptr cinfo));
+  LJPEG_JMETHOD(noreturn_t, LJPEG_error_exit, (LJPEG_j_common_ptr cinfo));
   /* Conditionally emit a trace or warning message */
-  LJPEG_JMETHOD(void, emit_message, (LJPEG_j_common_ptr cinfo, int msg_level));
+  LJPEG_JMETHOD(void, LJPEG_emit_message, (LJPEG_j_common_ptr cinfo, int msg_level));
   /* Routine that actually outputs a trace or error message */
-  LJPEG_JMETHOD(void, output_message, (LJPEG_j_common_ptr cinfo));
+  LJPEG_JMETHOD(void, LJPEG_output_message, (LJPEG_j_common_ptr cinfo));
   /* Format a message string for the most recent JPEG error or message */
-  LJPEG_JMETHOD(void, format_message, (LJPEG_j_common_ptr cinfo, char * buffer));
-#define JMSG_LENGTH_MAX  200	/* recommended size of format_message buffer */
+  LJPEG_JMETHOD(void, LJPEG_format_message, (LJPEG_j_common_ptr cinfo, char * buffer));
+#define JMSG_LENGTH_MAX  200	/* recommended size of LJPEG_format_message buffer */
   /* Reset error state variables at start of a new image */
-  LJPEG_JMETHOD(void, reset_error_mgr, (LJPEG_j_common_ptr cinfo));
+  LJPEG_JMETHOD(void, LJPEG_reset_error_mgr, (LJPEG_j_common_ptr cinfo));
   
   /* The message ID code and any parameters are saved here.
    * A message can have one string parameter or up to 8 int parameters.
@@ -720,7 +720,7 @@ struct LJPEG_jpeg_error_mgr {
   int trace_level;		/* max msg_level that will be displayed */
   
   /* For recoverable corrupt-data errors, we emit a warning message,
-   * but keep going unless emit_message chooses to abort.  emit_message
+   * but keep going unless LJPEG_emit_message chooses to abort.  LJPEG_emit_message
    * should count warnings in num_warnings.  The surrounding application
    * can check for bad data by seeing if num_warnings is nonzero at the
    * end of processing.
@@ -793,7 +793,7 @@ struct jpeg_source_mgr {
  * each created object is assigned to a pool, and whole pools can be freed
  * at once.  This is faster and more convenient than remembering exactly what
  * to free, especially where malloc()/free() are not too speedy.
- * NB: alloc routines never return NULL.  They exit to error_exit if not
+ * NB: alloc routines never return NULL.  They exit to LJPEG_error_exit if not
  * successful.
  */
 
@@ -926,7 +926,7 @@ typedef LJPEG_JMETHOD(boolean, LJPEG_jpeg_marker_parser_method, (LJPEG_j_decompr
 #define LJPEG_jpeg_calc_output_dimensions	jCalcDimensions
 #define LJPEG_jpeg_save_markers	jSaveMarkers
 #define LJPEG_jpeg_set_marker_processor	jSetMarker
-#define jpeg_read_coefficients	jReadCoefs
+#define LJPEG_jpeg_read_coefficients	jReadCoefs
 #define LJPEG_jpeg_write_coefficients	jWrtCoefs
 #define LJPEG_jpeg_copy_critical_parameters	jCopyCrit
 #define LJPEG_LJPEG_jpeg_abort_compress	jAbrtCompress
@@ -1083,7 +1083,7 @@ EXTERN(void) LJPEG_jpeg_set_marker_processor
 	     LJPEG_jpeg_marker_parser_method routine));
 
 /* Read or write raw DCT coefficients --- useful for lossless transcoding. */
-EXTERN(LJPEG_jvirt_barray_ptr *) jpeg_read_coefficients LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(LJPEG_jvirt_barray_ptr *) LJPEG_jpeg_read_coefficients LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) LJPEG_jpeg_write_coefficients LJPEG_JPP((LJPEG_j_compress_ptr cinfo,
 					  LJPEG_jvirt_barray_ptr * coef_arrays));
 EXTERN(void) LJPEG_jpeg_copy_critical_parameters LJPEG_JPP((LJPEG_j_decompress_ptr srcinfo,

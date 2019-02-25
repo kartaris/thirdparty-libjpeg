@@ -232,15 +232,15 @@ write_JPEG_file (char * filename, int quality)
  * adjust the behavior without duplicating a lot of code, which you might
  * have to update with each future release.
  *
- * Our example here shows how to override the "error_exit" method so that
+ * Our example here shows how to override the "LJPEG_error_exit" method so that
  * control is returned to the library's caller when a fatal error occurs,
- * rather than calling exit() as the standard error_exit method does.
+ * rather than calling exit() as the standard LJPEG_error_exit method does.
  *
  * We use C's setjmp/longjmp facility to return control.  This means that the
  * routine which calls the JPEG library must first execute a setjmp() call to
- * establish the return point.  We want the replacement error_exit to do a
+ * establish the return point.  We want the replacement LJPEG_error_exit to do a
  * longjmp().  But we need to make the setjmp buffer accessible to the
- * error_exit routine.  To do this, we make a private extension of the
+ * LJPEG_error_exit routine.  To do this, we make a private extension of the
  * standard JPEG error handler object.  (If we were using C++, we'd say we
  * were making a subclass of the regular error handler.)
  *
@@ -256,7 +256,7 @@ struct LJPEG_my_error_mgr {
 typedef struct LJPEG_my_error_mgr * LJPEG_my_error_ptr;
 
 /*
- * Here's the routine that will replace the standard error_exit method:
+ * Here's the routine that will replace the standard LJPEG_error_exit method:
  */
 
 LJPEG_METHODDEF(void)
@@ -267,7 +267,7 @@ LJPEG_my_error_exit (LJPEG_j_common_ptr cinfo)
 
   /* Always display the message. */
   /* We could postpone this until after returning, if we chose. */
-  (*cinfo->err->output_message) (cinfo);
+  (*cinfo->err->LJPEG_output_message) (cinfo);
 
   /* Return control to the setjmp point */
   longjmp(myerr->setjmp_buffer, 1);
@@ -310,9 +310,9 @@ LJPEG_read_JPEG_file (char * filename)
 
   /* Step 1: allocate and initialize JPEG decompression object */
 
-  /* We set up the normal JPEG error routines, then override error_exit. */
+  /* We set up the normal JPEG error routines, then override LJPEG_error_exit. */
   cinfo.err = LJPEG_jpeg_std_error(&jerr.pub);
-  jerr.pub.error_exit = LJPEG_my_error_exit;
+  jerr.pub.LJPEG_error_exit = LJPEG_my_error_exit;
   /* Establish the setjmp return context for LJPEG_my_error_exit to use. */
   if (setjmp(jerr.setjmp_buffer)) {
     /* If we get here, the JPEG code has signaled an error.

@@ -57,9 +57,9 @@ typedef struct {
    */
   UINT8 h_expand[MAX_COMPONENTS];
   UINT8 v_expand[MAX_COMPONENTS];
-} my_upsampler;
+} LJPEG_my_upsampler;
 
-typedef my_upsampler * my_upsample_ptr;
+typedef LJPEG_my_upsampler * LJPEG_my_upsample_ptr;
 
 
 /*
@@ -69,7 +69,7 @@ typedef my_upsampler * my_upsample_ptr;
 LJPEG_METHODDEF(void)
 LJPEG_start_pass_upsample (LJPEG_j_decompress_ptr cinfo)
 {
-  my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
+  LJPEG_my_upsample_ptr upsample = (LJPEG_my_upsample_ptr) cinfo->upsample;
 
   /* Mark the conversion buffer empty */
   upsample->next_row_out = cinfo->max_v_samp_factor;
@@ -87,13 +87,13 @@ LJPEG_start_pass_upsample (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-sep_upsample (LJPEG_j_decompress_ptr cinfo,
+LJPEG_sep_upsample (LJPEG_j_decompress_ptr cinfo,
 	      LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
 	      LJPEG_JDIMENSION in_row_groups_avail,
 	      LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
 	      LJPEG_JDIMENSION out_rows_avail)
 {
-  my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
+  LJPEG_my_upsample_ptr upsample = (LJPEG_my_upsample_ptr) cinfo->upsample;
   int ci;
   LJPEG_jpeg_component_info * compptr;
   LJPEG_JDIMENSION num_rows;
@@ -103,7 +103,7 @@ sep_upsample (LJPEG_j_decompress_ptr cinfo,
     for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
 	 ci++, compptr++) {
       /* Invoke per-component upsample method.  Notice we pass a POINTER
-       * to color_buf[ci], so that fullsize_upsample can change it.
+       * to color_buf[ci], so that LJPEG_fullsize_upsample can change it.
        */
       (*upsample->methods[ci]) (cinfo, compptr,
 	input_buf[ci] + (*in_row_group_ctr * upsample->rowgroup_height[ci]),
@@ -142,7 +142,7 @@ sep_upsample (LJPEG_j_decompress_ptr cinfo,
 
 
 /*
- * These are the routines invoked by sep_upsample to upsample pixel values
+ * These are the routines invoked by LJPEG_sep_upsample to upsample pixel values
  * of a single component.  One row group is processed per call.
  */
 
@@ -150,12 +150,12 @@ sep_upsample (LJPEG_j_decompress_ptr cinfo,
 /*
  * For full-size components, we just make color_buf[ci] point at the
  * input buffer, and thus avoid copying any data.  Note that this is
- * safe only because sep_upsample doesn't declare the input row group
+ * safe only because LJPEG_sep_upsample doesn't declare the input row group
  * "consumed" until we are done color converting and emitting it.
  */
 
 LJPEG_METHODDEF(void)
-fullsize_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_fullsize_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		   LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
   *output_data_ptr = input_data;
@@ -187,10 +187,10 @@ noop_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_METHODDEF(void)
-int_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_int_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	      LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
-  my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
+  LJPEG_my_upsample_ptr upsample = (LJPEG_my_upsample_ptr) cinfo->upsample;
   LJPEG_JSAMPARRAY output_data = *output_data_ptr;
   register LJPEG_JSAMPROW inptr, outptr;
   register JSAMPLE invalue;
@@ -231,7 +231,7 @@ int_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
  */
 
 LJPEG_METHODDEF(void)
-h2v1_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_h2v1_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
   LJPEG_JSAMPARRAY output_data = *output_data_ptr;
@@ -259,7 +259,7 @@ h2v1_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_METHODDEF(void)
-h2v2_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_h2v1_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
   LJPEG_JSAMPARRAY output_data = *output_data_ptr;
@@ -293,18 +293,18 @@ h2v2_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr
 LJPEG_GLOBAL(void)
 LJPEG_jinit_upsampler (LJPEG_j_decompress_ptr cinfo)
 {
-  my_upsample_ptr upsample;
+  LJPEG_my_upsample_ptr upsample;
   int ci;
   LJPEG_jpeg_component_info * compptr;
   boolean need_buffer;
   int h_in_group, v_in_group, h_out_group, v_out_group;
 
-  upsample = (my_upsample_ptr)
+  upsample = (LJPEG_my_upsample_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(my_upsampler));
+				SIZEOF(LJPEG_my_upsampler));
   cinfo->upsample = (struct jpeg_upsampler *) upsample;
   upsample->pub.LJPEG_start_pass = LJPEG_start_pass_upsample;
-  upsample->pub.upsample = sep_upsample;
+  upsample->pub.upsample = LJPEG_sep_upsample;
   upsample->pub.need_context_rows = FALSE; /* until we find out differently */
 
   if (cinfo->CCIR601_sampling)	/* this isn't supported */
@@ -332,12 +332,12 @@ LJPEG_jinit_upsampler (LJPEG_j_decompress_ptr cinfo)
       need_buffer = FALSE;
     } else if (h_in_group == h_out_group && v_in_group == v_out_group) {
       /* Fullsize components can be processed without any work. */
-      upsample->methods[ci] = fullsize_upsample;
+      upsample->methods[ci] = LJPEG_fullsize_upsample;
       need_buffer = FALSE;
     } else if (h_in_group * 2 == h_out_group &&
 	       v_in_group == v_out_group) {
       /* Special case for 2h1v upsampling */
-      upsample->methods[ci] = h2v1_upsample;
+      upsample->methods[ci] = LJPEG_h2v1_upsample;
     } else if (h_in_group * 2 == h_out_group &&
 	       v_in_group * 2 == v_out_group) {
       /* Special case for 2h2v upsampling */
@@ -345,7 +345,7 @@ LJPEG_jinit_upsampler (LJPEG_j_decompress_ptr cinfo)
     } else if ((h_out_group % h_in_group) == 0 &&
 	       (v_out_group % v_in_group) == 0) {
       /* Generic integral-factors upsampling method */
-      upsample->methods[ci] = int_upsample;
+      upsample->methods[ci] = LJPEG_int_upsample;
       upsample->h_expand[ci] = (UINT8) (h_out_group / h_in_group);
       upsample->v_expand[ci] = (UINT8) (v_out_group / v_in_group);
     } else

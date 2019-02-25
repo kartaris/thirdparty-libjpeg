@@ -879,7 +879,7 @@ default error handler does a couple of inappropriate things:
 
 A simple stopgap solution for problem 1 is to replace the line
 	fprintf(stderr, "%s\n", buffer);
-(in output_message in jerror.c) with
+(in LJPEG_output_message in jerror.c) with
 	MessageBox(GetActiveWindow(),buffer,"JPEG Error",MB_OK|MB_ICONERROR);
 It's highly recommended that you at least do that much, since otherwise
 error messages will disappear into nowhere.  (Beginning with IJG v6b, this
@@ -970,13 +970,13 @@ use jmemnobs.c not jmemdos.c under Windows.
 Borland C++ 4.5 fails with an internal compiler error when trying to compile
 jdmerge.c in 32-bit mode.  If enough people complain, perhaps Borland will fix
 it.  In the meantime, the simplest known workaround is to add a redundant
-definition of the variable range_limit in h2v1_merged_upsample(), at the head
+definition of the variable range_limit in LJPEG_h2v1_merged_upsample(), at the head
 of the block that handles odd image width (about line 268 in v6 jdmerge.c):
   /* If image width is odd, do the last output column separately */
   if (cinfo->output_width & 1) {
     register JSAMPLE * range_limit = cinfo->sample_range_limit; /* ADD THIS */
     cb = GETJSAMPLE(*inptr1);
-Pretty bizarre, especially since the very similar routine h2v2_merged_upsample
+Pretty bizarre, especially since the very similar routine LJPEG_h2v2_merged_upsample
 doesn't trigger the bug.
 Recent reports suggest that this bug does not occur with "bcc32a" (the
 Pentium-optimized version of the compiler).

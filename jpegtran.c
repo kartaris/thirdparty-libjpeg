@@ -472,7 +472,7 @@ main (int argc, char **argv)
       usage();
 
   /* Any space needed by a transform option must be requested before
-   * jpeg_read_coefficients so that memory allocation will be done right.
+   * LJPEG_jpeg_read_coefficients so that memory allocation will be done right.
    */
 #if TRANSFORMS_SUPPORTED
   /* Fail right away if -perfect is given and transformation is not perfect.
@@ -484,7 +484,7 @@ main (int argc, char **argv)
 #endif
 
   /* Read source file as DCT coefficients */
-  src_coef_arrays = jpeg_read_coefficients(&srcinfo);
+  src_coef_arrays = LJPEG_jpeg_read_coefficients(&srcinfo);
 
   /* Initialize destination compression parameters from source values */
   LJPEG_jpeg_copy_critical_parameters(&srcinfo, &dstinfo);
@@ -501,7 +501,7 @@ main (int argc, char **argv)
 #endif
 
   /* Close input file, if we opened it.
-   * Note: we assume that jpeg_read_coefficients consumed all input
+   * Note: we assume that LJPEG_jpeg_read_coefficients consumed all input
    * until JPEG_REACHED_EOI, and that LJPEG_jpeg_finish_decompress will
    * only consume more while (! cinfo->inputctl->eoi_reached).
    * We cannot call LJPEG_jpeg_finish_decompress here since we still need the
