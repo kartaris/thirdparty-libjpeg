@@ -74,9 +74,9 @@ typedef struct {
   LJPEG_JSAMPROW pixrow;		/* decompressor output buffer */
   size_t buffer_width;		/* width of I/O buffer */
   LJPEG_JDIMENSION samples_per_row;	/* JSAMPLEs per output row */
-} ppm_dest_struct;
+} LJPEG_ppm_dest_struct;
 
-typedef ppm_dest_struct * ppm_dest_ptr;
+typedef LJPEG_ppm_dest_struct * LJPEG_ppm_dest_ptr;
 
 
 /*
@@ -91,7 +91,7 @@ LJPEG_METHODDEF(void)
 LJPEG_put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 		LJPEG_JDIMENSION rows_supplied)
 {
-  ppm_dest_ptr dest = (ppm_dest_ptr) dinfo;
+  LJPEG_ppm_dest_ptr dest = (LJPEG_ppm_dest_ptr) dinfo;
 
   (void) JFWRITE(dest->pub.output_file, dest->iobuffer, dest->buffer_width);
 }
@@ -103,10 +103,10 @@ LJPEG_put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
  */
 
 LJPEG_METHODDEF(void)
-copy_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
+LJPEG_copy_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 		 LJPEG_JDIMENSION rows_supplied)
 {
-  ppm_dest_ptr dest = (ppm_dest_ptr) dinfo;
+  LJPEG_ppm_dest_ptr dest = (LJPEG_ppm_dest_ptr) dinfo;
   register char * bufferptr;
   register LJPEG_JSAMPROW ptr;
   register LJPEG_JDIMENSION col;
@@ -126,10 +126,10 @@ copy_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
  */
 
 LJPEG_METHODDEF(void)
-put_demapped_rgb (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
+LJPEG_put_demapped_rgb (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 		  LJPEG_JDIMENSION rows_supplied)
 {
-  ppm_dest_ptr dest = (ppm_dest_ptr) dinfo;
+  LJPEG_ppm_dest_ptr dest = (LJPEG_ppm_dest_ptr) dinfo;
   register char * bufferptr;
   register int pixval;
   register LJPEG_JSAMPROW ptr;
@@ -151,10 +151,10 @@ put_demapped_rgb (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 
 
 LJPEG_METHODDEF(void)
-put_demapped_gray (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
+LJPEG_put_demapped_gray (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 		   LJPEG_JDIMENSION rows_supplied)
 {
-  ppm_dest_ptr dest = (ppm_dest_ptr) dinfo;
+  LJPEG_ppm_dest_ptr dest = (LJPEG_ppm_dest_ptr) dinfo;
   register char * bufferptr;
   register LJPEG_JSAMPROW ptr;
   register LJPEG_JSAMPROW color_map = cinfo->colormap[0];
@@ -174,9 +174,9 @@ put_demapped_gray (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
  */
 
 LJPEG_METHODDEF(void)
-start_output_ppm (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
+LJPEG_start_output_ppm (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 {
-  ppm_dest_ptr dest = (ppm_dest_ptr) dinfo;
+  LJPEG_ppm_dest_ptr dest = (LJPEG_ppm_dest_ptr) dinfo;
 
   /* Emit file header */
   switch (cinfo->out_color_space) {
@@ -203,7 +203,7 @@ start_output_ppm (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
  */
 
 LJPEG_METHODDEF(void)
-finish_output_ppm (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
+LJPEG_finish_output_ppm (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 {
   /* Make sure we wrote the output file OK */
   fflush(dinfo->output_file);
@@ -219,14 +219,14 @@ finish_output_ppm (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 LJPEG_GLOBAL(LJPEG_djpeg_dest_ptr)
 LJPEG_jinit_write_ppm (LJPEG_j_decompress_ptr cinfo)
 {
-  ppm_dest_ptr dest;
+  LJPEG_ppm_dest_ptr dest;
 
   /* Create module interface object, fill in method pointers */
-  dest = (ppm_dest_ptr)
+  dest = (LJPEG_ppm_dest_ptr)
       (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				  SIZEOF(ppm_dest_struct));
-  dest->pub.start_output = start_output_ppm;
-  dest->pub.finish_output = finish_output_ppm;
+				  SIZEOF(LJPEG_ppm_dest_struct));
+  dest->pub.start_output = LJPEG_start_output_ppm;
+  dest->pub.finish_output = LJPEG_finish_output_ppm;
 
   /* Calculate output image dimensions so we can allocate space */
   LJPEG_jpeg_calc_output_dimensions(cinfo);
@@ -248,11 +248,11 @@ LJPEG_jinit_write_ppm (LJPEG_j_decompress_ptr cinfo)
        cinfo->output_width * cinfo->output_components, (LJPEG_JDIMENSION) 1);
     dest->pub.buffer_height = 1;
     if (! cinfo->quantize_colors)
-      dest->pub.LJPEG_put_pixel_rows = copy_pixel_rows;
+      dest->pub.LJPEG_put_pixel_rows = LJPEG_copy_pixel_rows;
     else if (cinfo->out_color_space == LJPEG_JCS_GRAYSCALE)
-      dest->pub.LJPEG_put_pixel_rows = put_demapped_gray;
+      dest->pub.LJPEG_put_pixel_rows = LJPEG_put_demapped_gray;
     else
-      dest->pub.LJPEG_put_pixel_rows = put_demapped_rgb;
+      dest->pub.LJPEG_put_pixel_rows = LJPEG_put_demapped_rgb;
   } else {
     /* We will fwrite() directly from decompressor output buffer. */
     /* Synthesize a LJPEG_JSAMPARRAY pointer structure */

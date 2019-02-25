@@ -57,12 +57,12 @@ typedef struct {
   rle_map *colormap;	 	/* RLE-style color map, or NULL if none */
   rle_pixel **rle_row;		/* To pass rows to rle_putrow() */
 
-} rle_dest_struct;
+} LJPEG_rle_dest_struct;
 
-typedef rle_dest_struct * rle_dest_ptr;
+typedef LJPEG_rle_dest_struct * LJPEG_rle_dest_ptr;
 
 /* Forward declarations */
-LJPEG_METHODDEF(void) rle_put_pixel_rows
+LJPEG_METHODDEF(void) LJPEG_rle_put_pixel_rows
     LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 	 LJPEG_JDIMENSION rows_supplied));
 
@@ -74,9 +74,9 @@ LJPEG_METHODDEF(void) rle_put_pixel_rows
  */
 
 LJPEG_METHODDEF(void)
-start_output_rle (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
+LJPEG_start_output_rle (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 {
-  rle_dest_ptr dest = (rle_dest_ptr) dinfo;
+  LJPEG_rle_dest_ptr dest = (LJPEG_rle_dest_ptr) dinfo;
   size_t cmapsize;
   int i, ci;
 #ifdef PROGRESS_REPORT
@@ -133,7 +133,7 @@ start_output_rle (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
     ((LJPEG_j_common_ptr) cinfo, dest->image, (LJPEG_JDIMENSION) 0, (LJPEG_JDIMENSION) 1, TRUE);
   dest->pub.buffer_height = 1;
 
-  dest->pub.LJPEG_put_pixel_rows = rle_put_pixel_rows;
+  dest->pub.LJPEG_put_pixel_rows = LJPEG_rle_put_pixel_rows;
 
 #ifdef PROGRESS_REPORT
   if (progress != NULL) {
@@ -150,10 +150,10 @@ start_output_rle (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
  */
 
 LJPEG_METHODDEF(void)
-rle_put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
+LJPEG_rle_put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 		    LJPEG_JDIMENSION rows_supplied)
 {
-  rle_dest_ptr dest = (rle_dest_ptr) dinfo;
+  LJPEG_rle_dest_ptr dest = (LJPEG_rle_dest_ptr) dinfo;
 
   if (cinfo->output_scanline < cinfo->output_height) {
     dest->pub.buffer = (*cinfo->mem->LJPEG_access_virt_sarray)
@@ -169,9 +169,9 @@ rle_put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
  */
 
 LJPEG_METHODDEF(void)
-finish_output_rle (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
+LJPEG_finish_output_rle (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 {
-  rle_dest_ptr dest = (rle_dest_ptr) dinfo;
+  LJPEG_rle_dest_ptr dest = (LJPEG_rle_dest_ptr) dinfo;
   rle_hdr header;		/* Output file information */
   rle_pixel **rle_row, *red, *green, *blue;
   LJPEG_JSAMPROW output_row;
@@ -275,14 +275,14 @@ finish_output_rle (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 LJPEG_GLOBAL(LJPEG_djpeg_dest_ptr)
 LJPEG_jinit_write_rle (LJPEG_j_decompress_ptr cinfo)
 {
-  rle_dest_ptr dest;
+  LJPEG_rle_dest_ptr dest;
 
   /* Create module interface object, fill in method pointers */
-  dest = (rle_dest_ptr)
+  dest = (LJPEG_rle_dest_ptr)
       (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-                                  SIZEOF(rle_dest_struct));
-  dest->pub.start_output = start_output_rle;
-  dest->pub.finish_output = finish_output_rle;
+                                  SIZEOF(LJPEG_rle_dest_struct));
+  dest->pub.start_output = LJPEG_start_output_rle;
+  dest->pub.finish_output = LJPEG_finish_output_rle;
 
   /* Calculate output image dimensions so we can allocate space */
   LJPEG_jpeg_calc_output_dimensions(cinfo);

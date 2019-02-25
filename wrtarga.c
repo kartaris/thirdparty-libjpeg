@@ -45,13 +45,13 @@ typedef struct {
 
   char *iobuffer;		/* physical I/O buffer */
   LJPEG_JDIMENSION buffer_width;	/* width of one row */
-} tga_dest_struct;
+} LJPEG_tga_dest_struct;
 
-typedef tga_dest_struct * tga_dest_ptr;
+typedef LJPEG_tga_dest_struct * LJPEG_tga_dest_ptr;
 
 
 LOCAL(void)
-write_header (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo, int num_colors)
+LJPEG_write_header (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo, int num_colors)
 /* Create and write a Targa header */
 {
   char targaheader[18];
@@ -100,7 +100,7 @@ LJPEG_put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 		LJPEG_JDIMENSION rows_supplied)
 /* used for unquantized full-color output */
 {
-  tga_dest_ptr dest = (tga_dest_ptr) dinfo;
+  LJPEG_tga_dest_ptr dest = (LJPEG_tga_dest_ptr) dinfo;
   register LJPEG_JSAMPROW inptr;
   register char * outptr;
   register LJPEG_JDIMENSION col;
@@ -121,7 +121,7 @@ LJPEG_put_gray_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 	       LJPEG_JDIMENSION rows_supplied)
 /* used for grayscale OR quantized color output */
 {
-  tga_dest_ptr dest = (tga_dest_ptr) dinfo;
+  LJPEG_tga_dest_ptr dest = (LJPEG_tga_dest_ptr) dinfo;
   register LJPEG_JSAMPROW inptr;
   register char * outptr;
   register LJPEG_JDIMENSION col;
@@ -141,10 +141,10 @@ LJPEG_put_gray_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
  */
 
 LJPEG_METHODDEF(void)
-put_demapped_gray (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
+LJPEG_put_demapped_gray (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 		   LJPEG_JDIMENSION rows_supplied)
 {
-  tga_dest_ptr dest = (tga_dest_ptr) dinfo;
+  LJPEG_tga_dest_ptr dest = (LJPEG_tga_dest_ptr) dinfo;
   register LJPEG_JSAMPROW inptr;
   register char * outptr;
   register LJPEG_JSAMPROW color_map0 = cinfo->colormap[0];
@@ -164,18 +164,18 @@ put_demapped_gray (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
  */
 
 LJPEG_METHODDEF(void)
-start_output_tga (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
+LJPEG_start_output_tga (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 {
-  tga_dest_ptr dest = (tga_dest_ptr) dinfo;
+  LJPEG_tga_dest_ptr dest = (LJPEG_tga_dest_ptr) dinfo;
   int num_colors, i;
   FILE *outfile;
 
   if (cinfo->out_color_space == LJPEG_JCS_GRAYSCALE) {
     /* Targa doesn't have a mapped grayscale format, so we will */
     /* demap quantized gray output.  Never emit a colormap. */
-    write_header(cinfo, dinfo, 0);
+    LJPEG_write_header(cinfo, dinfo, 0);
     if (cinfo->quantize_colors)
-      dest->pub.LJPEG_put_pixel_rows = put_demapped_gray;
+      dest->pub.LJPEG_put_pixel_rows = LJPEG_put_demapped_gray;
     else
       dest->pub.LJPEG_put_pixel_rows = LJPEG_put_gray_rows;
   } else if (cinfo->out_color_space == LJPEG_JCS_RGB) {
@@ -184,7 +184,7 @@ start_output_tga (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
       num_colors = cinfo->actual_number_of_colors;
       if (num_colors > 256)
 	ERREXIT1(cinfo, JERR_TOO_MANY_COLORS, num_colors);
-      write_header(cinfo, dinfo, num_colors);
+      LJPEG_write_header(cinfo, dinfo, num_colors);
       /* Write the colormap.  Note Targa uses BGR byte order */
       outfile = dest->pub.output_file;
       for (i = 0; i < num_colors; i++) {
@@ -194,7 +194,7 @@ start_output_tga (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
       }
       dest->pub.LJPEG_put_pixel_rows = LJPEG_put_gray_rows;
     } else {
-      write_header(cinfo, dinfo, 0);
+      LJPEG_write_header(cinfo, dinfo, 0);
       dest->pub.LJPEG_put_pixel_rows = LJPEG_put_pixel_rows;
     }
   } else {
@@ -208,7 +208,7 @@ start_output_tga (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
  */
 
 LJPEG_METHODDEF(void)
-finish_output_tga (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
+LJPEG_finish_output_tga (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 {
   /* Make sure we wrote the output file OK */
   fflush(dinfo->output_file);
@@ -223,14 +223,14 @@ finish_output_tga (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 LJPEG_GLOBAL(LJPEG_djpeg_dest_ptr)
 LJPEG_jinit_write_targa (LJPEG_j_decompress_ptr cinfo)
 {
-  tga_dest_ptr dest;
+  LJPEG_tga_dest_ptr dest;
 
   /* Create module interface object, fill in method pointers */
-  dest = (tga_dest_ptr)
+  dest = (LJPEG_tga_dest_ptr)
       (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				  SIZEOF(tga_dest_struct));
-  dest->pub.start_output = start_output_tga;
-  dest->pub.finish_output = finish_output_tga;
+				  SIZEOF(LJPEG_tga_dest_struct));
+  dest->pub.start_output = LJPEG_start_output_tga;
+  dest->pub.finish_output = LJPEG_finish_output_tga;
 
   /* Calculate output image dimensions so we can allocate space */
   LJPEG_jpeg_calc_output_dimensions(cinfo);

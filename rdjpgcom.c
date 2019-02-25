@@ -337,7 +337,7 @@ LJPEG_process_SOFn (int marker)
  */
 
 static int
-LJPEG_scan_JPEG_header (int verbose, int raw)
+LJPEG_scan_header (int verbose, int raw)
 {
   int marker;
 
@@ -507,7 +507,7 @@ main (int argc, char **argv)
   }
 
   /* Scan the JPEG headers. */
-  (void) LJPEG_scan_JPEG_header(verbose, raw);
+  (void) LJPEG_scan_header(verbose, raw);
 
   /* All done. */
   exit(EXIT_SUCCESS);

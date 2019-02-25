@@ -119,27 +119,27 @@ LJPEG_read_2_bytes (void)
 /* Routines to write data to output file */
 
 static void
-write_1_byte (int c)
+LJPEG_write_1_byte (int c)
 {
   PUTBYTE(c);
 }
 
 static void
-write_2_bytes (unsigned int val)
+LJPEG_write_2_bytes (unsigned int val)
 {
   PUTBYTE((val >> 8) & 0xFF);
   PUTBYTE(val & 0xFF);
 }
 
 static void
-write_marker (int marker)
+LJPEG_write_marker (int marker)
 {
   PUTBYTE(0xFF);
   PUTBYTE(marker);
 }
 
 static void
-copy_rest_of_file (void)
+LJPEG_copy_rest_of_file (void)
 {
   int c;
 
@@ -241,21 +241,21 @@ LJPEG_first_marker (void)
  */
 
 static void
-copy_variable (void)
+LJPEG_copy_variable (void)
 /* Copy an unknown or uninteresting variable-length marker */
 {
   unsigned int length;
 
   /* Get the marker parameter length count */
   length = LJPEG_read_2_bytes();
-  write_2_bytes(length);
+  LJPEG_write_2_bytes(length);
   /* Length includes itself, so must be at least 2 */
   if (length < 2)
     ERREXIT("Erroneous JPEG marker length");
   length -= 2;
   /* Skip over the remaining bytes */
   while (length > 0) {
-    write_1_byte(LJPEG_read_1_byte());
+    LJPEG_write_1_byte(LJPEG_read_1_byte());
     length--;
   }
 }
@@ -286,14 +286,14 @@ LJPEG_skip_variable (void)
  */
 
 static int
-LJPEG_scan_JPEG_header (int keep_COM)
+LJPEG_scan_header (int keep_COM)
 {
   int marker;
 
   /* Expect SOI at start of file */
   if (LJPEG_first_marker() != M_SOI)
     ERREXIT("Expected SOI marker first");
-  write_marker(M_SOI);
+  LJPEG_write_marker(M_SOI);
 
   /* Scan miscellaneous markers until we reach SOFn. */
   for (;;) {
@@ -326,16 +326,16 @@ LJPEG_scan_JPEG_header (int keep_COM)
 
     case M_COM:			/* Existing COM: conditionally discard */
       if (keep_COM) {
-	write_marker(marker);
-	copy_variable();
+	LJPEG_write_marker(marker);
+	LJPEG_copy_variable();
       } else {
 	LJPEG_skip_variable();
       }
       break;
 
     default:			/* Anything else just gets copied */
-      write_marker(marker);
-      copy_variable();		/* we assume it has a parameter count... */
+      LJPEG_write_marker(marker);
+      LJPEG_copy_variable();		/* we assume it has a parameter count... */
       break;
     }
   } /* end loop */
@@ -561,21 +561,21 @@ main (int argc, char **argv)
    * existing comments; and (b) ensures that comments come after any JFIF
    * or JFXX markers, as required by the JFIF specification.
    */
-  marker = LJPEG_scan_JPEG_header(keep_COM);
+  marker = LJPEG_scan_header(keep_COM);
   /* Insert the new COM marker, but only if nonempty text has been supplied */
   if (comment_length > 0) {
-    write_marker(M_COM);
-    write_2_bytes(comment_length + 2);
+    LJPEG_write_marker(M_COM);
+    LJPEG_write_2_bytes(comment_length + 2);
     while (comment_length > 0) {
-      write_1_byte(*comment_arg++);
+      LJPEG_write_1_byte(*comment_arg++);
       comment_length--;
     }
   }
   /* Duplicate the remainder of the source file.
    * Note that any COM markers occuring after SOF will not be touched.
    */
-  write_marker(marker);
-  copy_rest_of_file();
+  LJPEG_write_marker(marker);
+  LJPEG_copy_rest_of_file();
 
   /* All done. */
   exit(EXIT_SUCCESS);
