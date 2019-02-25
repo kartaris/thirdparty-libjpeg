@@ -89,7 +89,7 @@ static FILE * outfile;		/* output JPEG file */
 
 /* Read one byte, testing for EOF */
 static int
-read_1_byte (void)
+LJPEG_read_1_byte (void)
 {
   int c;
 
@@ -102,7 +102,7 @@ read_1_byte (void)
 /* Read 2 bytes, convert to unsigned int */
 /* All 2-byte quantities in JPEG markers are MSB first */
 static unsigned int
-read_2_bytes (void)
+LJPEG_read_2_bytes (void)
 {
   int c1, c2;
 
@@ -190,16 +190,16 @@ LJPEG_next_marker (void)
   int discarded_bytes = 0;
 
   /* Find 0xFF byte; count and skip any non-FFs. */
-  c = read_1_byte();
+  c = LJPEG_read_1_byte();
   while (c != 0xFF) {
     discarded_bytes++;
-    c = read_1_byte();
+    c = LJPEG_read_1_byte();
   }
   /* Get marker code byte, swallowing any duplicate FF bytes.  Extra FFs
    * are legal as pad bytes, so don't count them in discarded_bytes.
    */
   do {
-    c = read_1_byte();
+    c = LJPEG_read_1_byte();
   } while (c == 0xFF);
 
   if (discarded_bytes != 0) {
@@ -247,7 +247,7 @@ copy_variable (void)
   unsigned int length;
 
   /* Get the marker parameter length count */
-  length = read_2_bytes();
+  length = LJPEG_read_2_bytes();
   write_2_bytes(length);
   /* Length includes itself, so must be at least 2 */
   if (length < 2)
@@ -255,7 +255,7 @@ copy_variable (void)
   length -= 2;
   /* Skip over the remaining bytes */
   while (length > 0) {
-    write_1_byte(read_1_byte());
+    write_1_byte(LJPEG_read_1_byte());
     length--;
   }
 }
@@ -267,14 +267,14 @@ LJPEG_skip_variable (void)
   unsigned int length;
 
   /* Get the marker parameter length count */
-  length = read_2_bytes();
+  length = LJPEG_read_2_bytes();
   /* Length includes itself, so must be at least 2 */
   if (length < 2)
     ERREXIT("Erroneous JPEG marker length");
   length -= 2;
   /* Skip over the remaining bytes */
   while (length > 0) {
-    (void) read_1_byte();
+    (void) LJPEG_read_1_byte();
     length--;
   }
 }
@@ -286,7 +286,7 @@ LJPEG_skip_variable (void)
  */
 
 static int
-scan_JPEG_header (int keep_COM)
+LJPEG_scan_JPEG_header (int keep_COM)
 {
   int marker;
 
@@ -561,7 +561,7 @@ main (int argc, char **argv)
    * existing comments; and (b) ensures that comments come after any JFIF
    * or JFXX markers, as required by the JFIF specification.
    */
-  marker = scan_JPEG_header(keep_COM);
+  marker = LJPEG_scan_JPEG_header(keep_COM);
   /* Insert the new COM marker, but only if nonempty text has been supplied */
   if (comment_length > 0) {
     write_marker(M_COM);

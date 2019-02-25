@@ -158,7 +158,7 @@ LJPEG_jround_up (long a, long b)
  * Do not call this function directly, use the FMEMZERO macro instead.
  */
 LJPEG_GLOBALvoid)
-jzero_far (void FAR * target, size_t bytestozero)
+LJPEG_jzero_far (void FAR * target, size_t bytestozero)
 /* Zero out a chunk of FAR memory. */
 /* This might be sample-array data, block-array data, or LJPEG_alloc_large data. */
 {

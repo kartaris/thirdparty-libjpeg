@@ -85,7 +85,7 @@ static const UINT8 c5to8bits[32] = {
 
 
 LOCAL(int)
-read_byte (tga_source_ptr sinfo)
+LJPEG_read_byte (tga_source_ptr sinfo)
 /* Read next byte from Targa file */
 {
   register FILE *infile = sinfo->pub.input_file;
@@ -98,7 +98,7 @@ read_byte (tga_source_ptr sinfo)
 
 
 LOCAL(void)
-read_colormap (tga_source_ptr sinfo, int cmaplen, int mapentrysize)
+LJPEG_read_colormap (tga_source_ptr sinfo, int cmaplen, int mapentrysize)
 /* Read the colormap from a Targa file */
 {
   int i;
@@ -108,9 +108,9 @@ read_colormap (tga_source_ptr sinfo, int cmaplen, int mapentrysize)
     ERREXIT(sinfo->cinfo, JERR_TGA_BADCMAP);
 
   for (i = 0; i < cmaplen; i++) {
-    sinfo->colormap[2][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
-    sinfo->colormap[1][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
-    sinfo->colormap[0][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
+    sinfo->colormap[2][i] = (LJPEG_JSAMPLE) LJPEG_read_byte(sinfo);
+    sinfo->colormap[1][i] = (LJPEG_JSAMPLE) LJPEG_read_byte(sinfo);
+    sinfo->colormap[0][i] = (LJPEG_JSAMPLE) LJPEG_read_byte(sinfo);
   }
 }
 
@@ -147,7 +147,7 @@ read_rle_pixel (tga_source_ptr sinfo)
 
   /* Time to read RLE block header? */
   if (--sinfo->block_count < 0) { /* decrement pixels remaining in block */
-    i = read_byte(sinfo);
+    i = LJPEG_read_byte(sinfo);
     if (i & 0x80) {		/* Start of duplicate-pixel block? */
       sinfo->dup_pixel_count = i & 0x7F; /* number of dups after this one */
       sinfo->block_count = 0;	/* then read new block header */
@@ -187,7 +187,7 @@ get_8bit_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 }
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-get_8bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_get_8bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading 8-bit colormap indexes */
 {
   tga_source_ptr source = (tga_source_ptr) sinfo;
@@ -236,7 +236,7 @@ get_16bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 }
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-get_24bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_get_24bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading 24-bit pixels */
 {
   tga_source_ptr source = (tga_source_ptr) sinfo;
@@ -260,7 +260,7 @@ get_24bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
  * This works because the actual pixel length is only known to read_pixel.
  */
 
-#define get_32bit_row  get_24bit_row
+#define LJPEG_get_32bit_row  LJPEG_get_24bit_row
 
 
 /*
@@ -297,7 +297,7 @@ get_memory_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
  */
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-preload_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_preload_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   tga_source_ptr source = (tga_source_ptr) sinfo;
   LJPEG_JDIMENSION row;
@@ -383,7 +383,7 @@ start_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   switch (subtype) {
   case 1:			/* Colormapped image */
     if (source->pixel_size == 1 && cmaptype == 1)
-      source->get_pixel_rows = get_8bit_row;
+      source->get_pixel_rows = LJPEG_get_8bit_row;
     else
       ERREXIT(cinfo, JERR_TGA_BADPARMS);
     TRACEMS2(cinfo, 1, JTRC_TGA_MAPPED, width, height);
@@ -394,10 +394,10 @@ start_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
       source->get_pixel_rows = get_16bit_row;
       break;
     case 3:
-      source->get_pixel_rows = get_24bit_row;
+      source->get_pixel_rows = LJPEG_get_24bit_row;
       break;
     case 4:
-      source->get_pixel_rows = get_32bit_row;
+      source->get_pixel_rows = LJPEG_get_32bit_row;
       break;
     default:
       ERREXIT(cinfo, JERR_TGA_BADPARMS);
@@ -430,7 +430,7 @@ start_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     }
     /* source->pub.buffer will point to the virtual array. */
     source->pub.buffer_height = 1; /* in case anyone looks at it */
-    source->pub.get_pixel_rows = preload_image;
+    source->pub.get_pixel_rows = LJPEG_preload_image;
   } else {
     /* Don't need a virtual array, but do need a one-row input buffer. */
     source->whole_image = NULL;
@@ -442,7 +442,7 @@ start_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   }
   
   while (idlen--)		/* Throw away ID field */
-    (void) read_byte(source);
+    (void) LJPEG_read_byte(source);
 
   if (maplen > 0) {
     if (maplen > 256 || GET_2B(3) != 0)
@@ -451,7 +451,7 @@ start_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     source->colormap = (*cinfo->mem->LJPEG_alloc_sarray)
       ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, (LJPEG_JDIMENSION) maplen, (LJPEG_JDIMENSION) 3);
     /* and read it from the file */
-    read_colormap(source, (int) maplen, UCH(targaheader[7]));
+    LJPEG_read_colormap(source, (int) maplen, UCH(targaheader[7]));
   } else {
     if (cmaptype)		/* but you promised a cmap! */
       ERREXIT(cinfo, JERR_TGA_BADPARMS);

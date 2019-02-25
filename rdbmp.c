@@ -48,9 +48,9 @@ typedef char U_CHAR;
 
 /* Private version of data source object */
 
-typedef struct _bmp_source_struct * bmp_source_ptr;
+typedef struct LJPEG__bmp_source_struct * LJPEG_bmp_source_ptr;
 
-typedef struct _bmp_source_struct {
+typedef struct LJPEG__bmp_source_struct {
   struct LJPEG_cjpeg_source_struct pub; /* public fields */
 
   LJPEG_j_compress_ptr cinfo;		/* back link saves passing separate parm */
@@ -62,11 +62,11 @@ typedef struct _bmp_source_struct {
   LJPEG_JDIMENSION row_width;		/* Physical width of scanlines in file */
 
   int bits_per_pixel;		/* remembers 8- or 24-bit format */
-} bmp_source_struct;
+} LJPEG_bmp_source_struct;
 
 
 LOCAL(int)
-read_byte (bmp_source_ptr sinfo)
+LJPEG_read_byte (LJPEG_bmp_source_ptr sinfo)
 /* Read next byte from BMP file */
 {
   register FILE *infile = sinfo->pub.input_file;
@@ -79,7 +79,7 @@ read_byte (bmp_source_ptr sinfo)
 
 
 LOCAL(void)
-read_colormap (bmp_source_ptr sinfo, int cmaplen, int mapentrysize)
+LJPEG_read_colormap (LJPEG_bmp_source_ptr sinfo, int cmaplen, int mapentrysize)
 /* Read the colormap from a BMP file */
 {
   int i;
@@ -88,18 +88,18 @@ read_colormap (bmp_source_ptr sinfo, int cmaplen, int mapentrysize)
   case 3:
     /* BGR format (occurs in OS/2 files) */
     for (i = 0; i < cmaplen; i++) {
-      sinfo->colormap[2][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
-      sinfo->colormap[1][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
-      sinfo->colormap[0][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
+      sinfo->colormap[2][i] = (LJPEG_JSAMPLE) LJPEG_read_byte(sinfo);
+      sinfo->colormap[1][i] = (LJPEG_JSAMPLE) LJPEG_read_byte(sinfo);
+      sinfo->colormap[0][i] = (LJPEG_JSAMPLE) LJPEG_read_byte(sinfo);
     }
     break;
   case 4:
     /* BGR0 format (occurs in MS Windows files) */
     for (i = 0; i < cmaplen; i++) {
-      sinfo->colormap[2][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
-      sinfo->colormap[1][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
-      sinfo->colormap[0][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
-      (void) read_byte(sinfo);
+      sinfo->colormap[2][i] = (LJPEG_JSAMPLE) LJPEG_read_byte(sinfo);
+      sinfo->colormap[1][i] = (LJPEG_JSAMPLE) LJPEG_read_byte(sinfo);
+      sinfo->colormap[0][i] = (LJPEG_JSAMPLE) LJPEG_read_byte(sinfo);
+      (void) LJPEG_read_byte(sinfo);
     }
     break;
   default:
@@ -117,10 +117,10 @@ read_colormap (bmp_source_ptr sinfo, int cmaplen, int mapentrysize)
  */
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-get_8bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_get_8bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading 8-bit colormap indexes */
 {
-  bmp_source_ptr source = (bmp_source_ptr) sinfo;
+  LJPEG_bmp_source_ptr source = (LJPEG_bmp_source_ptr) sinfo;
   register LJPEG_JSAMPARRAY colormap = source->colormap;
   LJPEG_JSAMPARRAY image_ptr;
   register int t;
@@ -148,10 +148,10 @@ get_8bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-get_24bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_get_24bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading 24-bit pixels */
 {
-  bmp_source_ptr source = (bmp_source_ptr) sinfo;
+  LJPEG_bmp_source_ptr source = (LJPEG_bmp_source_ptr) sinfo;
   LJPEG_JSAMPARRAY image_ptr;
   register LJPEG_JSAMPROW inptr, outptr;
   register LJPEG_JDIMENSION col;
@@ -179,10 +179,10 @@ get_24bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-get_32bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_get_32bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading 32-bit pixels */
 {
-  bmp_source_ptr source = (bmp_source_ptr) sinfo;
+  LJPEG_bmp_source_ptr source = (LJPEG_bmp_source_ptr) sinfo;
   LJPEG_JSAMPARRAY image_ptr;
   register LJPEG_JSAMPROW inptr, outptr;
   register LJPEG_JDIMENSION col;
@@ -216,9 +216,9 @@ get_32bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
  */
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-preload_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_preload_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
-  bmp_source_ptr source = (bmp_source_ptr) sinfo;
+  LJPEG_bmp_source_ptr source = (LJPEG_bmp_source_ptr) sinfo;
   register FILE *infile = source->pub.input_file;
   register int c;
   register LJPEG_JSAMPROW out_ptr;
@@ -250,13 +250,13 @@ preload_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   /* Set up to read from the virtual array in top-to-bottom order */
   switch (source->bits_per_pixel) {
   case 8:
-    source->pub.get_pixel_rows = get_8bit_row;
+    source->pub.get_pixel_rows = LJPEG_get_8bit_row;
     break;
   case 24:
-    source->pub.get_pixel_rows = get_24bit_row;
+    source->pub.get_pixel_rows = LJPEG_get_24bit_row;
     break;
   case 32:
-    source->pub.get_pixel_rows = get_32bit_row;
+    source->pub.get_pixel_rows = LJPEG_get_32bit_row;
     break;
   default:
     ERREXIT(cinfo, JERR_BMP_BADDEPTH);
@@ -273,9 +273,9 @@ preload_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
  */
 
 LJPEG_METHODDEF(void)
-start_input_bmp (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_start_input_bmp (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
-  bmp_source_ptr source = (bmp_source_ptr) sinfo;
+  LJPEG_bmp_source_ptr source = (LJPEG_bmp_source_ptr) sinfo;
   U_CHAR bmpfileheader[14];
   U_CHAR bmpinfoheader[64];
 #define GET_2B(array,offset)  ((unsigned int) UCH(array[offset]) + \
@@ -399,7 +399,7 @@ start_input_bmp (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
       ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
        (LJPEG_JDIMENSION) biClrUsed, (LJPEG_JDIMENSION) 3);
     /* and read it from the file */
-    read_colormap(source, (int) biClrUsed, mapentrysize);
+    LJPEG_read_colormap(source, (int) biClrUsed, mapentrysize);
     /* account for size of colormap */
     bPad -= biClrUsed * mapentrysize;
   }
@@ -408,7 +408,7 @@ start_input_bmp (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   if (bPad < 0)			/* incorrect bfOffBits value? */
     ERREXIT(cinfo, JERR_BMP_BADHEADER);
   while (--bPad >= 0) {
-    (void) read_byte(source);
+    (void) LJPEG_read_byte(source);
   }
 
   /* Compute row width in file, including padding to 4-byte boundary */
@@ -425,7 +425,7 @@ start_input_bmp (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   source->whole_image = (*cinfo->mem->LJPEG_request_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
      row_width, (LJPEG_JDIMENSION) biHeight, (LJPEG_JDIMENSION) 1);
-  source->pub.get_pixel_rows = preload_image;
+  source->pub.get_pixel_rows = LJPEG_preload_image;
   if (cinfo->progress != NULL) {
     cd_progress_ptr progress = (cd_progress_ptr) cinfo->progress;
     progress->total_extra_passes++; /* count file input as separate pass */
@@ -450,7 +450,7 @@ start_input_bmp (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
  */
 
 LJPEG_METHODDEF(void)
-finish_input_bmp (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_finish_input_bmp (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   /* no work */
 }
@@ -463,16 +463,16 @@ finish_input_bmp (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 LJPEG_GLOBALLJPEG_cjpeg_source_ptr)
 LJPEG_jinit_read_bmp (LJPEG_j_compress_ptr cinfo)
 {
-  bmp_source_ptr source;
+  LJPEG_bmp_source_ptr source;
 
   /* Create module interface object */
-  source = (bmp_source_ptr)
+  source = (LJPEG_bmp_source_ptr)
       (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				  SIZEOF(bmp_source_struct));
+				  SIZEOF(LJPEG_bmp_source_struct));
   source->cinfo = cinfo;	/* make back link for subroutines */
   /* Fill in method ptrs, except get_pixel_rows which start_input sets */
-  source->pub.start_input = start_input_bmp;
-  source->pub.finish_input = finish_input_bmp;
+  source->pub.start_input = LJPEG_start_input_bmp;
+  source->pub.finish_input = LJPEG_finish_input_bmp;
 
   return (LJPEG_cjpeg_source_ptr) source;
 }

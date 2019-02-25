@@ -19,7 +19,7 @@
 
 
 LOCAL(int)
-text_getc (FILE * file)
+LJPEG_text_getc (FILE * file)
 /* Read next char, skipping over any comments (# to end of line) */
 /* A comment/newline sequence is returned as a newline */
 {
@@ -36,7 +36,7 @@ text_getc (FILE * file)
 
 
 LOCAL(boolean)
-read_text_integer (FILE * file, long * result, int * termchar)
+LJPEG_read_text_integer (FILE * file, long * result, int * termchar)
 /* Read an unsigned decimal integer from a file, store it in result */
 /* Reads one trailing character after the integer; returns it in termchar */
 {
@@ -45,7 +45,7 @@ read_text_integer (FILE * file, long * result, int * termchar)
   
   /* Skip any leading whitespace, detect EOF */
   do {
-    ch = text_getc(file);
+    ch = LJPEG_text_getc(file);
     if (ch == EOF) {
       *termchar = ch;
       return FALSE;
@@ -58,7 +58,7 @@ read_text_integer (FILE * file, long * result, int * termchar)
   }
 
   val = ch - '0';
-  while ((ch = text_getc(file)) != EOF) {
+  while ((ch = LJPEG_text_getc(file)) != EOF) {
     if (! isdigit(ch))
       break;
     val *= 10;
@@ -93,7 +93,7 @@ LJPEG_read_quant_tables (LJPEG_j_compress_ptr cinfo, char * filename, boolean fo
   }
   tblno = 0;
 
-  while (read_text_integer(fp, &val, &termchar)) { /* read 1st element of table */
+  while (LJPEG_read_text_integer(fp, &val, &termchar)) { /* read 1st element of table */
     if (tblno >= NUM_QUANT_TBLS) {
       fprintf(stderr, "Too many tables in file %s\n", filename);
       fclose(fp);
@@ -101,7 +101,7 @@ LJPEG_read_quant_tables (LJPEG_j_compress_ptr cinfo, char * filename, boolean fo
     }
     table[0] = (unsigned int) val;
     for (i = 1; i < DCTSIZE2; i++) {
-      if (! read_text_integer(fp, &val, &termchar)) {
+      if (! LJPEG_read_text_integer(fp, &val, &termchar)) {
 	fprintf(stderr, "Invalid table data in file %s\n", filename);
 	fclose(fp);
 	return FALSE;
@@ -127,18 +127,18 @@ LJPEG_read_quant_tables (LJPEG_j_compress_ptr cinfo, char * filename, boolean fo
 #ifdef C_MULTISCAN_FILES_SUPPORTED
 
 LOCAL(boolean)
-read_scan_integer (FILE * file, long * result, int * termchar)
+LJPEG_read_scan_integer (FILE * file, long * result, int * termchar)
 /* Variant of read_text_integer that always looks for a non-space termchar;
  * this simplifies parsing of punctuation in scan scripts.
  */
 {
   register int ch;
 
-  if (! read_text_integer(file, result, termchar))
+  if (! LJPEG_read_text_integer(file, result, termchar))
     return FALSE;
   ch = *termchar;
   while (ch != EOF && isspace(ch))
-    ch = text_getc(file);
+    ch = LJPEG_text_getc(file);
   if (isdigit(ch)) {		/* oops, put it back */
     if (ungetc(ch, file) == EOF)
       return FALSE;
@@ -187,7 +187,7 @@ LJPEG_read_scan_script (LJPEG_j_compress_ptr cinfo, char * filename)
   scanptr = scans;
   scanno = 0;
 
-  while (read_scan_integer(fp, &val, &termchar)) {
+  while (LJPEG_read_scan_integer(fp, &val, &termchar)) {
     if (scanno >= MAX_SCANS) {
       fprintf(stderr, "Too many scans defined in file %s\n", filename);
       fclose(fp);
@@ -202,23 +202,23 @@ LJPEG_read_scan_script (LJPEG_j_compress_ptr cinfo, char * filename)
 	fclose(fp);
 	return FALSE;
       }
-      if (! read_scan_integer(fp, &val, &termchar))
+      if (! LJPEG_read_scan_integer(fp, &val, &termchar))
 	goto bogus;
       scanptr->component_index[ncomps] = (int) val;
       ncomps++;
     }
     scanptr->comps_in_scan = ncomps;
     if (termchar == ':') {
-      if (! read_scan_integer(fp, &val, &termchar) || termchar != ' ')
+      if (! LJPEG_read_scan_integer(fp, &val, &termchar) || termchar != ' ')
 	goto bogus;
       scanptr->Ss = (int) val;
-      if (! read_scan_integer(fp, &val, &termchar) || termchar != ' ')
+      if (! LJPEG_read_scan_integer(fp, &val, &termchar) || termchar != ' ')
 	goto bogus;
       scanptr->Se = (int) val;
-      if (! read_scan_integer(fp, &val, &termchar) || termchar != ' ')
+      if (! LJPEG_read_scan_integer(fp, &val, &termchar) || termchar != ' ')
 	goto bogus;
       scanptr->Ah = (int) val;
-      if (! read_scan_integer(fp, &val, &termchar))
+      if (! LJPEG_read_scan_integer(fp, &val, &termchar))
 	goto bogus;
       scanptr->Al = (int) val;
     } else {

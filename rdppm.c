@@ -76,13 +76,13 @@ typedef struct {
   LJPEG_JSAMPROW pixrow;		/* FAR pointer to same */
   size_t buffer_width;		/* width of I/O buffer */
   LJPEG_JSAMPLE *rescale;		/* => maxval-remapping array, or NULL */
-} ppm_source_struct;
+} LJPEG_ppm_source_struct;
 
-typedef ppm_source_struct * ppm_source_ptr;
+typedef LJPEG_ppm_source_struct * LJPEG_ppm_source_ptr;
 
 
 LOCAL(int)
-pbm_getc (FILE * infile)
+LJPEG_pbm_getc (FILE * infile)
 /* Read next char, skipping over any comments */
 /* A comment/newline sequence is returned as a newline */
 {
@@ -99,7 +99,7 @@ pbm_getc (FILE * infile)
 
 
 LOCAL(unsigned int)
-read_pbm_integer (LJPEG_j_compress_ptr cinfo, FILE * infile)
+LJPEG_read_pbm_integer (LJPEG_j_compress_ptr cinfo, FILE * infile)
 /* Read an unsigned decimal integer from the PPM file */
 /* Swallows one trailing character after the integer */
 /* Note that on a 16-bit-int machine, only values up to 64k can be read. */
@@ -110,7 +110,7 @@ read_pbm_integer (LJPEG_j_compress_ptr cinfo, FILE * infile)
 
   /* Skip any leading whitespace */
   do {
-    ch = pbm_getc(infile);
+    ch = LJPEG_pbm_getc(infile);
     if (ch == EOF)
       ERREXIT(cinfo, JERR_INPUT_EOF);
   } while (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r');
@@ -119,7 +119,7 @@ read_pbm_integer (LJPEG_j_compress_ptr cinfo, FILE * infile)
     ERREXIT(cinfo, JERR_PPM_NONNUMERIC);
 
   val = ch - '0';
-  while ((ch = pbm_getc(infile)) >= '0' && ch <= '9') {
+  while ((ch = LJPEG_pbm_getc(infile)) >= '0' && ch <= '9') {
     val *= 10;
     val += ch - '0';
   }
@@ -139,10 +139,10 @@ read_pbm_integer (LJPEG_j_compress_ptr cinfo, FILE * infile)
 
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-get_text_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_get_text_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading text-format PGM files with any maxval */
 {
-  ppm_source_ptr source = (ppm_source_ptr) sinfo;
+  LJPEG_ppm_source_ptr source = (LJPEG_ppm_source_ptr) sinfo;
   FILE * infile = source->pub.input_file;
   register LJPEG_JSAMPROW ptr;
   register LJPEG_JSAMPLE *rescale = source->rescale;
@@ -150,17 +150,17 @@ get_text_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
   ptr = source->pub.buffer[0];
   for (col = cinfo->image_width; col > 0; col--) {
-    *ptr++ = rescale[read_pbm_integer(cinfo, infile)];
+    *ptr++ = rescale[LJPEG_read_pbm_integer(cinfo, infile)];
   }
   return 1;
 }
 
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-get_text_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_get_text_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading text-format PPM files with any maxval */
 {
-  ppm_source_ptr source = (ppm_source_ptr) sinfo;
+  LJPEG_ppm_source_ptr source = (LJPEG_ppm_source_ptr) sinfo;
   FILE * infile = source->pub.input_file;
   register LJPEG_JSAMPROW ptr;
   register LJPEG_JSAMPLE *rescale = source->rescale;
@@ -168,19 +168,19 @@ get_text_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
   ptr = source->pub.buffer[0];
   for (col = cinfo->image_width; col > 0; col--) {
-    *ptr++ = rescale[read_pbm_integer(cinfo, infile)];
-    *ptr++ = rescale[read_pbm_integer(cinfo, infile)];
-    *ptr++ = rescale[read_pbm_integer(cinfo, infile)];
+    *ptr++ = rescale[LJPEG_read_pbm_integer(cinfo, infile)];
+    *ptr++ = rescale[LJPEG_read_pbm_integer(cinfo, infile)];
+    *ptr++ = rescale[LJPEG_read_pbm_integer(cinfo, infile)];
   }
   return 1;
 }
 
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-get_scaled_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_get_scaled_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading raw-byte-format PGM files with any maxval */
 {
-  ppm_source_ptr source = (ppm_source_ptr) sinfo;
+  LJPEG_ppm_source_ptr source = (LJPEG_ppm_source_ptr) sinfo;
   register LJPEG_JSAMPROW ptr;
   register U_CHAR * bufferptr;
   register LJPEG_JSAMPLE *rescale = source->rescale;
@@ -198,10 +198,10 @@ get_scaled_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-get_scaled_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_get_scaled_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading raw-byte-format PPM files with any maxval */
 {
-  ppm_source_ptr source = (ppm_source_ptr) sinfo;
+  LJPEG_ppm_source_ptr source = (LJPEG_ppm_source_ptr) sinfo;
   register LJPEG_JSAMPROW ptr;
   register U_CHAR * bufferptr;
   register LJPEG_JSAMPLE *rescale = source->rescale;
@@ -221,13 +221,13 @@ get_scaled_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-get_raw_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_get_raw_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading raw-byte-format files with maxval = MAXJSAMPLE.
  * In this case we just read right into the LJPEG_JSAMPLE buffer!
  * Note that same code works for PPM and PGM files.
  */
 {
-  ppm_source_ptr source = (ppm_source_ptr) sinfo;
+  LJPEG_ppm_source_ptr source = (LJPEG_ppm_source_ptr) sinfo;
 
   if (! ReadOK(source->pub.input_file, source->iobuffer, source->buffer_width))
     ERREXIT(cinfo, JERR_INPUT_EOF);
@@ -236,10 +236,10 @@ get_raw_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-get_word_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_get_word_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading raw-word-format PGM files with any maxval */
 {
-  ppm_source_ptr source = (ppm_source_ptr) sinfo;
+  LJPEG_ppm_source_ptr source = (LJPEG_ppm_source_ptr) sinfo;
   register LJPEG_JSAMPROW ptr;
   register U_CHAR * bufferptr;
   register LJPEG_JSAMPLE *rescale = source->rescale;
@@ -260,10 +260,10 @@ get_word_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
 
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
-get_word_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_get_word_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading raw-word-format PPM files with any maxval */
 {
-  ppm_source_ptr source = (ppm_source_ptr) sinfo;
+  LJPEG_ppm_source_ptr source = (LJPEG_ppm_source_ptr) sinfo;
   register LJPEG_JSAMPROW ptr;
   register U_CHAR * bufferptr;
   register LJPEG_JSAMPLE *rescale = source->rescale;
@@ -294,9 +294,9 @@ get_word_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
  */
 
 LJPEG_METHODDEF(void)
-start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
-  ppm_source_ptr source = (ppm_source_ptr) sinfo;
+  LJPEG_ppm_source_ptr source = (LJPEG_ppm_source_ptr) sinfo;
   int c;
   unsigned int w, h, maxval;
   boolean need_iobuffer, use_raw_buffer, need_rescale;
@@ -319,9 +319,9 @@ start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   }
 
   /* fetch the remaining header info */
-  w = read_pbm_integer(cinfo, source->pub.input_file);
-  h = read_pbm_integer(cinfo, source->pub.input_file);
-  maxval = read_pbm_integer(cinfo, source->pub.input_file);
+  w = LJPEG_read_pbm_integer(cinfo, source->pub.input_file);
+  h = LJPEG_read_pbm_integer(cinfo, source->pub.input_file);
+  maxval = LJPEG_read_pbm_integer(cinfo, source->pub.input_file);
 
   if (w <= 0 || h <= 0 || maxval <= 0) /* error check */
     ERREXIT(cinfo, JERR_PPM_NOT);
@@ -340,7 +340,7 @@ start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     cinfo->input_components = 1;
     cinfo->in_color_space = LJPEG_JCS_GRAYSCALE;
     TRACEMS2(cinfo, 1, JTRC_PGM_TEXT, w, h);
-    source->pub.get_pixel_rows = get_text_gray_row;
+    source->pub.get_pixel_rows = LJPEG_get_text_gray_row;
     need_iobuffer = FALSE;
     break;
 
@@ -348,7 +348,7 @@ start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     cinfo->input_components = 3;
     cinfo->in_color_space = LJPEG_JCS_RGB;
     TRACEMS2(cinfo, 1, JTRC_PPM_TEXT, w, h);
-    source->pub.get_pixel_rows = get_text_rgb_row;
+    source->pub.get_pixel_rows = LJPEG_get_text_rgb_row;
     need_iobuffer = FALSE;
     break;
 
@@ -357,13 +357,13 @@ start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     cinfo->in_color_space = LJPEG_JCS_GRAYSCALE;
     TRACEMS2(cinfo, 1, JTRC_PGM, w, h);
     if (maxval > 255) {
-      source->pub.get_pixel_rows = get_word_gray_row;
+      source->pub.get_pixel_rows = LJPEG_get_word_gray_row;
     } else if (maxval == MAXJSAMPLE && SIZEOF(LJPEG_JSAMPLE) == SIZEOF(U_CHAR)) {
-      source->pub.get_pixel_rows = get_raw_row;
+      source->pub.get_pixel_rows = LJPEG_get_raw_row;
       use_raw_buffer = TRUE;
       need_rescale = FALSE;
     } else {
-      source->pub.get_pixel_rows = get_scaled_gray_row;
+      source->pub.get_pixel_rows = LJPEG_get_scaled_gray_row;
     }
     break;
 
@@ -372,13 +372,13 @@ start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     cinfo->in_color_space = LJPEG_JCS_RGB;
     TRACEMS2(cinfo, 1, JTRC_PPM, w, h);
     if (maxval > 255) {
-      source->pub.get_pixel_rows = get_word_rgb_row;
+      source->pub.get_pixel_rows = LJPEG_get_word_rgb_row;
     } else if (maxval == MAXJSAMPLE && SIZEOF(LJPEG_JSAMPLE) == SIZEOF(U_CHAR)) {
-      source->pub.get_pixel_rows = get_raw_row;
+      source->pub.get_pixel_rows = LJPEG_get_raw_row;
       use_raw_buffer = TRUE;
       need_rescale = FALSE;
     } else {
-      source->pub.get_pixel_rows = get_scaled_rgb_row;
+      source->pub.get_pixel_rows = LJPEG_get_scaled_rgb_row;
     }
     break;
   }
@@ -430,7 +430,7 @@ start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
  */
 
 LJPEG_METHODDEF(void)
-finish_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
+LJPEG_finish_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   /* no work */
 }
@@ -443,15 +443,15 @@ finish_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 LJPEG_GLOBAL(LJPEG_cjpeg_source_ptr)
 LJPEG_jinit_read_ppm (LJPEG_j_compress_ptr cinfo)
 {
-  ppm_source_ptr source;
+  LJPEG_ppm_source_ptr source;
 
   /* Create module interface object */
-  source = (ppm_source_ptr)
+  source = (LJPEG_ppm_source_ptr)
       (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				  SIZEOF(ppm_source_struct));
+				  SIZEOF(LJPEG_ppm_source_struct));
   /* Fill in method ptrs, except get_pixel_rows which start_input sets */
-  source->pub.start_input = start_input_ppm;
-  source->pub.finish_input = finish_input_ppm;
+  source->pub.start_input = LJPEG_start_input_ppm;
+  source->pub.finish_input = LJPEG_finish_input_ppm;
 
   return (LJPEG_cjpeg_source_ptr) source;
 }

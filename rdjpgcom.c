@@ -74,7 +74,7 @@ static FILE * infile;		/* input JPEG file */
 
 /* Read one byte, testing for EOF */
 static int
-read_1_byte (void)
+LJPEG_read_1_byte (void)
 {
   int c;
 
@@ -87,7 +87,7 @@ read_1_byte (void)
 /* Read 2 bytes, convert to unsigned int */
 /* All 2-byte quantities in JPEG markers are MSB first */
 static unsigned int
-read_2_bytes (void)
+LJPEG_read_2_bytes (void)
 {
   int c1, c2;
 
@@ -145,16 +145,16 @@ LJPEG_next_marker (void)
   int discarded_bytes = 0;
 
   /* Find 0xFF byte; count and skip any non-FFs. */
-  c = read_1_byte();
+  c = LJPEG_read_1_byte();
   while (c != 0xFF) {
     discarded_bytes++;
-    c = read_1_byte();
+    c = LJPEG_read_1_byte();
   }
   /* Get marker code byte, swallowing any duplicate FF bytes.  Extra FFs
    * are legal as pad bytes, so don't count them in discarded_bytes.
    */
   do {
-    c = read_1_byte();
+    c = LJPEG_read_1_byte();
   } while (c == 0xFF);
 
   if (discarded_bytes != 0) {
@@ -202,14 +202,14 @@ LJPEG_skip_variable (void)
   unsigned int length;
 
   /* Get the marker parameter length count */
-  length = read_2_bytes();
+  length = LJPEG_read_2_bytes();
   /* Length includes itself, so must be at least 2 */
   if (length < 2)
     ERREXIT("Erroneous JPEG marker length");
   length -= 2;
   /* Skip over the remaining bytes */
   while (length > 0) {
-    (void) read_1_byte();
+    (void) LJPEG_read_1_byte();
     length--;
   }
 }
@@ -222,7 +222,7 @@ LJPEG_skip_variable (void)
  */
 
 static void
-process_COM (int raw)
+LJPEG_process_COM (int raw)
 {
   unsigned int length;
   int ch;
@@ -234,14 +234,14 @@ process_COM (int raw)
 #endif
 
   /* Get the marker parameter length count */
-  length = read_2_bytes();
+  length = LJPEG_read_2_bytes();
   /* Length includes itself, so must be at least 2 */
   if (length < 2)
     ERREXIT("Erroneous JPEG marker length");
   length -= 2;
 
   while (length > 0) {
-    ch = read_1_byte();
+    ch = LJPEG_read_1_byte();
     if (raw) {
       putc(ch, stdout);
     /* Emit the character in a readable form.
@@ -279,7 +279,7 @@ process_COM (int raw)
  */
 
 static void
-process_SOFn (int marker)
+LJPEG_process_SOFn (int marker)
 {
   unsigned int length;
   unsigned int image_height, image_width;
@@ -287,12 +287,12 @@ process_SOFn (int marker)
   const char * process;
   int ci;
 
-  length = read_2_bytes();	/* usual parameter length count */
+  length = LJPEG_read_2_bytes();	/* usual parameter length count */
 
-  data_precision = read_1_byte();
-  image_height = read_2_bytes();
-  image_width = read_2_bytes();
-  num_components = read_1_byte();
+  data_precision = LJPEG_read_1_byte();
+  image_height = LJPEG_read_2_bytes();
+  image_width = LJPEG_read_2_bytes();
+  num_components = LJPEG_read_1_byte();
 
   switch (marker) {
   case M_SOF0:	process = "Baseline";  break;
@@ -319,9 +319,9 @@ process_SOFn (int marker)
     ERREXIT("Bogus SOF marker length");
 
   for (ci = 0; ci < num_components; ci++) {
-    (void) read_1_byte();	/* Component ID code */
-    (void) read_1_byte();	/* H, V sampling factors */
-    (void) read_1_byte();	/* Quantization table number */
+    (void) LJPEG_read_1_byte();	/* Component ID code */
+    (void) LJPEG_read_1_byte();	/* H, V sampling factors */
+    (void) LJPEG_read_1_byte();	/* Quantization table number */
   }
 }
 
@@ -337,7 +337,7 @@ process_SOFn (int marker)
  */
 
 static int
-scan_JPEG_header (int verbose, int raw)
+LJPEG_scan_JPEG_header (int verbose, int raw)
 {
   int marker;
 
@@ -366,7 +366,7 @@ scan_JPEG_header (int verbose, int raw)
     case M_SOF14:		/* Differential progressive, arithmetic */
     case M_SOF15:		/* Differential lossless, arithmetic */
       if (verbose)
-	process_SOFn(marker);
+	LJPEG_process_SOFn(marker);
       else
 	LJPEG_skip_variable();
       break;
@@ -378,7 +378,7 @@ scan_JPEG_header (int verbose, int raw)
       return marker;
 
     case M_COM:
-      process_COM(raw);
+      LJPEG_process_COM(raw);
       break;
 
     case M_APP12:
@@ -387,7 +387,7 @@ scan_JPEG_header (int verbose, int raw)
        */
       if (verbose) {
 	printf("APP12 contains:\n");
-	process_COM(raw);
+	LJPEG_process_COM(raw);
       } else
 	LJPEG_skip_variable();
       break;
@@ -507,7 +507,7 @@ main (int argc, char **argv)
   }
 
   /* Scan the JPEG headers. */
-  (void) scan_JPEG_header(verbose, raw);
+  (void) LJPEG_scan_JPEG_header(verbose, raw);
 
   /* All done. */
   exit(EXIT_SUCCESS);

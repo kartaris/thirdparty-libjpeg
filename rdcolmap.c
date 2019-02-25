@@ -43,7 +43,7 @@
  */
 
 LOCAL(void)
-add_map_entry (LJPEG_j_decompress_ptr cinfo, int R, int G, int B)
+LJPEG_add_map_entry (LJPEG_j_decompress_ptr cinfo, int R, int G, int B)
 {
   LJPEG_JSAMPROW colormap0 = cinfo->colormap[0];
   LJPEG_JSAMPROW colormap1 = cinfo->colormap[1];
@@ -76,7 +76,7 @@ add_map_entry (LJPEG_j_decompress_ptr cinfo, int R, int G, int B)
  */
 
 LOCAL(void)
-read_gif_map (LJPEG_j_decompress_ptr cinfo, FILE * infile)
+LJPEG_read_gif_map (LJPEG_j_decompress_ptr cinfo, FILE * infile)
 {
   int header[13];
   int i, colormaplen;
@@ -106,7 +106,7 @@ read_gif_map (LJPEG_j_decompress_ptr cinfo, FILE * infile)
     B = getc(infile);
     if (R == EOF || G == EOF || B == EOF)
       ERREXIT(cinfo, JERR_BAD_CMAP_FILE);
-    add_map_entry(cinfo,
+    LJPEG_add_map_entry(cinfo,
 		  R << (BITS_IN_JSAMPLE-8),
 		  G << (BITS_IN_JSAMPLE-8),
 		  B << (BITS_IN_JSAMPLE-8));
@@ -118,7 +118,7 @@ read_gif_map (LJPEG_j_decompress_ptr cinfo, FILE * infile)
 
 
 LOCAL(int)
-pbm_getc (FILE * infile)
+LJPEG_pbm_getc (FILE * infile)
 /* Read next char, skipping over any comments */
 /* A comment/newline sequence is returned as a newline */
 {
@@ -135,7 +135,7 @@ pbm_getc (FILE * infile)
 
 
 LOCAL(unsigned int)
-read_pbm_integer (LJPEG_j_decompress_ptr cinfo, FILE * infile)
+LJPEG_read_pbm_integer (LJPEG_j_decompress_ptr cinfo, FILE * infile)
 /* Read an unsigned decimal integer from the PPM file */
 /* Swallows one trailing character after the integer */
 /* Note that on a 16-bit-int machine, only values up to 64k can be read. */
@@ -146,7 +146,7 @@ read_pbm_integer (LJPEG_j_decompress_ptr cinfo, FILE * infile)
   
   /* Skip any leading whitespace */
   do {
-    ch = pbm_getc(infile);
+    ch = LJPEG_pbm_getc(infile);
     if (ch == EOF)
       ERREXIT(cinfo, JERR_BAD_CMAP_FILE);
   } while (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r');
@@ -155,7 +155,7 @@ read_pbm_integer (LJPEG_j_decompress_ptr cinfo, FILE * infile)
     ERREXIT(cinfo, JERR_BAD_CMAP_FILE);
   
   val = ch - '0';
-  while ((ch = pbm_getc(infile)) >= '0' && ch <= '9') {
+  while ((ch = LJPEG_pbm_getc(infile)) >= '0' && ch <= '9') {
     val *= 10;
     val += ch - '0';
   }
@@ -168,7 +168,7 @@ read_pbm_integer (LJPEG_j_decompress_ptr cinfo, FILE * infile)
  */
 
 LOCAL(void)
-read_ppm_map (LJPEG_j_decompress_ptr cinfo, FILE * infile)
+LJPEG_read_ppm_map (LJPEG_j_decompress_ptr cinfo, FILE * infile)
 {
   int c;
   unsigned int w, h, maxval, row, col;
@@ -178,9 +178,9 @@ read_ppm_map (LJPEG_j_decompress_ptr cinfo, FILE * infile)
   c = getc(infile);		/* save format discriminator for a sec */
 
   /* while we fetch the remaining header info */
-  w = read_pbm_integer(cinfo, infile);
-  h = read_pbm_integer(cinfo, infile);
-  maxval = read_pbm_integer(cinfo, infile);
+  w = LJPEG_read_pbm_integer(cinfo, infile);
+  h = LJPEG_read_pbm_integer(cinfo, infile);
+  maxval = LJPEG_read_pbm_integer(cinfo, infile);
 
   if (w <= 0 || h <= 0 || maxval <= 0) /* error check */
     ERREXIT(cinfo, JERR_BAD_CMAP_FILE);
@@ -193,10 +193,10 @@ read_ppm_map (LJPEG_j_decompress_ptr cinfo, FILE * infile)
   case '3':			/* it's a text-format PPM file */
     for (row = 0; row < h; row++) {
       for (col = 0; col < w; col++) {
-	R = read_pbm_integer(cinfo, infile);
-	G = read_pbm_integer(cinfo, infile);
-	B = read_pbm_integer(cinfo, infile);
-	add_map_entry(cinfo, R, G, B);
+	R = LJPEG_read_pbm_integer(cinfo, infile);
+	G = LJPEG_read_pbm_integer(cinfo, infile);
+	B = LJPEG_read_pbm_integer(cinfo, infile);
+	LJPEG_add_map_entry(cinfo, R, G, B);
       }
     }
     break;
@@ -209,7 +209,7 @@ read_ppm_map (LJPEG_j_decompress_ptr cinfo, FILE * infile)
 	B = getc(infile);
 	if (R == EOF || G == EOF || B == EOF)
 	  ERREXIT(cinfo, JERR_BAD_CMAP_FILE);
-	add_map_entry(cinfo, R, G, B);
+	LJPEG_add_map_entry(cinfo, R, G, B);
       }
     }
     break;
@@ -239,10 +239,10 @@ LJPEG_read_color_map (LJPEG_j_decompress_ptr cinfo, FILE * infile)
   /* Read first byte to determine file format */
   switch (getc(infile)) {
   case 'G':
-    read_gif_map(cinfo, infile);
+    LJPEG_read_gif_map(cinfo, infile);
     break;
   case 'P':
-    read_ppm_map(cinfo, infile);
+    LJPEG_read_ppm_map(cinfo, infile);
     break;
   default:
     ERREXIT(cinfo, JERR_BAD_CMAP_FILE);

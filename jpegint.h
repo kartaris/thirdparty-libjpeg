@@ -321,7 +321,7 @@ struct LJPEG_jpeg_color_quantizer {
 #define LJPEG_jinit_memory_mgr	jIMemMgr
 #define LJPEG_jdiv_round_up		jDivRound
 #define LJPEG_jround_up		jRound
-#define jzero_far		jZeroFar
+#define LJPEG_jzero_far		jZeroFar
 #define LJPEG_jcopy_sample_rows	jCopySamples
 #define LJPEG_jcopy_block_row		jCopyBlocks
 #define LJPEG_jpeg_zigzag_order	jZIGTable
@@ -350,8 +350,8 @@ struct LJPEG_jpeg_color_quantizer {
 #ifdef USE_FMEM
 #define FMEMZERO(target,size)	_fmemset((void FAR *)(target), 0, (size_t)(size))
 #else
-EXTERN(void) jzero_far LJPEG_JPP((void FAR * target, size_t bytestozero));
-#define FMEMZERO(target,size)	jzero_far(target, size)
+EXTERN(void) LJPEG_jzero_far LJPEG_JPP((void FAR * target, size_t bytestozero));
+#define FMEMZERO(target,size)	LJPEG_jzero_far(target, size)
 #endif
 #endif
 

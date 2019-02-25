@@ -93,7 +93,7 @@ typedef struct {
   struct LJPEG_jpeg_marker_reader pub; /* public fields */
 
   /* Application-overridable marker processing methods */
-  LJPEG_jpeg_marker_parser_method process_COM;
+  LJPEG_jpeg_marker_parser_method LJPEG_process_COM;
   LJPEG_jpeg_marker_parser_method process_APPn[16];
 
   /* Limit on marker data length to save for each marker type */
@@ -1206,7 +1206,7 @@ LJPEG_read_markers (LJPEG_j_decompress_ptr cinfo)
       break;
 
     case M_COM:
-      if (! (*((LJPEG_my_marker_ptr) cinfo->marker)->process_COM) (cinfo))
+      if (! (*((LJPEG_my_marker_ptr) cinfo->marker)->LJPEG_process_COM) (cinfo))
 	return JPEG_SUSPENDED;
       break;
 
@@ -1422,7 +1422,7 @@ LJPEG_jinit_marker_reader (LJPEG_j_decompress_ptr cinfo)
    * By default, we examine and then discard APP0 and APP14,
    * but simply discard COM and all other APPn.
    */
-  marker->process_COM = LJPEG_skip_variable;
+  marker->LJPEG_process_COM = LJPEG_skip_variable;
   marker->length_limit_COM = 0;
   for (i = 0; i < 16; i++) {
     marker->process_APPn[i] = LJPEG_skip_variable;
@@ -1474,7 +1474,7 @@ LJPEG_jpeg_save_markers (LJPEG_j_decompress_ptr cinfo, int marker_code,
   }
 
   if (marker_code == (int) M_COM) {
-    marker->process_COM = processor;
+    marker->LJPEG_process_COM = processor;
     marker->length_limit_COM = length_limit;
   } else if (marker_code >= (int) M_APP0 && marker_code <= (int) M_APP15) {
     marker->process_APPn[marker_code - (int) M_APP0] = processor;
@@ -1497,7 +1497,7 @@ LJPEG_jpeg_set_marker_processor (LJPEG_j_decompress_ptr cinfo, int marker_code,
   LJPEG_my_marker_ptr marker = (LJPEG_my_marker_ptr) cinfo->marker;
 
   if (marker_code == (int) M_COM)
-    marker->process_COM = routine;
+    marker->LJPEG_process_COM = routine;
   else if (marker_code >= (int) M_APP0 && marker_code <= (int) M_APP15)
     marker->process_APPn[marker_code - (int) M_APP0] = routine;
   else
