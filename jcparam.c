@@ -104,7 +104,7 @@ jpeg_set_linear_quality (LJPEG_j_compress_ptr cinfo, int scale_factor,
 			 boolean force_baseline)
 /* Set or change the 'quality' (quantization) setting, using default tables
  * and a straight percentage-scaling quality scale.  In most cases it's better
- * to use jpeg_set_quality (below); this entry point is provided for
+ * to use LJPEG_jpeg_set_quality (below); this entry point is provided for
  * applications that insist on a linear percentage scaling.
  */
 {
@@ -141,7 +141,7 @@ jpeg_quality_scaling (int quality)
 }
 
 LJPEG_GLOBAL(void)
-jpeg_set_quality (LJPEG_j_compress_ptr cinfo, int quality, boolean force_baseline)
+LJPEG_jpeg_set_quality (LJPEG_j_compress_ptr cinfo, int quality, boolean force_baseline)
 /* Set or change the 'quality' (quantization) setting, using default tables.
  * This is the standard quality-adjusting entry point for typical user
  * interfaces; only those who want detailed control over quantization tables
@@ -276,7 +276,7 @@ std_huff_tables (LJPEG_j_compress_ptr cinfo)
  * your code will still work (they'll be set to reasonable defaults).
  */
 LJPEG_GLOBAL(void)
-jpeg_set_defaults (LJPEG_j_compress_ptr cinfo)
+LJPEG_jpeg_set_defaults (LJPEG_j_compress_ptr cinfo)
 {
   int i;
 
@@ -299,7 +299,7 @@ jpeg_set_defaults (LJPEG_j_compress_ptr cinfo)
   cinfo->scale_denom = 1;
   cinfo->data_precision = BITS_IN_JSAMPLE;
   /* Set up two quantization tables using default quality of 75 */
-  jpeg_set_quality(cinfo, 75, TRUE);
+  LJPEG_jpeg_set_quality(cinfo, 75, TRUE);
   /* Set up two Huffman tables */
   std_huff_tables(cinfo);
 

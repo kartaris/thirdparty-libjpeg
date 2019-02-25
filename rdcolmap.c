@@ -45,9 +45,9 @@
 LOCAL(void)
 add_map_entry (LJPEG_j_decompress_ptr cinfo, int R, int G, int B)
 {
-  JSAMPROW colormap0 = cinfo->colormap[0];
-  JSAMPROW colormap1 = cinfo->colormap[1];
-  JSAMPROW colormap2 = cinfo->colormap[2];
+  LJPEG_JSAMPROW colormap0 = cinfo->colormap[0];
+  LJPEG_JSAMPROW colormap1 = cinfo->colormap[1];
+  LJPEG_JSAMPROW colormap2 = cinfo->colormap[2];
   int ncolors = cinfo->actual_number_of_colors;
   int index;
 

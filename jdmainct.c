@@ -124,7 +124,7 @@ typedef struct {
   /* Remaining fields are only used in the context case. */
 
   /* These are the master pointers to the funny-order pointer lists. */
-  JSAMPIMAGE xbuffer[2];	/* pointers to weird pointer lists */
+  LJPEG_JSAMPIMAGE xbuffer[2];	/* pointers to weird pointer lists */
 
   int whichptr;			/* indicates which pointer set is now in use */
   int context_state;		/* process_data state machine status */
@@ -142,14 +142,14 @@ typedef my_main_controller * my_main_ptr;
 
 /* Forward declarations */
 LJPEG_METHODDEF(void) process_data_simple_main
-	JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY output_buf,
+	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY output_buf,
 	     LJPEG_JDIMENSION *out_row_ctr, LJPEG_JDIMENSION out_rows_avail));
 LJPEG_METHODDEF(void) process_data_context_main
-	JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY output_buf,
+	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY output_buf,
 	     LJPEG_JDIMENSION *out_row_ctr, LJPEG_JDIMENSION out_rows_avail));
 #ifdef QUANT_2PASS_SUPPORTED
 LJPEG_METHODDEF(void) process_data_crank_post
-	JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY output_buf,
+	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY output_buf,
 	     LJPEG_JDIMENSION *out_row_ctr, LJPEG_JDIMENSION out_rows_avail));
 #endif
 
@@ -169,7 +169,7 @@ alloc_funny_pointers (LJPEG_j_decompress_ptr cinfo)
   /* Get top-level space for component array pointers.
    * We alloc both arrays with one call to save a few cycles.
    */
-  mainp->xbuffer[0] = (JSAMPIMAGE)
+  mainp->xbuffer[0] = (LJPEG_JSAMPIMAGE)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				cinfo->num_components * 2 * SIZEOF(LJPEG_JSAMPARRAY));
   mainp->xbuffer[1] = mainp->xbuffer[0] + cinfo->num_components;
@@ -183,7 +183,7 @@ alloc_funny_pointers (LJPEG_j_decompress_ptr cinfo)
      */
     xbuf = (LJPEG_JSAMPARRAY)
       (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				  2 * (rgroup * (M + 4)) * SIZEOF(JSAMPROW));
+				  2 * (rgroup * (M + 4)) * SIZEOF(LJPEG_JSAMPROW));
     xbuf += rgroup;		/* want one row group at negative offsets */
     mainp->xbuffer[0][ci] = xbuf;
     xbuf += rgroup * (M + 4);
@@ -305,7 +305,7 @@ set_bottom_pointers (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-start_pass_main (LJPEG_j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
+LJPEG_start_pass_main (LJPEG_j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
 {
   my_main_ptr mainp = (my_main_ptr) cinfo->main;
 
@@ -461,7 +461,7 @@ process_data_crank_post (LJPEG_j_decompress_ptr cinfo,
 			 LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
 			 LJPEG_JDIMENSION out_rows_avail)
 {
-  (*cinfo->post->post_process_data) (cinfo, (JSAMPIMAGE) NULL,
+  (*cinfo->post->post_process_data) (cinfo, (LJPEG_JSAMPIMAGE) NULL,
 				     (LJPEG_JDIMENSION *) NULL, (LJPEG_JDIMENSION) 0,
 				     output_buf, out_row_ctr, out_rows_avail);
 }
@@ -483,7 +483,7 @@ jinit_d_main_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_main_controller));
   cinfo->main = &mainp->pub;
-  mainp->pub.start_pass = start_pass_main;
+  mainp->pub.LJPEG_start_pass = LJPEG_start_pass_main;
 
   if (need_full_buffer)		/* shouldn't happen */
     ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);

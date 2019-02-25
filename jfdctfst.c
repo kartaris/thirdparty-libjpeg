@@ -118,7 +118,7 @@ jpeg_fdct_ifast (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION 
   DCTELEM tmp10, tmp11, tmp12, tmp13;
   DCTELEM z1, z2, z3, z4, z5, z11, z13;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 

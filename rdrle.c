@@ -205,7 +205,7 @@ LJPEG_METHODDEF(LJPEG_JDIMENSION)
 get_pseudocolor_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   rle_source_ptr source = (rle_source_ptr) sinfo;
-  JSAMPROW src_row, dest_row;
+  LJPEG_JSAMPROW src_row, dest_row;
   LJPEG_JDIMENSION col;
   rle_map *colormap;
   int val;
@@ -242,7 +242,7 @@ load_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   rle_source_ptr source = (rle_source_ptr) sinfo;
   LJPEG_JDIMENSION row, col;
-  JSAMPROW  scanline, red_ptr, green_ptr, blue_ptr;
+  LJPEG_JSAMPROW  scanline, red_ptr, green_ptr, blue_ptr;
   rle_pixel **rle_row;
   rle_map *colormap;
   char channel;

@@ -45,9 +45,9 @@
 #include "jmemsys.h"		/* import the system-dependent declarations */
 
 #ifndef HAVE_STDLIB_H		/* <stdlib.h> should declare these */
-extern void * malloc JPP((size_t size));
-extern void free JPP((void *ptr));
-extern char * getenv JPP((const char * name));
+extern void * malloc LJPEG_JPP((size_t size));
+extern void free LJPEG_JPP((void *ptr));
+extern char * getenv LJPEG_JPP((const char * name));
 #endif
 
 #ifdef NEED_FAR_POINTERS
@@ -104,17 +104,17 @@ typedef struct {		/* registers for calling EMS driver */
 	void far * ds_si;
       } EMScontext;
 
-extern short far jdos_open JPP((short far * handle, char far * filename));
-extern short far jdos_close JPP((short handle));
-extern short far jdos_seek JPP((short handle, long offset));
-extern short far jdos_read JPP((short handle, void far * buffer,
+extern short far jdos_open LJPEG_JPP((short far * handle, char far * filename));
+extern short far jdos_close LJPEG_JPP((short handle));
+extern short far jdos_seek LJPEG_JPP((short handle, long offset));
+extern short far jdos_read LJPEG_JPP((short handle, void far * buffer,
 				unsigned short count));
-extern short far jdos_write JPP((short handle, void far * buffer,
+extern short far jdos_write LJPEG_JPP((short handle, void far * buffer,
 				 unsigned short count));
-extern void far jxms_getdriver JPP((XMSDRIVER far *));
-extern void far jxms_calldriver JPP((XMSDRIVER, XMScontext far *));
-extern short far jems_available JPP((void));
-extern void far jems_calldriver JPP((EMScontext far *));
+extern void far jxms_getdriver LJPEG_JPP((XMSDRIVER far *));
+extern void far jxms_calldriver LJPEG_JPP((XMSDRIVER, XMScontext far *));
+extern short far jems_available LJPEG_JPP((void));
+extern void far jems_calldriver LJPEG_JPP((EMScontext far *));
 
 
 /*

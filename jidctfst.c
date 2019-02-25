@@ -175,7 +175,7 @@ jpeg_idct_ifast (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
   JCOEFPTR inptr;
   IFAST_MULT_TYPE * quantptr;
   int * wsptr;
-  JSAMPROW outptr;
+  LJPEG_JSAMPROW outptr;
   JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[DCTSIZE2];	/* buffers data between passes */

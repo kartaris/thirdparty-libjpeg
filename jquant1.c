@@ -334,7 +334,7 @@ LOCAL(void)
 create_colorindex (LJPEG_j_decompress_ptr cinfo)
 {
   my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
-  JSAMPROW indexptr;
+  LJPEG_JSAMPROW indexptr;
   int i,j,k, nci, blksize, val, pad;
 
   /* For ordered dither, we pad the color index tables by MAXJSAMPLE in
@@ -464,7 +464,7 @@ color_quantize (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
   my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
   LJPEG_JSAMPARRAY colorindex = cquantize->colorindex;
   register int pixcode, ci;
-  register JSAMPROW ptrin, ptrout;
+  register LJPEG_JSAMPROW ptrin, ptrout;
   int row;
   LJPEG_JDIMENSION col;
   LJPEG_JDIMENSION width = cinfo->output_width;
@@ -491,10 +491,10 @@ color_quantize3 (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 {
   my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
   register int pixcode;
-  register JSAMPROW ptrin, ptrout;
-  JSAMPROW colorindex0 = cquantize->colorindex[0];
-  JSAMPROW colorindex1 = cquantize->colorindex[1];
-  JSAMPROW colorindex2 = cquantize->colorindex[2];
+  register LJPEG_JSAMPROW ptrin, ptrout;
+  LJPEG_JSAMPROW colorindex0 = cquantize->colorindex[0];
+  LJPEG_JSAMPROW colorindex1 = cquantize->colorindex[1];
+  LJPEG_JSAMPROW colorindex2 = cquantize->colorindex[2];
   int row;
   LJPEG_JDIMENSION col;
   LJPEG_JDIMENSION width = cinfo->output_width;
@@ -518,9 +518,9 @@ quantize_ord_dither (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 /* General case, with ordered dithering */
 {
   my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
-  register JSAMPROW input_ptr;
-  register JSAMPROW output_ptr;
-  JSAMPROW colorindex_ci;
+  register LJPEG_JSAMPROW input_ptr;
+  register LJPEG_JSAMPROW output_ptr;
+  LJPEG_JSAMPROW colorindex_ci;
   int * dither;			/* points to active row of dither matrix */
   int row_index, col_index;	/* current indexes into dither matrix */
   int nc = cinfo->out_color_components;
@@ -569,11 +569,11 @@ quantize3_ord_dither (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 {
   my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
   register int pixcode;
-  register JSAMPROW input_ptr;
-  register JSAMPROW output_ptr;
-  JSAMPROW colorindex0 = cquantize->colorindex[0];
-  JSAMPROW colorindex1 = cquantize->colorindex[1];
-  JSAMPROW colorindex2 = cquantize->colorindex[2];
+  register LJPEG_JSAMPROW input_ptr;
+  register LJPEG_JSAMPROW output_ptr;
+  LJPEG_JSAMPROW colorindex0 = cquantize->colorindex[0];
+  LJPEG_JSAMPROW colorindex1 = cquantize->colorindex[1];
+  LJPEG_JSAMPROW colorindex2 = cquantize->colorindex[2];
   int * dither0;		/* points to active row of dither matrix */
   int * dither1;
   int * dither2;
@@ -619,10 +619,10 @@ quantize_fs_dither (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
   LOCFSERROR bnexterr;		/* error for below/next col */
   LOCFSERROR delta;
   register FSERRPTR errorptr;	/* => fserrors[] at column before current */
-  register JSAMPROW input_ptr;
-  register JSAMPROW output_ptr;
-  JSAMPROW colorindex_ci;
-  JSAMPROW colormap_ci;
+  register LJPEG_JSAMPROW input_ptr;
+  register LJPEG_JSAMPROW output_ptr;
+  LJPEG_JSAMPROW colorindex_ci;
+  LJPEG_JSAMPROW colormap_ci;
   int pixcode;
   int nc = cinfo->out_color_components;
   int dir;			/* 1 for left-to-right, -1 for right-to-left */
@@ -739,7 +739,7 @@ alloc_fs_workspace (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-start_pass_1_quant (LJPEG_j_decompress_ptr cinfo, boolean is_pre_scan)
+LJPEG_start_pass_1_quant (LJPEG_j_decompress_ptr cinfo, boolean is_pre_scan)
 {
   my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
   size_t arraysize;
@@ -796,7 +796,7 @@ start_pass_1_quant (LJPEG_j_decompress_ptr cinfo, boolean is_pre_scan)
  */
 
 LJPEG_METHODDEF(void)
-finish_pass_1_quant (LJPEG_j_decompress_ptr cinfo)
+LJPEG_finish_pass_1_quant (LJPEG_j_decompress_ptr cinfo)
 {
   /* no work in 1-pass case */
 }
@@ -826,8 +826,8 @@ jinit_1pass_quantizer (LJPEG_j_decompress_ptr cinfo)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_cquantizer));
   cinfo->cquantize = (struct jpeg_color_quantizer *) cquantize;
-  cquantize->pub.start_pass = start_pass_1_quant;
-  cquantize->pub.finish_pass = finish_pass_1_quant;
+  cquantize->pub.LJPEG_start_pass = LJPEG_start_pass_1_quant;
+  cquantize->pub.LJPEG_finish_pass = LJPEG_finish_pass_1_quant;
   cquantize->pub.new_color_map = new_color_map_1_quant;
   cquantize->fserrors[0] = NULL; /* Flag FS workspace not allocated */
   cquantize->odither[0] = NULL;	/* Also flag odither arrays not allocated */

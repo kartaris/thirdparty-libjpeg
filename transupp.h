@@ -160,25 +160,25 @@ typedef struct {
 
 /* Parse a crop specification (written in X11 geometry style) */
 EXTERN(boolean) jtransform_parse_crop_spec
-	JPP((jpeg_transform_info *info, const char *spec));
+	LJPEG_JPP((jpeg_transform_info *info, const char *spec));
 /* Request any required workspace */
 EXTERN(boolean) jtransform_request_workspace
-	JPP((LJPEG_j_decompress_ptr srcinfo, jpeg_transform_info *info));
+	LJPEG_JPP((LJPEG_j_decompress_ptr srcinfo, jpeg_transform_info *info));
 /* Adjust output image parameters */
 EXTERN(jvirt_barray_ptr *) jtransform_adjust_parameters
-	JPP((LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
+	LJPEG_JPP((LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	     jvirt_barray_ptr *src_coef_arrays,
 	     jpeg_transform_info *info));
 /* Execute the actual transformation, if any */
 EXTERN(void) jtransform_execute_transform
-	JPP((LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
+	LJPEG_JPP((LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	     jvirt_barray_ptr *src_coef_arrays,
 	     jpeg_transform_info *info));
 /* Determine whether lossless transformation is perfectly
  * possible for a specified image and transformation.
  */
 EXTERN(boolean) jtransform_perfect_transform
-	JPP((LJPEG_JDIMENSION image_width, LJPEG_JDIMENSION image_height,
+	LJPEG_JPP((LJPEG_JDIMENSION image_width, LJPEG_JDIMENSION image_height,
 	     int MCU_width, int MCU_height,
 	     JXFORM_CODE transform));
 
@@ -206,8 +206,8 @@ typedef enum {
 
 /* Setup decompression object to save desired markers in memory */
 EXTERN(void) jcopy_markers_setup
-	JPP((LJPEG_j_decompress_ptr srcinfo, JCOPY_OPTION option));
+	LJPEG_JPP((LJPEG_j_decompress_ptr srcinfo, JCOPY_OPTION option));
 /* Copy markers saved in the given source object to the destination object */
 EXTERN(void) jcopy_markers_execute
-	JPP((LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
+	LJPEG_JPP((LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	     JCOPY_OPTION option));

@@ -183,7 +183,7 @@ jcopy_sample_rows (LJPEG_JSAMPARRAY input_array, int source_row,
  * The source and destination arrays must be at least as wide as num_cols.
  */
 {
-  register JSAMPROW inptr, outptr;
+  register LJPEG_JSAMPROW inptr, outptr;
 #ifdef FMEMCOPY
   register size_t count = (size_t) (num_cols * SIZEOF(JSAMPLE));
 #else
@@ -208,7 +208,7 @@ jcopy_sample_rows (LJPEG_JSAMPARRAY input_array, int source_row,
 
 
 LJPEG_GLOBALvoid)
-jcopy_block_row (JBLOCKROW input_row, JBLOCKROW output_row,
+jcopy_block_row (LJPEG_JBLOCKROW input_row, LJPEG_JBLOCKROW output_row,
 		 LJPEG_JDIMENSION num_blocks)
 /* Copy a row of coefficient blocks from one place to another. */
 {

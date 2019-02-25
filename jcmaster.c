@@ -656,7 +656,7 @@ per_scan_setup (LJPEG_j_compress_ptr cinfo)
 /*
  * Per-pass setup.
  * This is called at the beginning of each pass.  We determine which modules
- * will be active during this pass and give them appropriate start_pass calls.
+ * will be active during this pass and give them appropriate LJPEG_start_pass calls.
  * We also set is_last_pass to indicate whether any more passes will be
  * required.
  */
@@ -674,21 +674,21 @@ prepare_for_pass (LJPEG_j_compress_ptr cinfo)
     select_scan_parameters(cinfo);
     per_scan_setup(cinfo);
     if (! cinfo->raw_data_in) {
-      (*cinfo->cconvert->start_pass) (cinfo);
-      (*cinfo->downsample->start_pass) (cinfo);
-      (*cinfo->prep->start_pass) (cinfo, JBUF_PASS_THRU);
+      (*cinfo->cconvert->LJPEG_start_pass) (cinfo);
+      (*cinfo->downsample->LJPEG_start_pass) (cinfo);
+      (*cinfo->prep->LJPEG_start_pass) (cinfo, JBUF_PASS_THRU);
     }
-    (*cinfo->fdct->start_pass) (cinfo);
-    (*cinfo->entropy->start_pass) (cinfo, cinfo->optimize_coding);
-    (*cinfo->coef->start_pass) (cinfo,
+    (*cinfo->fdct->LJPEG_start_pass) (cinfo);
+    (*cinfo->entropy->LJPEG_start_pass) (cinfo, cinfo->optimize_coding);
+    (*cinfo->coef->LJPEG_start_pass) (cinfo,
 				(master->total_passes > 1 ?
 				 JBUF_SAVE_AND_PASS : JBUF_PASS_THRU));
-    (*cinfo->main->start_pass) (cinfo, JBUF_PASS_THRU);
+    (*cinfo->main->LJPEG_start_pass) (cinfo, JBUF_PASS_THRU);
     if (cinfo->optimize_coding) {
       /* No immediate data output; postpone writing frame/scan headers */
       master->pub.call_pass_startup = FALSE;
     } else {
-      /* Will write frame/scan headers at first jpeg_write_scanlines call */
+      /* Will write frame/scan headers at first LJPEG_jpeg_write_scanlines call */
       master->pub.call_pass_startup = TRUE;
     }
     break;
@@ -698,8 +698,8 @@ prepare_for_pass (LJPEG_j_compress_ptr cinfo)
     select_scan_parameters(cinfo);
     per_scan_setup(cinfo);
     if (cinfo->Ss != 0 || cinfo->Ah == 0) {
-      (*cinfo->entropy->start_pass) (cinfo, TRUE);
-      (*cinfo->coef->start_pass) (cinfo, JBUF_CRANK_DEST);
+      (*cinfo->entropy->LJPEG_start_pass) (cinfo, TRUE);
+      (*cinfo->coef->LJPEG_start_pass) (cinfo, JBUF_CRANK_DEST);
       master->pub.call_pass_startup = FALSE;
       break;
     }
@@ -717,8 +717,8 @@ prepare_for_pass (LJPEG_j_compress_ptr cinfo)
       select_scan_parameters(cinfo);
       per_scan_setup(cinfo);
     }
-    (*cinfo->entropy->start_pass) (cinfo, FALSE);
-    (*cinfo->coef->start_pass) (cinfo, JBUF_CRANK_DEST);
+    (*cinfo->entropy->LJPEG_start_pass) (cinfo, FALSE);
+    (*cinfo->coef->LJPEG_start_pass) (cinfo, JBUF_CRANK_DEST);
     /* We emit frame/scan headers now */
     if (master->scan_number == 0)
       (*cinfo->marker->write_frame_header) (cinfo);
@@ -741,11 +741,11 @@ prepare_for_pass (LJPEG_j_compress_ptr cinfo)
 
 /*
  * Special start-of-pass hook.
- * This is called by jpeg_write_scanlines if call_pass_startup is TRUE.
+ * This is called by LJPEG_jpeg_write_scanlines if call_pass_startup is TRUE.
  * In single-pass processing, we need this hook because we don't want to
  * write frame/scan headers during LJPEG_jpeg_start_compress; we want to let the
  * application write COM markers etc. between LJPEG_jpeg_start_compress and the
- * jpeg_write_scanlines loop.
+ * LJPEG_jpeg_write_scanlines loop.
  * In multi-pass processing, this routine is not used.
  */
 
@@ -764,14 +764,14 @@ pass_startup (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-finish_pass_master (LJPEG_j_compress_ptr cinfo)
+LJPEG_finish_pass_master (LJPEG_j_compress_ptr cinfo)
 {
   my_master_ptr master = (my_master_ptr) cinfo->master;
 
   /* The entropy coder always needs an end-of-pass call,
    * either to analyze statistics or to flush its output buffer.
    */
-  (*cinfo->entropy->finish_pass) (cinfo);
+  (*cinfo->entropy->LJPEG_finish_pass) (cinfo);
 
   /* Update state for next pass */
   switch (master->pass_type) {
@@ -814,7 +814,7 @@ jinit_c_master_control (LJPEG_j_compress_ptr cinfo, boolean transcode_only)
   cinfo->master = (struct jpeg_comp_master *) master;
   master->pub.prepare_for_pass = prepare_for_pass;
   master->pub.pass_startup = pass_startup;
-  master->pub.finish_pass = finish_pass_master;
+  master->pub.LJPEG_finish_pass = LJPEG_finish_pass_master;
   master->pub.is_last_pass = FALSE;
 
   /* Validate parameters, determine derived values */

@@ -53,11 +53,11 @@ typedef my_main_controller * my_main_ptr;
 
 /* Forward declarations */
 LJPEG_METHODDEF(void) process_data_simple_main
-	JPP((LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
+	LJPEG_JPP((LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 	     LJPEG_JDIMENSION *in_row_ctr, LJPEG_JDIMENSION in_rows_avail));
 #ifdef FULL_MAIN_BUFFER_SUPPORTED
 LJPEG_METHODDEF(void) process_data_buffer_main
-	JPP((LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
+	LJPEG_JPP((LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 	     LJPEG_JDIMENSION *in_row_ctr, LJPEG_JDIMENSION in_rows_avail));
 #endif
 
@@ -67,7 +67,7 @@ LJPEG_METHODDEF(void) process_data_buffer_main
  */
 
 LJPEG_METHODDEF(void)
-start_pass_main (LJPEG_j_compress_ptr cinfo, J_BUF_MODE pass_mode)
+LJPEG_start_pass_main (LJPEG_j_compress_ptr cinfo, J_BUF_MODE pass_mode)
 {
   my_main_ptr mainp = (my_main_ptr) cinfo->main;
 
@@ -133,7 +133,7 @@ process_data_simple_main (LJPEG_j_compress_ptr cinfo,
       return;
 
     /* Send the completed row to the compressor */
-    if (! (*cinfo->coef->compress_data) (cinfo, mainp->buffer)) {
+    if (! (*cinfo->coef->LJPEG_compress_data) (cinfo, mainp->buffer)) {
       /* If compressor did not consume the whole row, then we must need to
        * suspend processing and return to the application.  In this situation
        * we pretend we didn't yet consume the last input row; otherwise, if
@@ -209,7 +209,7 @@ process_data_buffer_main (LJPEG_j_compress_ptr cinfo,
 
     /* Emit data, unless this is a sink-only pass. */
     if (mainp->pass_mode != JBUF_SAVE_SOURCE) {
-      if (! (*cinfo->coef->compress_data) (cinfo, mainp->buffer)) {
+      if (! (*cinfo->coef->LJPEG_compress_data) (cinfo, mainp->buffer)) {
 	/* If compressor did not consume the whole row, then we must need to
 	 * suspend processing and return to the application.  In this situation
 	 * we pretend we didn't yet consume the last input row; otherwise, if
@@ -255,7 +255,7 @@ jinit_c_main_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buffer)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_main_controller));
   cinfo->main = &mainp->pub;
-  mainp->pub.start_pass = start_pass_main;
+  mainp->pub.LJPEG_start_pass = LJPEG_start_pass_main;
 
   /* We don't need to create a buffer in raw-data mode. */
   if (cinfo->raw_data_in)

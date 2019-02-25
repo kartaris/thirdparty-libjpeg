@@ -70,7 +70,7 @@ which is used like this:
 Note the set of parentheses surrounding the parameter list.
 
 A similar solution is used for forward and external function declarations
-(see the EXTERN and JPP macros).
+(see the EXTERN and LJPEG_JPP macros).
 
 If the code is to work on non-ANSI compilers, we cannot rely on a prototype
 declaration to coerce actual parameters into the right types.  Therefore, use

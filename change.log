@@ -84,7 +84,7 @@ Thank to Volker Grabsch for the suggestion.
 Version 8a  28-Feb-2010
 -----------------------
 
-Writing tables-only datastreams via jpeg_write_tables works again.
+Writing tables-only datastreams via LJPEG_jpeg_write_tables works again.
 
 Support 32-bit BMPs (RGB image with Alpha channel) for read in cjpeg.
 Thank to Brett Blackham for the suggestion.
@@ -304,7 +304,7 @@ Version 5b  15-Mar-95
 
 Correct bugs with grayscale images having v_samp_factor > 1.
 
-jpeg_write_raw_data() now supports output suspension.
+LJPEG_jpeg_write_raw_data() now supports output suspension.
 
 Correct bugs in "configure" script for case of compiling in
 a directory other than the one containing the source files.

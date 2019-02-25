@@ -402,7 +402,7 @@ master_selection (LJPEG_j_decompress_ptr cinfo)
  * Per-pass setup.
  * This is called at the beginning of each output pass.  We determine which
  * modules will be active during this pass and give them appropriate
- * start_pass calls.  We also set is_dummy_pass to indicate whether this
+ * LJPEG_start_pass calls.  We also set is_dummy_pass to indicate whether this
  * is a "real" output pass or a dummy pass for color quantization.
  * (In the latter case, jdapistd.c will crank the pass to completion.)
  */
@@ -416,9 +416,9 @@ prepare_for_output_pass (LJPEG_j_decompress_ptr cinfo)
 #ifdef QUANT_2PASS_SUPPORTED
     /* Final pass of 2-pass quantization */
     master->pub.is_dummy_pass = FALSE;
-    (*cinfo->cquantize->start_pass) (cinfo, FALSE);
-    (*cinfo->post->start_pass) (cinfo, JBUF_CRANK_DEST);
-    (*cinfo->main->start_pass) (cinfo, JBUF_CRANK_DEST);
+    (*cinfo->cquantize->LJPEG_start_pass) (cinfo, FALSE);
+    (*cinfo->post->LJPEG_start_pass) (cinfo, JBUF_CRANK_DEST);
+    (*cinfo->main->LJPEG_start_pass) (cinfo, JBUF_CRANK_DEST);
 #else
     ERREXIT(cinfo, JERR_NOT_COMPILED);
 #endif /* QUANT_2PASS_SUPPORTED */
@@ -434,17 +434,17 @@ prepare_for_output_pass (LJPEG_j_decompress_ptr cinfo)
 	ERREXIT(cinfo, JERR_MODE_CHANGE);
       }
     }
-    (*cinfo->idct->start_pass) (cinfo);
+    (*cinfo->idct->LJPEG_start_pass) (cinfo);
     (*cinfo->coef->start_output_pass) (cinfo);
     if (! cinfo->raw_data_out) {
       if (! master->using_merged_upsample)
-	(*cinfo->cconvert->start_pass) (cinfo);
-      (*cinfo->upsample->start_pass) (cinfo);
+	(*cinfo->cconvert->LJPEG_start_pass) (cinfo);
+      (*cinfo->upsample->LJPEG_start_pass) (cinfo);
       if (cinfo->quantize_colors)
-	(*cinfo->cquantize->start_pass) (cinfo, master->pub.is_dummy_pass);
-      (*cinfo->post->start_pass) (cinfo,
+	(*cinfo->cquantize->LJPEG_start_pass) (cinfo, master->pub.is_dummy_pass);
+      (*cinfo->post->LJPEG_start_pass) (cinfo,
 	    (master->pub.is_dummy_pass ? JBUF_SAVE_AND_PASS : JBUF_PASS_THRU));
-      (*cinfo->main->start_pass) (cinfo, JBUF_PASS_THRU);
+      (*cinfo->main->LJPEG_start_pass) (cinfo, JBUF_PASS_THRU);
     }
   }
 
@@ -473,7 +473,7 @@ finish_output_pass (LJPEG_j_decompress_ptr cinfo)
   my_master_ptr master = (my_master_ptr) cinfo->master;
 
   if (cinfo->quantize_colors)
-    (*cinfo->cquantize->finish_pass) (cinfo);
+    (*cinfo->cquantize->LJPEG_finish_pass) (cinfo);
   master->pass_number++;
 }
 

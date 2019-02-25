@@ -62,7 +62,7 @@ jpeg_fdct_float (FAST_FLOAT * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSI
   FAST_FLOAT tmp10, tmp11, tmp12, tmp13;
   FAST_FLOAT z1, z2, z3, z4, z5, z11, z13;
   FAST_FLOAT *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
 
   /* Pass 1: process rows. */

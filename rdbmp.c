@@ -124,7 +124,7 @@ get_8bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   register LJPEG_JSAMPARRAY colormap = source->colormap;
   LJPEG_JSAMPARRAY image_ptr;
   register int t;
-  register JSAMPROW inptr, outptr;
+  register LJPEG_JSAMPROW inptr, outptr;
   register LJPEG_JDIMENSION col;
 
   /* Fetch next row from virtual array */
@@ -153,7 +153,7 @@ get_24bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   bmp_source_ptr source = (bmp_source_ptr) sinfo;
   LJPEG_JSAMPARRAY image_ptr;
-  register JSAMPROW inptr, outptr;
+  register LJPEG_JSAMPROW inptr, outptr;
   register LJPEG_JDIMENSION col;
 
   /* Fetch next row from virtual array */
@@ -184,7 +184,7 @@ get_32bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   bmp_source_ptr source = (bmp_source_ptr) sinfo;
   LJPEG_JSAMPARRAY image_ptr;
-  register JSAMPROW inptr, outptr;
+  register LJPEG_JSAMPROW inptr, outptr;
   register LJPEG_JDIMENSION col;
 
   /* Fetch next row from virtual array */
@@ -221,7 +221,7 @@ preload_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   bmp_source_ptr source = (bmp_source_ptr) sinfo;
   register FILE *infile = source->pub.input_file;
   register int c;
-  register JSAMPROW out_ptr;
+  register LJPEG_JSAMPROW out_ptr;
   LJPEG_JSAMPARRAY image_ptr;
   LJPEG_JDIMENSION row, col;
   cd_progress_ptr progress = (cd_progress_ptr) cinfo->progress;

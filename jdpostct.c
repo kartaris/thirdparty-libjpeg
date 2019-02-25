@@ -44,21 +44,21 @@ typedef my_post_controller * my_post_ptr;
 
 /* Forward declarations */
 LJPEG_METHODDEF(void) post_process_1pass
-	JPP((LJPEG_j_decompress_ptr cinfo,
-	     JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
+	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
+	     LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
 	     LJPEG_JDIMENSION in_row_groups_avail,
 	     LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
 	     LJPEG_JDIMENSION out_rows_avail));
 #ifdef QUANT_2PASS_SUPPORTED
 LJPEG_METHODDEF(void) post_process_prepass
-	JPP((LJPEG_j_decompress_ptr cinfo,
-	     JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
+	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
+	     LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
 	     LJPEG_JDIMENSION in_row_groups_avail,
 	     LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
 	     LJPEG_JDIMENSION out_rows_avail));
 LJPEG_METHODDEF(void) post_process_2pass
-	JPP((LJPEG_j_decompress_ptr cinfo,
-	     JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
+	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
+	     LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
 	     LJPEG_JDIMENSION in_row_groups_avail,
 	     LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
 	     LJPEG_JDIMENSION out_rows_avail));
@@ -70,7 +70,7 @@ LJPEG_METHODDEF(void) post_process_2pass
  */
 
 LJPEG_METHODDEF(void)
-start_pass_dpost (LJPEG_j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
+LJPEG_start_pass_dpost (LJPEG_j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
 {
   my_post_ptr post = (my_post_ptr) cinfo->post;
 
@@ -124,7 +124,7 @@ start_pass_dpost (LJPEG_j_decompress_ptr cinfo, J_BUF_MODE pass_mode)
 
 LJPEG_METHODDEF(void)
 post_process_1pass (LJPEG_j_decompress_ptr cinfo,
-		    JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
+		    LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
 		    LJPEG_JDIMENSION in_row_groups_avail,
 		    LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
 		    LJPEG_JDIMENSION out_rows_avail)
@@ -156,7 +156,7 @@ post_process_1pass (LJPEG_j_decompress_ptr cinfo,
 
 LJPEG_METHODDEF(void)
 post_process_prepass (LJPEG_j_decompress_ptr cinfo,
-		      JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
+		      LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
 		      LJPEG_JDIMENSION in_row_groups_avail,
 		      LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
 		      LJPEG_JDIMENSION out_rows_avail)
@@ -200,7 +200,7 @@ post_process_prepass (LJPEG_j_decompress_ptr cinfo,
 
 LJPEG_METHODDEF(void)
 post_process_2pass (LJPEG_j_decompress_ptr cinfo,
-		    JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
+		    LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
 		    LJPEG_JDIMENSION in_row_groups_avail,
 		    LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
 		    LJPEG_JDIMENSION out_rows_avail)
@@ -255,7 +255,7 @@ jinit_d_post_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_post_controller));
   cinfo->post = (struct jpeg_d_post_controller *) post;
-  post->pub.start_pass = start_pass_dpost;
+  post->pub.LJPEG_start_pass = LJPEG_start_pass_dpost;
   post->whole_image = NULL;	/* flag for no virtual arrays */
   post->buffer = NULL;		/* flag for no strip buffer */
 

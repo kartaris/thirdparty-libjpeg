@@ -567,9 +567,9 @@ there isn't any real need for it.
 Arrays of pixel sample values use the following data structure:
 
     typedef something JSAMPLE;		a pixel component value, 0..MAXJSAMPLE
-    typedef JSAMPLE *JSAMPROW;		ptr to a row of samples
-    typedef JSAMPROW *LJPEG_JSAMPARRAY;	ptr to a list of rows
-    typedef LJPEG_JSAMPARRAY *JSAMPIMAGE;	ptr to a list of color-component arrays
+    typedef JSAMPLE *LJPEG_JSAMPROW;		ptr to a row of samples
+    typedef LJPEG_JSAMPROW *LJPEG_JSAMPARRAY;	ptr to a list of rows
+    typedef LJPEG_JSAMPARRAY *LJPEG_JSAMPIMAGE;	ptr to a list of color-component arrays
 
 The basic element type JSAMPLE will typically be one of unsigned char,
 (signed) char, or short.  Short will be used if samples wider than 8 bits are
@@ -631,8 +631,8 @@ Arrays of DCT-coefficient values use the following data structure:
 
     typedef short JCOEF;		a 16-bit signed integer
     typedef JCOEF JBLOCK[DCTSIZE2];	an 8x8 block of coefficients
-    typedef JBLOCK *JBLOCKROW;		ptr to one horizontal row of 8x8 blocks
-    typedef JBLOCKROW *JBLOCKARRAY;	ptr to a list of such rows
+    typedef JBLOCK *LJPEG_JBLOCKROW;		ptr to one horizontal row of 8x8 blocks
+    typedef LJPEG_JBLOCKROW *JBLOCKARRAY;	ptr to a list of such rows
     typedef JBLOCKARRAY *JBLOCKIMAGE;	ptr to a list of color component arrays
 
 The underlying type is at least a 16-bit signed integer; while "short" is big
@@ -659,7 +659,7 @@ structure limits us to rows of less than 512 JBLOCKs, or a picture width of
 4000+ pixels.  This seems an acceptable restriction.
 
 
-On 80x86 machines, the bottom-level pointer types (JSAMPROW and JBLOCKROW)
+On 80x86 machines, the bottom-level pointer types (LJPEG_JSAMPROW and LJPEG_JBLOCKROW)
 must be declared as "far" pointers, but the upper levels can be "near"
 (implying that the pointer lists are allocated in the DS segment).
 We use a #define symbol FAR, which expands to the "far" keyword when

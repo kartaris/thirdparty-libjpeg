@@ -369,7 +369,7 @@ int
 main (int argc, char **argv)
 {
   struct LJPEG_jpeg_decompress_struct srcinfo;
-  struct jpeg_compress_struct dstinfo;
+  struct LJPEG_jpeg_compress_struct dstinfo;
   struct LJPEG_jpeg_error_mgr jsrcerr, jdsterr;
 #ifdef PROGRESS_REPORT
   struct LJPEG_cdjpeg_progress_mgr progress;
@@ -396,7 +396,7 @@ main (int argc, char **argv)
   LJPEG_jpeg_create_decompress(&srcinfo);
   /* Initialize the JPEG compression object with default error handling. */
   dstinfo.err = LJPEG_jpeg_std_error(&jdsterr);
-  jpeg_create_compress(&dstinfo);
+  LJPEG_jpeg_create_compress(&dstinfo);
 
   /* Now safe to enable signal catcher.
    * Note: we assume only the decompression object will have virtual arrays.

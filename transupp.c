@@ -191,7 +191,7 @@ do_flip_h (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
   LJPEG_JDIMENSION x_crop_blocks, y_crop_blocks;
   int ci, k, offset_y;
   JBLOCKARRAY src_buffer, dst_buffer;
-  JBLOCKROW src_row_ptr, dst_row_ptr;
+  LJPEG_JBLOCKROW src_row_ptr, dst_row_ptr;
   JCOEFPTR src_ptr, dst_ptr;
   jpeg_component_info *compptr;
 
@@ -253,7 +253,7 @@ do_flip_v (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
   LJPEG_JDIMENSION x_crop_blocks, y_crop_blocks;
   int ci, i, j, offset_y;
   JBLOCKARRAY src_buffer, dst_buffer;
-  JBLOCKROW src_row_ptr, dst_row_ptr;
+  LJPEG_JBLOCKROW src_row_ptr, dst_row_ptr;
   JCOEFPTR src_ptr, dst_ptr;
   jpeg_component_info *compptr;
 
@@ -537,7 +537,7 @@ do_rot_180 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
   LJPEG_JDIMENSION x_crop_blocks, y_crop_blocks;
   int ci, i, j, offset_y;
   JBLOCKARRAY src_buffer, dst_buffer;
-  JBLOCKROW src_row_ptr, dst_row_ptr;
+  LJPEG_JBLOCKROW src_row_ptr, dst_row_ptr;
   JCOEFPTR src_ptr, dst_ptr;
   jpeg_component_info *compptr;
 
@@ -1582,15 +1582,15 @@ jcopy_markers_execute (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dsti
 	GETJOCTET(marker->data[4]) == 0x65)
       continue;			/* reject duplicate Adobe */
 #ifdef NEED_FAR_POINTERS
-    /* We could use jpeg_write_marker if the data weren't FAR... */
+    /* We could use LJPEG_jpeg_write_marker if the data weren't FAR... */
     {
       unsigned int i;
-      jpeg_write_m_header(dstinfo, marker->marker, marker->data_length);
+      LJPEG_jpeg_write_m_header(dstinfo, marker->marker, marker->data_length);
       for (i = 0; i < marker->data_length; i++)
 	jpeg_write_m_byte(dstinfo, marker->data[i]);
     }
 #else
-    jpeg_write_marker(dstinfo, marker->marker,
+    LJPEG_jpeg_write_marker(dstinfo, marker->marker,
 		      marker->data, marker->data_length);
 #endif
   }

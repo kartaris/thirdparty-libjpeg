@@ -29,7 +29,7 @@ typedef my_input_controller * my_inputctl_ptr;
 
 
 /* Forward declarations */
-LJPEG_METHODDEF(int) consume_markers JPP((LJPEG_j_decompress_ptr cinfo));
+LJPEG_METHODDEF(int) consume_markers LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 
 
 /*
@@ -522,7 +522,7 @@ start_input_pass (LJPEG_j_decompress_ptr cinfo)
 {
   per_scan_setup(cinfo);
   latch_quant_tables(cinfo);
-  (*cinfo->entropy->start_pass) (cinfo);
+  (*cinfo->entropy->LJPEG_start_pass) (cinfo);
   (*cinfo->coef->start_input_pass) (cinfo);
   cinfo->inputctl->consume_input = cinfo->coef->consume_data;
 }

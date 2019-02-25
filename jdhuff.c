@@ -245,7 +245,7 @@ typedef struct {
   d_derived_tbl * dc_derived_tbls[NUM_HUFF_TBLS];
   d_derived_tbl * ac_derived_tbls[NUM_HUFF_TBLS];
 
-  /* Precalculated info set up by start_pass for use in decode_mcu: */
+  /* Precalculated info set up by LJPEG_start_pass for use in decode_mcu: */
 
   /* Pointers to derived tables to be used for each block within an MCU */
   d_derived_tbl * dc_cur_tbls[D_MAX_BLOCKS_IN_MCU];
@@ -692,13 +692,13 @@ process_restart (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
+decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {   
   huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
   int Al = cinfo->Al;
   register int s, r;
   int blkn, ci;
-  JBLOCKROW block;
+  LJPEG_JBLOCKROW block;
   BITREAD_STATE_VARS;
   savable_state state;
   d_derived_tbl * tbl;
@@ -763,14 +763,14 @@ decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
+decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {   
   huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
   register int s, k, r;
   unsigned int EOBRUN;
   int Se, Al;
   const int * natural_order;
-  JBLOCKROW block;
+  LJPEG_JBLOCKROW block;
   BITREAD_STATE_VARS;
   d_derived_tbl * tbl;
 
@@ -851,12 +851,12 @@ decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
+decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {   
   huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
   int p1 = 1 << cinfo->Al;	/* 1 in the bit position being coded */
   int blkn;
-  JBLOCKROW block;
+  LJPEG_JBLOCKROW block;
   BITREAD_STATE_VARS;
 
   /* Process restart marker if needed; may have to suspend */
@@ -900,14 +900,14 @@ decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
+decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {   
   huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
   register int s, k, r;
   unsigned int EOBRUN;
   int Se, p1, m1;
   const int * natural_order;
-  JBLOCKROW block;
+  LJPEG_JBLOCKROW block;
   JCOEFPTR thiscoef;
   BITREAD_STATE_VARS;
   d_derived_tbl * tbl;
@@ -1057,7 +1057,7 @@ undoit:
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_sub (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
+decode_mcu_sub (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
   huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
   const int * natural_order;
@@ -1087,7 +1087,7 @@ decode_mcu_sub (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
     /* Outer loop handles each block in the MCU */
 
     for (blkn = 0; blkn < cinfo->blocks_in_MCU; blkn++) {
-      JBLOCKROW block = MCU_data[blkn];
+      LJPEG_JBLOCKROW block = MCU_data[blkn];
       d_derived_tbl * htbl;
       register int s, k, r;
       int coef_limit, ci;
@@ -1185,7 +1185,7 @@ decode_mcu_sub (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
+decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
   huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
   int blkn;
@@ -1211,7 +1211,7 @@ decode_mcu (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
     /* Outer loop handles each block in the MCU */
 
     for (blkn = 0; blkn < cinfo->blocks_in_MCU; blkn++) {
-      JBLOCKROW block = MCU_data[blkn];
+      LJPEG_JBLOCKROW block = MCU_data[blkn];
       d_derived_tbl * htbl;
       register int s, k, r;
       int coef_limit, ci;
@@ -1308,7 +1308,7 @@ decode_mcu (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(void)
-start_pass_huff_decoder (LJPEG_j_decompress_ptr cinfo)
+LJPEG_start_pass_huff_decoder (LJPEG_j_decompress_ptr cinfo)
 {
   huff_entropy_ptr entropy = (huff_entropy_ptr) cinfo->entropy;
   int ci, blkn, tbl, i;
@@ -1516,7 +1516,7 @@ jinit_huff_decoder (LJPEG_j_decompress_ptr cinfo)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(huff_entropy_decoder));
   cinfo->entropy = &entropy->pub;
-  entropy->pub.start_pass = start_pass_huff_decoder;
+  entropy->pub.LJPEG_start_pass = LJPEG_start_pass_huff_decoder;
 
   if (cinfo->progressive_mode) {
     /* Create progression status table */

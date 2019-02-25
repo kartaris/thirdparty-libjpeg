@@ -63,7 +63,7 @@ typedef rle_dest_struct * rle_dest_ptr;
 
 /* Forward declarations */
 LJPEG_METHODDEF(void) rle_put_pixel_rows
-    JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
+    LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 	 LJPEG_JDIMENSION rows_supplied));
 
 
@@ -174,7 +174,7 @@ finish_output_rle (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
   rle_dest_ptr dest = (rle_dest_ptr) dinfo;
   rle_hdr header;		/* Output file information */
   rle_pixel **rle_row, *red, *green, *blue;
-  JSAMPROW output_row;
+  LJPEG_JSAMPROW output_row;
   char cmapcomment[80];
   int row, col;
   int ci;

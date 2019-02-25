@@ -63,7 +63,7 @@ typedef my_fdct_controller * my_fdct_ptr;
 
 LJPEG_METHODDEF(void)
 forward_DCT (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
-	     LJPEG_JSAMPARRAY sample_data, JBLOCKROW coef_blocks,
+	     LJPEG_JSAMPARRAY sample_data, LJPEG_JBLOCKROW coef_blocks,
 	     LJPEG_JDIMENSION start_row, LJPEG_JDIMENSION start_col,
 	     LJPEG_JDIMENSION num_blocks)
 /* This version is used for integer DCT implementations. */
@@ -126,7 +126,7 @@ forward_DCT (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
 
 LJPEG_METHODDEF(void)
 forward_DCT_float (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
-		   LJPEG_JSAMPARRAY sample_data, JBLOCKROW coef_blocks,
+		   LJPEG_JSAMPARRAY sample_data, LJPEG_JBLOCKROW coef_blocks,
 		   LJPEG_JDIMENSION start_row, LJPEG_JDIMENSION start_col,
 		   LJPEG_JDIMENSION num_blocks)
 /* This version is used for floating-point DCT implementations. */
@@ -177,7 +177,7 @@ forward_DCT_float (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
  */
 
 LJPEG_METHODDEF(void)
-start_pass_fdctmgr (LJPEG_j_compress_ptr cinfo)
+LJPEG_start_pass_fdctmgr (LJPEG_j_compress_ptr cinfo)
 {
   my_fdct_ptr fdct = (my_fdct_ptr) cinfo->fdct;
   int ci, qtblno, i;
@@ -470,7 +470,7 @@ jinit_forward_dct (LJPEG_j_compress_ptr cinfo)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_fdct_controller));
   cinfo->fdct = (struct jpeg_forward_dct *) fdct;
-  fdct->pub.start_pass = start_pass_fdctmgr;
+  fdct->pub.LJPEG_start_pass = LJPEG_start_pass_fdctmgr;
 
   /* Mark divisor tables unallocated */
   for (i = 0; i < NUM_QUANT_TBLS; i++) {

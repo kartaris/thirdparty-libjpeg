@@ -71,7 +71,7 @@ typedef struct {
 
   /* Usually these two pointers point to the same place: */
   char *iobuffer;		/* fwrite's I/O buffer */
-  JSAMPROW pixrow;		/* decompressor output buffer */
+  LJPEG_JSAMPROW pixrow;		/* decompressor output buffer */
   size_t buffer_width;		/* width of I/O buffer */
   LJPEG_JDIMENSION samples_per_row;	/* JSAMPLEs per output row */
 } ppm_dest_struct;
@@ -108,7 +108,7 @@ copy_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 {
   ppm_dest_ptr dest = (ppm_dest_ptr) dinfo;
   register char * bufferptr;
-  register JSAMPROW ptr;
+  register LJPEG_JSAMPROW ptr;
   register LJPEG_JDIMENSION col;
 
   ptr = dest->pub.buffer[0];
@@ -132,10 +132,10 @@ put_demapped_rgb (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
   ppm_dest_ptr dest = (ppm_dest_ptr) dinfo;
   register char * bufferptr;
   register int pixval;
-  register JSAMPROW ptr;
-  register JSAMPROW color_map0 = cinfo->colormap[0];
-  register JSAMPROW color_map1 = cinfo->colormap[1];
-  register JSAMPROW color_map2 = cinfo->colormap[2];
+  register LJPEG_JSAMPROW ptr;
+  register LJPEG_JSAMPROW color_map0 = cinfo->colormap[0];
+  register LJPEG_JSAMPROW color_map1 = cinfo->colormap[1];
+  register LJPEG_JSAMPROW color_map2 = cinfo->colormap[2];
   register LJPEG_JDIMENSION col;
 
   ptr = dest->pub.buffer[0];
@@ -156,8 +156,8 @@ put_demapped_gray (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 {
   ppm_dest_ptr dest = (ppm_dest_ptr) dinfo;
   register char * bufferptr;
-  register JSAMPROW ptr;
-  register JSAMPROW color_map = cinfo->colormap[0];
+  register LJPEG_JSAMPROW ptr;
+  register LJPEG_JSAMPROW color_map = cinfo->colormap[0];
   register LJPEG_JDIMENSION col;
 
   ptr = dest->pub.buffer[0];
@@ -257,7 +257,7 @@ LJPEG_jinit_write_ppm (LJPEG_j_decompress_ptr cinfo)
     /* We will fwrite() directly from decompressor output buffer. */
     /* Synthesize a LJPEG_JSAMPARRAY pointer structure */
     /* Cast here implies near->far pointer conversion on PCs */
-    dest->pixrow = (JSAMPROW) dest->iobuffer;
+    dest->pixrow = (LJPEG_JSAMPROW) dest->iobuffer;
     dest->pub.buffer = & dest->pixrow;
     dest->pub.buffer_height = 1;
     dest->pub.put_pixel_rows = put_pixel_rows;

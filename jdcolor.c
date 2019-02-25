@@ -29,7 +29,7 @@ typedef struct {
   INT32 * rgb_y_tab;		/* => table for RGB to Y conversion */
 } my_color_deconverter;
 
-typedef my_color_deconverter * my_cconvert_ptr;
+typedef my_color_deconverter * LJPEG_my_cconvert_ptr;
 
 
 /**************** YCbCr -> RGB conversion: most common case **************/
@@ -90,7 +90,7 @@ typedef my_color_deconverter * my_cconvert_ptr;
 LOCAL(void)
 build_ycc_rgb_table (LJPEG_j_decompress_ptr cinfo)
 {
-  my_cconvert_ptr cconvert = (my_cconvert_ptr) cinfo->cconvert;
+  LJPEG_my_cconvert_ptr cconvert = (LJPEG_my_cconvert_ptr) cinfo->cconvert;
   int i;
   INT32 x;
   SHIFT_TEMPS
@@ -138,14 +138,14 @@ build_ycc_rgb_table (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-ycc_rgb_convert (LJPEG_j_decompress_ptr cinfo,
-		 JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+ycc_LJPEG_rgb_convert (LJPEG_j_decompress_ptr cinfo,
+		 LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
 		 LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
-  my_cconvert_ptr cconvert = (my_cconvert_ptr) cinfo->cconvert;
+  LJPEG_my_cconvert_ptr cconvert = (LJPEG_my_cconvert_ptr) cinfo->cconvert;
   register int y, cb, cr;
-  register JSAMPROW outptr;
-  register JSAMPROW inptr0, inptr1, inptr2;
+  register LJPEG_JSAMPROW outptr;
+  register LJPEG_JSAMPROW inptr0, inptr1, inptr2;
   register LJPEG_JDIMENSION col;
   LJPEG_JDIMENSION num_cols = cinfo->output_width;
   /* copy these pointers into registers if possible */
@@ -188,7 +188,7 @@ ycc_rgb_convert (LJPEG_j_decompress_ptr cinfo,
 LOCAL(void)
 build_rgb_y_table (LJPEG_j_decompress_ptr cinfo)
 {
-  my_cconvert_ptr cconvert = (my_cconvert_ptr) cinfo->cconvert;
+  LJPEG_my_cconvert_ptr cconvert = (LJPEG_my_cconvert_ptr) cinfo->cconvert;
   INT32 * rgb_y_tab;
   INT32 i;
 
@@ -210,15 +210,15 @@ build_rgb_y_table (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-rgb_gray_convert (LJPEG_j_decompress_ptr cinfo,
-		  JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+LJPEG_rgb_gray_convert (LJPEG_j_decompress_ptr cinfo,
+		  LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
 		  LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
-  my_cconvert_ptr cconvert = (my_cconvert_ptr) cinfo->cconvert;
+  LJPEG_my_cconvert_ptr cconvert = (LJPEG_my_cconvert_ptr) cinfo->cconvert;
   register INT32 * ctab = cconvert->rgb_y_tab;
   register int r, g, b;
-  register JSAMPROW outptr;
-  register JSAMPROW inptr0, inptr1, inptr2;
+  register LJPEG_JSAMPROW outptr;
+  register LJPEG_JSAMPROW inptr0, inptr1, inptr2;
   register LJPEG_JDIMENSION col;
   LJPEG_JDIMENSION num_cols = cinfo->output_width;
 
@@ -247,13 +247,13 @@ rgb_gray_convert (LJPEG_j_decompress_ptr cinfo,
  */
 
 LJPEG_METHODDEF(void)
-rgb1_rgb_convert (LJPEG_j_decompress_ptr cinfo,
-		  JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+rgb1_LJPEG_rgb_convert (LJPEG_j_decompress_ptr cinfo,
+		  LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
 		  LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
   register int r, g, b;
-  register JSAMPROW outptr;
-  register JSAMPROW inptr0, inptr1, inptr2;
+  register LJPEG_JSAMPROW outptr;
+  register LJPEG_JSAMPROW inptr0, inptr1, inptr2;
   register LJPEG_JDIMENSION col;
   LJPEG_JDIMENSION num_cols = cinfo->output_width;
 
@@ -286,14 +286,14 @@ rgb1_rgb_convert (LJPEG_j_decompress_ptr cinfo,
 
 LJPEG_METHODDEF(void)
 rgb1_gray_convert (LJPEG_j_decompress_ptr cinfo,
-		   JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+		   LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
 		   LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
-  my_cconvert_ptr cconvert = (my_cconvert_ptr) cinfo->cconvert;
+  LJPEG_my_cconvert_ptr cconvert = (LJPEG_my_cconvert_ptr) cinfo->cconvert;
   register INT32 * ctab = cconvert->rgb_y_tab;
   register int r, g, b;
-  register JSAMPROW outptr;
-  register JSAMPROW inptr0, inptr1, inptr2;
+  register LJPEG_JSAMPROW outptr;
+  register LJPEG_JSAMPROW inptr0, inptr1, inptr2;
   register LJPEG_JDIMENSION col;
   LJPEG_JDIMENSION num_cols = cinfo->output_width;
 
@@ -327,12 +327,12 @@ rgb1_gray_convert (LJPEG_j_decompress_ptr cinfo,
  */
 
 LJPEG_METHODDEF(void)
-rgb_convert (LJPEG_j_decompress_ptr cinfo,
-	     JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+LJPEG_rgb_convert (LJPEG_j_decompress_ptr cinfo,
+	     LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
 	     LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
-  register JSAMPROW outptr;
-  register JSAMPROW inptr0, inptr1, inptr2;
+  register LJPEG_JSAMPROW outptr;
+  register LJPEG_JSAMPROW inptr0, inptr1, inptr2;
   register LJPEG_JDIMENSION col;
   LJPEG_JDIMENSION num_cols = cinfo->output_width;
 
@@ -359,14 +359,14 @@ rgb_convert (LJPEG_j_decompress_ptr cinfo,
  */
 
 LJPEG_METHODDEF(void)
-null_convert (LJPEG_j_decompress_ptr cinfo,
-	      JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+LJPEG_null_convert (LJPEG_j_decompress_ptr cinfo,
+	      LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
 	      LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
   int ci;
   register int nc = cinfo->num_components;
-  register JSAMPROW outptr;
-  register JSAMPROW inptr;
+  register LJPEG_JSAMPROW outptr;
+  register LJPEG_JSAMPROW inptr;
   register LJPEG_JDIMENSION col;
   LJPEG_JDIMENSION num_cols = cinfo->output_width;
 
@@ -392,8 +392,8 @@ null_convert (LJPEG_j_decompress_ptr cinfo,
  */
 
 LJPEG_METHODDEF(void)
-grayscale_convert (LJPEG_j_decompress_ptr cinfo,
-		   JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+LJPEG_grayscale_convert (LJPEG_j_decompress_ptr cinfo,
+		   LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
 		   LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
   jcopy_sample_rows(input_buf[0], (int) input_row, output_buf, 0,
@@ -408,12 +408,12 @@ grayscale_convert (LJPEG_j_decompress_ptr cinfo,
  */
 
 LJPEG_METHODDEF(void)
-gray_rgb_convert (LJPEG_j_decompress_ptr cinfo,
-		  JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+gray_LJPEG_rgb_convert (LJPEG_j_decompress_ptr cinfo,
+		  LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
 		  LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
-  register JSAMPROW outptr;
-  register JSAMPROW inptr;
+  register LJPEG_JSAMPROW outptr;
+  register LJPEG_JSAMPROW inptr;
   register LJPEG_JDIMENSION col;
   LJPEG_JDIMENSION num_cols = cinfo->output_width;
 
@@ -438,13 +438,13 @@ gray_rgb_convert (LJPEG_j_decompress_ptr cinfo,
 
 LJPEG_METHODDEF(void)
 ycck_cmyk_convert (LJPEG_j_decompress_ptr cinfo,
-		   JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
+		   LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
 		   LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
-  my_cconvert_ptr cconvert = (my_cconvert_ptr) cinfo->cconvert;
+  LJPEG_my_cconvert_ptr cconvert = (LJPEG_my_cconvert_ptr) cinfo->cconvert;
   register int y, cb, cr;
-  register JSAMPROW outptr;
-  register JSAMPROW inptr0, inptr1, inptr2, inptr3;
+  register LJPEG_JSAMPROW outptr;
+  register LJPEG_JSAMPROW inptr0, inptr1, inptr2, inptr3;
   register LJPEG_JDIMENSION col;
   LJPEG_JDIMENSION num_cols = cinfo->output_width;
   /* copy these pointers into registers if possible */
@@ -481,11 +481,11 @@ ycck_cmyk_convert (LJPEG_j_decompress_ptr cinfo,
 
 
 /*
- * Empty method for start_pass.
+ * Empty method for LJPEG_start_pass.
  */
 
 LJPEG_METHODDEF(void)
-start_pass_dcolor (LJPEG_j_decompress_ptr cinfo)
+LJPEG_start_pass_dcolor (LJPEG_j_decompress_ptr cinfo)
 {
   /* no work needed */
 }
@@ -497,14 +497,14 @@ start_pass_dcolor (LJPEG_j_decompress_ptr cinfo)
 LJPEG_GLOBAL(void)
 jinit_color_deconverter (LJPEG_j_decompress_ptr cinfo)
 {
-  my_cconvert_ptr cconvert;
+  LJPEG_my_cconvert_ptr cconvert;
   int ci;
 
-  cconvert = (my_cconvert_ptr)
+  cconvert = (LJPEG_my_cconvert_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_color_deconverter));
   cinfo->cconvert = &cconvert->pub;
-  cconvert->pub.start_pass = start_pass_dcolor;
+  cconvert->pub.LJPEG_start_pass = LJPEG_start_pass_dcolor;
 
   /* Make sure num_components agrees with jpeg_color_space */
   switch (cinfo->jpeg_color_space) {
@@ -545,14 +545,14 @@ jinit_color_deconverter (LJPEG_j_decompress_ptr cinfo)
     cinfo->out_color_components = 1;
     if (cinfo->jpeg_color_space == JCS_GRAYSCALE ||
 	cinfo->jpeg_color_space == JCS_YCbCr) {
-      cconvert->pub.color_convert = grayscale_convert;
+      cconvert->pub.color_convert = LJPEG_grayscale_convert;
       /* For color->grayscale conversion, only the Y (0) component is needed */
       for (ci = 1; ci < cinfo->num_components; ci++)
 	cinfo->comp_info[ci].component_needed = FALSE;
     } else if (cinfo->jpeg_color_space == JCS_RGB) {
       switch (cinfo->color_transform) {
       case JCT_NONE:
-	cconvert->pub.color_convert = rgb_gray_convert;
+	cconvert->pub.color_convert = LJPEG_rgb_gray_convert;
 	break;
       case JCT_SUBTRACT_GREEN:
 	cconvert->pub.color_convert = rgb1_gray_convert;
@@ -569,17 +569,17 @@ jinit_color_deconverter (LJPEG_j_decompress_ptr cinfo)
   case JCS_RGB:
     cinfo->out_color_components = RGB_PIXELSIZE;
     if (cinfo->jpeg_color_space == JCS_YCbCr) {
-      cconvert->pub.color_convert = ycc_rgb_convert;
+      cconvert->pub.color_convert = ycc_LJPEG_rgb_convert;
       build_ycc_rgb_table(cinfo);
     } else if (cinfo->jpeg_color_space == JCS_GRAYSCALE) {
-      cconvert->pub.color_convert = gray_rgb_convert;
+      cconvert->pub.color_convert = gray_LJPEG_rgb_convert;
     } else if (cinfo->jpeg_color_space == JCS_RGB) {
       switch (cinfo->color_transform) {
       case JCT_NONE:
-	cconvert->pub.color_convert = rgb_convert;
+	cconvert->pub.color_convert = LJPEG_rgb_convert;
 	break;
       case JCT_SUBTRACT_GREEN:
-	cconvert->pub.color_convert = rgb1_rgb_convert;
+	cconvert->pub.color_convert = rgb1_LJPEG_rgb_convert;
 	break;
       default:
 	ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);
@@ -595,7 +595,7 @@ jinit_color_deconverter (LJPEG_j_decompress_ptr cinfo)
       cconvert->pub.color_convert = ycck_cmyk_convert;
       build_ycc_rgb_table(cinfo);
     } else if (cinfo->jpeg_color_space == JCS_CMYK) {
-      cconvert->pub.color_convert = null_convert;
+      cconvert->pub.color_convert = LJPEG_null_convert;
     } else
       ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);
     break;
@@ -604,7 +604,7 @@ jinit_color_deconverter (LJPEG_j_decompress_ptr cinfo)
     /* Permit null conversion to same output space */
     if (cinfo->out_color_space == cinfo->jpeg_color_space) {
       cinfo->out_color_components = cinfo->num_components;
-      cconvert->pub.color_convert = null_convert;
+      cconvert->pub.color_convert = LJPEG_null_convert;
     } else			/* unsupported non-null conversion */
       ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);
     break;

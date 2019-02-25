@@ -73,7 +73,7 @@ typedef struct {
   struct LJPEG_cjpeg_source_struct pub; /* public fields */
 
   U_CHAR *iobuffer;		/* non-FAR pointer to I/O buffer */
-  JSAMPROW pixrow;		/* FAR pointer to same */
+  LJPEG_JSAMPROW pixrow;		/* FAR pointer to same */
   size_t buffer_width;		/* width of I/O buffer */
   JSAMPLE *rescale;		/* => maxval-remapping array, or NULL */
 } ppm_source_struct;
@@ -144,7 +144,7 @@ get_text_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
   FILE * infile = source->pub.input_file;
-  register JSAMPROW ptr;
+  register LJPEG_JSAMPROW ptr;
   register JSAMPLE *rescale = source->rescale;
   LJPEG_JDIMENSION col;
 
@@ -162,7 +162,7 @@ get_text_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
   FILE * infile = source->pub.input_file;
-  register JSAMPROW ptr;
+  register LJPEG_JSAMPROW ptr;
   register JSAMPLE *rescale = source->rescale;
   LJPEG_JDIMENSION col;
 
@@ -181,7 +181,7 @@ get_scaled_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading raw-byte-format PGM files with any maxval */
 {
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
-  register JSAMPROW ptr;
+  register LJPEG_JSAMPROW ptr;
   register U_CHAR * bufferptr;
   register JSAMPLE *rescale = source->rescale;
   LJPEG_JDIMENSION col;
@@ -202,7 +202,7 @@ get_scaled_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading raw-byte-format PPM files with any maxval */
 {
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
-  register JSAMPROW ptr;
+  register LJPEG_JSAMPROW ptr;
   register U_CHAR * bufferptr;
   register JSAMPLE *rescale = source->rescale;
   LJPEG_JDIMENSION col;
@@ -240,7 +240,7 @@ get_word_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading raw-word-format PGM files with any maxval */
 {
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
-  register JSAMPROW ptr;
+  register LJPEG_JSAMPROW ptr;
   register U_CHAR * bufferptr;
   register JSAMPLE *rescale = source->rescale;
   LJPEG_JDIMENSION col;
@@ -264,7 +264,7 @@ get_word_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading raw-word-format PPM files with any maxval */
 {
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
-  register JSAMPROW ptr;
+  register LJPEG_JSAMPROW ptr;
   register U_CHAR * bufferptr;
   register JSAMPLE *rescale = source->rescale;
   LJPEG_JDIMENSION col;
@@ -397,7 +397,7 @@ start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     /* For unscaled raw-input case, we can just map it onto the I/O buffer. */
     /* Synthesize a LJPEG_JSAMPARRAY pointer structure */
     /* Cast here implies near->far pointer conversion on PCs */
-    source->pixrow = (JSAMPROW) source->iobuffer;
+    source->pixrow = (LJPEG_JSAMPROW) source->iobuffer;
     source->pub.buffer = & source->pixrow;
     source->pub.buffer_height = 1;
   } else {

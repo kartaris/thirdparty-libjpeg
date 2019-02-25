@@ -21,7 +21,7 @@
 /* Expanded entropy encoder object for arithmetic encoding. */
 
 typedef struct {
-  struct jpeg_entropy_encoder pub; /* public fields */
+  struct LJPEG_jpeg_entropy_encoder pub; /* public fields */
 
   INT32 c; /* C register, base of coding interval, layout as in sec. D.1.3 */
   INT32 a;               /* A register, normalized size of coding interval */
@@ -43,9 +43,9 @@ typedef struct {
 
   /* Statistics bin for coding with fixed probability 0.5 */
   unsigned char fixed_bin[4];
-} arith_entropy_encoder;
+} LJPEG_arith_entropy_encoder;
 
-typedef arith_entropy_encoder * arith_entropy_ptr;
+typedef LJPEG_arith_entropy_encoder * LJPEG_arith_entropy_ptr;
 
 /* The following two definitions specify the allocation chunk size
  * for the statistics area.
@@ -113,7 +113,7 @@ typedef arith_entropy_encoder * arith_entropy_ptr;
 
 
 LOCAL(void)
-emit_byte (int val, LJPEG_j_compress_ptr cinfo)
+LJPEG_emit_byte (int val, LJPEG_j_compress_ptr cinfo)
 /* Write next output byte; we do not support suspension in this module. */
 {
   struct jpeg_destination_mgr * dest = cinfo->dest;
@@ -130,9 +130,9 @@ emit_byte (int val, LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-finish_pass (LJPEG_j_compress_ptr cinfo)
+LJPEG_finish_pass (LJPEG_j_compress_ptr cinfo)
 {
-  arith_entropy_ptr e = (arith_entropy_ptr) cinfo->entropy;
+  LJPEG_arith_entropy_ptr e = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   INT32 temp;
 
   /* Section D.1.8: Termination of encoding */
@@ -149,11 +149,11 @@ finish_pass (LJPEG_j_compress_ptr cinfo)
     /* One final overflow has to be handled */
     if (e->buffer >= 0) {
       if (e->zc)
-	do emit_byte(0x00, cinfo);
+	do LJPEG_emit_byte(0x00, cinfo);
 	while (--e->zc);
-      emit_byte(e->buffer + 1, cinfo);
+      LJPEG_emit_byte(e->buffer + 1, cinfo);
       if (e->buffer + 1 == 0xFF)
-	emit_byte(0x00, cinfo);
+	LJPEG_emit_byte(0x00, cinfo);
     }
     e->zc += e->sc;  /* carry-over converts stacked 0xFF bytes to 0x00 */
     e->sc = 0;
@@ -162,32 +162,32 @@ finish_pass (LJPEG_j_compress_ptr cinfo)
       ++e->zc;
     else if (e->buffer >= 0) {
       if (e->zc)
-	do emit_byte(0x00, cinfo);
+	do LJPEG_emit_byte(0x00, cinfo);
 	while (--e->zc);
-      emit_byte(e->buffer, cinfo);
+      LJPEG_emit_byte(e->buffer, cinfo);
     }
     if (e->sc) {
       if (e->zc)
-	do emit_byte(0x00, cinfo);
+	do LJPEG_emit_byte(0x00, cinfo);
 	while (--e->zc);
       do {
-	emit_byte(0xFF, cinfo);
-	emit_byte(0x00, cinfo);
+	LJPEG_emit_byte(0xFF, cinfo);
+	LJPEG_emit_byte(0x00, cinfo);
       } while (--e->sc);
     }
   }
   /* Output final bytes only if they are not 0x00 */
   if (e->c & 0x7FFF800L) {
     if (e->zc)  /* output final pending zero bytes */
-      do emit_byte(0x00, cinfo);
+      do LJPEG_emit_byte(0x00, cinfo);
       while (--e->zc);
-    emit_byte((e->c >> 19) & 0xFF, cinfo);
+    LJPEG_emit_byte((e->c >> 19) & 0xFF, cinfo);
     if (((e->c >> 19) & 0xFF) == 0xFF)
-      emit_byte(0x00, cinfo);
+      LJPEG_emit_byte(0x00, cinfo);
     if (e->c & 0x7F800L) {
-      emit_byte((e->c >> 11) & 0xFF, cinfo);
+      LJPEG_emit_byte((e->c >> 11) & 0xFF, cinfo);
       if (((e->c >> 11) & 0xFF) == 0xFF)
-	emit_byte(0x00, cinfo);
+	LJPEG_emit_byte(0x00, cinfo);
     }
   }
 }
@@ -216,9 +216,9 @@ finish_pass (LJPEG_j_compress_ptr cinfo)
  */
 
 LOCAL(void)
-arith_encode (LJPEG_j_compress_ptr cinfo, unsigned char *st, int val)
+LJPEG_arith_encode (LJPEG_j_compress_ptr cinfo, unsigned char *st, int val)
 {
-  register arith_entropy_ptr e = (arith_entropy_ptr) cinfo->entropy;
+  register LJPEG_arith_entropy_ptr e = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   register unsigned char nl, nm;
   register INT32 qe, temp;
   register int sv;
@@ -227,7 +227,7 @@ arith_encode (LJPEG_j_compress_ptr cinfo, unsigned char *st, int val)
    * Qe values and probability estimation state machine
    */
   sv = *st;
-  qe = jpeg_aritab[sv & 0x7F];	/* => Qe_Value */
+  qe = LJPEG_jpeg_aritab[sv & 0x7F];	/* => Qe_Value */
   nl = qe & 0xFF; qe >>= 8;	/* Next_Index_LPS + Switch_MPS */
   nm = qe & 0xFF; qe >>= 8;	/* Next_Index_MPS */
 
@@ -269,11 +269,11 @@ arith_encode (LJPEG_j_compress_ptr cinfo, unsigned char *st, int val)
 	/* Handle overflow over all stacked 0xFF bytes */
 	if (e->buffer >= 0) {
 	  if (e->zc)
-	    do emit_byte(0x00, cinfo);
+	    do LJPEG_emit_byte(0x00, cinfo);
 	    while (--e->zc);
-	  emit_byte(e->buffer + 1, cinfo);
+	  LJPEG_emit_byte(e->buffer + 1, cinfo);
 	  if (e->buffer + 1 == 0xFF)
-	    emit_byte(0x00, cinfo);
+	    LJPEG_emit_byte(0x00, cinfo);
 	}
 	e->zc += e->sc;  /* carry-over converts stacked 0xFF bytes to 0x00 */
 	e->sc = 0;
@@ -289,17 +289,17 @@ arith_encode (LJPEG_j_compress_ptr cinfo, unsigned char *st, int val)
 	  ++e->zc;
 	else if (e->buffer >= 0) {
 	  if (e->zc)
-	    do emit_byte(0x00, cinfo);
+	    do LJPEG_emit_byte(0x00, cinfo);
 	    while (--e->zc);
-	  emit_byte(e->buffer, cinfo);
+	  LJPEG_emit_byte(e->buffer, cinfo);
 	}
 	if (e->sc) {
 	  if (e->zc)
-	    do emit_byte(0x00, cinfo);
+	    do LJPEG_emit_byte(0x00, cinfo);
 	    while (--e->zc);
 	  do {
-	    emit_byte(0xFF, cinfo);
-	    emit_byte(0x00, cinfo);
+	    LJPEG_emit_byte(0xFF, cinfo);
+	    LJPEG_emit_byte(0x00, cinfo);
 	  } while (--e->sc);
 	}
 	e->buffer = temp & 0xFF;  /* new output byte (can still overflow) */
@@ -316,16 +316,16 @@ arith_encode (LJPEG_j_compress_ptr cinfo, unsigned char *st, int val)
  */
 
 LOCAL(void)
-emit_restart (LJPEG_j_compress_ptr cinfo, int restart_num)
+LJPEG_emit_restart (LJPEG_j_compress_ptr cinfo, int restart_num)
 {
-  arith_entropy_ptr entropy = (arith_entropy_ptr) cinfo->entropy;
+  LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   int ci;
   jpeg_component_info * compptr;
 
-  finish_pass(cinfo);
+  LJPEG_finish_pass(cinfo);
 
-  emit_byte(0xFF, cinfo);
-  emit_byte(JPEG_RST0 + restart_num, cinfo);
+  LJPEG_emit_byte(0xFF, cinfo);
+  LJPEG_emit_byte(JPEG_RST0 + restart_num, cinfo);
 
   /* Re-initialize statistics areas */
   for (ci = 0; ci < cinfo->comps_in_scan; ci++) {
@@ -359,10 +359,10 @@ emit_restart (LJPEG_j_compress_ptr cinfo, int restart_num)
  */
 
 LJPEG_METHODDEF(boolean)
-encode_mcu_DC_first (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
+LJPEG_LJPEG_encode_mcu_DC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  arith_entropy_ptr entropy = (arith_entropy_ptr) cinfo->entropy;
-  JBLOCKROW block;
+  LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
+  LJPEG_JBLOCKROW block;
   unsigned char *st;
   int blkn, ci, tbl;
   int v, v2, m;
@@ -371,7 +371,7 @@ encode_mcu_DC_first (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
   /* Emit restart marker if needed */
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0) {
-      emit_restart(cinfo, entropy->next_restart_num);
+      LJPEG_emit_restart(cinfo, entropy->next_restart_num);
       entropy->restarts_to_go = cinfo->restart_interval;
       entropy->next_restart_num++;
       entropy->next_restart_num &= 7;
@@ -397,37 +397,37 @@ encode_mcu_DC_first (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
 
     /* Figure F.4: Encode_DC_DIFF */
     if ((v = m - entropy->last_dc_val[ci]) == 0) {
-      arith_encode(cinfo, st, 0);
+      LJPEG_arith_encode(cinfo, st, 0);
       entropy->dc_context[ci] = 0;	/* zero diff category */
     } else {
       entropy->last_dc_val[ci] = m;
-      arith_encode(cinfo, st, 1);
+      LJPEG_arith_encode(cinfo, st, 1);
       /* Figure F.6: Encoding nonzero value v */
       /* Figure F.7: Encoding the sign of v */
       if (v > 0) {
-	arith_encode(cinfo, st + 1, 0);	/* Table F.4: SS = S0 + 1 */
+	LJPEG_arith_encode(cinfo, st + 1, 0);	/* Table F.4: SS = S0 + 1 */
 	st += 2;			/* Table F.4: SP = S0 + 2 */
 	entropy->dc_context[ci] = 4;	/* small positive diff category */
       } else {
 	v = -v;
-	arith_encode(cinfo, st + 1, 1);	/* Table F.4: SS = S0 + 1 */
+	LJPEG_arith_encode(cinfo, st + 1, 1);	/* Table F.4: SS = S0 + 1 */
 	st += 3;			/* Table F.4: SN = S0 + 3 */
 	entropy->dc_context[ci] = 8;	/* small negative diff category */
       }
       /* Figure F.8: Encoding the magnitude category of v */
       m = 0;
       if (v -= 1) {
-	arith_encode(cinfo, st, 1);
+	LJPEG_arith_encode(cinfo, st, 1);
 	m = 1;
 	v2 = v;
 	st = entropy->dc_stats[tbl] + 20; /* Table F.4: X1 = 20 */
 	while (v2 >>= 1) {
-	  arith_encode(cinfo, st, 1);
+	  LJPEG_arith_encode(cinfo, st, 1);
 	  m <<= 1;
 	  st += 1;
 	}
       }
-      arith_encode(cinfo, st, 0);
+      LJPEG_arith_encode(cinfo, st, 0);
       /* Section F.1.4.4.1.2: Establish dc_context conditioning category */
       if (m < (int) ((1L << cinfo->arith_dc_L[tbl]) >> 1))
 	entropy->dc_context[ci] = 0;	/* zero diff category */
@@ -436,7 +436,7 @@ encode_mcu_DC_first (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
       /* Figure F.9: Encoding the magnitude bit pattern of v */
       st += 14;
       while (m >>= 1)
-	arith_encode(cinfo, st, (m & v) ? 1 : 0);
+	LJPEG_arith_encode(cinfo, st, (m & v) ? 1 : 0);
     }
   }
 
@@ -450,10 +450,10 @@ encode_mcu_DC_first (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-encode_mcu_AC_first (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
+LJPEG_LJPEG_encode_mcu_AC_first (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  arith_entropy_ptr entropy = (arith_entropy_ptr) cinfo->entropy;
-  JBLOCKROW block;
+  LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
+  LJPEG_JBLOCKROW block;
   unsigned char *st;
   int tbl, k, ke;
   int v, v2, m;
@@ -462,7 +462,7 @@ encode_mcu_AC_first (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
   /* Emit restart marker if needed */
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0) {
-      emit_restart(cinfo, entropy->next_restart_num);
+      LJPEG_emit_restart(cinfo, entropy->next_restart_num);
       entropy->restarts_to_go = cinfo->restart_interval;
       entropy->next_restart_num++;
       entropy->next_restart_num &= 7;
@@ -496,54 +496,54 @@ encode_mcu_AC_first (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
   /* Figure F.5: Encode_AC_Coefficients */
   for (k = cinfo->Ss - 1; k < ke;) {
     st = entropy->ac_stats[tbl] + 3 * k;
-    arith_encode(cinfo, st, 0);		/* EOB decision */
+    LJPEG_arith_encode(cinfo, st, 0);		/* EOB decision */
     for (;;) {
       if ((v = (*block)[natural_order[++k]]) >= 0) {
 	if (v >>= cinfo->Al) {
-	  arith_encode(cinfo, st + 1, 1);
-	  arith_encode(cinfo, entropy->fixed_bin, 0);
+	  LJPEG_arith_encode(cinfo, st + 1, 1);
+	  LJPEG_arith_encode(cinfo, entropy->fixed_bin, 0);
 	  break;
 	}
       } else {
 	v = -v;
 	if (v >>= cinfo->Al) {
-	  arith_encode(cinfo, st + 1, 1);
-	  arith_encode(cinfo, entropy->fixed_bin, 1);
+	  LJPEG_arith_encode(cinfo, st + 1, 1);
+	  LJPEG_arith_encode(cinfo, entropy->fixed_bin, 1);
 	  break;
 	}
       }
-      arith_encode(cinfo, st + 1, 0);
+      LJPEG_arith_encode(cinfo, st + 1, 0);
       st += 3;
     }
     st += 2;
     /* Figure F.8: Encoding the magnitude category of v */
     m = 0;
     if (v -= 1) {
-      arith_encode(cinfo, st, 1);
+      LJPEG_arith_encode(cinfo, st, 1);
       m = 1;
       v2 = v;
       if (v2 >>= 1) {
-	arith_encode(cinfo, st, 1);
+	LJPEG_arith_encode(cinfo, st, 1);
 	m <<= 1;
 	st = entropy->ac_stats[tbl] +
 	     (k <= cinfo->arith_ac_K[tbl] ? 189 : 217);
 	while (v2 >>= 1) {
-	  arith_encode(cinfo, st, 1);
+	  LJPEG_arith_encode(cinfo, st, 1);
 	  m <<= 1;
 	  st += 1;
 	}
       }
     }
-    arith_encode(cinfo, st, 0);
+    LJPEG_arith_encode(cinfo, st, 0);
     /* Figure F.9: Encoding the magnitude bit pattern of v */
     st += 14;
     while (m >>= 1)
-      arith_encode(cinfo, st, (m & v) ? 1 : 0);
+      LJPEG_arith_encode(cinfo, st, (m & v) ? 1 : 0);
   }
   /* Encode EOB decision only if k < cinfo->Se */
   if (k < cinfo->Se) {
     st = entropy->ac_stats[tbl] + 3 * k;
-    arith_encode(cinfo, st, 1);
+    LJPEG_arith_encode(cinfo, st, 1);
   }
 
   return TRUE;
@@ -555,16 +555,16 @@ encode_mcu_AC_first (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-encode_mcu_DC_refine (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
+LJPEG_LJPEG_encode_mcu_DC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  arith_entropy_ptr entropy = (arith_entropy_ptr) cinfo->entropy;
+  LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   unsigned char *st;
   int Al, blkn;
 
   /* Emit restart marker if needed */
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0) {
-      emit_restart(cinfo, entropy->next_restart_num);
+      LJPEG_emit_restart(cinfo, entropy->next_restart_num);
       entropy->restarts_to_go = cinfo->restart_interval;
       entropy->next_restart_num++;
       entropy->next_restart_num &= 7;
@@ -578,7 +578,7 @@ encode_mcu_DC_refine (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
   /* Encode the MCU data blocks */
   for (blkn = 0; blkn < cinfo->blocks_in_MCU; blkn++) {
     /* We simply emit the Al'th bit of the DC coefficient value. */
-    arith_encode(cinfo, st, (MCU_data[blkn][0][0] >> Al) & 1);
+    LJPEG_arith_encode(cinfo, st, (MCU_data[blkn][0][0] >> Al) & 1);
   }
 
   return TRUE;
@@ -590,10 +590,10 @@ encode_mcu_DC_refine (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-encode_mcu_AC_refine (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
+LJPEG_LJPEG_encode_mcu_AC_refine (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  arith_entropy_ptr entropy = (arith_entropy_ptr) cinfo->entropy;
-  JBLOCKROW block;
+  LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
+  LJPEG_JBLOCKROW block;
   unsigned char *st;
   int tbl, k, ke, kex;
   int v;
@@ -602,7 +602,7 @@ encode_mcu_AC_refine (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
   /* Emit restart marker if needed */
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0) {
-      emit_restart(cinfo, entropy->next_restart_num);
+      LJPEG_emit_restart(cinfo, entropy->next_restart_num);
       entropy->restarts_to_go = cinfo->restart_interval;
       entropy->next_restart_num++;
       entropy->next_restart_num &= 7;
@@ -646,15 +646,15 @@ encode_mcu_AC_refine (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
   for (k = cinfo->Ss - 1; k < ke;) {
     st = entropy->ac_stats[tbl] + 3 * k;
     if (k >= kex)
-      arith_encode(cinfo, st, 0);	/* EOB decision */
+      LJPEG_arith_encode(cinfo, st, 0);	/* EOB decision */
     for (;;) {
       if ((v = (*block)[natural_order[++k]]) >= 0) {
 	if (v >>= cinfo->Al) {
 	  if (v >> 1)			/* previously nonzero coef */
-	    arith_encode(cinfo, st + 2, (v & 1));
+	    LJPEG_arith_encode(cinfo, st + 2, (v & 1));
 	  else {			/* newly nonzero coef */
-	    arith_encode(cinfo, st + 1, 1);
-	    arith_encode(cinfo, entropy->fixed_bin, 0);
+	    LJPEG_arith_encode(cinfo, st + 1, 1);
+	    LJPEG_arith_encode(cinfo, entropy->fixed_bin, 0);
 	  }
 	  break;
 	}
@@ -662,22 +662,22 @@ encode_mcu_AC_refine (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
 	v = -v;
 	if (v >>= cinfo->Al) {
 	  if (v >> 1)			/* previously nonzero coef */
-	    arith_encode(cinfo, st + 2, (v & 1));
+	    LJPEG_arith_encode(cinfo, st + 2, (v & 1));
 	  else {			/* newly nonzero coef */
-	    arith_encode(cinfo, st + 1, 1);
-	    arith_encode(cinfo, entropy->fixed_bin, 1);
+	    LJPEG_arith_encode(cinfo, st + 1, 1);
+	    LJPEG_arith_encode(cinfo, entropy->fixed_bin, 1);
 	  }
 	  break;
 	}
       }
-      arith_encode(cinfo, st + 1, 0);
+      LJPEG_arith_encode(cinfo, st + 1, 0);
       st += 3;
     }
   }
   /* Encode EOB decision only if k < cinfo->Se */
   if (k < cinfo->Se) {
     st = entropy->ac_stats[tbl] + 3 * k;
-    arith_encode(cinfo, st, 1);
+    LJPEG_arith_encode(cinfo, st, 1);
   }
 
   return TRUE;
@@ -689,11 +689,11 @@ encode_mcu_AC_refine (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-encode_mcu (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
+LJPEG_encode_mcu (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  arith_entropy_ptr entropy = (arith_entropy_ptr) cinfo->entropy;
+  LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   jpeg_component_info * compptr;
-  JBLOCKROW block;
+  LJPEG_JBLOCKROW block;
   unsigned char *st;
   int blkn, ci, tbl, k, ke;
   int v, v2, m;
@@ -702,7 +702,7 @@ encode_mcu (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
   /* Emit restart marker if needed */
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0) {
-      emit_restart(cinfo, entropy->next_restart_num);
+      LJPEG_emit_restart(cinfo, entropy->next_restart_num);
       entropy->restarts_to_go = cinfo->restart_interval;
       entropy->next_restart_num++;
       entropy->next_restart_num &= 7;
@@ -727,37 +727,37 @@ encode_mcu (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
 
     /* Figure F.4: Encode_DC_DIFF */
     if ((v = (*block)[0] - entropy->last_dc_val[ci]) == 0) {
-      arith_encode(cinfo, st, 0);
+      LJPEG_arith_encode(cinfo, st, 0);
       entropy->dc_context[ci] = 0;	/* zero diff category */
     } else {
       entropy->last_dc_val[ci] = (*block)[0];
-      arith_encode(cinfo, st, 1);
+      LJPEG_arith_encode(cinfo, st, 1);
       /* Figure F.6: Encoding nonzero value v */
       /* Figure F.7: Encoding the sign of v */
       if (v > 0) {
-	arith_encode(cinfo, st + 1, 0);	/* Table F.4: SS = S0 + 1 */
+	LJPEG_arith_encode(cinfo, st + 1, 0);	/* Table F.4: SS = S0 + 1 */
 	st += 2;			/* Table F.4: SP = S0 + 2 */
 	entropy->dc_context[ci] = 4;	/* small positive diff category */
       } else {
 	v = -v;
-	arith_encode(cinfo, st + 1, 1);	/* Table F.4: SS = S0 + 1 */
+	LJPEG_arith_encode(cinfo, st + 1, 1);	/* Table F.4: SS = S0 + 1 */
 	st += 3;			/* Table F.4: SN = S0 + 3 */
 	entropy->dc_context[ci] = 8;	/* small negative diff category */
       }
       /* Figure F.8: Encoding the magnitude category of v */
       m = 0;
       if (v -= 1) {
-	arith_encode(cinfo, st, 1);
+	LJPEG_arith_encode(cinfo, st, 1);
 	m = 1;
 	v2 = v;
 	st = entropy->dc_stats[tbl] + 20; /* Table F.4: X1 = 20 */
 	while (v2 >>= 1) {
-	  arith_encode(cinfo, st, 1);
+	  LJPEG_arith_encode(cinfo, st, 1);
 	  m <<= 1;
 	  st += 1;
 	}
       }
-      arith_encode(cinfo, st, 0);
+      LJPEG_arith_encode(cinfo, st, 0);
       /* Section F.1.4.4.1.2: Establish dc_context conditioning category */
       if (m < (int) ((1L << cinfo->arith_dc_L[tbl]) >> 1))
 	entropy->dc_context[ci] = 0;	/* zero diff category */
@@ -766,7 +766,7 @@ encode_mcu (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
       /* Figure F.9: Encoding the magnitude bit pattern of v */
       st += 14;
       while (m >>= 1)
-	arith_encode(cinfo, st, (m & v) ? 1 : 0);
+	LJPEG_arith_encode(cinfo, st, (m & v) ? 1 : 0);
     }
 
     /* Sections F.1.4.2 & F.1.4.4.2: Encoding of AC coefficients */
@@ -782,49 +782,49 @@ encode_mcu (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
     /* Figure F.5: Encode_AC_Coefficients */
     for (k = 0; k < ke;) {
       st = entropy->ac_stats[tbl] + 3 * k;
-      arith_encode(cinfo, st, 0);	/* EOB decision */
+      LJPEG_arith_encode(cinfo, st, 0);	/* EOB decision */
       while ((v = (*block)[natural_order[++k]]) == 0) {
-	arith_encode(cinfo, st + 1, 0);
+	LJPEG_arith_encode(cinfo, st + 1, 0);
 	st += 3;
       }
-      arith_encode(cinfo, st + 1, 1);
+      LJPEG_arith_encode(cinfo, st + 1, 1);
       /* Figure F.6: Encoding nonzero value v */
       /* Figure F.7: Encoding the sign of v */
       if (v > 0) {
-	arith_encode(cinfo, entropy->fixed_bin, 0);
+	LJPEG_arith_encode(cinfo, entropy->fixed_bin, 0);
       } else {
 	v = -v;
-	arith_encode(cinfo, entropy->fixed_bin, 1);
+	LJPEG_arith_encode(cinfo, entropy->fixed_bin, 1);
       }
       st += 2;
       /* Figure F.8: Encoding the magnitude category of v */
       m = 0;
       if (v -= 1) {
-	arith_encode(cinfo, st, 1);
+	LJPEG_arith_encode(cinfo, st, 1);
 	m = 1;
 	v2 = v;
 	if (v2 >>= 1) {
-	  arith_encode(cinfo, st, 1);
+	  LJPEG_arith_encode(cinfo, st, 1);
 	  m <<= 1;
 	  st = entropy->ac_stats[tbl] +
 	       (k <= cinfo->arith_ac_K[tbl] ? 189 : 217);
 	  while (v2 >>= 1) {
-	    arith_encode(cinfo, st, 1);
+	    LJPEG_arith_encode(cinfo, st, 1);
 	    m <<= 1;
 	    st += 1;
 	  }
 	}
       }
-      arith_encode(cinfo, st, 0);
+      LJPEG_arith_encode(cinfo, st, 0);
       /* Figure F.9: Encoding the magnitude bit pattern of v */
       st += 14;
       while (m >>= 1)
-	arith_encode(cinfo, st, (m & v) ? 1 : 0);
+	LJPEG_arith_encode(cinfo, st, (m & v) ? 1 : 0);
     }
     /* Encode EOB decision only if k < cinfo->lim_Se */
     if (k < cinfo->lim_Se) {
       st = entropy->ac_stats[tbl] + 3 * k;
-      arith_encode(cinfo, st, 1);
+      LJPEG_arith_encode(cinfo, st, 1);
     }
   }
 
@@ -837,9 +837,9 @@ encode_mcu (LJPEG_j_compress_ptr cinfo, JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(void)
-start_pass (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
+LJPEG_start_pass (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
 {
-  arith_entropy_ptr entropy = (arith_entropy_ptr) cinfo->entropy;
+  LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   int ci, tbl;
   jpeg_component_info * compptr;
 
@@ -856,17 +856,17 @@ start_pass (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
   if (cinfo->progressive_mode) {
     if (cinfo->Ah == 0) {
       if (cinfo->Ss == 0)
-	entropy->pub.encode_mcu = encode_mcu_DC_first;
+	entropy->pub.LJPEG_encode_mcu = LJPEG_LJPEG_encode_mcu_DC_first;
       else
-	entropy->pub.encode_mcu = encode_mcu_AC_first;
+	entropy->pub.LJPEG_encode_mcu = LJPEG_LJPEG_encode_mcu_AC_first;
     } else {
       if (cinfo->Ss == 0)
-	entropy->pub.encode_mcu = encode_mcu_DC_refine;
+	entropy->pub.LJPEG_encode_mcu = LJPEG_LJPEG_encode_mcu_DC_refine;
       else
-	entropy->pub.encode_mcu = encode_mcu_AC_refine;
+	entropy->pub.LJPEG_encode_mcu = LJPEG_LJPEG_encode_mcu_AC_refine;
     }
   } else
-    entropy->pub.encode_mcu = encode_mcu;
+    entropy->pub.LJPEG_encode_mcu = LJPEG_encode_mcu;
 
   /* Allocate & initialize requested statistics areas */
   for (ci = 0; ci < cinfo->comps_in_scan; ci++) {
@@ -920,17 +920,17 @@ start_pass (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
  */
 
 LJPEG_GLOBAL(void)
-jinit_arith_encoder (LJPEG_j_compress_ptr cinfo)
+LJPEG_jinit_LJPEG_arith_encoder (LJPEG_j_compress_ptr cinfo)
 {
-  arith_entropy_ptr entropy;
+  LJPEG_arith_entropy_ptr entropy;
   int i;
 
-  entropy = (arith_entropy_ptr)
+  entropy = (LJPEG_arith_entropy_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(arith_entropy_encoder));
+				SIZEOF(LJPEG_arith_entropy_encoder));
   cinfo->entropy = &entropy->pub;
-  entropy->pub.start_pass = start_pass;
-  entropy->pub.finish_pass = finish_pass;
+  entropy->pub.LJPEG_start_pass = LJPEG_start_pass;
+  entropy->pub.LJPEG_finish_pass = LJPEG_finish_pass;
 
   /* Mark tables unallocated */
   for (i = 0; i < NUM_ARITH_TBLS; i++) {

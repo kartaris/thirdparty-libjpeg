@@ -57,7 +57,7 @@ jpeg_abort (LJPEG_j_common_ptr cinfo)
 /*
  * Destruction of a JPEG object.
  *
- * Everything gets deallocated except the master jpeg_compress_struct itself
+ * Everything gets deallocated except the master LJPEG_jpeg_compress_struct itself
  * and the error manager struct.  Both of these are supplied by the application
  * and must be freed, if necessary, by the application.  (Often they are on
  * the stack and so don't need to be freed anyway.)

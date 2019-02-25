@@ -42,7 +42,7 @@ typedef struct {
   unsigned char fixed_bin[4];
 } arith_entropy_decoder;
 
-typedef arith_entropy_decoder * arith_entropy_ptr;
+typedef arith_entropy_decoder * LJPEG_arith_entropy_ptr;
 
 /* The following two definitions specify the allocation chunk size
  * for the statistics area.
@@ -105,7 +105,7 @@ get_byte (LJPEG_j_decompress_ptr cinfo)
 LOCAL(int)
 arith_decode (LJPEG_j_decompress_ptr cinfo, unsigned char *st)
 {
-  register arith_entropy_ptr e = (arith_entropy_ptr) cinfo->entropy;
+  register LJPEG_arith_entropy_ptr e = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   register unsigned char nl, nm;
   register INT32 qe, temp;
   register int sv, data;
@@ -149,7 +149,7 @@ arith_decode (LJPEG_j_decompress_ptr cinfo, unsigned char *st)
    * Qe values and probability estimation state machine
    */
   sv = *st;
-  qe = jpeg_aritab[sv & 0x7F];	/* => Qe_Value */
+  qe = LJPEG_jpeg_aritab[sv & 0x7F];	/* => Qe_Value */
   nl = (unsigned char)(qe & 0xFF); qe >>= 8;	/* Next_Index_LPS + Switch_MPS */
   nm = (unsigned char)(qe & 0xFF); qe >>= 8;	/* Next_Index_MPS */
 
@@ -189,7 +189,7 @@ arith_decode (LJPEG_j_decompress_ptr cinfo, unsigned char *st)
 LOCAL(void)
 process_restart (LJPEG_j_decompress_ptr cinfo)
 {
-  arith_entropy_ptr entropy = (arith_entropy_ptr) cinfo->entropy;
+  LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   int ci;
   jpeg_component_info * compptr;
 
@@ -239,10 +239,10 @@ process_restart (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
+decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  arith_entropy_ptr entropy = (arith_entropy_ptr) cinfo->entropy;
-  JBLOCKROW block;
+  LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
+  LJPEG_JBLOCKROW block;
   unsigned char *st;
   int blkn, ci, tbl, sign;
   int v, m;
@@ -318,10 +318,10 @@ decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
+decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  arith_entropy_ptr entropy = (arith_entropy_ptr) cinfo->entropy;
-  JBLOCKROW block;
+  LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
+  LJPEG_JBLOCKROW block;
   unsigned char *st;
   int tbl, sign, k;
   int v, m;
@@ -398,9 +398,9 @@ decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
+decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  arith_entropy_ptr entropy = (arith_entropy_ptr) cinfo->entropy;
+  LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   unsigned char *st;
   int p1, blkn;
 
@@ -431,10 +431,10 @@ decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
+decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  arith_entropy_ptr entropy = (arith_entropy_ptr) cinfo->entropy;
-  JBLOCKROW block;
+  LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
+  LJPEG_JBLOCKROW block;
   JCOEFPTR thiscoef;
   unsigned char *st;
   int tbl, k, kex;
@@ -506,11 +506,11 @@ decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
+decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
-  arith_entropy_ptr entropy = (arith_entropy_ptr) cinfo->entropy;
+  LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   jpeg_component_info * compptr;
-  JBLOCKROW block;
+  LJPEG_JBLOCKROW block;
   unsigned char *st;
   int blkn, ci, tbl, sign, k;
   int v, m;
@@ -638,9 +638,9 @@ decode_mcu (LJPEG_j_decompress_ptr cinfo, JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(void)
-start_pass (LJPEG_j_decompress_ptr cinfo)
+LJPEG_start_pass (LJPEG_j_decompress_ptr cinfo)
 {
-  arith_entropy_ptr entropy = (arith_entropy_ptr) cinfo->entropy;
+  LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   int ci, tbl;
   jpeg_component_info * compptr;
 
@@ -750,14 +750,14 @@ start_pass (LJPEG_j_decompress_ptr cinfo)
 LJPEG_GLOBALvoid)
 jinit_arith_decoder (LJPEG_j_decompress_ptr cinfo)
 {
-  arith_entropy_ptr entropy;
+  LJPEG_arith_entropy_ptr entropy;
   int i;
 
-  entropy = (arith_entropy_ptr)
+  entropy = (LJPEG_arith_entropy_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(arith_entropy_decoder));
   cinfo->entropy = &entropy->pub;
-  entropy->pub.start_pass = start_pass;
+  entropy->pub.LJPEG_start_pass = LJPEG_start_pass;
 
   /* Mark tables unallocated */
   for (i = 0; i < NUM_ARITH_TBLS; i++) {

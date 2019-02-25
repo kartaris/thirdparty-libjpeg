@@ -33,7 +33,7 @@
 /* Private buffer controller object */
 
 typedef struct {
-  struct jpeg_c_coef_controller pub; /* public fields */
+  struct LJPEG_jpeg_c_coef_controller pub; /* public fields */
 
   LJPEG_JDIMENSION iMCU_row_num;	/* iMCU row # within image */
   LJPEG_JDIMENSION mcu_ctr;		/* counts MCUs processed in current row */
@@ -49,31 +49,31 @@ typedef struct {
    * In multi-pass modes, this array points to the current MCU's blocks
    * within the virtual arrays.
    */
-  JBLOCKROW MCU_buffer[C_MAX_BLOCKS_IN_MCU];
+  LJPEG_JBLOCKROW MCU_buffer[C_MAX_BLOCKS_IN_MCU];
 
   /* In multi-pass modes, we need a virtual block array for each component. */
   jvirt_barray_ptr whole_image[MAX_COMPONENTS];
-} my_coef_controller;
+} LJPEG_my_coef_controller;
 
-typedef my_coef_controller * my_coef_ptr;
+typedef LJPEG_my_coef_controller * LJPEG_my_coef_ptr;
 
 
 /* Forward declarations */
-LJPEG_METHODDEF(boolean) compress_data
-    JPP((LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf));
+LJPEG_METHODDEF(boolean) LJPEG_compress_data
+    LJPEG_JPP((LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_buf));
 #ifdef FULL_COEF_BUFFER_SUPPORTED
-LJPEG_METHODDEF(boolean) compress_first_pass
-    JPP((LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf));
-LJPEG_METHODDEF(boolean) compress_output
-    JPP((LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf));
+LJPEG_METHODDEF(boolean) LJPEG_compress_first_pass
+    LJPEG_JPP((LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_buf));
+LJPEG_METHODDEF(boolean) LJPEG_compress_output
+    LJPEG_JPP((LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_buf));
 #endif
 
 
 LOCAL(void)
-start_iMCU_row (LJPEG_j_compress_ptr cinfo)
+LJPEG_start_iMCU_row (LJPEG_j_compress_ptr cinfo)
 /* Reset within-iMCU-row counters for a new row */
 {
-  my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
+  LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
 
   /* In an interleaved scan, an MCU row is the same as an iMCU row.
    * In a noninterleaved scan, an iMCU row has v_samp_factor MCU rows.
@@ -98,29 +98,29 @@ start_iMCU_row (LJPEG_j_compress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-start_pass_coef (LJPEG_j_compress_ptr cinfo, J_BUF_MODE pass_mode)
+LJPEG_start_pass_coef (LJPEG_j_compress_ptr cinfo, J_BUF_MODE pass_mode)
 {
-  my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
+  LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
 
   coef->iMCU_row_num = 0;
-  start_iMCU_row(cinfo);
+  LJPEG_start_iMCU_row(cinfo);
 
   switch (pass_mode) {
   case JBUF_PASS_THRU:
     if (coef->whole_image[0] != NULL)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
-    coef->pub.compress_data = compress_data;
+    coef->pub.LJPEG_compress_data = LJPEG_compress_data;
     break;
 #ifdef FULL_COEF_BUFFER_SUPPORTED
   case JBUF_SAVE_AND_PASS:
     if (coef->whole_image[0] == NULL)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
-    coef->pub.compress_data = compress_first_pass;
+    coef->pub.LJPEG_compress_data = LJPEG_compress_first_pass;
     break;
   case JBUF_CRANK_DEST:
     if (coef->whole_image[0] == NULL)
       ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
-    coef->pub.compress_data = compress_output;
+    coef->pub.LJPEG_compress_data = LJPEG_compress_output;
     break;
 #endif
   default:
@@ -141,9 +141,9 @@ start_pass_coef (LJPEG_j_compress_ptr cinfo, J_BUF_MODE pass_mode)
  */
 
 LJPEG_METHODDEF(boolean)
-compress_data (LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf)
+LJPEG_compress_data (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_buf)
 {
-  my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
+  LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
   LJPEG_JDIMENSION MCU_col_num;	/* index of current MCU within row */
   LJPEG_JDIMENSION last_MCU_col = cinfo->MCUs_per_row - 1;
   LJPEG_JDIMENSION last_iMCU_row = cinfo->total_iMCU_rows - 1;
@@ -205,7 +205,7 @@ compress_data (LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf)
       /* Try to write the MCU.  In event of a suspension failure, we will
        * re-DCT the MCU on restart (a bit inefficient, could be fixed...)
        */
-      if (! (*cinfo->entropy->encode_mcu) (cinfo, coef->MCU_buffer)) {
+      if (! (*cinfo->entropy->LJPEG_encode_mcu) (cinfo, coef->MCU_buffer)) {
 	/* Suspension forced; update state counters and exit */
 	coef->MCU_vert_offset = yoffset;
 	coef->mcu_ctr = MCU_col_num;
@@ -217,7 +217,7 @@ compress_data (LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf)
   }
   /* Completed the iMCU row, advance counters for next one */
   coef->iMCU_row_num++;
-  start_iMCU_row(cinfo);
+  LJPEG_start_iMCU_row(cinfo);
   return TRUE;
 }
 
@@ -235,7 +235,7 @@ compress_data (LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf)
  * it possible for subsequent passes not to worry about real vs. dummy blocks.
  *
  * We must also emit the data to the entropy encoder.  This is conveniently
- * done by calling compress_output() after we've loaded the current strip
+ * done by calling LJPEG_compress_output() after we've loaded the current strip
  * of the virtual arrays.
  *
  * NB: input_buf contains a plane for each component in image.  All
@@ -246,16 +246,16 @@ compress_data (LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf)
  */
 
 LJPEG_METHODDEF(boolean)
-compress_first_pass (LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf)
+LJPEG_compress_first_pass (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_buf)
 {
-  my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
+  LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
   LJPEG_JDIMENSION last_iMCU_row = cinfo->total_iMCU_rows - 1;
   LJPEG_JDIMENSION blocks_across, MCUs_across, MCUindex;
   int bi, ci, h_samp_factor, block_row, block_rows, ndummy;
   JCOEF lastDC;
   jpeg_component_info *compptr;
   JBLOCKARRAY buffer;
-  JBLOCKROW thisblockrow, lastblockrow;
+  LJPEG_JBLOCKROW thisblockrow, lastblockrow;
   forward_DCT_ptr forward_DCT;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
@@ -323,12 +323,12 @@ compress_first_pass (LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf)
       }
     }
   }
-  /* NB: compress_output will increment iMCU_row_num if successful.
+  /* NB: LJPEG_compress_output will increment iMCU_row_num if successful.
    * A suspension return will result in redoing all the work above next time.
    */
 
   /* Emit data to the entropy encoder, sharing code with subsequent passes */
-  return compress_output(cinfo, input_buf);
+  return LJPEG_compress_output(cinfo, input_buf);
 }
 
 
@@ -343,14 +343,14 @@ compress_first_pass (LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf)
  */
 
 LJPEG_METHODDEF(boolean)
-compress_output (LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf)
+LJPEG_compress_output (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_buf)
 {
-  my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
+  LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
   LJPEG_JDIMENSION MCU_col_num;	/* index of current MCU within row */
   int blkn, ci, xindex, yindex, yoffset;
   LJPEG_JDIMENSION start_col;
   JBLOCKARRAY buffer[MAX_COMPS_IN_SCAN];
-  JBLOCKROW buffer_ptr;
+  LJPEG_JBLOCKROW buffer_ptr;
   jpeg_component_info *compptr;
 
   /* Align the virtual buffers for the components used in this scan.
@@ -383,7 +383,7 @@ compress_output (LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf)
 	}
       }
       /* Try to write the MCU. */
-      if (! (*cinfo->entropy->encode_mcu) (cinfo, coef->MCU_buffer)) {
+      if (! (*cinfo->entropy->LJPEG_encode_mcu) (cinfo, coef->MCU_buffer)) {
 	/* Suspension forced; update state counters and exit */
 	coef->MCU_vert_offset = yoffset;
 	coef->mcu_ctr = MCU_col_num;
@@ -395,7 +395,7 @@ compress_output (LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf)
   }
   /* Completed the iMCU row, advance counters for next one */
   coef->iMCU_row_num++;
-  start_iMCU_row(cinfo);
+  LJPEG_start_iMCU_row(cinfo);
   return TRUE;
 }
 
@@ -407,15 +407,15 @@ compress_output (LJPEG_j_compress_ptr cinfo, JSAMPIMAGE input_buf)
  */
 
 LJPEG_GLOBAL(void)
-jinit_c_coef_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buffer)
+LJPEG_jinit_c_coef_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buffer)
 {
-  my_coef_ptr coef;
+  LJPEG_my_coef_ptr coef;
 
-  coef = (my_coef_ptr)
+  coef = (LJPEG_my_coef_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(my_coef_controller));
-  cinfo->coef = (struct jpeg_c_coef_controller *) coef;
-  coef->pub.start_pass = start_pass_coef;
+				SIZEOF(LJPEG_my_coef_controller));
+  cinfo->coef = (struct LJPEG_jpeg_c_coef_controller *) coef;
+  coef->pub.LJPEG_start_pass = LJPEG_start_pass_coef;
 
   /* Create the coefficient buffer. */
   if (need_full_buffer) {
@@ -440,10 +440,10 @@ jinit_c_coef_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buffer)
 #endif
   } else {
     /* We only need a single-MCU buffer. */
-    JBLOCKROW buffer;
+    LJPEG_JBLOCKROW buffer;
     int i;
 
-    buffer = (JBLOCKROW)
+    buffer = (LJPEG_JBLOCKROW)
       (*cinfo->mem->alloc_large) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  C_MAX_BLOCKS_IN_MCU * SIZEOF(JBLOCK));
     for (i = 0; i < C_MAX_BLOCKS_IN_MCU; i++) {

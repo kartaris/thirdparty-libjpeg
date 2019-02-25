@@ -75,7 +75,7 @@ typedef my_prep_controller * my_prep_ptr;
  */
 
 LJPEG_METHODDEF(void)
-start_pass_prep (LJPEG_j_compress_ptr cinfo, J_BUF_MODE pass_mode)
+LJPEG_start_pass_prep (LJPEG_j_compress_ptr cinfo, J_BUF_MODE pass_mode)
 {
   my_prep_ptr prep = (my_prep_ptr) cinfo->prep;
 
@@ -128,7 +128,7 @@ LJPEG_METHODDEF(void)
 pre_process_data (LJPEG_j_compress_ptr cinfo,
 		  LJPEG_JSAMPARRAY input_buf, LJPEG_JDIMENSION *in_row_ctr,
 		  LJPEG_JDIMENSION in_rows_avail,
-		  JSAMPIMAGE output_buf, LJPEG_JDIMENSION *out_row_group_ctr,
+		  LJPEG_JSAMPIMAGE output_buf, LJPEG_JDIMENSION *out_row_group_ctr,
 		  LJPEG_JDIMENSION out_row_groups_avail)
 {
   my_prep_ptr prep = (my_prep_ptr) cinfo->prep;
@@ -197,7 +197,7 @@ LJPEG_METHODDEF(void)
 pre_process_context (LJPEG_j_compress_ptr cinfo,
 		     LJPEG_JSAMPARRAY input_buf, LJPEG_JDIMENSION *in_row_ctr,
 		     LJPEG_JDIMENSION in_rows_avail,
-		     JSAMPIMAGE output_buf, LJPEG_JDIMENSION *out_row_group_ctr,
+		     LJPEG_JSAMPIMAGE output_buf, LJPEG_JDIMENSION *out_row_group_ctr,
 		     LJPEG_JDIMENSION out_row_groups_avail)
 {
   my_prep_ptr prep = (my_prep_ptr) cinfo->prep;
@@ -280,7 +280,7 @@ create_context_buffer (LJPEG_j_compress_ptr cinfo)
   fake_buffer = (LJPEG_JSAMPARRAY)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				(cinfo->num_components * 5 * rgroup_height) *
-				SIZEOF(JSAMPROW));
+				SIZEOF(LJPEG_JSAMPROW));
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
        ci++, compptr++) {
@@ -296,7 +296,7 @@ create_context_buffer (LJPEG_j_compress_ptr cinfo)
        (LJPEG_JDIMENSION) (3 * rgroup_height));
     /* Copy true buffer row pointers into the middle of the fake row array */
     MEMCOPY(fake_buffer + rgroup_height, true_buffer,
-	    3 * rgroup_height * SIZEOF(JSAMPROW));
+	    3 * rgroup_height * SIZEOF(LJPEG_JSAMPROW));
     /* Fill in the above and below wraparound pointers */
     for (i = 0; i < rgroup_height; i++) {
       fake_buffer[i] = true_buffer[2 * rgroup_height + i];
@@ -328,7 +328,7 @@ jinit_c_prep_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buffer)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_prep_controller));
   cinfo->prep = (struct jpeg_c_prep_controller *) prep;
-  prep->pub.start_pass = start_pass_prep;
+  prep->pub.LJPEG_start_pass = LJPEG_start_pass_prep;
 
   /* Allocate the color conversion buffer.
    * We make the buffer wide enough to allow the downsampler to edge-expand

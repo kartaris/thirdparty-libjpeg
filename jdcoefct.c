@@ -46,7 +46,7 @@ typedef struct {
    * In multi-pass modes, this array points to the current MCU's blocks
    * within the virtual arrays; it is used only by the input side.
    */
-  JBLOCKROW MCU_buffer[D_MAX_BLOCKS_IN_MCU];
+  LJPEG_JBLOCKROW MCU_buffer[D_MAX_BLOCKS_IN_MCU];
 
 #ifdef D_MULTISCAN_FILES_SUPPORTED
   /* In multi-pass modes, we need a virtual block array for each component. */
@@ -58,29 +58,29 @@ typedef struct {
   int * coef_bits_latch;
 #define SAVED_COEFS  6		/* we save coef_bits[0..5] */
 #endif
-} my_coef_controller;
+} LJPEG_my_coef_controller;
 
-typedef my_coef_controller * my_coef_ptr;
+typedef LJPEG_my_coef_controller * LJPEG_my_coef_ptr;
 
 /* Forward declarations */
 LJPEG_METHODDEF(int) decompress_onepass
-	JPP((LJPEG_j_decompress_ptr cinfo, JSAMPIMAGE output_buf));
+	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf));
 #ifdef D_MULTISCAN_FILES_SUPPORTED
 LJPEG_METHODDEF(int) decompress_data
-	JPP((LJPEG_j_decompress_ptr cinfo, JSAMPIMAGE output_buf));
+	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf));
 #endif
 #ifdef BLOCK_SMOOTHING_SUPPORTED
-LOCAL(boolean) smoothing_ok JPP((LJPEG_j_decompress_ptr cinfo));
+LOCAL(boolean) smoothing_ok LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 LJPEG_METHODDEF(int) decompress_smooth_data
-	JPP((LJPEG_j_decompress_ptr cinfo, JSAMPIMAGE output_buf));
+	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf));
 #endif
 
 
 LOCAL(void)
-start_iMCU_row (LJPEG_j_decompress_ptr cinfo)
+LJPEG_start_iMCU_row (LJPEG_j_decompress_ptr cinfo)
 /* Reset within-iMCU-row counters for a new row (input side) */
 {
-  my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
+  LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
 
   /* In an interleaved scan, an MCU row is the same as an iMCU row.
    * In a noninterleaved scan, an iMCU row has v_samp_factor MCU rows.
@@ -108,7 +108,7 @@ LJPEG_METHODDEF(void)
 start_input_pass (LJPEG_j_decompress_ptr cinfo)
 {
   cinfo->input_iMCU_row = 0;
-  start_iMCU_row(cinfo);
+  LJPEG_start_iMCU_row(cinfo);
 }
 
 
@@ -120,7 +120,7 @@ LJPEG_METHODDEF(void)
 start_output_pass (LJPEG_j_decompress_ptr cinfo)
 {
 #ifdef BLOCK_SMOOTHING_SUPPORTED
-  my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
+  LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
 
   /* If multipass, check to see whether to use block smoothing on this pass */
   if (coef->pub.coef_arrays != NULL) {
@@ -145,9 +145,9 @@ start_output_pass (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(int)
-decompress_onepass (LJPEG_j_decompress_ptr cinfo, JSAMPIMAGE output_buf)
+decompress_onepass (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf)
 {
-  my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
+  LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
   LJPEG_JDIMENSION MCU_col_num;	/* index of current MCU within row */
   LJPEG_JDIMENSION last_MCU_col = cinfo->MCUs_per_row - 1;
   LJPEG_JDIMENSION last_iMCU_row = cinfo->total_iMCU_rows - 1;
@@ -213,7 +213,7 @@ decompress_onepass (LJPEG_j_decompress_ptr cinfo, JSAMPIMAGE output_buf)
   /* Completed the iMCU row, advance counters for next one */
   cinfo->output_iMCU_row++;
   if (++(cinfo->input_iMCU_row) < cinfo->total_iMCU_rows) {
-    start_iMCU_row(cinfo);
+    LJPEG_start_iMCU_row(cinfo);
     return JPEG_ROW_COMPLETED;
   }
   /* Completed the scan */
@@ -245,12 +245,12 @@ dummy_consume_data (LJPEG_j_decompress_ptr cinfo)
 LJPEG_METHODDEF(int)
 consume_data (LJPEG_j_decompress_ptr cinfo)
 {
-  my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
+  LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
   LJPEG_JDIMENSION MCU_col_num;	/* index of current MCU within row */
   int blkn, ci, xindex, yindex, yoffset;
   LJPEG_JDIMENSION start_col;
   JBLOCKARRAY buffer[MAX_COMPS_IN_SCAN];
-  JBLOCKROW buffer_ptr;
+  LJPEG_JBLOCKROW buffer_ptr;
   jpeg_component_info *compptr;
 
   /* Align the virtual buffers for the components used in this scan. */
@@ -296,7 +296,7 @@ consume_data (LJPEG_j_decompress_ptr cinfo)
   }
   /* Completed the iMCU row, advance counters for next one */
   if (++(cinfo->input_iMCU_row) < cinfo->total_iMCU_rows) {
-    start_iMCU_row(cinfo);
+    LJPEG_start_iMCU_row(cinfo);
     return JPEG_ROW_COMPLETED;
   }
   /* Completed the scan */
@@ -314,14 +314,14 @@ consume_data (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(int)
-decompress_data (LJPEG_j_decompress_ptr cinfo, JSAMPIMAGE output_buf)
+decompress_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf)
 {
-  my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
+  LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
   LJPEG_JDIMENSION last_iMCU_row = cinfo->total_iMCU_rows - 1;
   LJPEG_JDIMENSION block_num;
   int ci, block_row, block_rows;
   JBLOCKARRAY buffer;
-  JBLOCKROW buffer_ptr;
+  LJPEG_JBLOCKROW buffer_ptr;
   LJPEG_JSAMPARRAY output_ptr;
   LJPEG_JDIMENSION output_col;
   jpeg_component_info *compptr;
@@ -406,7 +406,7 @@ decompress_data (LJPEG_j_decompress_ptr cinfo, JSAMPIMAGE output_buf)
 LOCAL(boolean)
 smoothing_ok (LJPEG_j_decompress_ptr cinfo)
 {
-  my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
+  LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
   boolean smoothing_useful = FALSE;
   int ci, coefi;
   jpeg_component_info *compptr;
@@ -460,14 +460,14 @@ smoothing_ok (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(int)
-decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, JSAMPIMAGE output_buf)
+decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf)
 {
-  my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
+  LJPEG_my_coef_ptr coef = (LJPEG_my_coef_ptr) cinfo->coef;
   LJPEG_JDIMENSION last_iMCU_row = cinfo->total_iMCU_rows - 1;
   LJPEG_JDIMENSION block_num, last_block_column;
   int ci, block_row, block_rows, access_rows;
   JBLOCKARRAY buffer;
-  JBLOCKROW buffer_ptr, prev_block_row, next_block_row;
+  LJPEG_JBLOCKROW buffer_ptr, prev_block_row, next_block_row;
   LJPEG_JSAMPARRAY output_ptr;
   LJPEG_JDIMENSION output_col;
   jpeg_component_info *compptr;
@@ -562,7 +562,7 @@ decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, JSAMPIMAGE output_buf)
       last_block_column = compptr->width_in_blocks - 1;
       for (block_num = 0; block_num <= last_block_column; block_num++) {
 	/* Fetch current DCT block into workspace so we can modify it. */
-	jcopy_block_row(buffer_ptr, (JBLOCKROW) workspace, (LJPEG_JDIMENSION) 1);
+	jcopy_block_row(buffer_ptr, (LJPEG_JBLOCKROW) workspace, (LJPEG_JDIMENSION) 1);
 	/* Update DC values */
 	if (block_num < last_block_column) {
 	  DC3 = (int) prev_block_row[1][0];
@@ -677,11 +677,11 @@ decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, JSAMPIMAGE output_buf)
 LJPEG_GLOBAL(void)
 jinit_d_coef_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
 {
-  my_coef_ptr coef;
+  LJPEG_my_coef_ptr coef;
 
-  coef = (my_coef_ptr)
+  coef = (LJPEG_my_coef_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(my_coef_controller));
+				SIZEOF(LJPEG_my_coef_controller));
   cinfo->coef = (struct jpeg_d_coef_controller *) coef;
   coef->pub.start_input_pass = start_input_pass;
   coef->pub.start_output_pass = start_output_pass;
@@ -722,10 +722,10 @@ jinit_d_coef_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
 #endif
   } else {
     /* We only need a single-MCU buffer. */
-    JBLOCKROW buffer;
+    LJPEG_JBLOCKROW buffer;
     int i;
 
-    buffer = (JBLOCKROW)
+    buffer = (LJPEG_JBLOCKROW)
       (*cinfo->mem->alloc_large) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  D_MAX_BLOCKS_IN_MCU * SIZEOF(JBLOCK));
     for (i = 0; i < D_MAX_BLOCKS_IN_MCU; i++) {

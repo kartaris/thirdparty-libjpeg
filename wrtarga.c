@@ -101,7 +101,7 @@ put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 /* used for unquantized full-color output */
 {
   tga_dest_ptr dest = (tga_dest_ptr) dinfo;
-  register JSAMPROW inptr;
+  register LJPEG_JSAMPROW inptr;
   register char * outptr;
   register LJPEG_JDIMENSION col;
 
@@ -122,7 +122,7 @@ put_gray_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 /* used for grayscale OR quantized color output */
 {
   tga_dest_ptr dest = (tga_dest_ptr) dinfo;
-  register JSAMPROW inptr;
+  register LJPEG_JSAMPROW inptr;
   register char * outptr;
   register LJPEG_JDIMENSION col;
 
@@ -145,9 +145,9 @@ put_demapped_gray (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 		   LJPEG_JDIMENSION rows_supplied)
 {
   tga_dest_ptr dest = (tga_dest_ptr) dinfo;
-  register JSAMPROW inptr;
+  register LJPEG_JSAMPROW inptr;
   register char * outptr;
-  register JSAMPROW color_map0 = cinfo->colormap[0];
+  register LJPEG_JSAMPROW color_map0 = cinfo->colormap[0];
   register LJPEG_JDIMENSION col;
 
   inptr = dest->pub.buffer[0];

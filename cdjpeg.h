@@ -117,41 +117,41 @@ typedef struct LJPEG_cdjpeg_progress_mgr * cd_progress_ptr;
 
 /* Module selection routines for I/O modules. */
 
-EXTERN(LJPEG_cjpeg_source_ptr) LJPEG_jinit_read_bmp JPP((LJPEG_j_compress_ptr cinfo));
-EXTERN(LJPEG_djpeg_dest_ptr) LJPEG_jinit_write_bmp JPP((LJPEG_j_decompress_ptr cinfo,
+EXTERN(LJPEG_cjpeg_source_ptr) LJPEG_jinit_read_bmp LJPEG_JPP((LJPEG_j_compress_ptr cinfo));
+EXTERN(LJPEG_djpeg_dest_ptr) LJPEG_jinit_write_bmp LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
 					    boolean is_os2));
-EXTERN(LJPEG_cjpeg_source_ptr) LJPEG_jinit_read_gif JPP((LJPEG_j_compress_ptr cinfo));
-EXTERN(LJPEG_djpeg_dest_ptr) LJPEG_jinit_write_gif JPP((LJPEG_j_decompress_ptr cinfo));
-EXTERN(LJPEG_cjpeg_source_ptr) LJPEG_jinit_read_ppm JPP((LJPEG_j_compress_ptr cinfo));
-EXTERN(LJPEG_djpeg_dest_ptr) LJPEG_jinit_write_ppm JPP((LJPEG_j_decompress_ptr cinfo));
-EXTERN(LJPEG_cjpeg_source_ptr) LJPEG_jinit_read_rle JPP((LJPEG_j_compress_ptr cinfo));
-EXTERN(LJPEG_djpeg_dest_ptr) LJPEG_jinit_write_rle JPP((LJPEG_j_decompress_ptr cinfo));
-EXTERN(LJPEG_cjpeg_source_ptr) LJPEG_jinit_read_targa JPP((LJPEG_j_compress_ptr cinfo));
-EXTERN(LJPEG_djpeg_dest_ptr) LJPEG_jinit_write_targa JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(LJPEG_cjpeg_source_ptr) LJPEG_jinit_read_gif LJPEG_JPP((LJPEG_j_compress_ptr cinfo));
+EXTERN(LJPEG_djpeg_dest_ptr) LJPEG_jinit_write_gif LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(LJPEG_cjpeg_source_ptr) LJPEG_jinit_read_ppm LJPEG_JPP((LJPEG_j_compress_ptr cinfo));
+EXTERN(LJPEG_djpeg_dest_ptr) LJPEG_jinit_write_ppm LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(LJPEG_cjpeg_source_ptr) LJPEG_jinit_read_rle LJPEG_JPP((LJPEG_j_compress_ptr cinfo));
+EXTERN(LJPEG_djpeg_dest_ptr) LJPEG_jinit_write_rle LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(LJPEG_cjpeg_source_ptr) LJPEG_jinit_read_targa LJPEG_JPP((LJPEG_j_compress_ptr cinfo));
+EXTERN(LJPEG_djpeg_dest_ptr) LJPEG_jinit_write_targa LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 
 /* cjpeg support routines (in rdswitch.c) */
 
-EXTERN(boolean) LJPEG_read_quant_tables JPP((LJPEG_j_compress_ptr cinfo, char * filename,
+EXTERN(boolean) LJPEG_read_quant_tables LJPEG_JPP((LJPEG_j_compress_ptr cinfo, char * filename,
 				       boolean force_baseline));
-EXTERN(boolean) LJPEG_read_scan_script JPP((LJPEG_j_compress_ptr cinfo, char * filename));
-EXTERN(boolean) LJPEG_set_quality_ratings JPP((LJPEG_j_compress_ptr cinfo, char *arg,
+EXTERN(boolean) LJPEG_read_scan_script LJPEG_JPP((LJPEG_j_compress_ptr cinfo, char * filename));
+EXTERN(boolean) LJPEG_set_quality_ratings LJPEG_JPP((LJPEG_j_compress_ptr cinfo, char *arg,
 					 boolean force_baseline));
-EXTERN(boolean) LJPEG_set_quant_slots JPP((LJPEG_j_compress_ptr cinfo, char *arg));
-EXTERN(boolean) LJPEG_set_sample_factors JPP((LJPEG_j_compress_ptr cinfo, char *arg));
+EXTERN(boolean) LJPEG_set_quant_slots LJPEG_JPP((LJPEG_j_compress_ptr cinfo, char *arg));
+EXTERN(boolean) LJPEG_set_sample_factors LJPEG_JPP((LJPEG_j_compress_ptr cinfo, char *arg));
 
 /* djpeg support routines (in rdcolmap.c) */
 
-EXTERN(void) LJPEG_read_color_map JPP((LJPEG_j_decompress_ptr cinfo, FILE * infile));
+EXTERN(void) LJPEG_read_color_map LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, FILE * infile));
 
 /* common support routines (in cdjpeg.c) */
 
-EXTERN(void) enable_LJPEG_signal_catcher JPP((LJPEG_j_common_ptr cinfo));
-EXTERN(void) LJPEG_start_progress_monitor JPP((LJPEG_j_common_ptr cinfo,
+EXTERN(void) enable_LJPEG_signal_catcher LJPEG_JPP((LJPEG_j_common_ptr cinfo));
+EXTERN(void) LJPEG_start_progress_monitor LJPEG_JPP((LJPEG_j_common_ptr cinfo,
 					 cd_progress_ptr progress));
-EXTERN(void) LJPEG_end_progress_monitor JPP((LJPEG_j_common_ptr cinfo));
-EXTERN(boolean) LJPEG_end_progress_monitor JPP((char * arg, const char * keyword, int minchars));
-EXTERN(FILE *) LJPEG_read_stdin JPP((void));
-EXTERN(FILE *) LJPEG_write_stdout JPP((void));
+EXTERN(void) LJPEG_end_progress_monitor LJPEG_JPP((LJPEG_j_common_ptr cinfo));
+EXTERN(boolean) LJPEG_end_progress_monitor LJPEG_JPP((char * arg, const char * keyword, int minchars));
+EXTERN(FILE *) LJPEG_read_stdin LJPEG_JPP((void));
+EXTERN(FILE *) LJPEG_write_stdout LJPEG_JPP((void));
 
 /* miscellaneous useful macros */
 

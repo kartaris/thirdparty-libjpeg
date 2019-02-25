@@ -116,7 +116,7 @@ The rough outline of a JPEG compression operation is:
 	Set parameters for compression, including image size & colorspace
 	LJPEG_jpeg_start_compress(...);
 	while (scan lines remain to be written)
-		jpeg_write_scanlines(...);
+		LJPEG_jpeg_write_scanlines(...);
 	LJPEG_jpeg_finish_compress(...);
 	Release the JPEG compression object
 
@@ -128,7 +128,7 @@ same parameter settings for a sequence of images.  Re-use of a JPEG object
 also has important implications for processing abbreviated JPEG datastreams,
 as discussed later.
 
-The image data to be compressed is supplied to jpeg_write_scanlines() from
+The image data to be compressed is supplied to LJPEG_jpeg_write_scanlines() from
 in-memory buffers.  If the application is doing file-to-file compression,
 reading image data from the source file is the application's responsibility.
 The library emits compressed data by calling a "data destination manager",
@@ -213,7 +213,7 @@ A 2-D array of pixels is formed by making a list of pointers to the starts of
 scanlines; so the scanlines need not be physically adjacent in memory.  Even
 if you process just one scanline at a time, you must make a one-element
 pointer array to conform to this structure.  Pointers to JSAMPLE rows are of
-type JSAMPROW, and the pointer to the pointer array is of type LJPEG_JSAMPARRAY.
+type LJPEG_JSAMPROW, and the pointer to the pointer array is of type LJPEG_JSAMPARRAY.
 
 The library accepts or supplies one or more complete scanlines per call.
 It is not possible to process part of a row at a time.  Scanlines are always
@@ -249,7 +249,7 @@ Here we revisit the JPEG compression outline given in the overview.
 
 1. Allocate and initialize a JPEG compression object.
 
-A JPEG compression object is a "struct jpeg_compress_struct".  (It also has
+A JPEG compression object is a "struct LJPEG_jpeg_compress_struct".  (It also has
 a bunch of subsidiary structures which are allocated via malloc(), but the
 application doesn't control those directly.)  This struct can be just a local
 variable in the calling routine, if a single routine is going to execute the
@@ -265,18 +265,18 @@ handler.  The default error handler will print JPEG error/warning messages
 on stderr, and it will call exit() if a fatal error occurs.
 
 You must initialize the error handler structure, store a pointer to it into
-the JPEG object's "err" field, and then call jpeg_create_compress() to
+the JPEG object's "err" field, and then call LJPEG_jpeg_create_compress() to
 initialize the rest of the JPEG object.
 
 Typical code for this step, if you are using the default error handler, is
 
-	struct jpeg_compress_struct cinfo;
+	struct LJPEG_jpeg_compress_struct cinfo;
 	struct LJPEG_jpeg_error_mgr jerr;
 	...
 	cinfo.err = LJPEG_jpeg_std_error(&jerr);
-	jpeg_create_compress(&cinfo);
+	LJPEG_jpeg_create_compress(&cinfo);
 
-jpeg_create_compress allocates a small amount of memory, so it could fail
+LJPEG_jpeg_create_compress allocates a small amount of memory, so it could fail
 if you are out of memory.  In that case it will exit via the error handler;
 that's why the error handler must be initialized first.
 
@@ -333,14 +333,14 @@ JCS_GRAYSCALE.
 JPEG has a large number of compression parameters that determine how the
 image is encoded.  Most applications don't need or want to know about all
 these parameters.  You can set all the parameters to reasonable defaults by
-calling jpeg_set_defaults(); then, if there are particular values you want
+calling LJPEG_jpeg_set_defaults(); then, if there are particular values you want
 to change, you can do so after that.  The "Compression parameter selection"
 section tells about all the parameters.
 
-You must set in_color_space correctly before calling jpeg_set_defaults(),
+You must set in_color_space correctly before calling LJPEG_jpeg_set_defaults(),
 because the defaults depend on the source image colorspace.  However the
 other three source image parameters need not be valid until you call
-LJPEG_jpeg_start_compress().  There's no harm in calling jpeg_set_defaults() more
+LJPEG_jpeg_start_compress().  There's no harm in calling LJPEG_jpeg_set_defaults() more
 than once, if that happens to be convenient.
 
 Typical code for a 24-bit RGB source image is
@@ -350,7 +350,7 @@ Typical code for a 24-bit RGB source image is
 	cinfo.input_components = 3;	/* # of color components per pixel */
 	cinfo.in_color_space = JCS_RGB; /* colorspace of input image */
 
-	jpeg_set_defaults(&cinfo);
+	LJPEG_jpeg_set_defaults(&cinfo);
 	/* Make optional parameter settings here */
 
 
@@ -376,9 +376,9 @@ the compression cycle.
 
 
 5. while (scan lines remain to be written)
-	jpeg_write_scanlines(...);
+	LJPEG_jpeg_write_scanlines(...);
 
-Now write all the required image data by calling jpeg_write_scanlines()
+Now write all the required image data by calling LJPEG_jpeg_write_scanlines()
 one or more times.  You can pass one or more scanlines in each call, up
 to the total image height.  In most applications it is convenient to pass
 just one or a few scanlines at a time.  The expected format for the passed
@@ -401,17 +401,17 @@ Code for this step depends heavily on the way that you store the source data.
 example.c shows the following code for the case of a full-size 2-D source
 array containing 3-byte RGB pixels:
 
-	JSAMPROW row_pointer[1];	/* pointer to a single row */
+	LJPEG_JSAMPROW row_pointer[1];	/* pointer to a single row */
 	int row_stride;			/* physical row width in buffer */
 
 	row_stride = image_width * 3;	/* JSAMPLEs per row in image_buffer */
 
 	while (cinfo.next_scanline < cinfo.image_height) {
 	    row_pointer[0] = & image_buffer[cinfo.next_scanline * row_stride];
-	    jpeg_write_scanlines(&cinfo, row_pointer, 1);
+	    LJPEG_jpeg_write_scanlines(&cinfo, row_pointer, 1);
 	}
 
-jpeg_write_scanlines() returns the number of scanlines actually written.
+LJPEG_jpeg_write_scanlines() returns the number of scanlines actually written.
 This will normally be equal to the number passed in, so you can usually
 ignore the return value.  It is different in just two cases:
   * If you try to write more scanlines than the declared image height,
@@ -456,7 +456,7 @@ destination manager, the new datastream will be written to the same target.
 If you do not change any JPEG parameters, the new datastream will be written
 with the same parameters as before.  Note that you can change the input image
 dimensions freely between cycles, but if you change the input colorspace, you
-should call jpeg_set_defaults() to adjust for the new colorspace; and then
+should call LJPEG_jpeg_set_defaults() to adjust for the new colorspace; and then
 you'll need to repeat all of step 3.
 
 
@@ -471,7 +471,7 @@ cases.  (Actually, these routines are equivalent except for the declared type
 of the passed pointer.  To avoid gripes from ANSI C compilers, jpeg_destroy()
 should be passed a LJPEG_j_common_ptr.)
 
-If you allocated the jpeg_compress_struct structure from malloc(), freeing
+If you allocated the LJPEG_jpeg_compress_struct structure from malloc(), freeing
 it is your responsibility --- jpeg_destroy() won't.  Ditto for the error
 handler structure.
 
@@ -487,10 +487,10 @@ in either of two ways:
 
 * If you don't need the JPEG object any more, just call
   LJPEG_jpeg_destroy_compress() or jpeg_destroy() to release memory.  This is
-  legitimate at any point after calling jpeg_create_compress() --- in fact,
-  it's safe even if jpeg_create_compress() fails.
+  legitimate at any point after calling LJPEG_jpeg_create_compress() --- in fact,
+  it's safe even if LJPEG_jpeg_create_compress() fails.
 
-* If you want to re-use the JPEG object, call jpeg_abort_compress(), or call
+* If you want to re-use the JPEG object, call LJPEG_jpeg_abort_compress(), or call
   jpeg_abort() which works on both compression and decompression objects.
   This will return the object to an idle state, releasing any working memory.
   jpeg_abort() is allowed at any time after successful object creation.
@@ -789,7 +789,7 @@ of the JPEG standard; if you don't know what a parameter is for, it's best
 not to mess with it!  See REFERENCES in the README file for pointers to
 more info about JPEG.
 
-It's a good idea to call jpeg_set_defaults() first, even if you plan to set
+It's a good idea to call LJPEG_jpeg_set_defaults() first, even if you plan to set
 all the parameters; that way your code is more likely to work with future JPEG
 libraries that have additional parameters.  For the same reason, we recommend
 you use a helper routine where one is provided, in preference to twiddling
@@ -797,11 +797,11 @@ cinfo fields directly.
 
 The helper routines are:
 
-jpeg_set_defaults (LJPEG_j_compress_ptr cinfo)
+LJPEG_jpeg_set_defaults (LJPEG_j_compress_ptr cinfo)
 	This routine sets all JPEG parameters to reasonable defaults, using
 	only the input image's color space (field in_color_space, which must
 	already be set in cinfo).  Many applications will only need to use
-	this routine and perhaps jpeg_set_quality().
+	this routine and perhaps LJPEG_jpeg_set_quality().
 
 jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
 	Sets the JPEG file's colorspace (field jpeg_color_space) as specified,
@@ -814,10 +814,10 @@ jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
 LJPEG_jpeg_default_colorspace (LJPEG_j_compress_ptr cinfo)
 	Selects an appropriate JPEG colorspace based on cinfo->in_color_space,
 	and calls jpeg_set_colorspace().  This is actually a subroutine of
-	jpeg_set_defaults().  It's broken out in case you want to change
+	LJPEG_jpeg_set_defaults().  It's broken out in case you want to change
 	just the colorspace-dependent JPEG parameters.
 
-jpeg_set_quality (LJPEG_j_compress_ptr cinfo, int quality, boolean force_baseline)
+LJPEG_jpeg_set_quality (LJPEG_j_compress_ptr cinfo, int quality, boolean force_baseline)
 	Constructs JPEG quantization tables appropriate for the indicated
 	quality setting.  The quality value is expressed on the 0..100 scale
 	recommended by IJG (cjpeg's "-quality" switch uses this routine).
@@ -833,7 +833,7 @@ jpeg_set_quality (LJPEG_j_compress_ptr cinfo, int quality, boolean force_baselin
 
 jpeg_set_linear_quality (LJPEG_j_compress_ptr cinfo, int scale_factor,
 			 boolean force_baseline)
-	Same as jpeg_set_quality() except that the generated tables are the
+	Same as LJPEG_jpeg_set_quality() except that the generated tables are the
 	sample tables given in the JPEC spec section K.1, multiplied by the
 	specified scale factor (which is expressed as a percentage; thus
 	scale_factor = 100 reproduces the spec's tables).  Note that larger
@@ -981,14 +981,14 @@ int smoothing_factor
 	for details of the smoothing algorithm.  The default is zero.
 
 boolean write_JFIF_header
-	If TRUE, a JFIF APP0 marker is emitted.  jpeg_set_defaults() and
+	If TRUE, a JFIF APP0 marker is emitted.  LJPEG_jpeg_set_defaults() and
 	jpeg_set_colorspace() set this TRUE if a JFIF-legal JPEG color space
 	(ie, YCbCr or grayscale) is selected, otherwise FALSE.
 
 UINT8 JFIF_major_version
 UINT8 JFIF_minor_version
 	The version number to be written into the JFIF marker.
-	jpeg_set_defaults() initializes the version to 1.01 (major=minor=1).
+	LJPEG_jpeg_set_defaults() initializes the version to 1.01 (major=minor=1).
 	You should set it to 1.02 (major=1, minor=2) if you plan to write
 	any JFIF 1.02 extension markers.
 
@@ -1001,7 +1001,7 @@ UINT16 Y_density
 	indicating square pixels of unknown size.
 
 boolean write_Adobe_marker
-	If TRUE, an Adobe APP14 marker is emitted.  jpeg_set_defaults() and
+	If TRUE, an Adobe APP14 marker is emitted.  LJPEG_jpeg_set_defaults() and
 	jpeg_set_colorspace() set this TRUE if JPEG color space RGB, CMYK,
 	or YCCK is selected, otherwise FALSE.  It is generally a bad idea
 	to set both write_JFIF_header and write_Adobe_marker.  In fact,
@@ -1025,7 +1025,7 @@ int q_scale_factor[NUM_QUANT_TBLS]
 	have to convert from user-defined ratings via jpeg_quality_scaling().
 	Here is an example code which corresponds to cjpeg -quality 90,70:
 
-		jpeg_set_defaults(cinfo);
+		LJPEG_jpeg_set_defaults(cinfo);
 
 		/* Set luminance quality 90. */
 		cinfo->q_scale_factor[0] = jpeg_quality_scaling(90);
@@ -1045,7 +1045,7 @@ JHUFF_TBL * dc_huff_tbl_ptrs[NUM_HUFF_TBLS]
 JHUFF_TBL * ac_huff_tbl_ptrs[NUM_HUFF_TBLS]
 	Pointers to Huffman coding tables, one per table slot, or NULL if
 	no table is defined for a slot.  Slots 0 and 1 are filled with the
-	JPEG sample tables by jpeg_set_defaults().  If you need to allocate
+	JPEG sample tables by LJPEG_jpeg_set_defaults().  If you need to allocate
 	more table structures, jpeg_alloc_huff_table() may be used.
 	Note that optimal Huffman tables can be computed for an image
 	by setting optimize_coding, as discussed above; there's seldom
@@ -1066,7 +1066,7 @@ LJPEG_JDIMENSION jpeg_height
 Per-component parameters are stored in the struct cinfo.comp_info[i] for
 component number i.  Note that components here refer to components of the
 JPEG color space, *not* the source image color space.  A suitably large
-comp_info[] array is allocated by jpeg_set_defaults(); if you choose not
+comp_info[] array is allocated by LJPEG_jpeg_set_defaults(); if you choose not
 to use that routine, it's up to you to allocate the array.
 
 int component_id
@@ -1286,7 +1286,7 @@ additional color spaces and perform appropriate conversions.
 
 For compression, the source data's color space is specified by field
 in_color_space.  This is transformed to the JPEG file's color space given
-by jpeg_color_space.  jpeg_set_defaults() chooses a reasonable JPEG color
+by jpeg_color_space.  LJPEG_jpeg_set_defaults() chooses a reasonable JPEG color
 space depending on in_color_space, but you can override this by calling
 jpeg_set_colorspace().  Of course you must select a supported transformation.
 jccolor.c currently supports the following transformations:
@@ -1381,7 +1381,7 @@ some of the method pointers in the LJPEG_jpeg_error_mgr struct, as illustrated b
 example.c.
 
 All of the error handling routines will receive a pointer to the JPEG object
-(a LJPEG_j_common_ptr which points to either a jpeg_compress_struct or a
+(a LJPEG_j_common_ptr which points to either a LJPEG_jpeg_compress_struct or a
 LJPEG_jpeg_decompress_struct; if you need to tell which, test the is_decompressor
 field).  This struct includes a pointer to the error manager struct in its
 "err" field.  Frequently, custom error handler routines will need to access
@@ -1641,10 +1641,10 @@ Compression suspension:
 
 For compression suspension, use an empty_output_buffer() routine that returns
 FALSE; typically it will not do anything else.  This will cause the
-compressor to return to the caller of jpeg_write_scanlines(), with the return
+compressor to return to the caller of LJPEG_jpeg_write_scanlines(), with the return
 value indicating that not all the supplied scanlines have been accepted.
 The application must make more room in the output buffer, adjust the output
-buffer pointer/count appropriately, and then call jpeg_write_scanlines()
+buffer pointer/count appropriately, and then call LJPEG_jpeg_write_scanlines()
 again, pointing to the first unconsumed scanline.
 
 When forced to suspend, the compressor will backtrack to a convenient stopping
@@ -1660,7 +1660,7 @@ for efficiency; you don't want the compressor to suspend often.  (In fact, an
 overly small buffer could lead to infinite looping, if a single MCU required
 more data than would fit in the buffer.)  We recommend a buffer of at least
 several Kbytes.  You may want to insert explicit code to ensure that you don't
-call jpeg_write_scanlines() unless there is a reasonable amount of space in
+call LJPEG_jpeg_write_scanlines() unless there is a reasonable amount of space in
 the output buffer; in other words, flush the buffer before trying to compress
 more data.
 
@@ -1835,7 +1835,7 @@ progressive scan sequence design.  (If you want to provide user control of
 scan sequences, you may wish to borrow the scan script reading code found
 in rdswitch.c, so that you can read scan script files just like cjpeg's.)
 When scan_info is not NULL, the compression library will store DCT'd data
-into a buffer array as jpeg_write_scanlines() is called, and will emit all
+into a buffer array as LJPEG_jpeg_write_scanlines() is called, and will emit all
 the requested scans during LJPEG_jpeg_finish_compress().  This implies that
 multiple-scan output cannot be created with a suspending data destination
 manager, since LJPEG_jpeg_finish_compress() does not support suspension.  We
@@ -2274,7 +2274,7 @@ calling LJPEG_jpeg_start_compress() will prevent the table from being written at
 all.
 
 If you want to create a "pure" abbreviated image file containing no tables,
-just call "jpeg_suppress_tables(&cinfo, TRUE)" after constructing all the
+just call "LJPEG_jpeg_suppress_tables(&cinfo, TRUE)" after constructing all the
 tables.  If you want to emit some but not all tables, you'll need to set the
 individual sent_table fields directly.
 
@@ -2285,7 +2285,7 @@ prevent abbreviated images from being created accidentally.)
 
 To create a tables-only file, perform the same parameter setup that you
 normally would, but instead of calling LJPEG_jpeg_start_compress() and so on, call
-jpeg_write_tables(&cinfo).  This will write an abbreviated datastream
+LJPEG_jpeg_write_tables(&cinfo).  This will write an abbreviated datastream
 containing only SOI, DQT and/or DHT markers, and EOI.  All the quantization
 and Huffman tables that are currently defined in the compression object will
 be emitted unless their sent_tables flag is already TRUE, and then all the
@@ -2297,7 +2297,7 @@ is to proceed as follows:
 	create JPEG compression object
 	set JPEG parameters
 	set destination to tables-only file
-	jpeg_write_tables(&cinfo);
+	LJPEG_jpeg_write_tables(&cinfo);
 	set destination to image file
 	LJPEG_jpeg_start_compress(&cinfo, FALSE);
 	write data...
@@ -2435,20 +2435,20 @@ Adobe markers and will set the JPEG colorspace properly when one is found.
 
 
 You can write special markers immediately following the datastream header by
-calling jpeg_write_marker() after LJPEG_jpeg_start_compress() and before the first
-call to jpeg_write_scanlines().  When you do this, the markers appear after
+calling LJPEG_jpeg_write_marker() after LJPEG_jpeg_start_compress() and before the first
+call to LJPEG_jpeg_write_scanlines().  When you do this, the markers appear after
 the SOI and the JFIF APP0 and Adobe APP14 markers (if written), but before
 all else.  Specify the marker type parameter as "JPEG_COM" for COM or
-"JPEG_APP0 + n" for APPn.  (Actually, jpeg_write_marker will let you write
+"JPEG_APP0 + n" for APPn.  (Actually, LJPEG_jpeg_write_marker will let you write
 any marker type, but we don't recommend writing any other kinds of marker.)
 For example, to write a user comment string pointed to by comment_text:
-	jpeg_write_marker(cinfo, JPEG_COM, comment_text, strlen(comment_text));
+	LJPEG_jpeg_write_marker(cinfo, JPEG_COM, comment_text, strlen(comment_text));
 
 If it's not convenient to store all the marker data in memory at once,
-you can instead call jpeg_write_m_header() followed by multiple calls to
+you can instead call LJPEG_jpeg_write_m_header() followed by multiple calls to
 jpeg_write_m_byte().  If you do it this way, it's your responsibility to
 call jpeg_write_m_byte() exactly the number of times given in the length
-parameter to jpeg_write_m_header().  (This method lets you empty the
+parameter to LJPEG_jpeg_write_m_header().  (This method lets you empty the
 output buffer partway through a marker, which might be important when
 using a suspending data destination module.  In any case, if you are using
 a suspending destination, you should flush its buffer after inserting
@@ -2578,7 +2578,7 @@ To compress raw data, you must supply the data in the colorspace to be used
 in the JPEG file (please read the earlier section on Special color spaces)
 and downsampled to the sampling factors specified in the JPEG parameters.
 You must supply the data in the format used internally by the JPEG library,
-namely a JSAMPIMAGE array.  This is an array of pointers to two-dimensional
+namely a LJPEG_JSAMPIMAGE array.  This is an array of pointers to two-dimensional
 arrays, each of type LJPEG_JSAMPARRAY.  Each 2-D array holds the values for one
 color component.  This structure is necessary since the components are of
 different sizes.  If the image dimensions are not a multiple of the MCU size,
@@ -2591,29 +2591,29 @@ images, the standard image size is usually a multiple of the DCT block size,
 so that no padding need actually be done.)
 
 The procedure for compression of raw data is basically the same as normal
-compression, except that you call jpeg_write_raw_data() in place of
-jpeg_write_scanlines().  Before calling LJPEG_jpeg_start_compress(), you must do
+compression, except that you call LJPEG_jpeg_write_raw_data() in place of
+LJPEG_jpeg_write_scanlines().  Before calling LJPEG_jpeg_start_compress(), you must do
 the following:
-  * Set cinfo->raw_data_in to TRUE.  (It is set FALSE by jpeg_set_defaults().)
+  * Set cinfo->raw_data_in to TRUE.  (It is set FALSE by LJPEG_jpeg_set_defaults().)
     This notifies the library that you will be supplying raw data.
     Furthermore, set cinfo->do_fancy_downsampling to FALSE if you want to use
-    real downsampled data.  (It is set TRUE by jpeg_set_defaults().)
+    real downsampled data.  (It is set TRUE by LJPEG_jpeg_set_defaults().)
   * Ensure jpeg_color_space is correct --- an explicit jpeg_set_colorspace()
     call is a good idea.  Note that since color conversion is bypassed,
-    in_color_space is ignored, except that jpeg_set_defaults() uses it to
+    in_color_space is ignored, except that LJPEG_jpeg_set_defaults() uses it to
     choose the default jpeg_color_space setting.
   * Ensure the sampling factors, cinfo->comp_info[i].h_samp_factor and
     cinfo->comp_info[i].v_samp_factor, are correct.  Since these indicate the
     dimensions of the data you are supplying, it's wise to set them
     explicitly, rather than assuming the library's defaults are what you want.
 
-To pass raw data to the library, call jpeg_write_raw_data() in place of
-jpeg_write_scanlines().  The two routines work similarly except that
-jpeg_write_raw_data takes a JSAMPIMAGE data array rather than LJPEG_JSAMPARRAY.
-The scanlines count passed to and returned from jpeg_write_raw_data is
+To pass raw data to the library, call LJPEG_jpeg_write_raw_data() in place of
+LJPEG_jpeg_write_scanlines().  The two routines work similarly except that
+LJPEG_jpeg_write_raw_data takes a LJPEG_JSAMPIMAGE data array rather than LJPEG_JSAMPARRAY.
+The scanlines count passed to and returned from LJPEG_jpeg_write_raw_data is
 measured in terms of the component with the largest v_samp_factor.
 
-jpeg_write_raw_data() processes one MCU row per call, which is to say
+LJPEG_jpeg_write_raw_data() processes one MCU row per call, which is to say
 v_samp_factor*DCTSIZE sample rows of each component.  The passed num_lines
 value must be at least max_v_samp_factor*DCTSIZE, and the return value will
 be exactly that amount (or possibly some multiple of that amount, in future
@@ -2644,7 +2644,7 @@ downsampled_width = 51 and width_in_blocks = 7 for Cb and Cr (and the same
 for the height fields).  You must pad the Y data to at least 13*8 = 104
 columns and rows, the Cb/Cr data to at least 7*8 = 56 columns and rows.  The
 MCU height is max_v_samp_factor = 2 DCT rows so you must pass at least 16
-scanlines on each call to jpeg_write_raw_data(), which is to say 16 actual
+scanlines on each call to LJPEG_jpeg_write_raw_data(), which is to say 16 actual
 sample rows of Y and 8 each of Cb and Cr.  A total of 7 MCU rows are needed,
 so you must pass a total of 7*16 = 112 "scanlines".  The last DCT block row
 of Y data is dummy, so it doesn't matter what you pass for it in the data
@@ -2652,7 +2652,7 @@ arrays, but the scanlines count must total up to 112 so that all of the Cb
 and Cr data gets passed.
 
 Output suspension is supported with raw-data compression: if the data
-destination module suspends, jpeg_write_raw_data() will return 0.
+destination module suspends, LJPEG_jpeg_write_raw_data() will return 0.
 In this case the same data rows must be passed again on the next call.
 
 
@@ -2736,7 +2736,7 @@ the DCT coefficients stored in virtual block arrays.  You can either pass
 block arrays read from an input JPEG file by jpeg_read_coefficients(), or
 allocate virtual arrays from the JPEG compression object and fill them
 yourself.  In either case, jpeg_write_coefficients() is substituted for
-LJPEG_jpeg_start_compress() and jpeg_write_scanlines().  Thus the sequence is
+LJPEG_jpeg_start_compress() and LJPEG_jpeg_write_scanlines().  Thus the sequence is
   * Create compression object
   * Set all compression parameters as necessary
   * Request virtual arrays if needed
@@ -2759,7 +2759,7 @@ When writing raw DCT coefficients, it is crucial that the JPEG quantization
 tables and sampling factors match the way the data was encoded, or the
 resulting file will be invalid.  For transcoding from an existing JPEG file,
 we recommend using jpeg_copy_critical_parameters().  This routine initializes
-all the compression parameters to default values (like jpeg_set_defaults()),
+all the compression parameters to default values (like LJPEG_jpeg_set_defaults()),
 then copies the critical information from a source decompression object.
 The decompression object should have just been used to read the entire
 JPEG input file --- that is, it should be awaiting LJPEG_jpeg_finish_decompress().
@@ -2768,7 +2768,7 @@ jpeg_write_coefficients() marks all tables stored in the compression object
 as needing to be written to the output file (thus, it acts like
 LJPEG_jpeg_start_compress(cinfo, TRUE)).  This is for safety's sake, to avoid
 emitting abbreviated JPEG files by accident.  If you really want to emit an
-abbreviated JPEG file, call jpeg_suppress_tables(), or set the tables'
+abbreviated JPEG file, call LJPEG_jpeg_suppress_tables(), or set the tables'
 individual sent_table flags, between calling jpeg_write_coefficients() and
 LJPEG_jpeg_finish_compress().
 
@@ -2780,7 +2780,7 @@ Some applications may need to regain control from the JPEG library every so
 often.  The typical use of this feature is to produce a percent-done bar or
 other progress display.  (For a simple example, see cjpeg.c or djpeg.c.)
 Although you do get control back frequently during the data-transferring pass
-(the jpeg_read_scanlines or jpeg_write_scanlines loop), any additional passes
+(the jpeg_read_scanlines or LJPEG_jpeg_write_scanlines loop), any additional passes
 will occur inside LJPEG_jpeg_finish_compress or LJPEG_jpeg_start_decompress; those
 routines may take a long time to execute, and you don't get control back
 until they are done.
@@ -2792,7 +2792,7 @@ At present, a call will occur once per MCU row, scanline, or sample row
 group, whichever unit is convenient for the current processing mode; so the
 wider the image, the longer the time between calls.  During the data
 transferring pass, only one call occurs per call of jpeg_read_scanlines or
-jpeg_write_scanlines, so don't pass a large number of scanlines at once if
+LJPEG_jpeg_write_scanlines, so don't pass a large number of scanlines at once if
 you want fine resolution in the progress count.  (If you really need to use
 the callback mechanism for time-critical tasks like mouse tracking, you could
 insert additional calls inside some of the library's inner loops.)
@@ -2801,7 +2801,7 @@ To establish a progress-monitor callback, create a struct jpeg_progress_mgr,
 fill in its LJPEG_progress_monitor field with a pointer to your callback routine,
 and set cinfo->progress to point to the struct.  The callback will be called
 whenever cinfo->progress is non-NULL.  (This pointer is set to NULL by
-jpeg_create_compress or LJPEG_jpeg_create_decompress; the library will not change
+LJPEG_jpeg_create_compress or LJPEG_jpeg_create_decompress; the library will not change
 it thereafter.  So if you allocate dynamic storage for the progress struct,
 make sure it will live as long as the JPEG object does.  Allocating from the
 JPEG memory manager with lifetime JPOOL_PERMANENT will work nicely.)  You

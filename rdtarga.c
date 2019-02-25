@@ -175,7 +175,7 @@ get_8bit_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading 8-bit grayscale pixels */
 {
   tga_source_ptr source = (tga_source_ptr) sinfo;
-  register JSAMPROW ptr;
+  register LJPEG_JSAMPROW ptr;
   register LJPEG_JDIMENSION col;
   
   ptr = source->pub.buffer[0];
@@ -192,7 +192,7 @@ get_8bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   tga_source_ptr source = (tga_source_ptr) sinfo;
   register int t;
-  register JSAMPROW ptr;
+  register LJPEG_JSAMPROW ptr;
   register LJPEG_JDIMENSION col;
   register LJPEG_JSAMPARRAY colormap = source->colormap;
 
@@ -213,7 +213,7 @@ get_16bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 {
   tga_source_ptr source = (tga_source_ptr) sinfo;
   register int t;
-  register JSAMPROW ptr;
+  register LJPEG_JSAMPROW ptr;
   register LJPEG_JDIMENSION col;
   
   ptr = source->pub.buffer[0];
@@ -240,7 +240,7 @@ get_24bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading 24-bit pixels */
 {
   tga_source_ptr source = (tga_source_ptr) sinfo;
-  register JSAMPROW ptr;
+  register LJPEG_JSAMPROW ptr;
   register LJPEG_JDIMENSION col;
   
   ptr = source->pub.buffer[0];

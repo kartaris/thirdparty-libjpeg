@@ -33,7 +33,7 @@
 
 #ifndef NO_GETENV
 #ifndef HAVE_STDLIB_H		/* <stdlib.h> should declare getenv() */
-extern char * getenv JPP((const char * name));
+extern char * getenv LJPEG_JPP((const char * name));
 #endif
 #endif
 
@@ -399,7 +399,7 @@ alloc_sarray (LJPEG_j_common_ptr cinfo, int pool_id,
 {
   my_mem_ptr mem = (my_mem_ptr) cinfo->mem;
   LJPEG_JSAMPARRAY result;
-  JSAMPROW workspace;
+  LJPEG_JSAMPROW workspace;
   LJPEG_JDIMENSION rowsperchunk, currow, i;
   long ltemp;
 
@@ -416,13 +416,13 @@ alloc_sarray (LJPEG_j_common_ptr cinfo, int pool_id,
 
   /* Get space for row pointers (small object) */
   result = (LJPEG_JSAMPARRAY) alloc_small(cinfo, pool_id,
-				    (size_t) (numrows * SIZEOF(JSAMPROW)));
+				    (size_t) (numrows * SIZEOF(LJPEG_JSAMPROW)));
 
   /* Get the rows themselves (large objects) */
   currow = 0;
   while (currow < numrows) {
     rowsperchunk = MIN(rowsperchunk, numrows - currow);
-    workspace = (JSAMPROW) alloc_large(cinfo, pool_id,
+    workspace = (LJPEG_JSAMPROW) alloc_large(cinfo, pool_id,
 	(size_t) ((size_t) rowsperchunk * (size_t) samplesperrow
 		  * SIZEOF(JSAMPLE)));
     for (i = rowsperchunk; i > 0; i--) {
@@ -447,7 +447,7 @@ alloc_barray (LJPEG_j_common_ptr cinfo, int pool_id,
 {
   my_mem_ptr mem = (my_mem_ptr) cinfo->mem;
   JBLOCKARRAY result;
-  JBLOCKROW workspace;
+  LJPEG_JBLOCKROW workspace;
   LJPEG_JDIMENSION rowsperchunk, currow, i;
   long ltemp;
 
@@ -464,13 +464,13 @@ alloc_barray (LJPEG_j_common_ptr cinfo, int pool_id,
 
   /* Get space for row pointers (small object) */
   result = (JBLOCKARRAY) alloc_small(cinfo, pool_id,
-				     (size_t) (numrows * SIZEOF(JBLOCKROW)));
+				     (size_t) (numrows * SIZEOF(LJPEG_JBLOCKROW)));
 
   /* Get the rows themselves (large objects) */
   currow = 0;
   while (currow < numrows) {
     rowsperchunk = MIN(rowsperchunk, numrows - currow);
-    workspace = (JBLOCKROW) alloc_large(cinfo, pool_id,
+    workspace = (LJPEG_JBLOCKROW) alloc_large(cinfo, pool_id,
 	(size_t) ((size_t) rowsperchunk * (size_t) blocksperrow
 		  * SIZEOF(JBLOCK)));
     for (i = rowsperchunk; i > 0; i--) {

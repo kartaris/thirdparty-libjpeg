@@ -57,12 +57,12 @@
 
 #ifdef HAVE_UNSIGNED_CHAR
 
-typedef unsigned char JSAMPLE;
+typedef unsigned char LJPEG_JSAMPLE;
 #define GETJSAMPLE(value)  ((int) (value))
 
 #else /* not HAVE_UNSIGNED_CHAR */
 
-typedef char JSAMPLE;
+typedef char LJPEG_JSAMPLE;
 #ifdef CHAR_IS_UNSIGNED
 #define GETJSAMPLE(value)  ((int) (value))
 #else
@@ -82,7 +82,7 @@ typedef char JSAMPLE;
  * On nearly all machines "short" will do nicely.
  */
 
-typedef short JSAMPLE;
+typedef short LJPEG_JSAMPLE;
 #define GETJSAMPLE(value)  ((int) (value))
 
 #define MAXJSAMPLE	4095
@@ -126,7 +126,7 @@ typedef char JOCTET;
 /* These typedefs are used for various table entries and so forth.
  * They must be at least as wide as specified; but making them too big
  * won't cost a huge amount of memory, so we don't provide special
- * extraction code like we did for JSAMPLE.  (In other words, these
+ * extraction code like we did for LJPEG_JSAMPLE.  (In other words, these
  * typedefs live at a different point on the speed/space tradeoff curve.)
  */
 

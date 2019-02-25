@@ -20,7 +20,7 @@
 
 
 /* Forward declarations */
-LOCAL(boolean) output_pass_setup JPP((LJPEG_j_decompress_ptr cinfo));
+LOCAL(boolean) output_pass_setup LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 
 
 /*
@@ -179,7 +179,7 @@ jpeg_read_scanlines (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY scanlines,
  * Processes exactly one iMCU row per call, unless suspended.
  */
 LJPEG_GLOBAL(LJPEG_JDIMENSION)
-jpeg_read_raw_data (LJPEG_j_decompress_ptr cinfo, JSAMPIMAGE data,
+jpeg_read_raw_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE data,
 		    LJPEG_JDIMENSION max_lines)
 {
   LJPEG_JDIMENSION lines_per_iMCU_row;

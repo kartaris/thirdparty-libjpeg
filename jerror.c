@@ -221,7 +221,7 @@ reset_error_mgr (LJPEG_j_common_ptr cinfo)
 /*
  * Fill in the standard error-handling methods in a LJPEG_jpeg_error_mgr object.
  * Typical call is:
- *	struct jpeg_compress_struct cinfo;
+ *	struct LJPEG_jpeg_compress_struct cinfo;
  *	struct LJPEG_jpeg_error_mgr err;
  *
  *	cinfo.err = LJPEG_jpeg_std_error(&err);

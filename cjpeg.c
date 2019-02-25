@@ -506,7 +506,7 @@ LJPEG_parse_switches (LJPEG_j_compress_ptr cinfo, int argc, char **argv,
 int
 main (int argc, char **argv)
 {
-  struct jpeg_compress_struct cinfo;
+  struct LJPEG_jpeg_compress_struct cinfo;
   struct LJPEG_jpeg_error_mgr jerr;
 #ifdef PROGRESS_REPORT
   struct LJPEG_cdjpeg_progress_mgr progress;
@@ -528,7 +528,7 @@ main (int argc, char **argv)
 
   /* Initialize the JPEG compression object with default error handling. */
   cinfo.err = LJPEG_jpeg_std_error(&jerr);
-  jpeg_create_compress(&cinfo);
+  LJPEG_jpeg_create_compress(&cinfo);
   /* Add some application-specific error messages (from cderror.h) */
   jerr.addon_message_table = LJPEG_cdjpeg_message_table;
   jerr.first_addon_message = JMSG_FIRSTADDONCODE;
@@ -542,11 +542,11 @@ main (int argc, char **argv)
   /* Initialize JPEG parameters.
    * Much of this may be overridden later.
    * In particular, we don't yet know the input file's color space,
-   * but we need to provide some value for jpeg_set_defaults() to work.
+   * but we need to provide some value for LJPEG_jpeg_set_defaults() to work.
    */
 
   cinfo.in_color_space = JCS_RGB; /* arbitrary guess */
-  jpeg_set_defaults(&cinfo);
+  LJPEG_jpeg_set_defaults(&cinfo);
 
   /* Scan command line to find file names.
    * It is convenient to use just one switch-parsing routine, but the switch
@@ -628,7 +628,7 @@ main (int argc, char **argv)
   /* Process data */
   while (cinfo.next_scanline < cinfo.image_height) {
     num_scanlines = (*src_mgr->get_pixel_rows) (&cinfo, src_mgr);
-    (void) jpeg_write_scanlines(&cinfo, src_mgr->buffer, num_scanlines);
+    (void) LJPEG_jpeg_write_scanlines(&cinfo, src_mgr->buffer, num_scanlines);
   }
 
   /* Finish compression and release memory */

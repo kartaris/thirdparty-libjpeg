@@ -107,7 +107,7 @@ typedef my_marker_writer * my_marker_ptr;
  */
 
 LOCAL(void)
-emit_byte (LJPEG_j_compress_ptr cinfo, int val)
+LJPEG_emit_byte (LJPEG_j_compress_ptr cinfo, int val)
 /* Emit a byte */
 {
   struct jpeg_destination_mgr * dest = cinfo->dest;
@@ -124,8 +124,8 @@ LOCAL(void)
 emit_marker (LJPEG_j_compress_ptr cinfo, JPEG_MARKER mark)
 /* Emit a marker code */
 {
-  emit_byte(cinfo, 0xFF);
-  emit_byte(cinfo, (int) mark);
+  LJPEG_emit_byte(cinfo, 0xFF);
+  LJPEG_emit_byte(cinfo, (int) mark);
 }
 
 
@@ -133,8 +133,8 @@ LOCAL(void)
 emit_2bytes (LJPEG_j_compress_ptr cinfo, int value)
 /* Emit a 2-byte integer; these are always MSB first in JPEG files */
 {
-  emit_byte(cinfo, (value >> 8) & 0xFF);
-  emit_byte(cinfo, value & 0xFF);
+  LJPEG_emit_byte(cinfo, (value >> 8) & 0xFF);
+  LJPEG_emit_byte(cinfo, value & 0xFF);
 }
 
 
@@ -166,14 +166,14 @@ emit_dqt (LJPEG_j_compress_ptr cinfo, int index)
     emit_2bytes(cinfo,
       prec ? cinfo->lim_Se * 2 + 2 + 1 + 2 : cinfo->lim_Se + 1 + 1 + 2);
 
-    emit_byte(cinfo, index + (prec<<4));
+    LJPEG_emit_byte(cinfo, index + (prec<<4));
 
     for (i = 0; i <= cinfo->lim_Se; i++) {
       /* The table entries must be emitted in zigzag order. */
       unsigned int qval = qtbl->quantval[cinfo->natural_order[i]];
       if (prec)
-	emit_byte(cinfo, (int) (qval >> 8));
-      emit_byte(cinfo, (int) (qval & 0xFF));
+	LJPEG_emit_byte(cinfo, (int) (qval >> 8));
+      LJPEG_emit_byte(cinfo, (int) (qval & 0xFF));
     }
 
     qtbl->sent_table = TRUE;
@@ -208,13 +208,13 @@ emit_dht (LJPEG_j_compress_ptr cinfo, int index, boolean is_ac)
       length += htbl->bits[i];
     
     emit_2bytes(cinfo, length + 2 + 1 + 16);
-    emit_byte(cinfo, index);
+    LJPEG_emit_byte(cinfo, index);
     
     for (i = 1; i <= 16; i++)
-      emit_byte(cinfo, htbl->bits[i]);
+      LJPEG_emit_byte(cinfo, htbl->bits[i]);
     
     for (i = 0; i < length; i++)
-      emit_byte(cinfo, htbl->huffval[i]);
+      LJPEG_emit_byte(cinfo, htbl->huffval[i]);
     
     htbl->sent_table = TRUE;
   }
@@ -257,12 +257,12 @@ emit_dac (LJPEG_j_compress_ptr cinfo)
 
     for (i = 0; i < NUM_ARITH_TBLS; i++) {
       if (dc_in_use[i]) {
-	emit_byte(cinfo, i);
-	emit_byte(cinfo, cinfo->arith_dc_L[i] + (cinfo->arith_dc_U[i]<<4));
+	LJPEG_emit_byte(cinfo, i);
+	LJPEG_emit_byte(cinfo, cinfo->arith_dc_L[i] + (cinfo->arith_dc_U[i]<<4));
       }
       if (ac_in_use[i]) {
-	emit_byte(cinfo, i + 0x10);
-	emit_byte(cinfo, cinfo->arith_ac_K[i]);
+	LJPEG_emit_byte(cinfo, i + 0x10);
+	LJPEG_emit_byte(cinfo, cinfo->arith_ac_K[i]);
       }
     }
   }
@@ -295,19 +295,19 @@ emit_lse_ict (LJPEG_j_compress_ptr cinfo)
   
   emit_2bytes(cinfo, 24);	/* fixed length */
 
-  emit_byte(cinfo, 0x0D);	/* ID inverse transform specification */
+  LJPEG_emit_byte(cinfo, 0x0D);	/* ID inverse transform specification */
   emit_2bytes(cinfo, MAXJSAMPLE);	/* MAXTRANS */
-  emit_byte(cinfo, 3);		/* Nt=3 */
-  emit_byte(cinfo, cinfo->comp_info[1].component_id);
-  emit_byte(cinfo, cinfo->comp_info[0].component_id);
-  emit_byte(cinfo, cinfo->comp_info[2].component_id);
-  emit_byte(cinfo, 0x80);	/* F1: CENTER1=1, NORM1=0 */
+  LJPEG_emit_byte(cinfo, 3);		/* Nt=3 */
+  LJPEG_emit_byte(cinfo, cinfo->comp_info[1].component_id);
+  LJPEG_emit_byte(cinfo, cinfo->comp_info[0].component_id);
+  LJPEG_emit_byte(cinfo, cinfo->comp_info[2].component_id);
+  LJPEG_emit_byte(cinfo, 0x80);	/* F1: CENTER1=1, NORM1=0 */
   emit_2bytes(cinfo, 0);	/* A(1,1)=0 */
   emit_2bytes(cinfo, 0);	/* A(1,2)=0 */
-  emit_byte(cinfo, 0);		/* F2: CENTER2=0, NORM2=0 */
+  LJPEG_emit_byte(cinfo, 0);		/* F2: CENTER2=0, NORM2=0 */
   emit_2bytes(cinfo, 1);	/* A(2,1)=1 */
   emit_2bytes(cinfo, 0);	/* A(2,2)=0 */
-  emit_byte(cinfo, 0);		/* F3: CENTER3=0, NORM3=0 */
+  LJPEG_emit_byte(cinfo, 0);		/* F3: CENTER3=0, NORM3=0 */
   emit_2bytes(cinfo, 1);	/* A(3,1)=1 */
   emit_2bytes(cinfo, 0);	/* A(3,2)=0 */
 }
@@ -329,17 +329,17 @@ emit_sof (LJPEG_j_compress_ptr cinfo, JPEG_MARKER code)
       (long) cinfo->jpeg_width > 65535L)
     ERREXIT1(cinfo, JERR_IMAGE_TOO_BIG, (unsigned int) 65535);
 
-  emit_byte(cinfo, cinfo->data_precision);
+  LJPEG_emit_byte(cinfo, cinfo->data_precision);
   emit_2bytes(cinfo, (int) cinfo->jpeg_height);
   emit_2bytes(cinfo, (int) cinfo->jpeg_width);
 
-  emit_byte(cinfo, cinfo->num_components);
+  LJPEG_emit_byte(cinfo, cinfo->num_components);
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
        ci++, compptr++) {
-    emit_byte(cinfo, compptr->component_id);
-    emit_byte(cinfo, (compptr->h_samp_factor << 4) + compptr->v_samp_factor);
-    emit_byte(cinfo, compptr->quant_tbl_no);
+    LJPEG_emit_byte(cinfo, compptr->component_id);
+    LJPEG_emit_byte(cinfo, (compptr->h_samp_factor << 4) + compptr->v_samp_factor);
+    LJPEG_emit_byte(cinfo, compptr->quant_tbl_no);
   }
 }
 
@@ -355,11 +355,11 @@ emit_sos (LJPEG_j_compress_ptr cinfo)
   
   emit_2bytes(cinfo, 2 * cinfo->comps_in_scan + 2 + 1 + 3); /* length */
   
-  emit_byte(cinfo, cinfo->comps_in_scan);
+  LJPEG_emit_byte(cinfo, cinfo->comps_in_scan);
   
   for (i = 0; i < cinfo->comps_in_scan; i++) {
     compptr = cinfo->cur_comp_info[i];
-    emit_byte(cinfo, compptr->component_id);
+    LJPEG_emit_byte(cinfo, compptr->component_id);
 
     /* We emit 0 for unused field(s); this is recommended by the P&M text
      * but does not seem to be specified in the standard.
@@ -370,12 +370,12 @@ emit_sos (LJPEG_j_compress_ptr cinfo)
     /* AC needs no table when not present */
     ta = cinfo->Se ? compptr->ac_tbl_no : 0;
 
-    emit_byte(cinfo, (td << 4) + ta);
+    LJPEG_emit_byte(cinfo, (td << 4) + ta);
   }
 
-  emit_byte(cinfo, cinfo->Ss);
-  emit_byte(cinfo, cinfo->Se);
-  emit_byte(cinfo, (cinfo->Ah << 4) + cinfo->Al);
+  LJPEG_emit_byte(cinfo, cinfo->Ss);
+  LJPEG_emit_byte(cinfo, cinfo->Se);
+  LJPEG_emit_byte(cinfo, (cinfo->Ah << 4) + cinfo->Al);
 }
 
 
@@ -387,11 +387,11 @@ emit_pseudo_sos (LJPEG_j_compress_ptr cinfo)
   
   emit_2bytes(cinfo, 2 + 1 + 3); /* length */
   
-  emit_byte(cinfo, 0); /* Ns */
+  LJPEG_emit_byte(cinfo, 0); /* Ns */
 
-  emit_byte(cinfo, 0); /* Ss */
-  emit_byte(cinfo, cinfo->block_size * cinfo->block_size - 1); /* Se */
-  emit_byte(cinfo, 0); /* Ah/Al */
+  LJPEG_emit_byte(cinfo, 0); /* Ss */
+  LJPEG_emit_byte(cinfo, cinfo->block_size * cinfo->block_size - 1); /* Se */
+  LJPEG_emit_byte(cinfo, 0); /* Ah/Al */
 }
 
 
@@ -415,18 +415,18 @@ emit_jfif_app0 (LJPEG_j_compress_ptr cinfo)
   
   emit_2bytes(cinfo, 2 + 4 + 1 + 2 + 1 + 2 + 2 + 1 + 1); /* length */
 
-  emit_byte(cinfo, 0x4A);	/* Identifier: ASCII "JFIF" */
-  emit_byte(cinfo, 0x46);
-  emit_byte(cinfo, 0x49);
-  emit_byte(cinfo, 0x46);
-  emit_byte(cinfo, 0);
-  emit_byte(cinfo, cinfo->JFIF_major_version); /* Version fields */
-  emit_byte(cinfo, cinfo->JFIF_minor_version);
-  emit_byte(cinfo, cinfo->density_unit); /* Pixel size information */
+  LJPEG_emit_byte(cinfo, 0x4A);	/* Identifier: ASCII "JFIF" */
+  LJPEG_emit_byte(cinfo, 0x46);
+  LJPEG_emit_byte(cinfo, 0x49);
+  LJPEG_emit_byte(cinfo, 0x46);
+  LJPEG_emit_byte(cinfo, 0);
+  LJPEG_emit_byte(cinfo, cinfo->JFIF_major_version); /* Version fields */
+  LJPEG_emit_byte(cinfo, cinfo->JFIF_minor_version);
+  LJPEG_emit_byte(cinfo, cinfo->density_unit); /* Pixel size information */
   emit_2bytes(cinfo, (int) cinfo->X_density);
   emit_2bytes(cinfo, (int) cinfo->Y_density);
-  emit_byte(cinfo, 0);		/* No thumbnail image */
-  emit_byte(cinfo, 0);
+  LJPEG_emit_byte(cinfo, 0);		/* No thumbnail image */
+  LJPEG_emit_byte(cinfo, 0);
 }
 
 
@@ -454,23 +454,23 @@ emit_adobe_app14 (LJPEG_j_compress_ptr cinfo)
   
   emit_2bytes(cinfo, 2 + 5 + 2 + 2 + 2 + 1); /* length */
 
-  emit_byte(cinfo, 0x41);	/* Identifier: ASCII "Adobe" */
-  emit_byte(cinfo, 0x64);
-  emit_byte(cinfo, 0x6F);
-  emit_byte(cinfo, 0x62);
-  emit_byte(cinfo, 0x65);
+  LJPEG_emit_byte(cinfo, 0x41);	/* Identifier: ASCII "Adobe" */
+  LJPEG_emit_byte(cinfo, 0x64);
+  LJPEG_emit_byte(cinfo, 0x6F);
+  LJPEG_emit_byte(cinfo, 0x62);
+  LJPEG_emit_byte(cinfo, 0x65);
   emit_2bytes(cinfo, 100);	/* Version */
   emit_2bytes(cinfo, 0);	/* Flags0 */
   emit_2bytes(cinfo, 0);	/* Flags1 */
   switch (cinfo->jpeg_color_space) {
   case JCS_YCbCr:
-    emit_byte(cinfo, 1);	/* Color transform = 1 */
+    LJPEG_emit_byte(cinfo, 1);	/* Color transform = 1 */
     break;
   case JCS_YCCK:
-    emit_byte(cinfo, 2);	/* Color transform = 2 */
+    LJPEG_emit_byte(cinfo, 2);	/* Color transform = 2 */
     break;
   default:
-    emit_byte(cinfo, 0);	/* Color transform = 0 */
+    LJPEG_emit_byte(cinfo, 0);	/* Color transform = 0 */
     break;
   }
 }
@@ -500,7 +500,7 @@ LJPEG_METHODDEF(void)
 write_marker_byte (LJPEG_j_compress_ptr cinfo, int val)
 /* Emit one byte of marker parameters following write_marker_header */
 {
-  emit_byte(cinfo, val);
+  LJPEG_emit_byte(cinfo, val);
 }
 
 

@@ -160,7 +160,7 @@ jpeg_fdct_islow (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION 
   INT32 tmp10, tmp11, tmp12, tmp13;
   INT32 z1;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -329,7 +329,7 @@ jpeg_fdct_7x7 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION st
   INT32 tmp10, tmp11, tmp12;
   INT32 z1, z2, z3;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -462,7 +462,7 @@ jpeg_fdct_6x6 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION st
   INT32 tmp0, tmp1, tmp2;
   INT32 tmp10, tmp11, tmp12;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -574,7 +574,7 @@ jpeg_fdct_5x5 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION st
   INT32 tmp0, tmp1, tmp2;
   INT32 tmp10, tmp11;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -683,7 +683,7 @@ jpeg_fdct_4x4 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION st
   INT32 tmp0, tmp1;
   INT32 tmp10, tmp11;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -774,7 +774,7 @@ jpeg_fdct_3x3 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION st
 {
   INT32 tmp0, tmp1, tmp2;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -857,7 +857,7 @@ LJPEG_GLOBAL(void)
 jpeg_fdct_2x2 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION start_col)
 {
   INT32 tmp0, tmp1, tmp2, tmp3;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
 
   /* Pre-zero output coefficient block. */
   MEMZERO(data, SIZEOF(DCTELEM) * DCTSIZE2);
@@ -922,7 +922,7 @@ jpeg_fdct_9x9 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION st
   DCTELEM workspace[8];
   DCTELEM *dataptr;
   DCTELEM *wsptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -1070,7 +1070,7 @@ jpeg_fdct_10x10 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION 
   DCTELEM workspace[8*2];
   DCTELEM *dataptr;
   DCTELEM *wsptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -1233,7 +1233,7 @@ jpeg_fdct_11x11 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION 
   DCTELEM workspace[8*3];
   DCTELEM *dataptr;
   DCTELEM *wsptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -1414,7 +1414,7 @@ jpeg_fdct_12x12 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION 
   DCTELEM workspace[8*4];
   DCTELEM *dataptr;
   DCTELEM *wsptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -1579,7 +1579,7 @@ jpeg_fdct_13x13 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION 
   DCTELEM workspace[8*5];
   DCTELEM *dataptr;
   DCTELEM *wsptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -1776,7 +1776,7 @@ jpeg_fdct_14x14 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION 
   DCTELEM workspace[8*6];
   DCTELEM *dataptr;
   DCTELEM *wsptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -1976,7 +1976,7 @@ jpeg_fdct_15x15 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION 
   DCTELEM workspace[8*7];
   DCTELEM *dataptr;
   DCTELEM *wsptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -2153,7 +2153,7 @@ jpeg_fdct_16x16 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION 
   DCTELEM workspace[DCTSIZE2];
   DCTELEM *dataptr;
   DCTELEM *wsptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -2359,7 +2359,7 @@ jpeg_fdct_16x8 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION s
   INT32 tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, tmp16, tmp17;
   INT32 z1;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -2539,7 +2539,7 @@ jpeg_fdct_14x7 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION s
   INT32 tmp10, tmp11, tmp12, tmp13, tmp14, tmp15, tmp16;
   INT32 z1, z2, z3;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -2701,7 +2701,7 @@ jpeg_fdct_12x6 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION s
   INT32 tmp0, tmp1, tmp2, tmp3, tmp4, tmp5;
   INT32 tmp10, tmp11, tmp12, tmp13, tmp14, tmp15;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -2839,7 +2839,7 @@ jpeg_fdct_10x5 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION s
   INT32 tmp0, tmp1, tmp2, tmp3, tmp4;
   INT32 tmp10, tmp11, tmp12, tmp13, tmp14;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -2971,7 +2971,7 @@ jpeg_fdct_8x4 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION st
   INT32 tmp10, tmp11, tmp12, tmp13;
   INT32 z1;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -3105,7 +3105,7 @@ jpeg_fdct_6x3 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION st
   INT32 tmp0, tmp1, tmp2;
   INT32 tmp10, tmp11, tmp12;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -3204,7 +3204,7 @@ jpeg_fdct_4x2 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION st
   INT32 tmp0, tmp1;
   INT32 tmp10, tmp11;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -3284,7 +3284,7 @@ LJPEG_GLOBAL(void)
 jpeg_fdct_2x1 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION start_col)
 {
   INT32 tmp0, tmp1;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
 
   /* Pre-zero output coefficient block. */
   MEMZERO(data, SIZEOF(DCTELEM) * DCTSIZE2);
@@ -3321,7 +3321,7 @@ jpeg_fdct_8x16 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION s
   DCTELEM workspace[DCTSIZE2];
   DCTELEM *dataptr;
   DCTELEM *wsptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -3508,7 +3508,7 @@ jpeg_fdct_7x14 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION s
   DCTELEM workspace[8*6];
   DCTELEM *dataptr;
   DCTELEM *wsptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -3687,7 +3687,7 @@ jpeg_fdct_6x12 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION s
   DCTELEM workspace[8*4];
   DCTELEM *dataptr;
   DCTELEM *wsptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -3835,7 +3835,7 @@ jpeg_fdct_5x10 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION s
   DCTELEM workspace[8*2];
   DCTELEM *dataptr;
   DCTELEM *wsptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -3979,7 +3979,7 @@ jpeg_fdct_4x8 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION st
   INT32 tmp10, tmp11, tmp12, tmp13;
   INT32 z1;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -4113,7 +4113,7 @@ jpeg_fdct_3x6 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION st
   INT32 tmp0, tmp1, tmp2;
   INT32 tmp10, tmp11, tmp12;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 
@@ -4217,7 +4217,7 @@ jpeg_fdct_2x4 (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION st
   INT32 tmp0, tmp1;
   INT32 tmp10, tmp11;
   DCTELEM *dataptr;
-  JSAMPROW elemptr;
+  LJPEG_JSAMPROW elemptr;
   int ctr;
   SHIFT_TEMPS
 

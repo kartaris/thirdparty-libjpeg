@@ -81,7 +81,7 @@ typedef my_downsampler * my_downsample_ptr;
  */
 
 LJPEG_METHODDEF(void)
-start_pass_downsample (LJPEG_j_compress_ptr cinfo)
+LJPEG_start_pass_downsample (LJPEG_j_compress_ptr cinfo)
 {
   /* no work for now */
 }
@@ -96,8 +96,8 @@ LOCAL(void)
 expand_right_edge (LJPEG_JSAMPARRAY image_data, int num_rows,
 		   LJPEG_JDIMENSION input_cols, LJPEG_JDIMENSION output_cols)
 {
-  register JSAMPROW ptr;
-  register JSAMPLE pixval;
+  register LJPEG_JSAMPROW ptr;
+  register LJPEG_JSAMPLE pixval;
   register int count;
   int row;
   int numcols = (int) (output_cols - input_cols);
@@ -121,8 +121,8 @@ expand_right_edge (LJPEG_JSAMPARRAY image_data, int num_rows,
 
 LJPEG_METHODDEF(void)
 sep_downsample (LJPEG_j_compress_ptr cinfo,
-		JSAMPIMAGE input_buf, LJPEG_JDIMENSION in_row_index,
-		JSAMPIMAGE output_buf, LJPEG_JDIMENSION out_row_group_index)
+		LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION in_row_index,
+		LJPEG_JSAMPIMAGE output_buf, LJPEG_JDIMENSION out_row_group_index)
 {
   my_downsample_ptr downsample = (my_downsample_ptr) cinfo->downsample;
   int ci;
@@ -154,7 +154,7 @@ int_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
   int inrow, outrow, h_expand, v_expand, numpix, numpix2, h, v;
   LJPEG_JDIMENSION outcol, outcol_h;	/* outcol_h == outcol*h_expand */
   LJPEG_JDIMENSION output_cols = compptr->width_in_blocks * compptr->DCT_h_scaled_size;
-  JSAMPROW inptr, outptr;
+  LJPEG_JSAMPROW inptr, outptr;
   INT32 outvalue;
 
   h_expand = downsample->h_expand[compptr->component_index];
@@ -181,7 +181,7 @@ int_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
 	  outvalue += (INT32) GETJSAMPLE(*inptr++);
 	}
       }
-      *outptr++ = (JSAMPLE) ((outvalue + numpix2) / numpix);
+      *outptr++ = (LJPEG_JSAMPLE) ((outvalue + numpix2) / numpix);
     }
     inrow += v_expand;
     outrow++;
@@ -227,7 +227,7 @@ h2v1_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
   int inrow;
   LJPEG_JDIMENSION outcol;
   LJPEG_JDIMENSION output_cols = compptr->width_in_blocks * compptr->DCT_h_scaled_size;
-  register JSAMPROW inptr, outptr;
+  register LJPEG_JSAMPROW inptr, outptr;
   register int bias;
 
   /* Expand input data enough to let all the output samples be generated
@@ -264,7 +264,7 @@ h2v2_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * compptr,
   int inrow, outrow;
   LJPEG_JDIMENSION outcol;
   LJPEG_JDIMENSION output_cols = compptr->width_in_blocks * compptr->DCT_h_scaled_size;
-  register JSAMPROW inptr0, inptr1, outptr;
+  register LJPEG_JSAMPROW inptr0, inptr1, outptr;
   register int bias;
 
   /* Expand input data enough to let all the output samples be generated
@@ -308,7 +308,7 @@ h2v2_smooth_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info * comppt
   int inrow, outrow;
   LJPEG_JDIMENSION colctr;
   LJPEG_JDIMENSION output_cols = compptr->width_in_blocks * compptr->DCT_h_scaled_size;
-  register JSAMPROW inptr0, inptr1, above_ptr, below_ptr, outptr;
+  register LJPEG_JSAMPROW inptr0, inptr1, above_ptr, below_ptr, outptr;
   INT32 membersum, neighsum, memberscale, neighscale;
 
   /* Expand input data enough to let all the output samples be generated
@@ -409,7 +409,7 @@ fullsize_smooth_downsample (LJPEG_j_compress_ptr cinfo, jpeg_component_info *com
   int inrow;
   LJPEG_JDIMENSION colctr;
   LJPEG_JDIMENSION output_cols = compptr->width_in_blocks * compptr->DCT_h_scaled_size;
-  register JSAMPROW inptr, above_ptr, below_ptr, outptr;
+  register LJPEG_JSAMPROW inptr, above_ptr, below_ptr, outptr;
   INT32 membersum, neighsum, memberscale, neighscale;
   int colsum, lastcolsum, nextcolsum;
 
@@ -487,7 +487,7 @@ jinit_downsampler (LJPEG_j_compress_ptr cinfo)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_downsampler));
   cinfo->downsample = (struct jpeg_downsampler *) downsample;
-  downsample->pub.start_pass = start_pass_downsample;
+  downsample->pub.LJPEG_start_pass = LJPEG_start_pass_downsample;
   downsample->pub.downsample = sep_downsample;
   downsample->pub.need_context_rows = FALSE;
 

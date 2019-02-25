@@ -67,7 +67,7 @@ typedef my_upsampler * my_upsample_ptr;
  */
 
 LJPEG_METHODDEF(void)
-start_pass_upsample (LJPEG_j_decompress_ptr cinfo)
+LJPEG_start_pass_upsample (LJPEG_j_decompress_ptr cinfo)
 {
   my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
 
@@ -88,7 +88,7 @@ start_pass_upsample (LJPEG_j_decompress_ptr cinfo)
 
 LJPEG_METHODDEF(void)
 sep_upsample (LJPEG_j_decompress_ptr cinfo,
-	      JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
+	      LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION *in_row_group_ctr,
 	      LJPEG_JDIMENSION in_row_groups_avail,
 	      LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
 	      LJPEG_JDIMENSION out_rows_avail)
@@ -192,10 +192,10 @@ int_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
 {
   my_upsample_ptr upsample = (my_upsample_ptr) cinfo->upsample;
   LJPEG_JSAMPARRAY output_data = *output_data_ptr;
-  register JSAMPROW inptr, outptr;
+  register LJPEG_JSAMPROW inptr, outptr;
   register JSAMPLE invalue;
   register int h;
-  JSAMPROW outend;
+  LJPEG_JSAMPROW outend;
   int h_expand, v_expand;
   int inrow, outrow;
 
@@ -235,9 +235,9 @@ h2v1_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
 	       LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
   LJPEG_JSAMPARRAY output_data = *output_data_ptr;
-  register JSAMPROW inptr, outptr;
+  register LJPEG_JSAMPROW inptr, outptr;
   register JSAMPLE invalue;
-  JSAMPROW outend;
+  LJPEG_JSAMPROW outend;
   int outrow;
 
   for (outrow = 0; outrow < cinfo->max_v_samp_factor; outrow++) {
@@ -263,9 +263,9 @@ h2v2_upsample (LJPEG_j_decompress_ptr cinfo, jpeg_component_info * compptr,
 	       LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
   LJPEG_JSAMPARRAY output_data = *output_data_ptr;
-  register JSAMPROW inptr, outptr;
+  register LJPEG_JSAMPROW inptr, outptr;
   register JSAMPLE invalue;
-  JSAMPROW outend;
+  LJPEG_JSAMPROW outend;
   int inrow, outrow;
 
   inrow = outrow = 0;
@@ -303,7 +303,7 @@ jinit_upsampler (LJPEG_j_decompress_ptr cinfo)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(my_upsampler));
   cinfo->upsample = (struct jpeg_upsampler *) upsample;
-  upsample->pub.start_pass = start_pass_upsample;
+  upsample->pub.LJPEG_start_pass = LJPEG_start_pass_upsample;
   upsample->pub.upsample = sep_upsample;
   upsample->pub.need_context_rows = FALSE; /* until we find out differently */
 

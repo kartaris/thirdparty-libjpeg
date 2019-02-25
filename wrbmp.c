@@ -58,7 +58,7 @@ typedef bmp_dest_struct * bmp_dest_ptr;
 
 /* Forward declarations */
 LOCAL(void) write_colormap
-	JPP((LJPEG_j_decompress_ptr cinfo, bmp_dest_ptr dest,
+	LJPEG_JPP((LJPEG_j_decompress_ptr cinfo, bmp_dest_ptr dest,
 	     int map_colors, int map_entry_size));
 
 
@@ -74,7 +74,7 @@ put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 {
   bmp_dest_ptr dest = (bmp_dest_ptr) dinfo;
   LJPEG_JSAMPARRAY image_ptr;
-  register JSAMPROW inptr, outptr;
+  register LJPEG_JSAMPROW inptr, outptr;
   register LJPEG_JDIMENSION col;
   int pad;
 
@@ -109,7 +109,7 @@ put_gray_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 {
   bmp_dest_ptr dest = (bmp_dest_ptr) dinfo;
   LJPEG_JSAMPARRAY image_ptr;
-  register JSAMPROW inptr, outptr;
+  register LJPEG_JSAMPROW inptr, outptr;
   register LJPEG_JDIMENSION col;
   int pad;
 
@@ -346,7 +346,7 @@ finish_output_bmp (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
   bmp_dest_ptr dest = (bmp_dest_ptr) dinfo;
   register FILE * outfile = dest->pub.output_file;
   LJPEG_JSAMPARRAY image_ptr;
-  register JSAMPROW data_ptr;
+  register LJPEG_JSAMPROW data_ptr;
   LJPEG_JDIMENSION row;
   register LJPEG_JDIMENSION col;
   cd_progress_ptr progress = (cd_progress_ptr) cinfo->progress;

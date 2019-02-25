@@ -34,7 +34,7 @@ jinit_compress_master (LJPEG_j_compress_ptr cinfo)
 
   /* Preprocessing */
   if (! cinfo->raw_data_in) {
-    jinit_color_converter(cinfo);
+    LJPEG_jinit_color_converter(cinfo);
     jinit_downsampler(cinfo);
     jinit_c_prep_controller(cinfo, FALSE /* never need full buffer here */);
   }
@@ -42,13 +42,13 @@ jinit_compress_master (LJPEG_j_compress_ptr cinfo)
   jinit_forward_dct(cinfo);
   /* Entropy encoding: either Huffman or arithmetic coding. */
   if (cinfo->arith_code)
-    jinit_arith_encoder(cinfo);
+    LJPEG_jinit_LJPEG_arith_encoder(cinfo);
   else {
     jinit_huff_encoder(cinfo);
   }
 
   /* Need a full-image coefficient buffer in any multi-pass mode. */
-  jinit_c_coef_controller(cinfo,
+  LJPEG_jinit_c_coef_controller(cinfo,
 		(boolean) (cinfo->num_scans > 1 || cinfo->optimize_coding));
   jinit_c_main_controller(cinfo, FALSE /* never need full buffer here */);
 

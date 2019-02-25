@@ -320,7 +320,7 @@ put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
 		LJPEG_JDIMENSION rows_supplied)
 {
   gif_dest_ptr dest = (gif_dest_ptr) dinfo;
-  register JSAMPROW ptr;
+  register LJPEG_JSAMPROW ptr;
   register LJPEG_JDIMENSION col;
 
   ptr = dest->pub.buffer[0];
