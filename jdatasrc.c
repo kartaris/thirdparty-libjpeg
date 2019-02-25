@@ -24,7 +24,7 @@
 /* Expanded data source object for stdio input */
 
 typedef struct {
-  struct jpeg_source_mgr pub;	/* public fields */
+  struct LJPEG_jpeg_source_mgr pub;	/* public fields */
 
   FILE * infile;		/* source stream */
   JOCTET * buffer;		/* start of buffer */
@@ -155,7 +155,7 @@ LJPEG_fill_mem_input_buffer (LJPEG_j_decompress_ptr cinfo)
 LJPEG_METHODDEF(void)
 LJPEG_skip_input_data (LJPEG_j_decompress_ptr cinfo, long num_bytes)
 {
-  struct jpeg_source_mgr * src = cinfo->src;
+  struct LJPEG_jpeg_source_mgr * src = cinfo->src;
 
   /* Just a dumb implementation for now.  Could use fseek() except
    * it doesn't work on pipes.  Not clear that being smart is worth
@@ -219,12 +219,12 @@ LJPEG_jpeg_stdio_src (LJPEG_j_decompress_ptr cinfo, FILE * infile)
    * manager serially with the same JPEG object.  Caveat programmer.
    */
   if (cinfo->src == NULL) {	/* first time for this JPEG object? */
-    cinfo->src = (struct jpeg_source_mgr *)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
+    cinfo->src = (struct LJPEG_jpeg_source_mgr *)
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
 				  SIZEOF(LJPEG_my_source_mgr));
     src = (LJPEG_my_src_ptr) cinfo->src;
     src->buffer = (JOCTET *)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
 				  INPUT_BUF_SIZE * SIZEOF(JOCTET));
   }
 
@@ -249,7 +249,7 @@ LJPEG_GLOBALvoid)
 LJPEG_jpeg_mem_src (LJPEG_j_decompress_ptr cinfo,
 	      unsigned char * inbuffer, unsigned long insize)
 {
-  struct jpeg_source_mgr * src;
+  struct LJPEG_jpeg_source_mgr * src;
 
   if (inbuffer == NULL || insize == 0)	/* Treat empty input as fatal error */
     ERREXIT(cinfo, JERR_INPUT_EMPTY);
@@ -259,9 +259,9 @@ LJPEG_jpeg_mem_src (LJPEG_j_decompress_ptr cinfo,
    * the first one.
    */
   if (cinfo->src == NULL) {	/* first time for this JPEG object? */
-    cinfo->src = (struct jpeg_source_mgr *)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
-				  SIZEOF(struct jpeg_source_mgr));
+    cinfo->src = (struct LJPEG_jpeg_source_mgr *)
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
+				  SIZEOF(struct LJPEG_jpeg_source_mgr));
   }
 
   src = cinfo->src;

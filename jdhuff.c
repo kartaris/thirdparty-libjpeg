@@ -220,7 +220,7 @@ typedef struct {
 
 
 typedef struct {
-  struct jpeg_entropy_decoder pub; /* public fields */
+  struct LJPEG_jpeg_entropy_decoder pub; /* public fields */
 
   /* These fields are loaded into local variables at start of each MCU.
    * In case of suspension, we exit WITHOUT updating them.
@@ -346,7 +346,7 @@ LJPEG_jpeg_make_d_derived_tbl (LJPEG_j_decompress_ptr cinfo, boolean isDC, int t
   /* Allocate a workspace if we haven't already done so. */
   if (*pdtbl == NULL)
     *pdtbl = (LJPEG_d_derived_tbl *)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(LJPEG_d_derived_tbl));
   dtbl = *pdtbl;
   dtbl->pub = htbl;		/* fill in back link */
@@ -741,8 +741,8 @@ LJPEG_decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_da
       /* Convert DC difference to actual value, update last_dc_val */
       s += state.last_dc_val[ci];
       state.last_dc_val[ci] = s;
-      /* Scale and output the coefficient (assumes jpeg_natural_order[0]=0) */
-      (*block)[0] = (JCOEF) (s << Al);
+      /* Scale and output the coefficient (assumes LJPEG_jpeg_natural_order[0]=0) */
+      (*block)[0] = (LJPEG_JCOEF) (s << Al);
     }
 
     /* Completed MCU, so update state */
@@ -814,7 +814,7 @@ LJPEG_decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_da
 	  r = GET_BITS(s);
 	  s = HUFF_EXTEND(r, s);
 	  /* Scale and output coefficient in natural (dezigzagged) order */
-	  (*block)[natural_order[k]] = (JCOEF) (s << Al);
+	  (*block)[natural_order[k]] = (LJPEG_JCOEF) (s << Al);
 	} else {
 	  if (r != 15) {	/* EOBr, run length is 2^r + appended bits */
 	    if (r) {		/* EOBr, r > 0 */
@@ -999,7 +999,7 @@ LJPEG_decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_d
 	if (s) {
 	  int pos = natural_order[k];
 	  /* Output newly nonzero coefficient */
-	  (*block)[pos] = (JCOEF) s;
+	  (*block)[pos] = (LJPEG_JCOEF) s;
 	  /* Remember its position in case we have to suspend */
 	  newnz_pos[num_newnz++] = pos;
 	}
@@ -1112,7 +1112,7 @@ decode_mcu_sub (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 	s += state.last_dc_val[ci];
 	state.last_dc_val[ci] = s;
 	/* Output the DC coefficient */
-	(*block)[0] = (JCOEF) s;
+	(*block)[0] = (LJPEG_JCOEF) s;
 
 	/* Section F.2.2.2: decode the AC coefficients */
 	/* Since zeroes are skipped, output area must be cleared beforehand */
@@ -1131,7 +1131,7 @@ decode_mcu_sub (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 	     * Note: the extra entries in natural_order[] will save us
 	     * if k > Se, which could happen if the data is corrupted.
 	     */
-	    (*block)[natural_order[k]] = (JCOEF) s;
+	    (*block)[natural_order[k]] = (LJPEG_JCOEF) s;
 	  } else {
 	    if (r != 15)
 	      goto EndOfBlock;
@@ -1236,7 +1236,7 @@ LJPEG_decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 	s += state.last_dc_val[ci];
 	state.last_dc_val[ci] = s;
 	/* Output the DC coefficient */
-	(*block)[0] = (JCOEF) s;
+	(*block)[0] = (LJPEG_JCOEF) s;
 
 	/* Section F.2.2.2: decode the AC coefficients */
 	/* Since zeroes are skipped, output area must be cleared beforehand */
@@ -1252,10 +1252,10 @@ LJPEG_decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 	    r = GET_BITS(s);
 	    s = HUFF_EXTEND(r, s);
 	    /* Output coefficient in natural (dezigzagged) order.
-	     * Note: the extra entries in jpeg_natural_order[] will save us
+	     * Note: the extra entries in LJPEG_jpeg_natural_order[] will save us
 	     * if k >= DCTSIZE2, which could happen if the data is corrupted.
 	     */
-	    (*block)[jpeg_natural_order[k]] = (JCOEF) s;
+	    (*block)[LJPEG_jpeg_natural_order[k]] = (LJPEG_JCOEF) s;
 	  } else {
 	    if (r != 15)
 	      goto EndOfBlock;
@@ -1513,7 +1513,7 @@ LJPEG_jinit_huff_decoder (LJPEG_j_decompress_ptr cinfo)
   int i;
 
   entropy = (LJPEG_huff_entropy_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_huff_entropy_decoder));
   cinfo->entropy = &entropy->pub;
   entropy->pub.LJPEG_start_pass = LJPEG_start_pass_huff_decoder;
@@ -1522,7 +1522,7 @@ LJPEG_jinit_huff_decoder (LJPEG_j_decompress_ptr cinfo)
     /* Create progression status table */
     int *coef_bit_ptr, ci;
     cinfo->coef_bits = (int (*)[DCTSIZE2])
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  cinfo->num_components*DCTSIZE2*SIZEOF(int));
     coef_bit_ptr = & cinfo->coef_bits[0][0];
     for (ci = 0; ci < cinfo->num_components; ci++)

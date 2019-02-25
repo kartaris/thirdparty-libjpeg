@@ -36,7 +36,7 @@ JMEMDOSA_TXT	segment byte public 'CODE'
 		public	_jems_calldriver
 
 ;
-; short far jdos_open (short far * handle, char far * filename)
+; short far LJPEG_jdos_open (short far * handle, char far * filename)
 ;
 ; Create and open a temporary file
 ;
@@ -71,7 +71,7 @@ _jdos_open	endp
 
 
 ;
-; short far jdos_close (short handle)
+; short far LJPEG_jdos_close (short handle)
 ;
 ; Close the file handle
 ;
@@ -103,7 +103,7 @@ _jdos_close	endp
 
 
 ;
-; short far jdos_seek (short handle, long offset)
+; short far LJPEG_jdos_seek (short handle, long offset)
 ;
 ; Set file position
 ;
@@ -137,7 +137,7 @@ _jdos_seek	endp
 
 
 ;
-; short far jdos_read (short handle, void far * buffer, unsigned short count)
+; short far LJPEG_jdos_read (short handle, void far * buffer, unsigned short count)
 ;
 ; Read from file
 ;
@@ -175,7 +175,7 @@ _jdos_read	endp
 
 
 ;
-; short far jdos_write (short handle, void far * buffer, unsigned short count)
+; short far LJPEG_jdos_write (short handle, void far * buffer, unsigned short count)
 ;
 ; Write to file
 ;
@@ -213,7 +213,7 @@ _jdos_write	endp
 
 
 ;
-; void far jxms_getdriver (XMSDRIVER far *)
+; void far LJPEG_jxms_getdriver (XMSDRIVER far *)
 ;
 ; Get the address of the XMS driver, or NULL if not available
 ;
@@ -254,7 +254,7 @@ _jxms_getdriver	endp
 
 
 ;
-; void far jxms_calldriver (XMSDRIVER, XMScontext far *)
+; void far LJPEG_jxms_calldriver (XMSDRIVER, XMScontext far *)
 ;
 ; The XMScontext structure contains values for the AX,DX,BX,SI,DS registers.
 ; These are loaded, the XMS call is performed, and the new values of the
@@ -295,7 +295,7 @@ _jxms_calldriver 	endp
 
 
 ;
-; short far jems_available (void)
+; short far LJPEG_jems_available (void)
 ;
 ; Have we got an EMS driver? (this comes straight from the EMS 4.0 specs)
 ;
@@ -335,7 +335,7 @@ _jems_available	endp
 
 
 ;
-; void far jems_calldriver (EMScontext far *)
+; void far LJPEG_jems_calldriver (EMScontext far *)
 ;
 ; The EMScontext structure contains values for the AX,DX,BX,SI,DS registers.
 ; These are loaded, the EMS trap is performed, and the new values of the

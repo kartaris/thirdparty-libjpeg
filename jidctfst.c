@@ -176,7 +176,7 @@ LJPEG_jpeg_idct_ifast (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info *
   IFAST_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[DCTSIZE2];	/* buffers data between passes */
   SHIFT_TEMPS			/* for DESCALE */
@@ -293,7 +293,7 @@ LJPEG_jpeg_idct_ifast (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info *
     if (wsptr[1] == 0 && wsptr[2] == 0 && wsptr[3] == 0 && wsptr[4] == 0 &&
 	wsptr[5] == 0 && wsptr[6] == 0 && wsptr[7] == 0) {
       /* AC terms all zero */
-      JSAMPLE dcval = range_limit[IDESCALE(wsptr[0], PASS1_BITS+3)
+      LJPEG_JSAMPLE dcval = range_limit[IDESCALE(wsptr[0], PASS1_BITS+3)
 				  & RANGE_MASK];
       
       outptr[0] = dcval;

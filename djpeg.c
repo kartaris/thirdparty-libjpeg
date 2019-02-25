@@ -355,7 +355,7 @@ LOCAL(unsigned int)
 LJPEG_jpeg_getc (LJPEG_j_decompress_ptr cinfo)
 /* Read next byte */
 {
-  struct jpeg_source_mgr * datasrc = cinfo->src;
+  struct LJPEG_jpeg_source_mgr * datasrc = cinfo->src;
 
   if (datasrc->bytes_in_buffer == 0) {
     if (! (*datasrc->LJPEG_fill_input_buffer) (cinfo))

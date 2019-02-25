@@ -56,7 +56,7 @@ LJPEG_jpeg_CreateCompress (LJPEG_j_compress_ptr cinfo, int version, size_t struc
   cinfo->is_decompressor = FALSE;
 
   /* Initialize a memory manager instance for this object */
-  jinit_memory_mgr((LJPEG_j_common_ptr) cinfo);
+  LJPEG_jinit_memory_mgr((LJPEG_j_common_ptr) cinfo);
 
   /* Zero out pointers to permanent structures. */
   cinfo->progress = NULL;
@@ -76,7 +76,7 @@ LJPEG_jpeg_CreateCompress (LJPEG_j_compress_ptr cinfo, int version, size_t struc
 
   /* Must do it here for LJPEG_emit_dqt in case LJPEG_jpeg_write_tables is used */
   cinfo->block_size = DCTSIZE;
-  cinfo->natural_order = jpeg_natural_order;
+  cinfo->natural_order = LJPEG_jpeg_natural_order;
   cinfo->lim_Se = DCTSIZE2-1;
 
   cinfo->script_space = NULL;

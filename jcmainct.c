@@ -27,7 +27,7 @@
 /* Private buffer controller object */
 
 typedef struct {
-  struct jpeg_c_main_controller pub; /* public fields */
+  struct LJPEG_jpeg_c_main_controller pub; /* public fields */
 
   LJPEG_JDIMENSION cur_iMCU_row;	/* number of current iMCU row */
   LJPEG_JDIMENSION rowgroup_ctr;	/* counts row groups received in iMCU row */
@@ -181,7 +181,7 @@ LJPEG_process_data_buffer_main (LJPEG_j_compress_ptr cinfo,
     if (mainp->rowgroup_ctr == 0) {
       for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
 	   ci++, compptr++) {
-	mainp->buffer[ci] = (*cinfo->mem->access_virt_sarray)
+	mainp->buffer[ci] = (*cinfo->mem->LJPEG_access_virt_sarray)
 	  ((LJPEG_j_common_ptr) cinfo, mainp->whole_image[ci], mainp->cur_iMCU_row *
 	   ((LJPEG_JDIMENSION) (compptr->v_samp_factor * cinfo->min_DCT_v_scaled_size)),
 	   (LJPEG_JDIMENSION) (compptr->v_samp_factor * cinfo->min_DCT_v_scaled_size),
@@ -252,7 +252,7 @@ LJPEG_jinit_c_main_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buf
   LJPEG_jpeg_component_info *compptr;
 
   mainp = (LJPEG_my_main_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_my_main_controller));
   cinfo->main = &mainp->pub;
   mainp->pub.LJPEG_start_pass = LJPEG_start_pass_main;
@@ -270,10 +270,10 @@ LJPEG_jinit_c_main_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buf
     /* Note we pad the bottom to a multiple of the iMCU height */
     for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
 	 ci++, compptr++) {
-      mainp->whole_image[ci] = (*cinfo->mem->request_virt_sarray)
+      mainp->whole_image[ci] = (*cinfo->mem->LJPEG_request_virt_sarray)
 	((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
 	 compptr->width_in_blocks * ((LJPEG_JDIMENSION) compptr->DCT_h_scaled_size),
-	 ((LJPEG_JDIMENSION) jround_up((long) compptr->height_in_blocks,
+	 ((LJPEG_JDIMENSION) LJPEG_jround_up((long) compptr->height_in_blocks,
 				 (long) compptr->v_samp_factor)) *
 	 ((LJPEG_JDIMENSION) cinfo->min_DCT_v_scaled_size),
 	 (LJPEG_JDIMENSION) (compptr->v_samp_factor * compptr->DCT_v_scaled_size));
@@ -288,7 +288,7 @@ LJPEG_jinit_c_main_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buf
     /* Allocate a strip buffer for each component */
     for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
 	 ci++, compptr++) {
-      mainp->buffer[ci] = (*cinfo->mem->alloc_sarray)
+      mainp->buffer[ci] = (*cinfo->mem->LJPEG_alloc_sarray)
 	((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 	 compptr->width_in_blocks * ((LJPEG_JDIMENSION) compptr->DCT_h_scaled_size),
 	 (LJPEG_JDIMENSION) (compptr->v_samp_factor * compptr->DCT_v_scaled_size));

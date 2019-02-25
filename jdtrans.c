@@ -35,7 +35,7 @@ LOCAL(void) LJPEG_transdecode_master_selection LJPEG_JPP((LJPEG_j_decompress_ptr
  * during a buffered-image-mode decompression operation.  This is allowed
  * after any LJPEG_jpeg_finish_output() call.  The arrays can be accessed until
  * LJPEG_jpeg_finish_decompress() is called.  (Note that any call to the library
- * may reposition the arrays, so don't rely on access_virt_barray() results
+ * may reposition the arrays, so don't rely on LJPEG_access_virt_barray() results
  * to stay valid across library calls.)
  *
  * Returns NULL if suspended.  This case need be checked only if
@@ -113,7 +113,7 @@ LJPEG_transdecode_master_selection (LJPEG_j_decompress_ptr cinfo)
   LJPEG_jinit_d_coef_controller(cinfo, TRUE);
 
   /* We can now tell the memory manager to allocate virtual arrays. */
-  (*cinfo->mem->realize_virt_arrays) ((LJPEG_j_common_ptr) cinfo);
+  (*cinfo->mem->LJPEG_realize_virt_arrays) ((LJPEG_j_common_ptr) cinfo);
 
   /* Initialize input side of decompressor to consume first scan. */
   (*cinfo->inputctl->LJPEG_start_input_pass) (cinfo);

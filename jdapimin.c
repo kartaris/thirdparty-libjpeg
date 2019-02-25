@@ -56,7 +56,7 @@ LJPEG_jpeg_CreateDecompress (LJPEG_j_decompress_ptr cinfo, int version, size_t s
   cinfo->is_decompressor = TRUE;
 
   /* Initialize a memory manager instance for this object */
-  jinit_memory_mgr((LJPEG_j_common_ptr) cinfo);
+  LJPEG_jinit_memory_mgr((LJPEG_j_common_ptr) cinfo);
 
   /* Zero out pointers to permanent structures. */
   cinfo->progress = NULL;

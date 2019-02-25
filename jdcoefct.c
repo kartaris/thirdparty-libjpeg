@@ -27,7 +27,7 @@
 /* Private buffer controller object */
 
 typedef struct {
-  struct jpeg_d_coef_controller pub; /* public fields */
+  struct LJPEG_jpeg_d_coef_controller pub; /* public fields */
 
   /* These variables keep track of the current location of the input side. */
   /* cinfo->input_iMCU_row is also used for this. */
@@ -165,7 +165,7 @@ LJPEG_decompress_onepass (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_
       /* Try to fetch an MCU.  Entropy decoder expects buffer to be zeroed. */
       if (cinfo->lim_Se)	/* can bypass in DC only case */
 	FMEMZERO((void FAR *) coef->MCU_buffer[0],
-		 (size_t) (cinfo->blocks_in_MCU * SIZEOF(JBLOCK)));
+		 (size_t) (cinfo->blocks_in_MCU * SIZEOF(LJPEG_JBLOCK)));
       if (! (*cinfo->entropy->LJPEG_decode_mcu) (cinfo, coef->MCU_buffer)) {
 	/* Suspension forced; update state counters and exit */
 	coef->MCU_vert_offset = yoffset;
@@ -249,14 +249,14 @@ LJPEG_consume_data (LJPEG_j_decompress_ptr cinfo)
   LJPEG_JDIMENSION MCU_col_num;	/* index of current MCU within row */
   int blkn, ci, xindex, yindex, yoffset;
   LJPEG_JDIMENSION start_col;
-  JBLOCKARRAY buffer[MAX_COMPS_IN_SCAN];
+  LJPEG_JBLOCKARRAY buffer[MAX_COMPS_IN_SCAN];
   LJPEG_JBLOCKROW buffer_ptr;
   LJPEG_jpeg_component_info *compptr;
 
   /* Align the virtual buffers for the components used in this scan. */
   for (ci = 0; ci < cinfo->comps_in_scan; ci++) {
     compptr = cinfo->cur_comp_info[ci];
-    buffer[ci] = (*cinfo->mem->access_virt_barray)
+    buffer[ci] = (*cinfo->mem->LJPEG_access_virt_barray)
       ((LJPEG_j_common_ptr) cinfo, coef->whole_image[compptr->component_index],
        cinfo->input_iMCU_row * compptr->v_samp_factor,
        (LJPEG_JDIMENSION) compptr->v_samp_factor, TRUE);
@@ -320,7 +320,7 @@ LJPEG_decompress_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf
   LJPEG_JDIMENSION last_iMCU_row = cinfo->total_iMCU_rows - 1;
   LJPEG_JDIMENSION block_num;
   int ci, block_row, block_rows;
-  JBLOCKARRAY buffer;
+  LJPEG_JBLOCKARRAY buffer;
   LJPEG_JBLOCKROW buffer_ptr;
   LJPEG_JSAMPARRAY output_ptr;
   LJPEG_JDIMENSION output_col;
@@ -342,7 +342,7 @@ LJPEG_decompress_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf
     if (! compptr->component_needed)
       continue;
     /* Align the virtual buffer for this component. */
-    buffer = (*cinfo->mem->access_virt_barray)
+    buffer = (*cinfo->mem->LJPEG_access_virt_barray)
       ((LJPEG_j_common_ptr) cinfo, coef->whole_image[ci],
        cinfo->output_iMCU_row * compptr->v_samp_factor,
        (LJPEG_JDIMENSION) compptr->v_samp_factor, FALSE);
@@ -420,7 +420,7 @@ LJPEG_smoothing_ok (LJPEG_j_decompress_ptr cinfo)
   /* Allocate latch area if not already done */
   if (coef->coef_bits_latch == NULL)
     coef->coef_bits_latch = (int *)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  cinfo->num_components *
 				  (SAVED_COEFS * SIZEOF(int)));
   coef_bits_latch = coef->coef_bits_latch;
@@ -466,14 +466,14 @@ LJPEG_decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE out
   LJPEG_JDIMENSION last_iMCU_row = cinfo->total_iMCU_rows - 1;
   LJPEG_JDIMENSION block_num, last_block_column;
   int ci, block_row, block_rows, access_rows;
-  JBLOCKARRAY buffer;
+  LJPEG_JBLOCKARRAY buffer;
   LJPEG_JBLOCKROW buffer_ptr, prev_block_row, next_block_row;
   LJPEG_JSAMPARRAY output_ptr;
   LJPEG_JDIMENSION output_col;
   LJPEG_jpeg_component_info *compptr;
   inverse_DCT_method_ptr inverse_DCT;
   boolean first_row, last_row;
-  JBLOCK workspace;
+  LJPEG_JBLOCK workspace;
   int *coef_bits;
   LJPEG_JQUANT_TBL *quanttbl;
   INT32 Q00,Q01,Q02,Q10,Q11,Q20, num;
@@ -518,14 +518,14 @@ LJPEG_decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE out
     /* Align the virtual buffer for this component. */
     if (cinfo->output_iMCU_row > 0) {
       access_rows += compptr->v_samp_factor; /* prior iMCU row too */
-      buffer = (*cinfo->mem->access_virt_barray)
+      buffer = (*cinfo->mem->LJPEG_access_virt_barray)
 	((LJPEG_j_common_ptr) cinfo, coef->whole_image[ci],
 	 (cinfo->output_iMCU_row - 1) * compptr->v_samp_factor,
 	 (LJPEG_JDIMENSION) access_rows, FALSE);
       buffer += compptr->v_samp_factor;	/* point to current iMCU row */
       first_row = FALSE;
     } else {
-      buffer = (*cinfo->mem->access_virt_barray)
+      buffer = (*cinfo->mem->LJPEG_access_virt_barray)
 	((LJPEG_j_common_ptr) cinfo, coef->whole_image[ci],
 	 (LJPEG_JDIMENSION) 0, (LJPEG_JDIMENSION) access_rows, FALSE);
       first_row = TRUE;
@@ -562,7 +562,7 @@ LJPEG_decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE out
       last_block_column = compptr->width_in_blocks - 1;
       for (block_num = 0; block_num <= last_block_column; block_num++) {
 	/* Fetch current DCT block into workspace so we can modify it. */
-	jcopy_block_row(buffer_ptr, (LJPEG_JBLOCKROW) workspace, (LJPEG_JDIMENSION) 1);
+	LJPEG_jcopy_block_row(buffer_ptr, (LJPEG_JBLOCKROW) workspace, (LJPEG_JDIMENSION) 1);
 	/* Update DC values */
 	if (block_num < last_block_column) {
 	  DC3 = (int) prev_block_row[1][0];
@@ -586,7 +586,7 @@ LJPEG_decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE out
 	      pred = (1<<Al)-1;
 	    pred = -pred;
 	  }
-	  workspace[1] = (JCOEF) pred;
+	  workspace[1] = (LJPEG_JCOEF) pred;
 	}
 	/* AC10 */
 	if ((Al=coef_bits[2]) != 0 && workspace[8] == 0) {
@@ -601,7 +601,7 @@ LJPEG_decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE out
 	      pred = (1<<Al)-1;
 	    pred = -pred;
 	  }
-	  workspace[8] = (JCOEF) pred;
+	  workspace[8] = (LJPEG_JCOEF) pred;
 	}
 	/* AC20 */
 	if ((Al=coef_bits[3]) != 0 && workspace[16] == 0) {
@@ -616,7 +616,7 @@ LJPEG_decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE out
 	      pred = (1<<Al)-1;
 	    pred = -pred;
 	  }
-	  workspace[16] = (JCOEF) pred;
+	  workspace[16] = (LJPEG_JCOEF) pred;
 	}
 	/* AC11 */
 	if ((Al=coef_bits[4]) != 0 && workspace[9] == 0) {
@@ -631,7 +631,7 @@ LJPEG_decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE out
 	      pred = (1<<Al)-1;
 	    pred = -pred;
 	  }
-	  workspace[9] = (JCOEF) pred;
+	  workspace[9] = (LJPEG_JCOEF) pred;
 	}
 	/* AC02 */
 	if ((Al=coef_bits[5]) != 0 && workspace[2] == 0) {
@@ -646,7 +646,7 @@ LJPEG_decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE out
 	      pred = (1<<Al)-1;
 	    pred = -pred;
 	  }
-	  workspace[2] = (JCOEF) pred;
+	  workspace[2] = (LJPEG_JCOEF) pred;
 	}
 	/* OK, do the IDCT */
 	(*inverse_DCT) (cinfo, compptr, (LJPEG_JCOEFPTR) workspace,
@@ -680,9 +680,9 @@ LJPEG_jinit_d_coef_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_b
   LJPEG_my_coef_ptr coef;
 
   coef = (LJPEG_my_coef_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_my_coef_controller));
-  cinfo->coef = (struct jpeg_d_coef_controller *) coef;
+  cinfo->coef = (struct LJPEG_jpeg_d_coef_controller *) coef;
   coef->pub.LJPEG_start_input_pass = LJPEG_start_input_pass;
   coef->pub.LJPEG_start_output_pass = LJPEG_start_output_pass;
 #ifdef BLOCK_SMOOTHING_SUPPORTED
@@ -706,11 +706,11 @@ LJPEG_jinit_d_coef_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_b
       if (cinfo->progressive_mode)
 	access_rows *= 3;
 #endif
-      coef->whole_image[ci] = (*cinfo->mem->request_virt_barray)
+      coef->whole_image[ci] = (*cinfo->mem->LJPEG_request_virt_barray)
 	((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, TRUE,
-	 (LJPEG_JDIMENSION) jround_up((long) compptr->width_in_blocks,
+	 (LJPEG_JDIMENSION) LJPEG_jround_up((long) compptr->width_in_blocks,
 				(long) compptr->h_samp_factor),
-	 (LJPEG_JDIMENSION) jround_up((long) compptr->height_in_blocks,
+	 (LJPEG_JDIMENSION) LJPEG_jround_up((long) compptr->height_in_blocks,
 				(long) compptr->v_samp_factor),
 	 (LJPEG_JDIMENSION) access_rows);
     }
@@ -726,14 +726,14 @@ LJPEG_jinit_d_coef_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_b
     int i;
 
     buffer = (LJPEG_JBLOCKROW)
-      (*cinfo->mem->alloc_large) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				  D_MAX_BLOCKS_IN_MCU * SIZEOF(JBLOCK));
+      (*cinfo->mem->LJPEG_alloc_large) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+				  D_MAX_BLOCKS_IN_MCU * SIZEOF(LJPEG_JBLOCK));
     for (i = 0; i < D_MAX_BLOCKS_IN_MCU; i++) {
       coef->MCU_buffer[i] = buffer + i;
     }
     if (cinfo->lim_Se == 0)	/* DC only case: want to bypass later */
       FMEMZERO((void FAR *) buffer,
-	       (size_t) (D_MAX_BLOCKS_IN_MCU * SIZEOF(JBLOCK)));
+	       (size_t) (D_MAX_BLOCKS_IN_MCU * SIZEOF(LJPEG_JBLOCK)));
     coef->pub.LJPEG_consume_data = LJPEG_dummy_consume_data;
     coef->pub.LJPEG_decompress_data = LJPEG_decompress_onepass;
     coef->pub.coef_arrays = NULL; /* flag for no virtual arrays */

@@ -176,9 +176,9 @@ LJPEG_read_scan_script (LJPEG_j_compress_ptr cinfo, char * filename)
   FILE * fp;
   int scanno, ncomps, termchar;
   long val;
-  jpeg_scan_info * scanptr;
+  LJPEG_jpeg_scan_info * scanptr;
 #define MAX_SCANS  100		/* quite arbitrary limit */
-  jpeg_scan_info scans[MAX_SCANS];
+  LJPEG_jpeg_scan_info scans[MAX_SCANS];
 
   if ((fp = fopen(filename, "r")) == NULL) {
     fprintf(stderr, "Can't open scan definition file %s\n", filename);
@@ -248,10 +248,10 @@ bogus:
      * NOTE: for cjpeg's use, JPOOL_IMAGE is the right lifetime for this data,
      * but if you want to compress multiple images you'd want JPOOL_PERMANENT.
      */
-    scanptr = (jpeg_scan_info *)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				  scanno * SIZEOF(jpeg_scan_info));
-    MEMCOPY(scanptr, scans, scanno * SIZEOF(jpeg_scan_info));
+    scanptr = (LJPEG_jpeg_scan_info *)
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+				  scanno * SIZEOF(LJPEG_jpeg_scan_info));
+    MEMCOPY(scanptr, scans, scanno * SIZEOF(LJPEG_jpeg_scan_info));
     cinfo->scan_info = scanptr;
     cinfo->num_scans = scanno;
   }

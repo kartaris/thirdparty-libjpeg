@@ -90,7 +90,7 @@ typedef enum {			/* JPEG marker codes */
 /* Private state */
 
 typedef struct {
-  struct jpeg_marker_reader pub; /* public fields */
+  struct LJPEG_jpeg_marker_reader pub; /* public fields */
 
   /* Application-overridable marker processing methods */
   LJPEG_jpeg_marker_parser_method process_COM;
@@ -101,7 +101,7 @@ typedef struct {
   unsigned int length_limit_APPn[16];
 
   /* Status of COM/APPn marker saving */
-  jpeg_saved_marker_ptr cur_marker;	/* NULL if not processing a marker */
+  LJPEG_jpeg_saved_marker_ptr cur_marker;	/* NULL if not processing a marker */
   unsigned int bytes_read;		/* data bytes read so far in marker */
   /* Note: cur_marker is not linked into marker_list until it's all read. */
 } LJPEG_my_marker_reader;
@@ -119,7 +119,7 @@ typedef LJPEG_my_marker_reader * LJPEG_my_marker_ptr;
 
 /* Declare and initialize local copies of input pointer/count */
 #define INPUT_VARS(cinfo)  \
-	struct jpeg_source_mgr * datasrc = (cinfo)->src;  \
+	struct LJPEG_jpeg_source_mgr * datasrc = (cinfo)->src;  \
 	const JOCTET * next_input_byte = datasrc->next_input_byte;  \
 	size_t bytes_in_buffer = datasrc->bytes_in_buffer
 
@@ -277,7 +277,7 @@ LJPEG_get_sof (LJPEG_j_decompress_ptr cinfo, boolean is_baseline, boolean is_pro
     ERREXIT(cinfo, JERR_BAD_LENGTH);
 
   if (cinfo->comp_info == NULL)	/* do only once, even if suspend */
-    cinfo->comp_info = (LJPEG_jpeg_component_info *) (*cinfo->mem->alloc_small)
+    cinfo->comp_info = (LJPEG_jpeg_component_info *) (*cinfo->mem->LJPEG_alloc_small)
 			((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 			 cinfo->num_components * SIZEOF(LJPEG_jpeg_component_info));
 
@@ -573,13 +573,13 @@ LJPEG_get_dqt (LJPEG_j_decompress_ptr cinfo)
     }
 
     switch (count) {
-    case (2*2): natural_order = jpeg_natural_order2; break;
-    case (3*3): natural_order = jpeg_natural_order3; break;
-    case (4*4): natural_order = jpeg_natural_order4; break;
-    case (5*5): natural_order = jpeg_natural_order5; break;
-    case (6*6): natural_order = jpeg_natural_order6; break;
-    case (7*7): natural_order = jpeg_natural_order7; break;
-    default:    natural_order = jpeg_natural_order;  break;
+    case (2*2): natural_order = LJPEG_jpeg_natural_order2; break;
+    case (3*3): natural_order = LJPEG_jpeg_natural_order3; break;
+    case (4*4): natural_order = LJPEG_jpeg_natural_order4; break;
+    case (5*5): natural_order = LJPEG_jpeg_natural_order5; break;
+    case (6*6): natural_order = LJPEG_jpeg_natural_order6; break;
+    case (7*7): natural_order = LJPEG_jpeg_natural_order7; break;
+    default:    natural_order = LJPEG_jpeg_natural_order;  break;
     }
 
     for (i = 0; i < count; i++) {
@@ -871,7 +871,7 @@ LJPEG_save_marker (LJPEG_j_decompress_ptr cinfo)
 /* Save an APPn or COM marker into the marker list */
 {
   LJPEG_my_marker_ptr marker = (LJPEG_my_marker_ptr) cinfo->marker;
-  jpeg_saved_marker_ptr cur_marker = marker->cur_marker;
+  LJPEG_jpeg_saved_marker_ptr cur_marker = marker->cur_marker;
   unsigned int bytes_read, data_length;
   JOCTET FAR * data;
   INT32 length = 0;
@@ -891,14 +891,14 @@ LJPEG_save_marker (LJPEG_j_decompress_ptr cinfo)
       if ((unsigned int) length < limit)
 	limit = (unsigned int) length;
       /* allocate and initialize the marker item */
-      cur_marker = (jpeg_saved_marker_ptr)
-	(*cinfo->mem->alloc_large) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				    SIZEOF(struct jpeg_marker_struct) + limit);
+      cur_marker = (LJPEG_jpeg_saved_marker_ptr)
+	(*cinfo->mem->LJPEG_alloc_large) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+				    SIZEOF(struct LJPEG_jpeg_marker_struct) + limit);
       cur_marker->next = NULL;
       cur_marker->marker = (UINT8) cinfo->unread_marker;
       cur_marker->original_length = (unsigned int) length;
       cur_marker->data_length = limit;
-      /* data area is just beyond the jpeg_marker_struct */
+      /* data area is just beyond the LJPEG_jpeg_marker_struct */
       data = cur_marker->data = (JOCTET FAR *) (cur_marker + 1);
       marker->cur_marker = cur_marker;
       marker->bytes_read = 0;
@@ -935,7 +935,7 @@ LJPEG_save_marker (LJPEG_j_decompress_ptr cinfo)
     if (cinfo->marker_list == NULL) {
       cinfo->marker_list = cur_marker;
     } else {
-      jpeg_saved_marker_ptr prev = cinfo->marker_list;
+      LJPEG_jpeg_saved_marker_ptr prev = cinfo->marker_list;
       while (prev->next != NULL)
 	prev = prev->next;
       prev->next = cur_marker;
@@ -1411,7 +1411,7 @@ LJPEG_jinit_marker_reader (LJPEG_j_decompress_ptr cinfo)
 
   /* Create subobject in permanent pool */
   marker = (LJPEG_my_marker_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
 				SIZEOF(LJPEG_my_marker_reader));
   cinfo->marker = &marker->pub;
   /* Initialize public method pointers */
@@ -1452,7 +1452,7 @@ LJPEG_jpeg_save_markers (LJPEG_j_decompress_ptr cinfo, int marker_code,
   /* Length limit mustn't be larger than what we can allocate
    * (should only be a concern in a 16-bit environment).
    */
-  maxlength = cinfo->mem->max_alloc_chunk - SIZEOF(struct jpeg_marker_struct);
+  maxlength = cinfo->mem->max_alloc_chunk - SIZEOF(struct LJPEG_jpeg_marker_struct);
   if (((long) length_limit) > maxlength)
     length_limit = (unsigned int) maxlength;
 

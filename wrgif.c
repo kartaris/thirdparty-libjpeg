@@ -363,7 +363,7 @@ LJPEG_jinit_write_gif (LJPEG_j_decompress_ptr cinfo)
 
   /* Create module interface object, fill in method pointers */
   dest = (gif_dest_ptr)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(gif_dest_struct));
   dest->cinfo = cinfo;		/* make back link for subroutines */
   dest->pub.start_output = start_output_gif;
@@ -389,7 +389,7 @@ LJPEG_jinit_write_gif (LJPEG_j_decompress_ptr cinfo)
     ERREXIT(cinfo, JERR_GIF_BUG);
 
   /* Create decompressor output buffer. */
-  dest->pub.buffer = (*cinfo->mem->alloc_sarray)
+  dest->pub.buffer = (*cinfo->mem->LJPEG_alloc_sarray)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, cinfo->output_width, (LJPEG_JDIMENSION) 1);
   dest->pub.buffer_height = 1;
 

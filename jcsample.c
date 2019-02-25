@@ -58,7 +58,7 @@ typedef LJPEG_JMETHOD(void, downsample1_ptr,
 /* Private subobject */
 
 typedef struct {
-  struct jpeg_downsampler pub;	/* public fields */
+  struct LJPEG_jpeg_downsampler pub;	/* public fields */
 
   /* Downsampling method pointers, one per component */
   downsample1_ptr methods[MAX_COMPONENTS];
@@ -200,7 +200,7 @@ LJPEG_fullsize_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info
 		     LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   /* Copy the data */
-  jcopy_sample_rows(input_data, 0, output_data, 0,
+  LJPEG_jcopy_sample_rows(input_data, 0, output_data, 0,
 		    cinfo->max_v_samp_factor, cinfo->image_width);
   /* Edge-expand */
   LJPEG_expand_right_edge(output_data, cinfo->max_v_samp_factor, cinfo->image_width,
@@ -242,7 +242,7 @@ LJPEG_h2v1_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * c
     inptr = input_data[inrow];
     bias = 0;			/* bias = 0,1,0,1,... for successive samples */
     for (outcol = 0; outcol < output_cols; outcol++) {
-      *outptr++ = (JSAMPLE) ((GETJSAMPLE(*inptr) + GETJSAMPLE(inptr[1])
+      *outptr++ = (LJPEG_JSAMPLE) ((GETJSAMPLE(*inptr) + GETJSAMPLE(inptr[1])
 			      + bias) >> 1);
       bias ^= 1;		/* 0=>1, 1=>0 */
       inptr += 2;
@@ -281,7 +281,7 @@ LJPEG_h2v2_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * c
     inptr1 = input_data[inrow+1];
     bias = 1;			/* bias = 1,2,1,2,... for successive samples */
     for (outcol = 0; outcol < output_cols; outcol++) {
-      *outptr++ = (JSAMPLE) ((GETJSAMPLE(*inptr0) + GETJSAMPLE(inptr0[1]) +
+      *outptr++ = (LJPEG_JSAMPLE) ((GETJSAMPLE(*inptr0) + GETJSAMPLE(inptr0[1]) +
 			      GETJSAMPLE(*inptr1) + GETJSAMPLE(inptr1[1])
 			      + bias) >> 2);
       bias ^= 3;		/* 1=>2, 2=>1 */
@@ -353,7 +353,7 @@ LJPEG_h2v2_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_i
     neighsum += GETJSAMPLE(*above_ptr) + GETJSAMPLE(above_ptr[2]) +
 		GETJSAMPLE(*below_ptr) + GETJSAMPLE(below_ptr[2]);
     membersum = membersum * memberscale + neighsum * neighscale;
-    *outptr++ = (JSAMPLE) ((membersum + 32768) >> 16);
+    *outptr++ = (LJPEG_JSAMPLE) ((membersum + 32768) >> 16);
     inptr0 += 2; inptr1 += 2; above_ptr += 2; below_ptr += 2;
 
     for (colctr = output_cols - 2; colctr > 0; colctr--) {
@@ -373,7 +373,7 @@ LJPEG_h2v2_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_i
       /* form final output scaled up by 2^16 */
       membersum = membersum * memberscale + neighsum * neighscale;
       /* round, descale and output it */
-      *outptr++ = (JSAMPLE) ((membersum + 32768) >> 16);
+      *outptr++ = (LJPEG_JSAMPLE) ((membersum + 32768) >> 16);
       inptr0 += 2; inptr1 += 2; above_ptr += 2; below_ptr += 2;
     }
 
@@ -388,7 +388,7 @@ LJPEG_h2v2_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_i
     neighsum += GETJSAMPLE(above_ptr[-1]) + GETJSAMPLE(above_ptr[1]) +
 		GETJSAMPLE(below_ptr[-1]) + GETJSAMPLE(below_ptr[1]);
     membersum = membersum * memberscale + neighsum * neighscale;
-    *outptr = (JSAMPLE) ((membersum + 32768) >> 16);
+    *outptr = (LJPEG_JSAMPLE) ((membersum + 32768) >> 16);
 
     inrow += 2;
     outrow++;
@@ -443,7 +443,7 @@ LJPEG_fullsize_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_compone
 		 GETJSAMPLE(*inptr);
     neighsum = colsum + (colsum - membersum) + nextcolsum;
     membersum = membersum * memberscale + neighsum * neighscale;
-    *outptr++ = (JSAMPLE) ((membersum + 32768) >> 16);
+    *outptr++ = (LJPEG_JSAMPLE) ((membersum + 32768) >> 16);
     lastcolsum = colsum; colsum = nextcolsum;
 
     for (colctr = output_cols - 2; colctr > 0; colctr--) {
@@ -453,7 +453,7 @@ LJPEG_fullsize_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_compone
 		   GETJSAMPLE(*inptr);
       neighsum = lastcolsum + (colsum - membersum) + nextcolsum;
       membersum = membersum * memberscale + neighsum * neighscale;
-      *outptr++ = (JSAMPLE) ((membersum + 32768) >> 16);
+      *outptr++ = (LJPEG_JSAMPLE) ((membersum + 32768) >> 16);
       lastcolsum = colsum; colsum = nextcolsum;
     }
 
@@ -461,7 +461,7 @@ LJPEG_fullsize_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_compone
     membersum = GETJSAMPLE(*inptr);
     neighsum = lastcolsum + (colsum - membersum) + colsum;
     membersum = membersum * memberscale + neighsum * neighscale;
-    *outptr = (JSAMPLE) ((membersum + 32768) >> 16);
+    *outptr = (LJPEG_JSAMPLE) ((membersum + 32768) >> 16);
 
   }
 }
@@ -484,9 +484,9 @@ LJPEG_jinit_downsampler (LJPEG_j_compress_ptr cinfo)
   int h_in_group, v_in_group, h_out_group, v_out_group;
 
   downsample = (LJPEG_my_downsample_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_my_downsampler));
-  cinfo->downsample = (struct jpeg_downsampler *) downsample;
+  cinfo->downsample = (struct LJPEG_jpeg_downsampler *) downsample;
   downsample->pub.LJPEG_start_pass = LJPEG_start_pass_downsample;
   downsample->pub.downsample = LJPEG_sep_downsample;
   downsample->pub.need_context_rows = FALSE;

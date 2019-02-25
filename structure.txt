@@ -214,7 +214,7 @@ a larger struct that contains the common struct as its first member, plus
 additional private fields.  With appropriate pointer casting, the module's
 internal functions can access these private fields.  (For a simple example,
 see jdatadst.c, which implements the external interface specified by struct
-jpeg_destination_mgr, but adds extra fields.)
+LJPEG_jpeg_destination_mgr, but adds extra fields.)
 
 (Of course this would all be a lot easier if we were using C++, but we are
 not yet prepared to assume that everyone has a C++ compiler.)
@@ -566,20 +566,20 @@ there isn't any real need for it.
 
 Arrays of pixel sample values use the following data structure:
 
-    typedef something JSAMPLE;		a pixel component value, 0..MAXJSAMPLE
-    typedef JSAMPLE *LJPEG_JSAMPROW;		ptr to a row of samples
+    typedef something LJPEG_JSAMPLE;		a pixel component value, 0..MAXJSAMPLE
+    typedef LJPEG_JSAMPLE *LJPEG_JSAMPROW;		ptr to a row of samples
     typedef LJPEG_JSAMPROW *LJPEG_JSAMPARRAY;	ptr to a list of rows
     typedef LJPEG_JSAMPARRAY *LJPEG_JSAMPIMAGE;	ptr to a list of color-component arrays
 
-The basic element type JSAMPLE will typically be one of unsigned char,
+The basic element type LJPEG_JSAMPLE will typically be one of unsigned char,
 (signed) char, or short.  Short will be used if samples wider than 8 bits are
 to be supported (this is a compile-time option).  Otherwise, unsigned char is
 used if possible.  If the compiler only supports signed chars, then it is
-necessary to mask off the value when reading.  Thus, all reads of JSAMPLE
+necessary to mask off the value when reading.  Thus, all reads of LJPEG_JSAMPLE
 values must be coded as "GETJSAMPLE(value)", where the macro will be defined
 as "((value) & 0xFF)" on signed-char machines and "((int) (value))" elsewhere.
 
-With these conventions, JSAMPLE values can be assumed to be >= 0.  This helps
+With these conventions, LJPEG_JSAMPLE values can be assumed to be >= 0.  This helps
 simplify correct rounding during downsampling, etc.  The JPEG standard's
 specification that sample values run from -128..127 is accommodated by
 subtracting 128 from the sample value in the DCT step.  Similarly, during
@@ -589,7 +589,7 @@ The code is written in terms of MAXJSAMPLE and CENTERJSAMPLE, which will be
 defined as 255 and 128 respectively in an 8-bit implementation, and as 4095
 and 2048 in a 12-bit implementation.)
 
-We use a pointer per row, rather than a two-dimensional JSAMPLE array.  This
+We use a pointer per row, rather than a two-dimensional LJPEG_JSAMPLE array.  This
 choice costs only a small amount of memory and has several benefits:
 * Code using the data structure doesn't need to know the allocated width of
   the rows.  This simplifies edge expansion/compression, since we can work
@@ -619,7 +619,7 @@ be precomputed by copying the relevant pointer.
 Since most image-processing applications prefer to work on images in which
 the components of a pixel are stored together, the data passed to or from the
 surrounding application uses the traditional convention: a single pixel is
-represented by N consecutive JSAMPLE values, and an image row is an array of
+represented by N consecutive LJPEG_JSAMPLE values, and an image row is an array of
 (# of color components)*(image width) JSAMPLEs.  One or more rows of data can
 be represented by a pointer of type LJPEG_JSAMPARRAY in this scheme.  This scheme is
 converted to component-wise storage inside the JPEG library.  (Applications
@@ -629,11 +629,11 @@ with component-wise storage.)
 
 Arrays of DCT-coefficient values use the following data structure:
 
-    typedef short JCOEF;		a 16-bit signed integer
-    typedef JCOEF JBLOCK[DCTSIZE2];	an 8x8 block of coefficients
-    typedef JBLOCK *LJPEG_JBLOCKROW;		ptr to one horizontal row of 8x8 blocks
-    typedef LJPEG_JBLOCKROW *JBLOCKARRAY;	ptr to a list of such rows
-    typedef JBLOCKARRAY *JBLOCKIMAGE;	ptr to a list of color component arrays
+    typedef short LJPEG_JCOEF;		a 16-bit signed integer
+    typedef LJPEG_JCOEF LJPEG_JBLOCK[DCTSIZE2];	an 8x8 block of coefficients
+    typedef LJPEG_JBLOCK *LJPEG_JBLOCKROW;		ptr to one horizontal row of 8x8 blocks
+    typedef LJPEG_JBLOCKROW *LJPEG_JBLOCKARRAY;	ptr to a list of such rows
+    typedef LJPEG_JBLOCKARRAY *LJPEG_JBLOCKIMAGE;	ptr to a list of color component arrays
 
 The underlying type is at least a 16-bit signed integer; while "short" is big
 enough on all machines of interest, on some machines it is preferable to use
@@ -778,11 +778,11 @@ The memory manager deals with three kinds of object:
    without virtual memory, the rest of the array may be swapped out to a
    temporary file.
 
-(Note: LJPEG_JSAMPARRAY and JBLOCKARRAY data structures are a combination of large
+(Note: LJPEG_JSAMPARRAY and LJPEG_JBLOCKARRAY data structures are a combination of large
 objects for the data proper and small objects for the row pointers.  For
 convenience and speed, the memory manager provides single routines to create
 these structures.  Similarly, virtual arrays include a small control block
-and a LJPEG_JSAMPARRAY or JBLOCKARRAY working buffer, all created with one call.)
+and a LJPEG_JSAMPARRAY or LJPEG_JBLOCKARRAY working buffer, all created with one call.)
 
 In the present implementation, virtual arrays are only permitted to have image
 lifespan.  (Permanent lifespan would not be reasonable, and pass lifespan is
@@ -811,15 +811,15 @@ with the memory manager:
      during the initial setup phase, i.e., in their jinit_xxx routines.
   2. All "large" objects (including LJPEG_JSAMPARRAYs and JBLOCKARRAYs) must also be
      allocated during initial setup.
-  3. realize_virt_arrays will be called at the completion of initial setup.
+  3. LJPEG_realize_virt_arrays will be called at the completion of initial setup.
      The above conventions ensure that sufficient information is available
      for it to choose a good size for virtual array buffers.
 Small objects of any lifespan may be allocated at any time.  We expect that
 the total space used for small objects will be small enough to be negligible
-in the realize_virt_arrays computation.
+in the LJPEG_realize_virt_arrays computation.
 
 In a virtual-memory machine, we simply pretend that the available space is
-infinite, thus causing realize_virt_arrays to decide that it can allocate all
+infinite, thus causing LJPEG_realize_virt_arrays to decide that it can allocate all
 the virtual arrays as full-size in-memory buffers.  The overhead of the
 virtual-array access protocol is very small when no swapping occurs.
 
@@ -850,26 +850,26 @@ outlined above are implemented by the front end.  The back end provides
 the following routines for use by the front end (none of these routines
 are known to the rest of the JPEG code):
 
-jpeg_mem_init, jpeg_mem_term	system-dependent initialization/shutdown
+LJPEG_jpeg_mem_init, LJPEG_jpeg_mem_term	system-dependent initialization/shutdown
 
-jpeg_get_small, jpeg_free_small	interface to malloc and free library routines
+LJPEG_jpeg_get_small, LJPEG_jpeg_free_small	interface to malloc and free library routines
 				(or their equivalents)
 
-jpeg_get_large, jpeg_free_large	interface to FAR malloc/free in MSDOS machines;
+LJPEG_jpeg_get_large, LJPEG_jpeg_free_large	interface to FAR malloc/free in MSDOS machines;
 				else usually the same as
-				jpeg_get_small/jpeg_free_small
+				LJPEG_jpeg_get_small/LJPEG_jpeg_free_small
 
-jpeg_mem_available		estimate available memory
+LJPEG_jpeg_mem_available		estimate available memory
 
-jpeg_open_backing_store		create a backing-store object
+LJPEG_jpeg_open_backing_store		create a backing-store object
 
-read_backing_store,		manipulate a backing-store object
-write_backing_store,
-close_backing_store
+LJPEG_read_backing_store,		manipulate a backing-store object
+LJPEG_write_backing_store,
+LJPEG_close_backing_store
 
 On some systems there will be more than one type of backing-store object
 (specifically, in MS-DOS a backing store file might be an area of extended
-memory as well as a disk file).  jpeg_open_backing_store is responsible for
+memory as well as a disk file).  LJPEG_jpeg_open_backing_store is responsible for
 choosing how to implement a given object.  The read/write/close routines
 are method pointers in the structure that describes a given object; this
 lets them be different for different object types.
@@ -877,7 +877,7 @@ lets them be different for different object types.
 It may be necessary to ensure that backing store objects are explicitly
 released upon abnormal program termination.  For example, MS-DOS won't free
 extended memory by itself.  To support this, we will expect the main program
-or surrounding application to arrange to call self_destruct (typically via
+or surrounding application to arrange to call LJPEG_self_destruct (typically via
 LJPEG_jpeg_destroy) upon abnormal termination.  This may require a SIGINT signal
 handler or equivalent.  We don't want to have the back end module install its
 own signal handler, because that would pre-empt the surrounding application's

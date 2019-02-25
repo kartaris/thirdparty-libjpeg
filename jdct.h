@@ -46,7 +46,7 @@ typedef LJPEG_JMETHOD(void, float_DCT_method_ptr, (FAST_FLOAT * data,
 
 
 /*
- * An inverse DCT routine is given a pointer to the input JBLOCK and a pointer
+ * An inverse DCT routine is given a pointer to the input LJPEG_JBLOCK and a pointer
  * to an output sample array.  The routine must dequantize the input data as
  * well as perform the IDCT; for dequantization, it uses the multiplier table
  * pointed to by compptr->dct_table.  The output data is to be placed into the

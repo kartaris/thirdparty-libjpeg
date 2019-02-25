@@ -88,17 +88,17 @@ read_colormap (bmp_source_ptr sinfo, int cmaplen, int mapentrysize)
   case 3:
     /* BGR format (occurs in OS/2 files) */
     for (i = 0; i < cmaplen; i++) {
-      sinfo->colormap[2][i] = (JSAMPLE) read_byte(sinfo);
-      sinfo->colormap[1][i] = (JSAMPLE) read_byte(sinfo);
-      sinfo->colormap[0][i] = (JSAMPLE) read_byte(sinfo);
+      sinfo->colormap[2][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
+      sinfo->colormap[1][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
+      sinfo->colormap[0][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
     }
     break;
   case 4:
     /* BGR0 format (occurs in MS Windows files) */
     for (i = 0; i < cmaplen; i++) {
-      sinfo->colormap[2][i] = (JSAMPLE) read_byte(sinfo);
-      sinfo->colormap[1][i] = (JSAMPLE) read_byte(sinfo);
-      sinfo->colormap[0][i] = (JSAMPLE) read_byte(sinfo);
+      sinfo->colormap[2][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
+      sinfo->colormap[1][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
+      sinfo->colormap[0][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
       (void) read_byte(sinfo);
     }
     break;
@@ -129,7 +129,7 @@ get_8bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
   /* Fetch next row from virtual array */
   source->source_row--;
-  image_ptr = (*cinfo->mem->access_virt_sarray)
+  image_ptr = (*cinfo->mem->LJPEG_access_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, source->whole_image,
      source->source_row, (LJPEG_JDIMENSION) 1, FALSE);
 
@@ -158,7 +158,7 @@ get_24bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
   /* Fetch next row from virtual array */
   source->source_row--;
-  image_ptr = (*cinfo->mem->access_virt_sarray)
+  image_ptr = (*cinfo->mem->LJPEG_access_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, source->whole_image,
      source->source_row, (LJPEG_JDIMENSION) 1, FALSE);
 
@@ -189,7 +189,7 @@ get_32bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
   /* Fetch next row from virtual array */
   source->source_row--;
-  image_ptr = (*cinfo->mem->access_virt_sarray)
+  image_ptr = (*cinfo->mem->LJPEG_access_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, source->whole_image,
      source->source_row, (LJPEG_JDIMENSION) 1, FALSE);
   /* Transfer data.  Note source values are in BGR order
@@ -233,7 +233,7 @@ preload_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
       progress->pub.pass_limit = (long) cinfo->image_height;
       (*progress->pub.LJPEG_progress_monitor) ((LJPEG_j_common_ptr) cinfo);
     }
-    image_ptr = (*cinfo->mem->access_virt_sarray)
+    image_ptr = (*cinfo->mem->LJPEG_access_virt_sarray)
       ((LJPEG_j_common_ptr) cinfo, source->whole_image,
        row, (LJPEG_JDIMENSION) 1, TRUE);
     out_ptr = image_ptr[0];
@@ -241,7 +241,7 @@ preload_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
       /* inline copy of read_byte() for speed */
       if ((c = getc(infile)) == EOF)
 	ERREXIT(cinfo, JERR_INPUT_EOF);
-      *out_ptr++ = (JSAMPLE) c;
+      *out_ptr++ = (LJPEG_JSAMPLE) c;
     }
   }
   if (progress != NULL)
@@ -395,7 +395,7 @@ start_input_bmp (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     else if (biClrUsed > 256)
       ERREXIT(cinfo, JERR_BMP_BADCMAP);
     /* Allocate space to store the colormap */
-    source->colormap = (*cinfo->mem->alloc_sarray)
+    source->colormap = (*cinfo->mem->LJPEG_alloc_sarray)
       ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
        (LJPEG_JDIMENSION) biClrUsed, (LJPEG_JDIMENSION) 3);
     /* and read it from the file */
@@ -422,7 +422,7 @@ start_input_bmp (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   source->row_width = row_width;
 
   /* Allocate space for inversion array, prepare for preload pass */
-  source->whole_image = (*cinfo->mem->request_virt_sarray)
+  source->whole_image = (*cinfo->mem->LJPEG_request_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
      row_width, (LJPEG_JDIMENSION) biHeight, (LJPEG_JDIMENSION) 1);
   source->pub.get_pixel_rows = preload_image;
@@ -432,7 +432,7 @@ start_input_bmp (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   }
 
   /* Allocate one-row buffer for returned data */
-  source->pub.buffer = (*cinfo->mem->alloc_sarray)
+  source->pub.buffer = (*cinfo->mem->LJPEG_alloc_sarray)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
      (LJPEG_JDIMENSION) (biWidth * 3), (LJPEG_JDIMENSION) 1);
   source->pub.buffer_height = 1;
@@ -467,7 +467,7 @@ LJPEG_jinit_read_bmp (LJPEG_j_compress_ptr cinfo)
 
   /* Create module interface object */
   source = (bmp_source_ptr)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(bmp_source_struct));
   source->cinfo = cinfo;	/* make back link for subroutines */
   /* Fill in method ptrs, except get_pixel_rows which start_input sets */

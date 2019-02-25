@@ -62,7 +62,7 @@ typedef LJPEG_my_color_converter * LJPEG_my_cconvert_ptr;
 #define FIX(x)		((INT32) ((x) * (1L<<SCALEBITS) + 0.5))
 
 /* We allocate one big table and divide it up into eight parts, instead of
- * doing eight alloc_small requests.  This lets us use a single table base
+ * doing eight LJPEG_alloc_small requests.  This lets us use a single table base
  * address, which can be held in a register in the inner loops on many
  * machines (more than can hold all eight addresses, anyway).
  */
@@ -92,7 +92,7 @@ LJPEG_rgb_ycc_start (LJPEG_j_compress_ptr cinfo)
 
   /* Allocate and fill in the conversion tables. */
   cconvert->rgb_ycc_tab = rgb_ycc_tab = (INT32 *)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				(TABLE_SIZE * SIZEOF(INT32)));
 
   for (i = 0; i <= MAXJSAMPLE; i++) {
@@ -156,15 +156,15 @@ LJPEG_rgb_ycc_convert (LJPEG_j_compress_ptr cinfo,
        * need the general RIGHT_SHIFT macro.
        */
       /* Y */
-      outptr0[col] = (JSAMPLE)
+      outptr0[col] = (LJPEG_JSAMPLE)
 		((ctab[r+R_Y_OFF] + ctab[g+G_Y_OFF] + ctab[b+B_Y_OFF])
 		 >> SCALEBITS);
       /* Cb */
-      outptr1[col] = (JSAMPLE)
+      outptr1[col] = (LJPEG_JSAMPLE)
 		((ctab[r+R_CB_OFF] + ctab[g+G_CB_OFF] + ctab[b+B_CB_OFF])
 		 >> SCALEBITS);
       /* Cr */
-      outptr2[col] = (JSAMPLE)
+      outptr2[col] = (LJPEG_JSAMPLE)
 		((ctab[r+R_CR_OFF] + ctab[g+G_CR_OFF] + ctab[b+B_CR_OFF])
 		 >> SCALEBITS);
       inptr += RGB_PIXELSIZE;
@@ -204,7 +204,7 @@ LJPEG_rgb_gray_convert (LJPEG_j_compress_ptr cinfo,
       g = GETJSAMPLE(inptr[RGB_GREEN]);
       b = GETJSAMPLE(inptr[RGB_BLUE]);
       /* Y */
-      outptr[col] = (JSAMPLE)
+      outptr[col] = (LJPEG_JSAMPLE)
 		((ctab[r+R_Y_OFF] + ctab[g+G_Y_OFF] + ctab[b+B_Y_OFF])
 		 >> SCALEBITS);
       inptr += RGB_PIXELSIZE;
@@ -253,15 +253,15 @@ LJPEG_cmyk_ycck_convert (LJPEG_j_compress_ptr cinfo,
        * need the general RIGHT_SHIFT macro.
        */
       /* Y */
-      outptr0[col] = (JSAMPLE)
+      outptr0[col] = (LJPEG_JSAMPLE)
 		((ctab[r+R_Y_OFF] + ctab[g+G_Y_OFF] + ctab[b+B_Y_OFF])
 		 >> SCALEBITS);
       /* Cb */
-      outptr1[col] = (JSAMPLE)
+      outptr1[col] = (LJPEG_JSAMPLE)
 		((ctab[r+R_CB_OFF] + ctab[g+G_CB_OFF] + ctab[b+B_CB_OFF])
 		 >> SCALEBITS);
       /* Cr */
-      outptr2[col] = (JSAMPLE)
+      outptr2[col] = (LJPEG_JSAMPLE)
 		((ctab[r+R_CR_OFF] + ctab[g+G_CR_OFF] + ctab[b+B_CR_OFF])
 		 >> SCALEBITS);
       inptr += 4;
@@ -300,9 +300,9 @@ LJPEG_rgb_rgb1_convert (LJPEG_j_compress_ptr cinfo,
       /* Assume that MAXJSAMPLE+1 is a power of 2, so that the MOD
        * (modulo) operator is equivalent to the bitmask operator AND.
        */
-      outptr0[col] = (JSAMPLE) ((r - g + CENTERJSAMPLE) & MAXJSAMPLE);
-      outptr1[col] = (JSAMPLE) g;
-      outptr2[col] = (JSAMPLE) ((b - g + CENTERJSAMPLE) & MAXJSAMPLE);
+      outptr0[col] = (LJPEG_JSAMPLE) ((r - g + CENTERJSAMPLE) & MAXJSAMPLE);
+      outptr1[col] = (LJPEG_JSAMPLE) g;
+      outptr2[col] = (LJPEG_JSAMPLE) ((b - g + CENTERJSAMPLE) & MAXJSAMPLE);
       inptr += RGB_PIXELSIZE;
     }
   }
@@ -425,7 +425,7 @@ LJPEG_jinit_color_converter (LJPEG_j_compress_ptr cinfo)
   LJPEG_my_cconvert_ptr cconvert;
 
   cconvert = (LJPEG_my_cconvert_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_my_color_converter));
   cinfo->cconvert = &cconvert->pub;
   /* set LJPEG_start_pass to null method until we find out differently */

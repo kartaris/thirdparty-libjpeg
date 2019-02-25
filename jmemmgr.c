@@ -77,37 +77,37 @@ extern char * getenv LJPEG_JPP((const char * name));
 
 /*
  * We allocate objects from "pools", where each pool is gotten with a single
- * request to jpeg_get_small() or jpeg_get_large().  There is no per-object
+ * request to LJPEG_jpeg_get_small() or LJPEG_jpeg_get_large().  There is no per-object
  * overhead within a pool, except for alignment padding.  Each pool has a
  * header with a link to the next pool of the same class.
  * Small and large pool headers are identical except that the latter's
  * link pointer must be FAR on 80x86 machines.
  * Notice that the "real" header fields are union'ed with a dummy ALIGN_TYPE
- * field.  This forces the compiler to make SIZEOF(small_pool_hdr) a multiple
+ * field.  This forces the compiler to make SIZEOF(LJPEG_small_pool_hdr) a multiple
  * of the alignment requirement of ALIGN_TYPE.
  */
 
-typedef union small_pool_struct * small_pool_ptr;
+typedef union LJPEG_small_pool_struct * LJPEG_small_pool_ptr;
 
-typedef union small_pool_struct {
+typedef union LJPEG_small_pool_struct {
   struct {
-    small_pool_ptr next;	/* next in list of pools */
+    LJPEG_small_pool_ptr next;	/* next in list of pools */
     size_t bytes_used;		/* how many bytes already used within pool */
     size_t bytes_left;		/* bytes still available in this pool */
   } hdr;
   ALIGN_TYPE dummy;		/* included in union to ensure alignment */
-} small_pool_hdr;
+} LJPEG_small_pool_hdr;
 
-typedef union large_pool_struct FAR * large_pool_ptr;
+typedef union LJPEG_large_pool_struct FAR * LJPEG_large_pool_ptr;
 
-typedef union large_pool_struct {
+typedef union LJPEG_large_pool_struct {
   struct {
-    large_pool_ptr next;	/* next in list of pools */
+    LJPEG_large_pool_ptr next;	/* next in list of pools */
     size_t bytes_used;		/* how many bytes already used within pool */
     size_t bytes_left;		/* bytes still available in this pool */
   } hdr;
   ALIGN_TYPE dummy;		/* included in union to ensure alignment */
-} large_pool_hdr;
+} LJPEG_large_pool_hdr;
 
 
 /*
@@ -115,11 +115,11 @@ typedef union large_pool_struct {
  */
 
 typedef struct {
-  struct jpeg_memory_mgr pub;	/* public fields */
+  struct LJPEG_jpeg_memory_mgr pub;	/* public fields */
 
   /* Each pool identifier (lifetime class) names a linked list of pools. */
-  small_pool_ptr small_list[JPOOL_NUMPOOLS];
-  large_pool_ptr large_list[JPOOL_NUMPOOLS];
+  LJPEG_small_pool_ptr small_list[JPOOL_NUMPOOLS];
+  LJPEG_large_pool_ptr large_list[JPOOL_NUMPOOLS];
 
   /* Since we only have one lifetime class of virtual arrays, only one
    * linked list is necessary (for each datatype).  Note that the virtual
@@ -129,30 +129,30 @@ typedef struct {
   LJPEG_jvirt_sarray_ptr virt_sarray_list;
   LJPEG_jvirt_barray_ptr virt_barray_list;
 
-  /* This counts total space obtained from jpeg_get_small/large */
+  /* This counts total space obtained from LJPEG_jpeg_get_small/large */
   long total_space_allocated;
 
-  /* alloc_sarray and alloc_barray set this value for use by virtual
+  /* LJPEG_alloc_sarray and LJPEG_alloc_barray set this value for use by virtual
    * array routines.
    */
-  LJPEG_JDIMENSION last_rowsperchunk;	/* from most recent alloc_sarray/barray */
-} my_memory_mgr;
+  LJPEG_JDIMENSION last_rowsperchunk;	/* from most recent LJPEG_alloc_sarray/barray */
+} LJPEG_my_memory_mgr;
 
-typedef my_memory_mgr * my_mem_ptr;
+typedef LJPEG_my_memory_mgr * LJPEG_my_mem_ptr;
 
 
 /*
  * The control blocks for virtual arrays.
  * Note that these blocks are allocated in the "small" pool area.
  * System-dependent info for the associated backing store (if any) is hidden
- * inside the backing_store_info struct.
+ * inside the LJPEG_backing_store_info struct.
  */
 
-struct jvirt_sarray_control {
+struct LJPEG_jvirt_sarray_control {
   LJPEG_JSAMPARRAY mem_buffer;	/* => the in-memory buffer */
   LJPEG_JDIMENSION rows_in_array;	/* total virtual array height */
   LJPEG_JDIMENSION samplesperrow;	/* width of array (and of memory buffer) */
-  LJPEG_JDIMENSION maxaccess;		/* max rows accessed by access_virt_sarray */
+  LJPEG_JDIMENSION maxaccess;		/* max rows accessed by LJPEG_access_virt_sarray */
   LJPEG_JDIMENSION rows_in_mem;	/* height of memory buffer */
   LJPEG_JDIMENSION rowsperchunk;	/* allocation chunk size in mem_buffer */
   LJPEG_JDIMENSION cur_start_row;	/* first logical row # in the buffer */
@@ -161,14 +161,14 @@ struct jvirt_sarray_control {
   boolean dirty;		/* do current buffer contents need written? */
   boolean b_s_open;		/* is backing-store data valid? */
   LJPEG_jvirt_sarray_ptr next;	/* link to next virtual sarray control block */
-  backing_store_info b_s_info;	/* System-dependent control info */
+  LJPEG_backing_store_info b_s_info;	/* System-dependent control info */
 };
 
-struct jvirt_barray_control {
-  JBLOCKARRAY mem_buffer;	/* => the in-memory buffer */
+struct LJPEG_jvirt_barray_control {
+  LJPEG_JBLOCKARRAY mem_buffer;	/* => the in-memory buffer */
   LJPEG_JDIMENSION rows_in_array;	/* total virtual array height */
   LJPEG_JDIMENSION blocksperrow;	/* width of array (and of memory buffer) */
-  LJPEG_JDIMENSION maxaccess;		/* max rows accessed by access_virt_barray */
+  LJPEG_JDIMENSION maxaccess;		/* max rows accessed by LJPEG_access_virt_barray */
   LJPEG_JDIMENSION rows_in_mem;	/* height of memory buffer */
   LJPEG_JDIMENSION rowsperchunk;	/* allocation chunk size in mem_buffer */
   LJPEG_JDIMENSION cur_start_row;	/* first logical row # in the buffer */
@@ -177,18 +177,18 @@ struct jvirt_barray_control {
   boolean dirty;		/* do current buffer contents need written? */
   boolean b_s_open;		/* is backing-store data valid? */
   LJPEG_jvirt_barray_ptr next;	/* link to next virtual barray control block */
-  backing_store_info b_s_info;	/* System-dependent control info */
+  LJPEG_backing_store_info b_s_info;	/* System-dependent control info */
 };
 
 
 #ifdef MEM_STATS		/* optional extra stuff for statistics */
 
 LOCAL(void)
-print_mem_stats (LJPEG_j_common_ptr cinfo, int pool_id)
+LJPEG_print_mem_stats (LJPEG_j_common_ptr cinfo, int pool_id)
 {
-  my_mem_ptr mem = (my_mem_ptr) cinfo->mem;
-  small_pool_ptr shdr_ptr;
-  large_pool_ptr lhdr_ptr;
+  LJPEG_my_mem_ptr mem = (LJPEG_my_mem_ptr) cinfo->mem;
+  LJPEG_small_pool_ptr shdr_ptr;
+  LJPEG_large_pool_ptr lhdr_ptr;
 
   /* Since this is only a debugging stub, we can cheat a little by using
    * fprintf directly rather than going through the trace message code.
@@ -215,12 +215,12 @@ print_mem_stats (LJPEG_j_common_ptr cinfo, int pool_id)
 
 
 LOCAL(noreturn_t)
-out_of_memory (LJPEG_j_common_ptr cinfo, int which)
+LJPEG_out_of_memory (LJPEG_j_common_ptr cinfo, int which)
 /* Report an out-of-memory error and stop execution */
 /* If we compiled MEM_STATS support, report alloc requests before dying */
 {
 #ifdef MEM_STATS
-  cinfo->err->trace_level = 2;	/* force self_destruct to report stats */
+  cinfo->err->trace_level = 2;	/* force LJPEG_self_destruct to report stats */
 #endif
   ERREXIT1(cinfo, JERR_OUT_OF_MEMORY, which);
 }
@@ -239,7 +239,7 @@ out_of_memory (LJPEG_j_common_ptr cinfo, int which)
  * machines, but may be too small if longs are 64 bits or more.
  */
 
-static const size_t first_pool_slop[JPOOL_NUMPOOLS] = 
+static const size_t LJPEG_first_pool_slop[JPOOL_NUMPOOLS] =
 {
 	1600,			/* first PERMANENT pool */
 	16000			/* first IMAGE pool */
@@ -255,17 +255,17 @@ static const size_t extra_pool_slop[JPOOL_NUMPOOLS] =
 
 
 LJPEG_METHODDEF(void *)
-alloc_small (LJPEG_j_common_ptr cinfo, int pool_id, size_t sizeofobject)
+LJPEG_alloc_small (LJPEG_j_common_ptr cinfo, int pool_id, size_t sizeofobject)
 /* Allocate a "small" object */
 {
-  my_mem_ptr mem = (my_mem_ptr) cinfo->mem;
-  small_pool_ptr hdr_ptr, prev_hdr_ptr;
+  LJPEG_my_mem_ptr mem = (LJPEG_my_mem_ptr) cinfo->mem;
+  LJPEG_small_pool_ptr hdr_ptr, prev_hdr_ptr;
   char * data_ptr;
   size_t odd_bytes, min_request, slop;
 
   /* Check for unsatisfiable request (do now to ensure no overflow below) */
-  if (sizeofobject > (size_t) (MAX_ALLOC_CHUNK-SIZEOF(small_pool_hdr)))
-    out_of_memory(cinfo, 1);	/* request exceeds malloc's ability */
+  if (sizeofobject > (size_t) (MAX_ALLOC_CHUNK-SIZEOF(LJPEG_small_pool_hdr)))
+    LJPEG_out_of_memory(cinfo, 1);	/* request exceeds malloc's ability */
 
   /* Round up the requested size to a multiple of SIZEOF(ALIGN_TYPE) */
   odd_bytes = sizeofobject % SIZEOF(ALIGN_TYPE);
@@ -287,9 +287,9 @@ alloc_small (LJPEG_j_common_ptr cinfo, int pool_id, size_t sizeofobject)
   /* Time to make a new pool? */
   if (hdr_ptr == NULL) {
     /* min_request is what we need now, slop is what will be leftover */
-    min_request = sizeofobject + SIZEOF(small_pool_hdr);
+    min_request = sizeofobject + SIZEOF(LJPEG_small_pool_hdr);
     if (prev_hdr_ptr == NULL)	/* first pool in class? */
-      slop = first_pool_slop[pool_id];
+      slop = LJPEG_first_pool_slop[pool_id];
     else
       slop = extra_pool_slop[pool_id];
     /* Don't ask for more than MAX_ALLOC_CHUNK */
@@ -297,12 +297,12 @@ alloc_small (LJPEG_j_common_ptr cinfo, int pool_id, size_t sizeofobject)
       slop = (size_t) (MAX_ALLOC_CHUNK-min_request);
     /* Try to get space, if fail reduce slop and try again */
     for (;;) {
-      hdr_ptr = (small_pool_ptr) jpeg_get_small(cinfo, min_request + slop);
+      hdr_ptr = (LJPEG_small_pool_ptr) LJPEG_jpeg_get_small(cinfo, min_request + slop);
       if (hdr_ptr != NULL)
 	break;
       slop /= 2;
       if (slop < MIN_SLOP)	/* give up when it gets real small */
-	out_of_memory(cinfo, 2); /* jpeg_get_small failed */
+	LJPEG_out_of_memory(cinfo, 2); /* LJPEG_jpeg_get_small failed */
     }
     mem->total_space_allocated += min_request + slop;
     /* Success, initialize the new pool header and add to end of list */
@@ -332,24 +332,24 @@ alloc_small (LJPEG_j_common_ptr cinfo, int pool_id, size_t sizeofobject)
  * except that FAR pointers are used on 80x86.  However the pool
  * management heuristics are quite different.  We assume that each
  * request is large enough that it may as well be passed directly to
- * jpeg_get_large; the pool management just links everything together
+ * LJPEG_jpeg_get_large; the pool management just links everything together
  * so that we can free it all on demand.
- * Note: the major use of "large" objects is in LJPEG_JSAMPARRAY and JBLOCKARRAY
+ * Note: the major use of "large" objects is in LJPEG_JSAMPARRAY and LJPEG_JBLOCKARRAY
  * structures.  The routines that create these structures (see below)
  * deliberately bunch rows together to ensure a large request size.
  */
 
 LJPEG_METHODDEF(void FAR *)
-alloc_large (LJPEG_j_common_ptr cinfo, int pool_id, size_t sizeofobject)
+LJPEG_alloc_large (LJPEG_j_common_ptr cinfo, int pool_id, size_t sizeofobject)
 /* Allocate a "large" object */
 {
-  my_mem_ptr mem = (my_mem_ptr) cinfo->mem;
-  large_pool_ptr hdr_ptr;
+  LJPEG_my_mem_ptr mem = (LJPEG_my_mem_ptr) cinfo->mem;
+  LJPEG_large_pool_ptr hdr_ptr;
   size_t odd_bytes;
 
   /* Check for unsatisfiable request (do now to ensure no overflow below) */
-  if (sizeofobject > (size_t) (MAX_ALLOC_CHUNK-SIZEOF(large_pool_hdr)))
-    out_of_memory(cinfo, 3);	/* request exceeds malloc's ability */
+  if (sizeofobject > (size_t) (MAX_ALLOC_CHUNK-SIZEOF(LJPEG_large_pool_hdr)))
+    LJPEG_out_of_memory(cinfo, 3);	/* request exceeds malloc's ability */
 
   /* Round up the requested size to a multiple of SIZEOF(ALIGN_TYPE) */
   odd_bytes = sizeofobject % SIZEOF(ALIGN_TYPE);
@@ -360,11 +360,11 @@ alloc_large (LJPEG_j_common_ptr cinfo, int pool_id, size_t sizeofobject)
   if (pool_id < 0 || pool_id >= JPOOL_NUMPOOLS)
     ERREXIT1(cinfo, JERR_BAD_POOL_ID, pool_id);	/* safety check */
 
-  hdr_ptr = (large_pool_ptr) jpeg_get_large(cinfo, sizeofobject +
-					    SIZEOF(large_pool_hdr));
+  hdr_ptr = (LJPEG_large_pool_ptr) LJPEG_jpeg_get_large(cinfo, sizeofobject +
+					    SIZEOF(LJPEG_large_pool_hdr));
   if (hdr_ptr == NULL)
-    out_of_memory(cinfo, 4);	/* jpeg_get_large failed */
-  mem->total_space_allocated += sizeofobject + SIZEOF(large_pool_hdr);
+    LJPEG_out_of_memory(cinfo, 4);	/* LJPEG_jpeg_get_large failed */
+  mem->total_space_allocated += sizeofobject + SIZEOF(LJPEG_large_pool_hdr);
 
   /* Success, initialize the new pool header and add to list */
   hdr_ptr->hdr.next = mem->large_list[pool_id];
@@ -393,19 +393,19 @@ alloc_large (LJPEG_j_common_ptr cinfo, int pool_id, size_t sizeofobject)
  */
 
 LJPEG_METHODDEF(LJPEG_JSAMPARRAY)
-alloc_sarray (LJPEG_j_common_ptr cinfo, int pool_id,
+LJPEG_alloc_sarray (LJPEG_j_common_ptr cinfo, int pool_id,
 	      LJPEG_JDIMENSION samplesperrow, LJPEG_JDIMENSION numrows)
 /* Allocate a 2-D sample array */
 {
-  my_mem_ptr mem = (my_mem_ptr) cinfo->mem;
+  LJPEG_my_mem_ptr mem = (LJPEG_my_mem_ptr) cinfo->mem;
   LJPEG_JSAMPARRAY result;
   LJPEG_JSAMPROW workspace;
   LJPEG_JDIMENSION rowsperchunk, currow, i;
   long ltemp;
 
   /* Calculate max # of rows allowed in one allocation chunk */
-  ltemp = (MAX_ALLOC_CHUNK-SIZEOF(large_pool_hdr)) /
-	  ((long) samplesperrow * SIZEOF(JSAMPLE));
+  ltemp = (MAX_ALLOC_CHUNK-SIZEOF(LJPEG_large_pool_hdr)) /
+	  ((long) samplesperrow * SIZEOF(LJPEG_JSAMPLE));
   if (ltemp <= 0)
     ERREXIT(cinfo, JERR_WIDTH_OVERFLOW);
   if (ltemp < (long) numrows)
@@ -415,16 +415,16 @@ alloc_sarray (LJPEG_j_common_ptr cinfo, int pool_id,
   mem->last_rowsperchunk = rowsperchunk;
 
   /* Get space for row pointers (small object) */
-  result = (LJPEG_JSAMPARRAY) alloc_small(cinfo, pool_id,
+  result = (LJPEG_JSAMPARRAY) LJPEG_alloc_small(cinfo, pool_id,
 				    (size_t) (numrows * SIZEOF(LJPEG_JSAMPROW)));
 
   /* Get the rows themselves (large objects) */
   currow = 0;
   while (currow < numrows) {
     rowsperchunk = MIN(rowsperchunk, numrows - currow);
-    workspace = (LJPEG_JSAMPROW) alloc_large(cinfo, pool_id,
+    workspace = (LJPEG_JSAMPROW) LJPEG_alloc_large(cinfo, pool_id,
 	(size_t) ((size_t) rowsperchunk * (size_t) samplesperrow
-		  * SIZEOF(JSAMPLE)));
+		  * SIZEOF(LJPEG_JSAMPLE)));
     for (i = rowsperchunk; i > 0; i--) {
       result[currow++] = workspace;
       workspace += samplesperrow;
@@ -440,20 +440,20 @@ alloc_sarray (LJPEG_j_common_ptr cinfo, int pool_id,
  * This is essentially the same as the code for sample arrays, above.
  */
 
-LJPEG_METHODDEF(JBLOCKARRAY)
-alloc_barray (LJPEG_j_common_ptr cinfo, int pool_id,
+LJPEG_METHODDEF(LJPEG_JBLOCKARRAY)
+LJPEG_alloc_barray (LJPEG_j_common_ptr cinfo, int pool_id,
 	      LJPEG_JDIMENSION blocksperrow, LJPEG_JDIMENSION numrows)
 /* Allocate a 2-D coefficient-block array */
 {
-  my_mem_ptr mem = (my_mem_ptr) cinfo->mem;
-  JBLOCKARRAY result;
+  LJPEG_my_mem_ptr mem = (LJPEG_my_mem_ptr) cinfo->mem;
+  LJPEG_JBLOCKARRAY result;
   LJPEG_JBLOCKROW workspace;
   LJPEG_JDIMENSION rowsperchunk, currow, i;
   long ltemp;
 
   /* Calculate max # of rows allowed in one allocation chunk */
-  ltemp = (MAX_ALLOC_CHUNK-SIZEOF(large_pool_hdr)) /
-	  ((long) blocksperrow * SIZEOF(JBLOCK));
+  ltemp = (MAX_ALLOC_CHUNK-SIZEOF(LJPEG_large_pool_hdr)) /
+	  ((long) blocksperrow * SIZEOF(LJPEG_JBLOCK));
   if (ltemp <= 0)
     ERREXIT(cinfo, JERR_WIDTH_OVERFLOW);
   if (ltemp < (long) numrows)
@@ -463,16 +463,16 @@ alloc_barray (LJPEG_j_common_ptr cinfo, int pool_id,
   mem->last_rowsperchunk = rowsperchunk;
 
   /* Get space for row pointers (small object) */
-  result = (JBLOCKARRAY) alloc_small(cinfo, pool_id,
+  result = (LJPEG_JBLOCKARRAY) LJPEG_alloc_small(cinfo, pool_id,
 				     (size_t) (numrows * SIZEOF(LJPEG_JBLOCKROW)));
 
   /* Get the rows themselves (large objects) */
   currow = 0;
   while (currow < numrows) {
     rowsperchunk = MIN(rowsperchunk, numrows - currow);
-    workspace = (LJPEG_JBLOCKROW) alloc_large(cinfo, pool_id,
+    workspace = (LJPEG_JBLOCKROW) LJPEG_alloc_large(cinfo, pool_id,
 	(size_t) ((size_t) rowsperchunk * (size_t) blocksperrow
-		  * SIZEOF(JBLOCK)));
+		  * SIZEOF(LJPEG_JBLOCK)));
     for (i = rowsperchunk; i > 0; i--) {
       result[currow++] = workspace;
       workspace += blocksperrow;
@@ -499,7 +499,7 @@ alloc_barray (LJPEG_j_common_ptr cinfo, int pool_id,
  * buffer must be at least as large as the maxaccess value.
  *
  * The request routines create control blocks but not the in-memory buffers.
- * That is postponed until realize_virt_arrays is called.  At that time the
+ * That is postponed until LJPEG_realize_virt_arrays is called.  At that time the
  * total amount of space needed is known (approximately, anyway), so free
  * memory can be divided up fairly.
  *
@@ -521,12 +521,12 @@ alloc_barray (LJPEG_j_common_ptr cinfo, int pool_id,
 
 
 LJPEG_METHODDEF(LJPEG_jvirt_sarray_ptr)
-request_virt_sarray (LJPEG_j_common_ptr cinfo, int pool_id, boolean pre_zero,
+LJPEG_request_virt_sarray (LJPEG_j_common_ptr cinfo, int pool_id, boolean pre_zero,
 		     LJPEG_JDIMENSION samplesperrow, LJPEG_JDIMENSION numrows,
 		     LJPEG_JDIMENSION maxaccess)
 /* Request a virtual 2-D sample array */
 {
-  my_mem_ptr mem = (my_mem_ptr) cinfo->mem;
+  LJPEG_my_mem_ptr mem = (LJPEG_my_mem_ptr) cinfo->mem;
   LJPEG_jvirt_sarray_ptr result;
 
   /* Only IMAGE-lifetime virtual arrays are currently supported */
@@ -534,8 +534,8 @@ request_virt_sarray (LJPEG_j_common_ptr cinfo, int pool_id, boolean pre_zero,
     ERREXIT1(cinfo, JERR_BAD_POOL_ID, pool_id);	/* safety check */
 
   /* get control block */
-  result = (LJPEG_jvirt_sarray_ptr) alloc_small(cinfo, pool_id,
-					  SIZEOF(struct jvirt_sarray_control));
+  result = (LJPEG_jvirt_sarray_ptr) LJPEG_alloc_small(cinfo, pool_id,
+					  SIZEOF(struct LJPEG_jvirt_sarray_control));
 
   result->mem_buffer = NULL;	/* marks array not yet realized */
   result->rows_in_array = numrows;
@@ -551,12 +551,12 @@ request_virt_sarray (LJPEG_j_common_ptr cinfo, int pool_id, boolean pre_zero,
 
 
 LJPEG_METHODDEF(LJPEG_jvirt_barray_ptr)
-request_virt_barray (LJPEG_j_common_ptr cinfo, int pool_id, boolean pre_zero,
+LJPEG_request_virt_barray (LJPEG_j_common_ptr cinfo, int pool_id, boolean pre_zero,
 		     LJPEG_JDIMENSION blocksperrow, LJPEG_JDIMENSION numrows,
 		     LJPEG_JDIMENSION maxaccess)
 /* Request a virtual 2-D coefficient-block array */
 {
-  my_mem_ptr mem = (my_mem_ptr) cinfo->mem;
+  LJPEG_my_mem_ptr mem = (LJPEG_my_mem_ptr) cinfo->mem;
   LJPEG_jvirt_barray_ptr result;
 
   /* Only IMAGE-lifetime virtual arrays are currently supported */
@@ -564,8 +564,8 @@ request_virt_barray (LJPEG_j_common_ptr cinfo, int pool_id, boolean pre_zero,
     ERREXIT1(cinfo, JERR_BAD_POOL_ID, pool_id);	/* safety check */
 
   /* get control block */
-  result = (LJPEG_jvirt_barray_ptr) alloc_small(cinfo, pool_id,
-					  SIZEOF(struct jvirt_barray_control));
+  result = (LJPEG_jvirt_barray_ptr) LJPEG_alloc_small(cinfo, pool_id,
+					  SIZEOF(struct LJPEG_jvirt_barray_control));
 
   result->mem_buffer = NULL;	/* marks array not yet realized */
   result->rows_in_array = numrows;
@@ -581,10 +581,10 @@ request_virt_barray (LJPEG_j_common_ptr cinfo, int pool_id, boolean pre_zero,
 
 
 LJPEG_METHODDEF(void)
-realize_virt_arrays (LJPEG_j_common_ptr cinfo)
+LJPEG_realize_virt_arrays (LJPEG_j_common_ptr cinfo)
 /* Allocate the in-memory buffers for any unrealized virtual arrays */
 {
-  my_mem_ptr mem = (my_mem_ptr) cinfo->mem;
+  LJPEG_my_mem_ptr mem = (LJPEG_my_mem_ptr) cinfo->mem;
   long space_per_minheight, maximum_space, avail_mem;
   long minheights, max_minheights;
   LJPEG_jvirt_sarray_ptr sptr;
@@ -592,24 +592,24 @@ realize_virt_arrays (LJPEG_j_common_ptr cinfo)
 
   /* Compute the minimum space needed (maxaccess rows in each buffer)
    * and the maximum space needed (full image height in each buffer).
-   * These may be of use to the system-dependent jpeg_mem_available routine.
+   * These may be of use to the system-dependent LJPEG_jpeg_mem_available routine.
    */
   space_per_minheight = 0;
   maximum_space = 0;
   for (sptr = mem->virt_sarray_list; sptr != NULL; sptr = sptr->next) {
     if (sptr->mem_buffer == NULL) { /* if not realized yet */
       space_per_minheight += (long) sptr->maxaccess *
-			     (long) sptr->samplesperrow * SIZEOF(JSAMPLE);
+			     (long) sptr->samplesperrow * SIZEOF(LJPEG_JSAMPLE);
       maximum_space += (long) sptr->rows_in_array *
-		       (long) sptr->samplesperrow * SIZEOF(JSAMPLE);
+		       (long) sptr->samplesperrow * SIZEOF(LJPEG_JSAMPLE);
     }
   }
   for (bptr = mem->virt_barray_list; bptr != NULL; bptr = bptr->next) {
     if (bptr->mem_buffer == NULL) { /* if not realized yet */
       space_per_minheight += (long) bptr->maxaccess *
-			     (long) bptr->blocksperrow * SIZEOF(JBLOCK);
+			     (long) bptr->blocksperrow * SIZEOF(LJPEG_JBLOCK);
       maximum_space += (long) bptr->rows_in_array *
-		       (long) bptr->blocksperrow * SIZEOF(JBLOCK);
+		       (long) bptr->blocksperrow * SIZEOF(LJPEG_JBLOCK);
     }
   }
 
@@ -617,7 +617,7 @@ realize_virt_arrays (LJPEG_j_common_ptr cinfo)
     return;			/* no unrealized arrays, no work */
 
   /* Determine amount of memory to actually use; this is system-dependent. */
-  avail_mem = jpeg_mem_available(cinfo, space_per_minheight, maximum_space,
+  avail_mem = LJPEG_jpeg_mem_available(cinfo, space_per_minheight, maximum_space,
 				 mem->total_space_allocated);
 
   /* If the maximum space needed is available, make all the buffers full
@@ -629,7 +629,7 @@ realize_virt_arrays (LJPEG_j_common_ptr cinfo)
   else {
     max_minheights = avail_mem / space_per_minheight;
     /* If there doesn't seem to be enough space, try to get the minimum
-     * anyway.  This allows a "stub" implementation of jpeg_mem_available().
+     * anyway.  This allows a "stub" implementation of LJPEG_jpeg_mem_available().
      */
     if (max_minheights <= 0)
       max_minheights = 1;
@@ -646,13 +646,13 @@ realize_virt_arrays (LJPEG_j_common_ptr cinfo)
       } else {
 	/* It doesn't fit in memory, create backing store. */
 	sptr->rows_in_mem = (LJPEG_JDIMENSION) (max_minheights * sptr->maxaccess);
-	jpeg_open_backing_store(cinfo, & sptr->b_s_info,
+	LJPEG_jpeg_open_backing_store(cinfo, & sptr->b_s_info,
 				(long) sptr->rows_in_array *
 				(long) sptr->samplesperrow *
-				(long) SIZEOF(JSAMPLE));
+				(long) SIZEOF(LJPEG_JSAMPLE));
 	sptr->b_s_open = TRUE;
       }
-      sptr->mem_buffer = alloc_sarray(cinfo, JPOOL_IMAGE,
+      sptr->mem_buffer = LJPEG_alloc_sarray(cinfo, JPOOL_IMAGE,
 				      sptr->samplesperrow, sptr->rows_in_mem);
       sptr->rowsperchunk = mem->last_rowsperchunk;
       sptr->cur_start_row = 0;
@@ -670,13 +670,13 @@ realize_virt_arrays (LJPEG_j_common_ptr cinfo)
       } else {
 	/* It doesn't fit in memory, create backing store. */
 	bptr->rows_in_mem = (LJPEG_JDIMENSION) (max_minheights * bptr->maxaccess);
-	jpeg_open_backing_store(cinfo, & bptr->b_s_info,
+	LJPEG_jpeg_open_backing_store(cinfo, & bptr->b_s_info,
 				(long) bptr->rows_in_array *
 				(long) bptr->blocksperrow *
-				(long) SIZEOF(JBLOCK));
+				(long) SIZEOF(LJPEG_JBLOCK));
 	bptr->b_s_open = TRUE;
       }
-      bptr->mem_buffer = alloc_barray(cinfo, JPOOL_IMAGE,
+      bptr->mem_buffer = LJPEG_alloc_barray(cinfo, JPOOL_IMAGE,
 				      bptr->blocksperrow, bptr->rows_in_mem);
       bptr->rowsperchunk = mem->last_rowsperchunk;
       bptr->cur_start_row = 0;
@@ -688,12 +688,12 @@ realize_virt_arrays (LJPEG_j_common_ptr cinfo)
 
 
 LOCAL(void)
-do_sarray_io (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_sarray_ptr ptr, boolean writing)
+LJPEG_do_sarray_io (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_sarray_ptr ptr, boolean writing)
 /* Do backing store read or write of a virtual sample array */
 {
   long bytesperrow, file_offset, byte_count, rows, thisrow, i;
 
-  bytesperrow = (long) ptr->samplesperrow * SIZEOF(JSAMPLE);
+  bytesperrow = (long) ptr->samplesperrow * SIZEOF(LJPEG_JSAMPLE);
   file_offset = ptr->cur_start_row * bytesperrow;
   /* Loop to read or write each allocation chunk in mem_buffer */
   for (i = 0; i < (long) ptr->rows_in_mem; i += ptr->rowsperchunk) {
@@ -708,11 +708,11 @@ do_sarray_io (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_sarray_ptr ptr, boolean writ
       break;
     byte_count = rows * bytesperrow;
     if (writing)
-      (*ptr->b_s_info.write_backing_store) (cinfo, & ptr->b_s_info,
+      (*ptr->b_s_info.LJPEG_write_backing_store) (cinfo, & ptr->b_s_info,
 					    (void FAR *) ptr->mem_buffer[i],
 					    file_offset, byte_count);
     else
-      (*ptr->b_s_info.read_backing_store) (cinfo, & ptr->b_s_info,
+      (*ptr->b_s_info.LJPEG_read_backing_store) (cinfo, & ptr->b_s_info,
 					   (void FAR *) ptr->mem_buffer[i],
 					   file_offset, byte_count);
     file_offset += byte_count;
@@ -721,12 +721,12 @@ do_sarray_io (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_sarray_ptr ptr, boolean writ
 
 
 LOCAL(void)
-do_barray_io (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_barray_ptr ptr, boolean writing)
+LJPEG_do_barray_io (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_barray_ptr ptr, boolean writing)
 /* Do backing store read or write of a virtual coefficient-block array */
 {
   long bytesperrow, file_offset, byte_count, rows, thisrow, i;
 
-  bytesperrow = (long) ptr->blocksperrow * SIZEOF(JBLOCK);
+  bytesperrow = (long) ptr->blocksperrow * SIZEOF(LJPEG_JBLOCK);
   file_offset = ptr->cur_start_row * bytesperrow;
   /* Loop to read or write each allocation chunk in mem_buffer */
   for (i = 0; i < (long) ptr->rows_in_mem; i += ptr->rowsperchunk) {
@@ -741,11 +741,11 @@ do_barray_io (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_barray_ptr ptr, boolean writ
       break;
     byte_count = rows * bytesperrow;
     if (writing)
-      (*ptr->b_s_info.write_backing_store) (cinfo, & ptr->b_s_info,
+      (*ptr->b_s_info.LJPEG_write_backing_store) (cinfo, & ptr->b_s_info,
 					    (void FAR *) ptr->mem_buffer[i],
 					    file_offset, byte_count);
     else
-      (*ptr->b_s_info.read_backing_store) (cinfo, & ptr->b_s_info,
+      (*ptr->b_s_info.LJPEG_read_backing_store) (cinfo, & ptr->b_s_info,
 					   (void FAR *) ptr->mem_buffer[i],
 					   file_offset, byte_count);
     file_offset += byte_count;
@@ -754,7 +754,7 @@ do_barray_io (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_barray_ptr ptr, boolean writ
 
 
 LJPEG_METHODDEF(LJPEG_JSAMPARRAY)
-access_virt_sarray (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_sarray_ptr ptr,
+LJPEG_access_virt_sarray (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_sarray_ptr ptr,
 		    LJPEG_JDIMENSION start_row, LJPEG_JDIMENSION num_rows,
 		    boolean writable)
 /* Access the part of a virtual sample array starting at start_row */
@@ -776,7 +776,7 @@ access_virt_sarray (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_sarray_ptr ptr,
       ERREXIT(cinfo, JERR_VIRTUAL_BUG);
     /* Flush old buffer contents if necessary */
     if (ptr->dirty) {
-      do_sarray_io(cinfo, ptr, TRUE);
+      LJPEG_do_sarray_io(cinfo, ptr, TRUE);
       ptr->dirty = FALSE;
     }
     /* Decide what part of virtual array to access.
@@ -801,7 +801,7 @@ access_virt_sarray (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_sarray_ptr ptr,
      * During the initial write pass, we will do no actual read
      * because the selected part is all undefined.
      */
-    do_sarray_io(cinfo, ptr, FALSE);
+    LJPEG_do_sarray_io(cinfo, ptr, FALSE);
   }
   /* Ensure the accessed part of the array is defined; prezero if needed.
    * To improve locality of access, we only prezero the part of the array
@@ -818,7 +818,7 @@ access_virt_sarray (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_sarray_ptr ptr,
     if (writable)
       ptr->first_undef_row = end_row;
     if (ptr->pre_zero) {
-      size_t bytesperrow = (size_t) ptr->samplesperrow * SIZEOF(JSAMPLE);
+      size_t bytesperrow = (size_t) ptr->samplesperrow * SIZEOF(LJPEG_JSAMPLE);
       undef_row -= ptr->cur_start_row; /* make indexes relative to buffer */
       end_row -= ptr->cur_start_row;
       while (undef_row < end_row) {
@@ -838,8 +838,8 @@ access_virt_sarray (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_sarray_ptr ptr,
 }
 
 
-LJPEG_METHODDEF(JBLOCKARRAY)
-access_virt_barray (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_barray_ptr ptr,
+LJPEG_METHODDEF(LJPEG_JBLOCKARRAY)
+LJPEG_access_virt_barray (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_barray_ptr ptr,
 		    LJPEG_JDIMENSION start_row, LJPEG_JDIMENSION num_rows,
 		    boolean writable)
 /* Access the part of a virtual block array starting at start_row */
@@ -861,7 +861,7 @@ access_virt_barray (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_barray_ptr ptr,
       ERREXIT(cinfo, JERR_VIRTUAL_BUG);
     /* Flush old buffer contents if necessary */
     if (ptr->dirty) {
-      do_barray_io(cinfo, ptr, TRUE);
+      LJPEG_do_barray_io(cinfo, ptr, TRUE);
       ptr->dirty = FALSE;
     }
     /* Decide what part of virtual array to access.
@@ -886,7 +886,7 @@ access_virt_barray (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_barray_ptr ptr,
      * During the initial write pass, we will do no actual read
      * because the selected part is all undefined.
      */
-    do_barray_io(cinfo, ptr, FALSE);
+    LJPEG_do_barray_io(cinfo, ptr, FALSE);
   }
   /* Ensure the accessed part of the array is defined; prezero if needed.
    * To improve locality of access, we only prezero the part of the array
@@ -903,7 +903,7 @@ access_virt_barray (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_barray_ptr ptr,
     if (writable)
       ptr->first_undef_row = end_row;
     if (ptr->pre_zero) {
-      size_t bytesperrow = (size_t) ptr->blocksperrow * SIZEOF(JBLOCK);
+      size_t bytesperrow = (size_t) ptr->blocksperrow * SIZEOF(LJPEG_JBLOCK);
       undef_row -= ptr->cur_start_row; /* make indexes relative to buffer */
       end_row -= ptr->cur_start_row;
       while (undef_row < end_row) {
@@ -928,11 +928,11 @@ access_virt_barray (LJPEG_j_common_ptr cinfo, LJPEG_jvirt_barray_ptr ptr,
  */
 
 LJPEG_METHODDEF(void)
-free_pool (LJPEG_j_common_ptr cinfo, int pool_id)
+LJPEG_free_pool (LJPEG_j_common_ptr cinfo, int pool_id)
 {
-  my_mem_ptr mem = (my_mem_ptr) cinfo->mem;
-  small_pool_ptr shdr_ptr;
-  large_pool_ptr lhdr_ptr;
+  LJPEG_my_mem_ptr mem = (LJPEG_my_mem_ptr) cinfo->mem;
+  LJPEG_small_pool_ptr shdr_ptr;
+  LJPEG_large_pool_ptr lhdr_ptr;
   size_t space_freed;
 
   if (pool_id < 0 || pool_id >= JPOOL_NUMPOOLS)
@@ -940,7 +940,7 @@ free_pool (LJPEG_j_common_ptr cinfo, int pool_id)
 
 #ifdef MEM_STATS
   if (cinfo->err->trace_level > 1)
-    print_mem_stats(cinfo, pool_id); /* print pool's memory usage statistics */
+    LJPEG_print_mem_stats(cinfo, pool_id); /* print pool's memory usage statistics */
 #endif
 
   /* If freeing IMAGE pool, close any virtual arrays first */
@@ -951,14 +951,14 @@ free_pool (LJPEG_j_common_ptr cinfo, int pool_id)
     for (sptr = mem->virt_sarray_list; sptr != NULL; sptr = sptr->next) {
       if (sptr->b_s_open) {	/* there may be no backing store */
 	sptr->b_s_open = FALSE;	/* prevent recursive close if error */
-	(*sptr->b_s_info.close_backing_store) (cinfo, & sptr->b_s_info);
+	(*sptr->b_s_info.LJPEG_close_backing_store) (cinfo, & sptr->b_s_info);
       }
     }
     mem->virt_sarray_list = NULL;
     for (bptr = mem->virt_barray_list; bptr != NULL; bptr = bptr->next) {
       if (bptr->b_s_open) {	/* there may be no backing store */
 	bptr->b_s_open = FALSE;	/* prevent recursive close if error */
-	(*bptr->b_s_info.close_backing_store) (cinfo, & bptr->b_s_info);
+	(*bptr->b_s_info.LJPEG_close_backing_store) (cinfo, & bptr->b_s_info);
       }
     }
     mem->virt_barray_list = NULL;
@@ -969,11 +969,11 @@ free_pool (LJPEG_j_common_ptr cinfo, int pool_id)
   mem->large_list[pool_id] = NULL;
 
   while (lhdr_ptr != NULL) {
-    large_pool_ptr next_lhdr_ptr = lhdr_ptr->hdr.next;
+    LJPEG_large_pool_ptr next_lhdr_ptr = lhdr_ptr->hdr.next;
     space_freed = lhdr_ptr->hdr.bytes_used +
 		  lhdr_ptr->hdr.bytes_left +
-		  SIZEOF(large_pool_hdr);
-    jpeg_free_large(cinfo, (void FAR *) lhdr_ptr, space_freed);
+		  SIZEOF(LJPEG_large_pool_hdr);
+    LJPEG_jpeg_free_large(cinfo, (void FAR *) lhdr_ptr, space_freed);
     mem->total_space_allocated -= space_freed;
     lhdr_ptr = next_lhdr_ptr;
   }
@@ -983,11 +983,11 @@ free_pool (LJPEG_j_common_ptr cinfo, int pool_id)
   mem->small_list[pool_id] = NULL;
 
   while (shdr_ptr != NULL) {
-    small_pool_ptr next_shdr_ptr = shdr_ptr->hdr.next;
+    LJPEG_small_pool_ptr next_shdr_ptr = shdr_ptr->hdr.next;
     space_freed = shdr_ptr->hdr.bytes_used +
 		  shdr_ptr->hdr.bytes_left +
-		  SIZEOF(small_pool_hdr);
-    jpeg_free_small(cinfo, (void *) shdr_ptr, space_freed);
+		  SIZEOF(LJPEG_small_pool_hdr);
+    LJPEG_jpeg_free_small(cinfo, (void *) shdr_ptr, space_freed);
     mem->total_space_allocated -= space_freed;
     shdr_ptr = next_shdr_ptr;
   }
@@ -1000,7 +1000,7 @@ free_pool (LJPEG_j_common_ptr cinfo, int pool_id)
  */
 
 LJPEG_METHODDEF(void)
-self_destruct (LJPEG_j_common_ptr cinfo)
+LJPEG_self_destruct (LJPEG_j_common_ptr cinfo)
 {
   int pool;
 
@@ -1009,14 +1009,14 @@ self_destruct (LJPEG_j_common_ptr cinfo)
    * with some (brain-damaged) malloc libraries.
    */
   for (pool = JPOOL_NUMPOOLS-1; pool >= JPOOL_PERMANENT; pool--) {
-    free_pool(cinfo, pool);
+    LJPEG_free_pool(cinfo, pool);
   }
 
   /* Release the memory manager control block too. */
-  jpeg_free_small(cinfo, (void *) cinfo->mem, SIZEOF(my_memory_mgr));
+  LJPEG_jpeg_free_small(cinfo, (void *) cinfo->mem, SIZEOF(LJPEG_my_memory_mgr));
   cinfo->mem = NULL;		/* ensures I will be called only once */
 
-  jpeg_mem_term(cinfo);		/* system-dependent cleanup */
+  LJPEG_jpeg_mem_term(cinfo);		/* system-dependent cleanup */
 }
 
 
@@ -1025,9 +1025,9 @@ self_destruct (LJPEG_j_common_ptr cinfo)
  * When this is called, only the error manager pointer is valid in cinfo!
  */
 LJPEG_GLOBAL(void)
-jinit_memory_mgr (LJPEG_j_common_ptr cinfo)
+LJPEG_jinit_memory_mgr (LJPEG_j_common_ptr cinfo)
 {
-  my_mem_ptr mem;
+  LJPEG_my_mem_ptr mem;
   long max_to_use;
   int pool;
   size_t test_mac;
@@ -1053,28 +1053,28 @@ jinit_memory_mgr (LJPEG_j_common_ptr cinfo)
       (MAX_ALLOC_CHUNK % SIZEOF(ALIGN_TYPE)) != 0)
     ERREXIT(cinfo, JERR_BAD_ALLOC_CHUNK);
 
-  max_to_use = jpeg_mem_init(cinfo); /* system-dependent initialization */
+  max_to_use = LJPEG_jpeg_mem_init(cinfo); /* system-dependent initialization */
 
   /* Attempt to allocate memory manager's control block */
-  mem = (my_mem_ptr) jpeg_get_small(cinfo, SIZEOF(my_memory_mgr));
+  mem = (LJPEG_my_mem_ptr) LJPEG_jpeg_get_small(cinfo, SIZEOF(LJPEG_my_memory_mgr));
 
   if (mem == NULL) {
-    jpeg_mem_term(cinfo);	/* system-dependent cleanup */
+    LJPEG_jpeg_mem_term(cinfo);	/* system-dependent cleanup */
     ERREXIT1(cinfo, JERR_OUT_OF_MEMORY, 0);
   }
 
   /* OK, fill in the method pointers */
-  mem->pub.alloc_small = alloc_small;
-  mem->pub.alloc_large = alloc_large;
-  mem->pub.alloc_sarray = alloc_sarray;
-  mem->pub.alloc_barray = alloc_barray;
-  mem->pub.request_virt_sarray = request_virt_sarray;
-  mem->pub.request_virt_barray = request_virt_barray;
-  mem->pub.realize_virt_arrays = realize_virt_arrays;
-  mem->pub.access_virt_sarray = access_virt_sarray;
-  mem->pub.access_virt_barray = access_virt_barray;
-  mem->pub.free_pool = free_pool;
-  mem->pub.self_destruct = self_destruct;
+  mem->pub.LJPEG_alloc_small = LJPEG_alloc_small;
+  mem->pub.LJPEG_alloc_large = LJPEG_alloc_large;
+  mem->pub.LJPEG_alloc_sarray = LJPEG_alloc_sarray;
+  mem->pub.LJPEG_alloc_barray = LJPEG_alloc_barray;
+  mem->pub.LJPEG_request_virt_sarray = LJPEG_request_virt_sarray;
+  mem->pub.LJPEG_request_virt_barray = LJPEG_request_virt_barray;
+  mem->pub.LJPEG_realize_virt_arrays = LJPEG_realize_virt_arrays;
+  mem->pub.LJPEG_access_virt_sarray = LJPEG_access_virt_sarray;
+  mem->pub.LJPEG_access_virt_barray = LJPEG_access_virt_barray;
+  mem->pub.LJPEG_free_pool = LJPEG_free_pool;
+  mem->pub.LJPEG_self_destruct = LJPEG_self_destruct;
 
   /* Make MAX_ALLOC_CHUNK accessible to other modules */
   mem->pub.max_alloc_chunk = MAX_ALLOC_CHUNK;
@@ -1089,13 +1089,13 @@ jinit_memory_mgr (LJPEG_j_common_ptr cinfo)
   mem->virt_sarray_list = NULL;
   mem->virt_barray_list = NULL;
 
-  mem->total_space_allocated = SIZEOF(my_memory_mgr);
+  mem->total_space_allocated = SIZEOF(LJPEG_my_memory_mgr);
 
   /* Declare ourselves open for business */
   cinfo->mem = & mem->pub;
 
   /* Check for an environment variable JPEGMEM; if found, override the
-   * default max_memory setting from jpeg_mem_init.  Note that the
+   * default max_memory setting from LJPEG_jpeg_mem_init.  Note that the
    * surrounding application may again override this value.
    * If your system doesn't support getenv(), define NO_GETENV to disable
    * this feature.

@@ -113,7 +113,7 @@
 /* Private buffer controller object */
 
 typedef struct {
-  struct jpeg_d_main_controller pub; /* public fields */
+  struct LJPEG_jpeg_d_main_controller pub; /* public fields */
 
   /* Pointer to allocated workspace (M or M+2 row groups). */
   LJPEG_JSAMPARRAY buffer[MAX_COMPONENTS];
@@ -170,7 +170,7 @@ LJPEG_alloc_funny_pointers (LJPEG_j_decompress_ptr cinfo)
    * We alloc both arrays with one call to save a few cycles.
    */
   mainp->xbuffer[0] = (LJPEG_JSAMPIMAGE)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				cinfo->num_components * 2 * SIZEOF(LJPEG_JSAMPARRAY));
   mainp->xbuffer[1] = mainp->xbuffer[0] + cinfo->num_components;
 
@@ -182,7 +182,7 @@ LJPEG_alloc_funny_pointers (LJPEG_j_decompress_ptr cinfo)
      * We alloc both pointer lists with one call to save a few cycles.
      */
     xbuf = (LJPEG_JSAMPARRAY)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  2 * (rgroup * (M + 4)) * SIZEOF(LJPEG_JSAMPROW));
     xbuf += rgroup;		/* want one row group at negative offsets */
     mainp->xbuffer[0][ci] = xbuf;
@@ -480,7 +480,7 @@ LJPEG_jinit_d_main_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_b
   LJPEG_jpeg_component_info *compptr;
 
   mainp = (LJPEG_my_main_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_my_main_controller));
   cinfo->main = &mainp->pub;
   mainp->pub.LJPEG_start_pass = LJPEG_start_pass_main;
@@ -504,7 +504,7 @@ LJPEG_jinit_d_main_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_b
        ci++, compptr++) {
     rgroup = (compptr->v_samp_factor * compptr->DCT_v_scaled_size) /
       cinfo->min_DCT_v_scaled_size; /* height of a row group of component */
-    mainp->buffer[ci] = (*cinfo->mem->alloc_sarray)
+    mainp->buffer[ci] = (*cinfo->mem->LJPEG_alloc_sarray)
       ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
        compptr->width_in_blocks * ((LJPEG_JDIMENSION) compptr->DCT_h_scaled_size),
        (LJPEG_JDIMENSION) (rgroup * ngroups));

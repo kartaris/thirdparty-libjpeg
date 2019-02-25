@@ -29,7 +29,7 @@ extern void free LJPEG_JPP((void *ptr));
 /* Expanded data destination object for stdio output */
 
 typedef struct {
-  struct jpeg_destination_mgr pub; /* public fields */
+  struct LJPEG_jpeg_destination_mgr pub; /* public fields */
 
   FILE * outfile;		/* target stream */
   JOCTET * buffer;		/* start of buffer */
@@ -43,7 +43,7 @@ typedef LJPEG_my_destination_mgr * LJPEG_my_dest_ptr;
 /* Expanded data destination object for memory output */
 
 typedef struct {
-  struct jpeg_destination_mgr pub; /* public fields */
+  struct LJPEG_jpeg_destination_mgr pub; /* public fields */
 
   unsigned char ** outbuffer;	/* target buffer */
   unsigned long * outsize;
@@ -67,7 +67,7 @@ LJPEG_init_destination (LJPEG_j_compress_ptr cinfo)
 
   /* Allocate the output buffer --- it will be released when done with image */
   dest->buffer = (JOCTET *)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  OUTPUT_BUF_SIZE * SIZEOF(JOCTET));
 
   dest->pub.next_output_byte = dest->buffer;
@@ -204,8 +204,8 @@ LJPEG_jpeg_stdio_dest (LJPEG_j_compress_ptr cinfo, FILE * outfile)
    * sizes may be different.  Caveat programmer.
    */
   if (cinfo->dest == NULL) {	/* first time for this JPEG object? */
-    cinfo->dest = (struct jpeg_destination_mgr *)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
+    cinfo->dest = (struct LJPEG_jpeg_destination_mgr *)
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
 				  SIZEOF(LJPEG_my_destination_mgr));
   }
 
@@ -244,8 +244,8 @@ LJPEG_jpeg_mem_dest (LJPEG_j_compress_ptr cinfo,
    * can be written to the same buffer without re-executing LJPEG_jpeg_mem_dest.
    */
   if (cinfo->dest == NULL) {	/* first time for this JPEG object? */
-    cinfo->dest = (struct jpeg_destination_mgr *)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
+    cinfo->dest = (struct LJPEG_jpeg_destination_mgr *)
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
 				  SIZEOF(LJPEG_my_mem_destination_mgr));
   }
 

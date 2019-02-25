@@ -116,7 +116,7 @@ LOCAL(void)
 LJPEG_emit_byte (int val, LJPEG_j_compress_ptr cinfo)
 /* Write next output byte; we do not support suspension in this module. */
 {
-  struct jpeg_destination_mgr * dest = cinfo->dest;
+  struct LJPEG_jpeg_destination_mgr * dest = cinfo->dest;
 
   *dest->next_output_byte++ = (JOCTET) val;
   if (--dest->free_in_buffer == 0)
@@ -877,7 +877,7 @@ LJPEG_start_pass (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
       if (tbl < 0 || tbl >= NUM_ARITH_TBLS)
 	ERREXIT1(cinfo, JERR_NO_ARITH_TABLE, tbl);
       if (entropy->dc_stats[tbl] == NULL)
-	entropy->dc_stats[tbl] = (unsigned char *) (*cinfo->mem->alloc_small)
+	entropy->dc_stats[tbl] = (unsigned char *) (*cinfo->mem->LJPEG_alloc_small)
 	  ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, DC_STAT_BINS);
       MEMZERO(entropy->dc_stats[tbl], DC_STAT_BINS);
       /* Initialize DC predictions to 0 */
@@ -890,7 +890,7 @@ LJPEG_start_pass (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
       if (tbl < 0 || tbl >= NUM_ARITH_TBLS)
 	ERREXIT1(cinfo, JERR_NO_ARITH_TABLE, tbl);
       if (entropy->ac_stats[tbl] == NULL)
-	entropy->ac_stats[tbl] = (unsigned char *) (*cinfo->mem->alloc_small)
+	entropy->ac_stats[tbl] = (unsigned char *) (*cinfo->mem->LJPEG_alloc_small)
 	  ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, AC_STAT_BINS);
       MEMZERO(entropy->ac_stats[tbl], AC_STAT_BINS);
 #ifdef CALCULATE_SPECTRAL_CONDITIONING
@@ -926,7 +926,7 @@ LJPEG_jinit_LJPEG_arith_encoder (LJPEG_j_compress_ptr cinfo)
   int i;
 
   entropy = (LJPEG_arith_entropy_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_arith_entropy_encoder));
   cinfo->entropy = &entropy->pub;
   entropy->pub.LJPEG_start_pass = LJPEG_start_pass;

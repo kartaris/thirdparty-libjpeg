@@ -55,7 +55,7 @@ LJPEG_jinit_compress_master (LJPEG_j_compress_ptr cinfo)
   LJPEG_jinit_marker_writer(cinfo);
 
   /* We can now tell the memory manager to allocate virtual arrays. */
-  (*cinfo->mem->realize_virt_arrays) ((LJPEG_j_common_ptr) cinfo);
+  (*cinfo->mem->LJPEG_realize_virt_arrays) ((LJPEG_j_common_ptr) cinfo);
 
   /* Write the datastream header (SOI) immediately.
    * Frame and scan headers are postponed till later.

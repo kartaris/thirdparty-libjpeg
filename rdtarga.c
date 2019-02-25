@@ -108,9 +108,9 @@ read_colormap (tga_source_ptr sinfo, int cmaplen, int mapentrysize)
     ERREXIT(sinfo->cinfo, JERR_TGA_BADCMAP);
 
   for (i = 0; i < cmaplen; i++) {
-    sinfo->colormap[2][i] = (JSAMPLE) read_byte(sinfo);
-    sinfo->colormap[1][i] = (JSAMPLE) read_byte(sinfo);
-    sinfo->colormap[0][i] = (JSAMPLE) read_byte(sinfo);
+    sinfo->colormap[2][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
+    sinfo->colormap[1][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
+    sinfo->colormap[0][i] = (LJPEG_JSAMPLE) read_byte(sinfo);
   }
 }
 
@@ -181,7 +181,7 @@ get_8bit_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   ptr = source->pub.buffer[0];
   for (col = cinfo->image_width; col > 0; col--) {
     (*source->read_pixel) (source); /* Load next pixel into tga_pixel */
-    *ptr++ = (JSAMPLE) UCH(source->tga_pixel[0]);
+    *ptr++ = (LJPEG_JSAMPLE) UCH(source->tga_pixel[0]);
   }
   return 1;
 }
@@ -225,11 +225,11 @@ get_16bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
      * The format of the 16-bit (LSB first) input word is
      *     xRRRRRGGGGGBBBBB
      */
-    ptr[2] = (JSAMPLE) c5to8bits[t & 0x1F];
+    ptr[2] = (LJPEG_JSAMPLE) c5to8bits[t & 0x1F];
     t >>= 5;
-    ptr[1] = (JSAMPLE) c5to8bits[t & 0x1F];
+    ptr[1] = (LJPEG_JSAMPLE) c5to8bits[t & 0x1F];
     t >>= 5;
-    ptr[0] = (JSAMPLE) c5to8bits[t & 0x1F];
+    ptr[0] = (LJPEG_JSAMPLE) c5to8bits[t & 0x1F];
     ptr += 3;
   }
   return 1;
@@ -246,9 +246,9 @@ get_24bit_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   ptr = source->pub.buffer[0];
   for (col = cinfo->image_width; col > 0; col--) {
     (*source->read_pixel) (source); /* Load next pixel into tga_pixel */
-    *ptr++ = (JSAMPLE) UCH(source->tga_pixel[2]); /* change BGR to RGB order */
-    *ptr++ = (JSAMPLE) UCH(source->tga_pixel[1]);
-    *ptr++ = (JSAMPLE) UCH(source->tga_pixel[0]);
+    *ptr++ = (LJPEG_JSAMPLE) UCH(source->tga_pixel[2]); /* change BGR to RGB order */
+    *ptr++ = (LJPEG_JSAMPLE) UCH(source->tga_pixel[1]);
+    *ptr++ = (LJPEG_JSAMPLE) UCH(source->tga_pixel[0]);
   }
   return 1;
 }
@@ -281,7 +281,7 @@ get_memory_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   source_row = cinfo->image_height - source->current_row - 1;
 
   /* Fetch that row from virtual array */
-  source->pub.buffer = (*cinfo->mem->access_virt_sarray)
+  source->pub.buffer = (*cinfo->mem->LJPEG_access_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, source->whole_image,
      source_row, (LJPEG_JDIMENSION) 1, FALSE);
 
@@ -310,7 +310,7 @@ preload_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
       progress->pub.pass_limit = (long) cinfo->image_height;
       (*progress->pub.LJPEG_progress_monitor) ((LJPEG_j_common_ptr) cinfo);
     }
-    source->pub.buffer = (*cinfo->mem->access_virt_sarray)
+    source->pub.buffer = (*cinfo->mem->LJPEG_access_virt_sarray)
       ((LJPEG_j_common_ptr) cinfo, source->whole_image, row, (LJPEG_JDIMENSION) 1, TRUE);
     (*source->get_pixel_rows) (cinfo, sinfo);
   }
@@ -421,7 +421,7 @@ start_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
   if (is_bottom_up) {
     /* Create a virtual array to buffer the upside-down image. */
-    source->whole_image = (*cinfo->mem->request_virt_sarray)
+    source->whole_image = (*cinfo->mem->LJPEG_request_virt_sarray)
       ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
        (LJPEG_JDIMENSION) width * components, (LJPEG_JDIMENSION) height, (LJPEG_JDIMENSION) 1);
     if (cinfo->progress != NULL) {
@@ -434,7 +434,7 @@ start_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   } else {
     /* Don't need a virtual array, but do need a one-row input buffer. */
     source->whole_image = NULL;
-    source->pub.buffer = (*cinfo->mem->alloc_sarray)
+    source->pub.buffer = (*cinfo->mem->LJPEG_alloc_sarray)
       ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
        (LJPEG_JDIMENSION) width * components, (LJPEG_JDIMENSION) 1);
     source->pub.buffer_height = 1;
@@ -448,7 +448,7 @@ start_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     if (maplen > 256 || GET_2B(3) != 0)
       ERREXIT(cinfo, JERR_TGA_BADCMAP);
     /* Allocate space to store the colormap */
-    source->colormap = (*cinfo->mem->alloc_sarray)
+    source->colormap = (*cinfo->mem->LJPEG_alloc_sarray)
       ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, (LJPEG_JDIMENSION) maplen, (LJPEG_JDIMENSION) 3);
     /* and read it from the file */
     read_colormap(source, (int) maplen, UCH(targaheader[7]));
@@ -487,7 +487,7 @@ LJPEG_jinit_read_targa (LJPEG_j_compress_ptr cinfo)
 
   /* Create module interface object */
   source = (tga_source_ptr)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(tga_source_struct));
   source->cinfo = cinfo;	/* make back link for subroutines */
   /* Fill in method ptrs, except get_pixel_rows which start_input sets */

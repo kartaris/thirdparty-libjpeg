@@ -72,16 +72,16 @@ extern "C" {
  * but the pointer arrays can fit in near memory.
  */
 
-typedef JSAMPLE FAR *LJPEG_JSAMPROW;	/* ptr to one image row of pixel samples. */
+typedef LJPEG_JSAMPLE FAR *LJPEG_JSAMPROW;	/* ptr to one image row of pixel samples. */
 typedef LJPEG_JSAMPROW *LJPEG_JSAMPARRAY;	/* ptr to some rows (a 2-D sample array) */
 typedef LJPEG_JSAMPARRAY *LJPEG_JSAMPIMAGE;	/* a 3-D sample array: top index is color */
 
-typedef JCOEF JBLOCK[DCTSIZE2];	/* one block of coefficients */
-typedef JBLOCK FAR *LJPEG_JBLOCKROW;	/* pointer to one row of coefficient blocks */
-typedef LJPEG_JBLOCKROW *JBLOCKARRAY;		/* a 2-D array of coefficient blocks */
-typedef JBLOCKARRAY *JBLOCKIMAGE;	/* a 3-D array of coefficient blocks */
+typedef LJPEG_JCOEF LJPEG_JBLOCK[DCTSIZE2];	/* one block of coefficients */
+typedef LJPEG_JBLOCK FAR *LJPEG_JBLOCKROW;	/* pointer to one row of coefficient blocks */
+typedef LJPEG_JBLOCKROW *LJPEG_JBLOCKARRAY;		/* a 2-D array of coefficient blocks */
+typedef LJPEG_JBLOCKARRAY *LJPEG_JBLOCKIMAGE;	/* a 3-D array of coefficient blocks */
 
-typedef JCOEF FAR *LJPEG_JCOEFPTR;	/* useful in a couple of places */
+typedef LJPEG_JCOEF FAR *LJPEG_JCOEFPTR;	/* useful in a couple of places */
 
 
 /* Types for JPEG compression parameters and working tables. */
@@ -195,14 +195,14 @@ typedef struct {
   int component_index[MAX_COMPS_IN_SCAN]; /* their SOF/comp_info[] indexes */
   int Ss, Se;			/* progressive JPEG spectral selection parms */
   int Ah, Al;			/* progressive JPEG successive approx. parms */
-} jpeg_scan_info;
+} LJPEG_jpeg_scan_info;
 
 /* The decompressor can save APPn and COM markers in a list of these: */
 
-typedef struct jpeg_marker_struct FAR * jpeg_saved_marker_ptr;
+typedef struct LJPEG_jpeg_marker_struct FAR * LJPEG_jpeg_saved_marker_ptr;
 
-struct jpeg_marker_struct {
-  jpeg_saved_marker_ptr next;	/* next in list, or NULL */
+struct LJPEG_jpeg_marker_struct {
+  LJPEG_jpeg_saved_marker_ptr next;	/* next in list, or NULL */
   UINT8 marker;			/* marker code: JPEG_COM, or JPEG_APP0+n */
   unsigned int original_length;	/* # bytes of data in the file */
   unsigned int data_length;	/* # bytes of data saved at data[] */
@@ -219,14 +219,14 @@ typedef enum {
 	LJPEG_JCS_YCbCr,		/* Y/Cb/Cr (also known as YUV) */
 	LJPEG_JCS_CMYK,		/* C/M/Y/K */
 	LJPEG_JCS_YCCK		/* Y/Cb/Cr/K */
-} J_COLOR_SPACE;
+} LJPEG_J_COLOR_SPACE;
 
 /* Supported color transforms. */
 
 typedef enum {
 	JCT_NONE           = 0,
 	JCT_SUBTRACT_GREEN = 1
-} J_COLOR_TRANSFORM;
+} LJPEG_J_COLOR_TRANSFORM;
 
 /* DCT/IDCT algorithm options. */
 
@@ -234,7 +234,7 @@ typedef enum {
 	JDCT_ISLOW,		/* slow but accurate integer algorithm */
 	JDCT_IFAST,		/* faster, less accurate integer method */
 	JDCT_FLOAT		/* floating-point: accurate, fast on fast HW */
-} J_DCT_METHOD;
+} LJPEG_J_DCT_METHOD;
 
 #ifndef JDCT_DEFAULT		/* may be overridden in jconfig.h */
 #define JDCT_DEFAULT  JDCT_ISLOW
@@ -249,32 +249,32 @@ typedef enum {
 	JDITHER_NONE,		/* no dithering */
 	JDITHER_ORDERED,	/* simple ordered dither */
 	JDITHER_FS		/* Floyd-Steinberg error diffusion dither */
-} J_DITHER_MODE;
+} LJPEG_J_DITHER_MODE;
 
 
 /* Common fields between JPEG compression and decompression master structs. */
 
-#define jpeg_common_fields \
+#define LJPEG_jpeg_common_fields \
   struct LJPEG_jpeg_error_mgr * err;	/* Error handler module */\
-  struct jpeg_memory_mgr * mem;	/* Memory manager module */\
-  struct jpeg_progress_mgr * progress; /* Progress monitor, or NULL if none */\
+  struct LJPEG_jpeg_memory_mgr * mem;	/* Memory manager module */\
+  struct LJPEG_jpeg_progress_mgr * progress; /* Progress monitor, or NULL if none */\
   void * client_data;		/* Available for use by application */\
   boolean is_decompressor;	/* So common code can tell which is which */\
   int global_state		/* For checking call sequence validity */
 
 /* Routines that are to be used by both halves of the library are declared
  * to receive a pointer to this structure.  There are no actual instances of
- * jpeg_common_struct, only of LJPEG_jpeg_compress_struct and LJPEG_jpeg_decompress_struct.
+ * LJPEG_jpeg_common_struct, only of LJPEG_jpeg_compress_struct and LJPEG_jpeg_decompress_struct.
  */
-struct jpeg_common_struct {
-  jpeg_common_fields;		/* Fields common to both master struct types */
+struct LJPEG_jpeg_common_struct {
+  LJPEG_jpeg_common_fields;		/* Fields common to both master struct types */
   /* Additional fields follow in an actual LJPEG_jpeg_compress_struct or
    * LJPEG_jpeg_decompress_struct.  All three structs must agree on these
    * initial fields!  (This would be a lot cleaner in C++.)
    */
 };
 
-typedef struct jpeg_common_struct * LJPEG_j_common_ptr;
+typedef struct LJPEG_jpeg_common_struct * LJPEG_j_common_ptr;
 typedef struct LJPEG_jpeg_compress_struct * LJPEG_j_compress_ptr;
 typedef struct LJPEG_jpeg_decompress_struct * LJPEG_j_decompress_ptr;
 
@@ -282,10 +282,10 @@ typedef struct LJPEG_jpeg_decompress_struct * LJPEG_j_decompress_ptr;
 /* Master record for a compression instance */
 
 struct LJPEG_jpeg_compress_struct {
-  jpeg_common_fields;		/* Fields shared with LJPEG_jpeg_decompress_struct */
+  LJPEG_jpeg_common_fields;		/* Fields shared with LJPEG_jpeg_decompress_struct */
 
   /* Destination for compressed data */
-  struct jpeg_destination_mgr * dest;
+  struct LJPEG_jpeg_destination_mgr * dest;
 
   /* Description of source image --- these fields must be filled in by
    * outer application before starting compression.  in_color_space must
@@ -295,7 +295,7 @@ struct LJPEG_jpeg_compress_struct {
   LJPEG_JDIMENSION image_width;	/* input image width */
   LJPEG_JDIMENSION image_height;	/* input image height */
   int input_components;		/* # of color components in input image */
-  J_COLOR_SPACE in_color_space;	/* colorspace of input image */
+  LJPEG_J_COLOR_SPACE in_color_space;	/* colorspace of input image */
 
   double input_gamma;		/* image gamma of input image */
 
@@ -321,7 +321,7 @@ struct LJPEG_jpeg_compress_struct {
   int data_precision;		/* bits of precision in image data */
 
   int num_components;		/* # of color components in JPEG image */
-  J_COLOR_SPACE jpeg_color_space; /* colorspace of JPEG image */
+  LJPEG_J_COLOR_SPACE jpeg_color_space; /* colorspace of JPEG image */
 
   LJPEG_jpeg_component_info * comp_info;
   /* comp_info[i] describes component that appears i'th in SOF */
@@ -341,7 +341,7 @@ struct LJPEG_jpeg_compress_struct {
   UINT8 arith_ac_K[NUM_ARITH_TBLS]; /* Kx values for AC arith-coding tables */
 
   int num_scans;		/* # of entries in scan_info array */
-  const jpeg_scan_info * scan_info; /* script for multi-scan file, or NULL */
+  const LJPEG_jpeg_scan_info * scan_info; /* script for multi-scan file, or NULL */
   /* The default value of scan_info is NULL, which causes a single-scan
    * sequential JPEG file to be emitted.  To create a multi-scan file,
    * set num_scans and scan_info to point to an array of scan definitions.
@@ -353,7 +353,7 @@ struct LJPEG_jpeg_compress_struct {
   boolean CCIR601_sampling;	/* TRUE=first samples are cosited */
   boolean do_fancy_downsampling; /* TRUE=apply fancy downsampling */
   int smoothing_factor;		/* 1..100, or 0 for no input smoothing */
-  J_DCT_METHOD dct_method;	/* DCT algorithm selector */
+  LJPEG_J_DCT_METHOD dct_method;	/* DCT algorithm selector */
 
   /* The restart interval can be specified in absolute MCUs by setting
    * restart_interval, or in MCU rows by setting restart_in_rows
@@ -377,7 +377,7 @@ struct LJPEG_jpeg_compress_struct {
   UINT16 Y_density;		/* Vertical pixel density */
   boolean write_Adobe_marker;	/* should an Adobe marker be written? */
 
-  J_COLOR_TRANSFORM color_transform;
+  LJPEG_J_COLOR_TRANSFORM color_transform;
   /* Color transform identifier, writes LSE marker if nonzero */
 
   /* State variable: index of next scanline to be written to
@@ -433,16 +433,16 @@ struct LJPEG_jpeg_compress_struct {
   /*
    * Links to compression subobjects (methods and private variables of modules)
    */
-  struct jpeg_comp_master * master;
-  struct jpeg_c_main_controller * main;
-  struct jpeg_c_prep_controller * prep;
+  struct LJPEG_jpeg_comp_master * master;
+  struct LJPEG_jpeg_c_main_controller * main;
+  struct LJPEG_jpeg_c_prep_controller * prep;
   struct LJPEG_jpeg_c_coef_controller * coef;
-  struct jpeg_marker_writer * marker;
+  struct LJPEG_jpeg_marker_writer * marker;
   struct LJPEG_jpeg_color_converter * cconvert;
-  struct jpeg_downsampler * downsample;
+  struct LJPEG_jpeg_downsampler * downsample;
   struct LJPEG_jpeg_forward_dct * fdct;
   struct LJPEG_jpeg_entropy_encoder * entropy;
-  jpeg_scan_info * script_space; /* workspace for LJPEG_jpeg_simple_progression */
+  LJPEG_jpeg_scan_info * script_space; /* workspace for LJPEG_jpeg_simple_progression */
   int script_space_size;
 };
 
@@ -450,10 +450,10 @@ struct LJPEG_jpeg_compress_struct {
 /* Master record for a decompression instance */
 
 struct LJPEG_jpeg_decompress_struct {
-  jpeg_common_fields;		/* Fields shared with LJPEG_jpeg_compress_struct */
+  LJPEG_jpeg_common_fields;		/* Fields shared with LJPEG_jpeg_compress_struct */
 
   /* Source of compressed data */
-  struct jpeg_source_mgr * src;
+  struct LJPEG_jpeg_source_mgr * src;
 
   /* Basic description of image --- filled in by LJPEG_jpeg_read_header(). */
   /* Application may inspect these values to decide how to process image. */
@@ -461,14 +461,14 @@ struct LJPEG_jpeg_decompress_struct {
   LJPEG_JDIMENSION image_width;	/* nominal image width (from SOF marker) */
   LJPEG_JDIMENSION image_height;	/* nominal image height */
   int num_components;		/* # of color components in JPEG image */
-  J_COLOR_SPACE jpeg_color_space; /* colorspace of JPEG image */
+  LJPEG_J_COLOR_SPACE jpeg_color_space; /* colorspace of JPEG image */
 
   /* Decompression processing parameters --- these fields must be set before
    * calling LJPEG_jpeg_start_decompress().  Note that LJPEG_jpeg_read_header() initializes
    * them to default values.
    */
 
-  J_COLOR_SPACE out_color_space; /* colorspace for output */
+  LJPEG_J_COLOR_SPACE out_color_space; /* colorspace for output */
 
   unsigned int scale_num, scale_denom; /* fraction by which to scale image */
 
@@ -477,13 +477,13 @@ struct LJPEG_jpeg_decompress_struct {
   boolean buffered_image;	/* TRUE=multiple output passes */
   boolean raw_data_out;		/* TRUE=downsampled data wanted */
 
-  J_DCT_METHOD dct_method;	/* IDCT algorithm selector */
+  LJPEG_J_DCT_METHOD dct_method;	/* IDCT algorithm selector */
   boolean do_fancy_upsampling;	/* TRUE=apply fancy upsampling */
   boolean do_block_smoothing;	/* TRUE=apply interblock smoothing */
 
   boolean quantize_colors;	/* TRUE=colormapped output wanted */
   /* the following are ignored if not quantize_colors: */
-  J_DITHER_MODE dither_mode;	/* type of color dithering to use */
+  LJPEG_J_DITHER_MODE dither_mode;	/* type of color dithering to use */
   boolean two_pass_quantize;	/* TRUE=use two-pass color quantization */
   int desired_number_of_colors;	/* max # colors to use in created colormap */
   /* these are significant only in buffered-image mode: */
@@ -599,7 +599,7 @@ struct LJPEG_jpeg_decompress_struct {
   boolean saw_Adobe_marker;	/* TRUE iff an Adobe APP14 marker was found */
   UINT8 Adobe_transform;	/* Color transform code from Adobe marker */
 
-  J_COLOR_TRANSFORM color_transform;
+  LJPEG_J_COLOR_TRANSFORM color_transform;
   /* Color transform identifier derived from LSE marker, otherwise zero */
 
   boolean CCIR601_sampling;	/* TRUE=first samples are cosited */
@@ -608,7 +608,7 @@ struct LJPEG_jpeg_decompress_struct {
    * library, the uninterpreted contents of any or all APPn and COM markers
    * can be saved in a list for examination by the application.
    */
-  jpeg_saved_marker_ptr marker_list; /* Head of list of saved markers */
+  LJPEG_jpeg_saved_marker_ptr marker_list; /* Head of list of saved markers */
 
   /* Remaining fields are known throughout decompressor, but generally
    * should not be touched by a surrounding application.
@@ -632,7 +632,7 @@ struct LJPEG_jpeg_decompress_struct {
    * v_samp_factor*DCT_v_scaled_size sample rows of a component per iMCU row.
    */
 
-  JSAMPLE * sample_range_limit; /* table for fast range-limiting */
+  LJPEG_JSAMPLE * sample_range_limit; /* table for fast range-limiting */
 
   /*
    * These fields are valid during any one scan.
@@ -668,17 +668,17 @@ struct LJPEG_jpeg_decompress_struct {
   /*
    * Links to decompression subobjects (methods, private variables of modules)
    */
-  struct jpeg_decomp_master * master;
-  struct jpeg_d_main_controller * main;
-  struct jpeg_d_coef_controller * coef;
-  struct jpeg_d_post_controller * post;
-  struct jpeg_input_controller * inputctl;
-  struct jpeg_marker_reader * marker;
-  struct jpeg_entropy_decoder * entropy;
-  struct jpeg_inverse_dct * idct;
-  struct jpeg_upsampler * upsample;
-  struct jpeg_color_deconverter * cconvert;
-  struct jpeg_color_quantizer * cquantize;
+  struct LJPEG_jpeg_decomp_master * master;
+  struct LJPEG_jpeg_d_main_controller * main;
+  struct LJPEG_jpeg_d_coef_controller * coef;
+  struct LJPEG_jpeg_d_post_controller * post;
+  struct LJPEG_jpeg_input_controller * inputctl;
+  struct LJPEG_jpeg_marker_reader * marker;
+  struct LJPEG_jpeg_entropy_decoder * entropy;
+  struct LJPEG_jpeg_inverse_dct * idct;
+  struct LJPEG_jpeg_upsampler * upsample;
+  struct LJPEG_jpeg_color_deconverter * cconvert;
+  struct LJPEG_jpeg_color_quantizer * cquantize;
 };
 
 
@@ -750,7 +750,7 @@ struct LJPEG_jpeg_error_mgr {
 
 /* Progress monitor object */
 
-struct jpeg_progress_mgr {
+struct LJPEG_jpeg_progress_mgr {
   LJPEG_JMETHOD(void, LJPEG_progress_monitor, (LJPEG_j_common_ptr cinfo));
 
   long pass_counter;		/* work units completed in this pass */
@@ -762,7 +762,7 @@ struct jpeg_progress_mgr {
 
 /* Data destination object for compression */
 
-struct jpeg_destination_mgr {
+struct LJPEG_jpeg_destination_mgr {
   JOCTET * next_output_byte;	/* => next byte to write in buffer */
   size_t free_in_buffer;	/* # of byte spaces remaining in buffer */
 
@@ -774,7 +774,7 @@ struct jpeg_destination_mgr {
 
 /* Data source object for decompression */
 
-struct jpeg_source_mgr {
+struct LJPEG_jpeg_source_mgr {
   const JOCTET * next_input_byte; /* => next byte to read from buffer */
   size_t bytes_in_buffer;	/* # of bytes remaining in buffer */
 
@@ -801,47 +801,47 @@ struct jpeg_source_mgr {
 #define JPOOL_IMAGE	1	/* lasts until done with image/datastream */
 #define JPOOL_NUMPOOLS	2
 
-typedef struct jvirt_sarray_control * LJPEG_jvirt_sarray_ptr;
-typedef struct jvirt_barray_control * LJPEG_jvirt_barray_ptr;
+typedef struct LJPEG_jvirt_sarray_control * LJPEG_jvirt_sarray_ptr;
+typedef struct LJPEG_jvirt_barray_control * LJPEG_jvirt_barray_ptr;
 
 
-struct jpeg_memory_mgr {
+struct LJPEG_jpeg_memory_mgr {
   /* Method pointers */
-  LJPEG_JMETHOD(void *, alloc_small, (LJPEG_j_common_ptr cinfo, int pool_id,
+  LJPEG_JMETHOD(void *, LJPEG_alloc_small, (LJPEG_j_common_ptr cinfo, int pool_id,
 				size_t sizeofobject));
-  LJPEG_JMETHOD(void FAR *, alloc_large, (LJPEG_j_common_ptr cinfo, int pool_id,
+  LJPEG_JMETHOD(void FAR *, LJPEG_alloc_large, (LJPEG_j_common_ptr cinfo, int pool_id,
 				     size_t sizeofobject));
-  LJPEG_JMETHOD(LJPEG_JSAMPARRAY, alloc_sarray, (LJPEG_j_common_ptr cinfo, int pool_id,
+  LJPEG_JMETHOD(LJPEG_JSAMPARRAY, LJPEG_alloc_sarray, (LJPEG_j_common_ptr cinfo, int pool_id,
 				     LJPEG_JDIMENSION samplesperrow,
 				     LJPEG_JDIMENSION numrows));
-  LJPEG_JMETHOD(JBLOCKARRAY, alloc_barray, (LJPEG_j_common_ptr cinfo, int pool_id,
+  LJPEG_JMETHOD(LJPEG_JBLOCKARRAY, LJPEG_alloc_barray, (LJPEG_j_common_ptr cinfo, int pool_id,
 				      LJPEG_JDIMENSION blocksperrow,
 				      LJPEG_JDIMENSION numrows));
-  LJPEG_JMETHOD(LJPEG_jvirt_sarray_ptr, request_virt_sarray, (LJPEG_j_common_ptr cinfo,
+  LJPEG_JMETHOD(LJPEG_jvirt_sarray_ptr, LJPEG_request_virt_sarray, (LJPEG_j_common_ptr cinfo,
 						  int pool_id,
 						  boolean pre_zero,
 						  LJPEG_JDIMENSION samplesperrow,
 						  LJPEG_JDIMENSION numrows,
 						  LJPEG_JDIMENSION maxaccess));
-  LJPEG_JMETHOD(LJPEG_jvirt_barray_ptr, request_virt_barray, (LJPEG_j_common_ptr cinfo,
+  LJPEG_JMETHOD(LJPEG_jvirt_barray_ptr, LJPEG_request_virt_barray, (LJPEG_j_common_ptr cinfo,
 						  int pool_id,
 						  boolean pre_zero,
 						  LJPEG_JDIMENSION blocksperrow,
 						  LJPEG_JDIMENSION numrows,
 						  LJPEG_JDIMENSION maxaccess));
-  LJPEG_JMETHOD(void, realize_virt_arrays, (LJPEG_j_common_ptr cinfo));
-  LJPEG_JMETHOD(LJPEG_JSAMPARRAY, access_virt_sarray, (LJPEG_j_common_ptr cinfo,
+  LJPEG_JMETHOD(void, LJPEG_realize_virt_arrays, (LJPEG_j_common_ptr cinfo));
+  LJPEG_JMETHOD(LJPEG_JSAMPARRAY, LJPEG_access_virt_sarray, (LJPEG_j_common_ptr cinfo,
 					   LJPEG_jvirt_sarray_ptr ptr,
 					   LJPEG_JDIMENSION start_row,
 					   LJPEG_JDIMENSION num_rows,
 					   boolean writable));
-  LJPEG_JMETHOD(JBLOCKARRAY, access_virt_barray, (LJPEG_j_common_ptr cinfo,
+  LJPEG_JMETHOD(LJPEG_JBLOCKARRAY, LJPEG_access_virt_barray, (LJPEG_j_common_ptr cinfo,
 					    LJPEG_jvirt_barray_ptr ptr,
 					    LJPEG_JDIMENSION start_row,
 					    LJPEG_JDIMENSION num_rows,
 					    boolean writable));
-  LJPEG_JMETHOD(void, free_pool, (LJPEG_j_common_ptr cinfo, int pool_id));
-  LJPEG_JMETHOD(void, self_destruct, (LJPEG_j_common_ptr cinfo));
+  LJPEG_JMETHOD(void, LJPEG_free_pool, (LJPEG_j_common_ptr cinfo, int pool_id));
+  LJPEG_JMETHOD(void, LJPEG_self_destruct, (LJPEG_j_common_ptr cinfo));
 
   /* Limit on memory allocation for this JPEG object.  (Note that this is
    * merely advisory, not a guaranteed maximum; it only affects the space
@@ -850,7 +850,7 @@ struct jpeg_memory_mgr {
    */
   long max_memory_to_use;
 
-  /* Maximum allocation request accepted by alloc_large. */
+  /* Maximum allocation request accepted by LJPEG_alloc_large. */
   long max_alloc_chunk;
 };
 
@@ -881,59 +881,59 @@ typedef LJPEG_JMETHOD(boolean, LJPEG_jpeg_marker_parser_method, (LJPEG_j_decompr
  */
 
 #ifdef NEED_SHORT_EXTERNAL_NAMES
-#define LJPEG_jpeg_std_error		jStdError
-#define LJPEG_jpeg_CreateCompress	jCreaCompress
-#define LJPEG_jpeg_CreateDecompress	jCreaDecompress
-#define LJPEG_jpeg_destroy_compress	jDestCompress
-#define LJPEG_jpeg_destroy_decompress	jDestDecompress
-#define LJPEG_jpeg_stdio_dest		jStdDest
-#define LJPEG_jpeg_stdio_src		jStdSrc
-#define LJPEG_jpeg_mem_dest		jMemDest
-#define LJPEG_jpeg_mem_src		jMemSrc
-#define LJPEG_jpeg_set_defaults	jSetDefaults
-#define LJPEG_jpeg_set_colorspace	jSetColorspace
-#define LJPEG_jpeg_default_colorspace	jDefColorspace
-#define LJPEG_jpeg_set_quality	jSetQuality
-#define LJPEG_jpeg_set_linear_quality	jSetLQuality
-#define LJPEG_jpeg_default_qtables	jDefQTables
-#define LJPEG_jpeg_add_quant_table	jAddQuantTable
-#define LJPEG_jpeg_quality_scaling	jQualityScaling
-#define LJPEG_jpeg_simple_progression	jSimProgress
-#define LJPEG_jpeg_suppress_tables	jSuppressTables
-#define LJPEG_jpeg_alloc_quant_table	jAlcQTable
-#define LJPEG_jpeg_alloc_huff_table	jAlcHTable
-#define LJPEG_jpeg_start_compress	jStrtCompress
-#define LJPEG_jpeg_write_scanlines	jWrtScanlines
-#define LJPEG_jpeg_finish_compress	jFinCompress
-#define LJPEG_jpeg_calc_jpeg_dimensions	jCjpegDimensions
-#define LJPEG_jpeg_write_raw_data	jWrtRawData
-#define LJPEG_jpeg_write_marker	jWrtMarker
-#define LJPEG_jpeg_write_m_header	jWrtMHeader
-#define jpeg_write_m_byte	jWrtMByte
-#define LJPEG_jpeg_write_tables	jWrtTables
-#define LJPEG_jpeg_read_header	jReadHeader
-#define LJPEG_jpeg_start_decompress	jStrtDecompress
-#define LJPEG_jpeg_read_scanlines	jReadScanlines
-#define LJPEG_jpeg_finish_decompress	jFinDecompress
-#define LJPEG_jpeg_read_raw_data	jReadRawData
-#define LJPEG_jpeg_has_multiple_scans	jHasMultScn
-#define LJPEG_jpeg_start_output	jStrtOutput
-#define LJPEG_jpeg_finish_output	jFinOutput
-#define LJPEG_jpeg_input_complete	jInComplete
-#define LJPEG_jpeg_new_colormap	jNewCMap
-#define LJPEG_jpeg_consume_input	jConsumeInput
-#define LJPEG_jpeg_core_output_dimensions	jCoreDimensions
-#define LJPEG_jpeg_calc_output_dimensions	jCalcDimensions
-#define LJPEG_jpeg_save_markers	jSaveMarkers
-#define LJPEG_jpeg_set_marker_processor	jSetMarker
-#define LJPEG_jpeg_read_coefficients	jReadCoefs
-#define LJPEG_jpeg_write_coefficients	jWrtCoefs
-#define LJPEG_jpeg_copy_critical_parameters	jCopyCrit
-#define LJPEG_LJPEG_jpeg_abort_compress	jAbrtCompress
-#define LJPEG_jpeg_abort_decompress	jAbrtDecompress
-#define LJPEG_jpeg_abort		jAbort
-#define LJPEG_jpeg_destroy		jDestroy
-#define LJPEG_jpeg_resync_to_restart	jResyncRestart
+#define LJPEG_jpeg_std_error		        LJPEG_jStdError
+#define LJPEG_jpeg_CreateCompress	        LJPEG_jCreaCompress
+#define LJPEG_jpeg_CreateDecompress	        LJPEG_jCreaDecompress
+#define LJPEG_jpeg_destroy_compress	        LJPEG_jDestCompress
+#define LJPEG_jpeg_destroy_decompress	    LJPEG_jDestDecompress
+#define LJPEG_jpeg_stdio_dest		        LJPEG_jStdDest
+#define LJPEG_jpeg_stdio_src		        LJPEG_jStdSrc
+#define LJPEG_jpeg_mem_dest		            LJPEG_jMemDest
+#define LJPEG_jpeg_mem_src		            LJPEG_jMemSrc
+#define LJPEG_jpeg_set_defaults	            LJPEG_jSetDefaults
+#define LJPEG_jpeg_set_colorspace	        LJPEG_jSetColorspace
+#define LJPEG_jpeg_default_colorspace	    LJPEG_jDefColorspace
+#define LJPEG_jpeg_set_quality	            LJPEG_jSetQuality
+#define LJPEG_jpeg_set_linear_quality	    LJPEG_jSetLQuality
+#define LJPEG_jpeg_default_qtables	        LJPEG_jDefQTables
+#define LJPEG_jpeg_add_quant_table	        LJPEG_jAddQuantTable
+#define LJPEG_jpeg_quality_scaling	        LJPEG_jQualityScaling
+#define LJPEG_jpeg_simple_progression	    LJPEG_jSimProgress
+#define LJPEG_jpeg_suppress_tables	        LJPEG_jSuppressTables
+#define LJPEG_jpeg_alloc_quant_table	    LJPEG_jAlcQTable
+#define LJPEG_jpeg_alloc_huff_table	        LJPEG_jAlcHTable
+#define LJPEG_jpeg_start_compress	        LJPEG_jStrtCompress
+#define LJPEG_jpeg_write_scanlines	        LJPEG_jWrtScanlines
+#define LJPEG_jpeg_finish_compress	        LJPEG_jFinCompress
+#define LJPEG_jpeg_calc_jpeg_dimensions	    LJPEG_jCjpegDimensions
+#define LJPEG_jpeg_write_raw_data	        LJPEG_jWrtRawData
+#define LJPEG_jpeg_write_marker	            LJPEG_jWrtMarker
+#define LJPEG_jpeg_write_m_header	        LJPEG_jWrtMHeader
+#define jpeg_write_m_byte	                LJPEG_jWrtMByte
+#define LJPEG_jpeg_write_tables	            LJPEG_jWrtTables
+#define LJPEG_jpeg_read_header	            LJPEG_jReadHeader
+#define LJPEG_jpeg_start_decompress	        LJPEG_jStrtDecompress
+#define LJPEG_jpeg_read_scanlines	        LJPEG_jReadScanlines
+#define LJPEG_jpeg_finish_decompress	    LJPEG_jFinDecompress
+#define LJPEG_jpeg_read_raw_data	        LJPEG_jReadRawData
+#define LJPEG_jpeg_has_multiple_scans	    LJPEG_jHasMultScn
+#define LJPEG_jpeg_start_output	            LJPEG_jStrtOutput
+#define LJPEG_jpeg_finish_output	        LJPEG_jFinOutput
+#define LJPEG_jpeg_input_complete	        LJPEG_jInComplete
+#define LJPEG_jpeg_new_colormap	            LJPEG_jNewCMap
+#define LJPEG_jpeg_consume_input	        LJPEG_jConsumeInput
+#define LJPEG_jpeg_core_output_dimensions	LJPEG_jCoreDimensions
+#define LJPEG_jpeg_calc_output_dimensions	LJPEG_jCalcDimensions
+#define LJPEG_jpeg_save_markers	            LJPEG_jSaveMarkers
+#define LJPEG_jpeg_set_marker_processor	    LJPEG_jSetMarker
+#define LJPEG_jpeg_read_coefficients	    LJPEG_jReadCoefs
+#define LJPEG_jpeg_write_coefficients	    LJPEG_jWrtCoefs
+#define LJPEG_jpeg_copy_critical_parameters	LJPEG_jCopyCrit
+#define LJPEG_LJPEG_jpeg_abort_compress	    LJPEG_jAbrtCompress
+#define LJPEG_jpeg_abort_decompress	        LJPEG_jAbrtDecompress
+#define LJPEG_jpeg_abort		            LJPEG_jAbort
+#define LJPEG_jpeg_destroy		            LJPEG_jDestroy
+#define LJPEG_jpeg_resync_to_restart	    LJPEG_jResyncRestart
 #endif /* NEED_SHORT_EXTERNAL_NAMES */
 
 
@@ -979,7 +979,7 @@ EXTERN(void) LJPEG_jpeg_mem_src LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
 EXTERN(void) LJPEG_jpeg_set_defaults LJPEG_JPP((LJPEG_j_compress_ptr cinfo));
 /* Compression parameter setup aids */
 EXTERN(void) LJPEG_jpeg_set_colorspace LJPEG_JPP((LJPEG_j_compress_ptr cinfo,
-				      J_COLOR_SPACE colorspace));
+				      LJPEG_J_COLOR_SPACE colorspace));
 EXTERN(void) LJPEG_jpeg_default_colorspace LJPEG_JPP((LJPEG_j_compress_ptr cinfo));
 EXTERN(void) LJPEG_jpeg_set_quality LJPEG_JPP((LJPEG_j_compress_ptr cinfo, int quality,
 				   boolean force_baseline));
@@ -1126,28 +1126,28 @@ EXTERN(boolean) LJPEG_jpeg_resync_to_restart LJPEG_JPP((LJPEG_j_decompress_ptr c
 
 #ifdef INCOMPLETE_TYPES_BROKEN
 #ifndef JPEG_INTERNALS		/* will be defined in jpegint.h */
-struct jvirt_sarray_control { long dummy; };
-struct jvirt_barray_control { long dummy; };
-struct jpeg_comp_master { long dummy; };
-struct jpeg_c_main_controller { long dummy; };
-struct jpeg_c_prep_controller { long dummy; };
+struct LJPEG_jvirt_sarray_control { long dummy; };
+struct LJPEG_jvirt_barray_control { long dummy; };
+struct LJPEG_jpeg_comp_master { long dummy; };
+struct LJPEG_jpeg_c_main_controller { long dummy; };
+struct LJPEG_jpeg_c_prep_controller { long dummy; };
 struct LJPEG_jpeg_c_coef_controller { long dummy; };
-struct jpeg_marker_writer { long dummy; };
+struct LJPEG_jpeg_marker_writer { long dummy; };
 struct LJPEG_jpeg_color_converter { long dummy; };
-struct jpeg_downsampler { long dummy; };
+struct LJPEG_jpeg_downsampler { long dummy; };
 struct LJPEG_jpeg_forward_dct { long dummy; };
 struct LJPEG_jpeg_entropy_encoder { long dummy; };
-struct jpeg_decomp_master { long dummy; };
-struct jpeg_d_main_controller { long dummy; };
-struct jpeg_d_coef_controller { long dummy; };
-struct jpeg_d_post_controller { long dummy; };
-struct jpeg_input_controller { long dummy; };
-struct jpeg_marker_reader { long dummy; };
-struct jpeg_entropy_decoder { long dummy; };
-struct jpeg_inverse_dct { long dummy; };
-struct jpeg_upsampler { long dummy; };
-struct jpeg_color_deconverter { long dummy; };
-struct jpeg_color_quantizer { long dummy; };
+struct LJPEG_jpeg_decomp_master { long dummy; };
+struct LJPEG_jpeg_d_main_controller { long dummy; };
+struct LJPEG_jpeg_d_coef_controller { long dummy; };
+struct LJPEG_jpeg_d_post_controller { long dummy; };
+struct LJPEG_jpeg_input_controller { long dummy; };
+struct LJPEG_jpeg_marker_reader { long dummy; };
+struct LJPEG_jpeg_entropy_decoder { long dummy; };
+struct LJPEG_jpeg_inverse_dct { long dummy; };
+struct LJPEG_jpeg_upsampler { long dummy; };
+struct LJPEG_jpeg_color_deconverter { long dummy; };
+struct LJPEG_jpeg_color_quantizer { long dummy; };
 #endif /* JPEG_INTERNALS */
 #endif /* INCOMPLETE_TYPES_BROKEN */
 

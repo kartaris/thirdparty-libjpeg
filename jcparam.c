@@ -290,7 +290,7 @@ LJPEG_jpeg_set_defaults (LJPEG_j_compress_ptr cinfo)
    */
   if (cinfo->comp_info == NULL)
     cinfo->comp_info = (LJPEG_jpeg_component_info *)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
 				  MAX_COMPONENTS * SIZEOF(LJPEG_jpeg_component_info));
 
   /* Initialize everything not dependent on the color space */
@@ -405,7 +405,7 @@ LJPEG_jpeg_default_colorspace (LJPEG_j_compress_ptr cinfo)
  * Set the JPEG colorspace, and choose colorspace-dependent default values.
  */
 LJPEG_GLOBAL(void)
-LJPEG_jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
+LJPEG_jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, LJPEG_J_COLOR_SPACE colorspace)
 {
   LJPEG_jpeg_component_info * compptr;
   int ci;
@@ -490,8 +490,8 @@ LJPEG_jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
 
 #ifdef C_PROGRESSIVE_SUPPORTED
 
-LOCAL(jpeg_scan_info *)
-LJPEG_fill_a_scan (jpeg_scan_info * scanptr, int ci,
+LOCAL(LJPEG_jpeg_scan_info *)
+LJPEG_fill_a_scan (LJPEG_jpeg_scan_info * scanptr, int ci,
 	     int Ss, int Se, int Ah, int Al)
 /* Support routine: generate one scan for specified component */
 {
@@ -505,8 +505,8 @@ LJPEG_fill_a_scan (jpeg_scan_info * scanptr, int ci,
   return scanptr;
 }
 
-LOCAL(jpeg_scan_info *)
-LJPEG_fill_scans (jpeg_scan_info * scanptr, int ncomps,
+LOCAL(LJPEG_jpeg_scan_info *)
+LJPEG_fill_scans (LJPEG_jpeg_scan_info * scanptr, int ncomps,
 	    int Ss, int Se, int Ah, int Al)
 /* Support routine: generate one scan for each component */
 {
@@ -524,8 +524,8 @@ LJPEG_fill_scans (jpeg_scan_info * scanptr, int ncomps,
   return scanptr;
 }
 
-LOCAL(jpeg_scan_info *)
-LJPEG_fill_dc_scans (jpeg_scan_info * scanptr, int ncomps, int Ah, int Al)
+LOCAL(LJPEG_jpeg_scan_info *)
+LJPEG_fill_dc_scans (LJPEG_jpeg_scan_info * scanptr, int ncomps, int Ah, int Al)
 /* Support routine: generate interleaved DC scan if possible, else N scans */
 {
   int ci;
@@ -556,7 +556,7 @@ LJPEG_jpeg_simple_progression (LJPEG_j_compress_ptr cinfo)
 {
   int ncomps = cinfo->num_components;
   int nscans;
-  jpeg_scan_info * scanptr;
+  LJPEG_jpeg_scan_info * scanptr;
 
   /* Safety check to ensure start_compress not called yet. */
   if (cinfo->global_state != CSTATE_START)
@@ -583,9 +583,9 @@ LJPEG_jpeg_simple_progression (LJPEG_j_compress_ptr cinfo)
    */
   if (cinfo->script_space == NULL || cinfo->script_space_size < nscans) {
     cinfo->script_space_size = MAX(nscans, 10);
-    cinfo->script_space = (jpeg_scan_info *)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
-			cinfo->script_space_size * SIZEOF(jpeg_scan_info));
+    cinfo->script_space = (LJPEG_jpeg_scan_info *)
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_PERMANENT,
+			cinfo->script_space_size * SIZEOF(LJPEG_jpeg_scan_info));
   }
   scanptr = cinfo->script_space;
   cinfo->scan_info = scanptr;

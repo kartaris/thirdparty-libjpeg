@@ -42,7 +42,7 @@
 /* Private subobject for this module */
 
 typedef struct {
-  struct jpeg_inverse_dct pub;	/* public fields */
+  struct LJPEG_jpeg_inverse_dct pub;	/* public fields */
 
   /* This array contains the IDCT method code that each multiplier table
    * is currently set up for, or -1 if it's not yet set up.
@@ -366,16 +366,16 @@ LJPEG_jinit_inverse_dct (LJPEG_j_decompress_ptr cinfo)
   LJPEG_jpeg_component_info *compptr;
 
   idct = (LJPEG_my_idct_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_my_idct_controller));
-  cinfo->idct = (struct jpeg_inverse_dct *) idct;
+  cinfo->idct = (struct LJPEG_jpeg_inverse_dct *) idct;
   idct->pub.LJPEG_start_pass = LJPEG_start_pass;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
        ci++, compptr++) {
     /* Allocate and pre-zero a multiplier table for each component */
     compptr->dct_table =
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(LJPEG_multiplier_table));
     MEMZERO(compptr->dct_table, SIZEOF(LJPEG_multiplier_table));
     /* Mark multiplier table not yet set up for any method */

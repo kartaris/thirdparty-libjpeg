@@ -204,7 +204,7 @@ and the other references mentioned in the README file.
 Pixels are stored by scanlines, with each scanline running from left to
 right.  The component values for each pixel are adjacent in the row; for
 example, R,G,B,R,G,B,R,G,B,... for 24-bit RGB color.  Each scanline is an
-array of data type JSAMPLE --- which is typically "unsigned char", unless
+array of data type LJPEG_JSAMPLE --- which is typically "unsigned char", unless
 you've changed jmorecfg.h.  (You can also change the RGB pixel layout, say
 to B,G,R order, by modifying jmorecfg.h.  But see the restrictions listed in
 that file before doing so.)
@@ -212,7 +212,7 @@ that file before doing so.)
 A 2-D array of pixels is formed by making a list of pointers to the starts of
 scanlines; so the scanlines need not be physically adjacent in memory.  Even
 if you process just one scanline at a time, you must make a one-element
-pointer array to conform to this structure.  Pointers to JSAMPLE rows are of
+pointer array to conform to this structure.  Pointers to LJPEG_JSAMPLE rows are of
 type LJPEG_JSAMPROW, and the pointer to the pointer array is of type LJPEG_JSAMPARRAY.
 
 The library accepts or supplies one or more complete scanlines per call.
@@ -233,12 +233,12 @@ The data format returned by the decompressor is the same in all details,
 except that colormapped output is supported.  (Again, a JPEG file is never
 colormapped.  But you can ask the decompressor to perform on-the-fly color
 quantization to deliver colormapped output.)  If you request colormapped
-output then the returned data array contains a single JSAMPLE per pixel;
+output then the returned data array contains a single LJPEG_JSAMPLE per pixel;
 its value is an index into a color map.  The color map is represented as
 a 2-D LJPEG_JSAMPARRAY in which each row holds the values of one color component,
 that is, colormap[i][j] is the value of the i'th color component for pixel
 value (map index) j.  Note that since the colormap indexes are stored in
-JSAMPLEs, the maximum number of colors is limited by the size of JSAMPLE
+JSAMPLEs, the maximum number of colors is limited by the size of LJPEG_JSAMPLE
 (ie, at most 256 colors for an 8-bit JPEG library).
 
 
@@ -327,7 +327,7 @@ The image dimensions are, hopefully, obvious.  JPEG supports image dimensions
 of 1 to 64K pixels in either direction.  The input color space is typically
 RGB or grayscale, and input_components is 3 or 1 accordingly.  (See "Special
 color spaces", later, for more info.)  The in_color_space field must be
-assigned one of the J_COLOR_SPACE enum constants, typically LJPEG_JCS_RGB or
+assigned one of the LJPEG_J_COLOR_SPACE enum constants, typically LJPEG_JCS_RGB or
 LJPEG_JCS_GRAYSCALE.
 
 JPEG has a large number of compression parameters that determine how the
@@ -636,7 +636,7 @@ colormapped output has been requested.  Useful fields include
 	actual_number_of_colors		number of entries in colormap
 
 output_components is 1 (a colormap index) when quantizing colors; otherwise it
-equals out_color_components.  It is the number of JSAMPLE values that will be
+equals out_color_components.  It is the number of LJPEG_JSAMPLE values that will be
 emitted per pixel in the output arrays.
 
 Typically you will need to allocate data buffers to hold the incoming image.
@@ -803,7 +803,7 @@ LJPEG_jpeg_set_defaults (LJPEG_j_compress_ptr cinfo)
 	already be set in cinfo).  Many applications will only need to use
 	this routine and perhaps LJPEG_jpeg_set_quality().
 
-LJPEG_jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
+LJPEG_jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, LJPEG_J_COLOR_SPACE colorspace)
 	Sets the JPEG file's colorspace (field jpeg_color_space) as specified,
 	and sets other color-space-dependent parameters appropriately.  See
 	"Special color spaces", below, before using this.  A large number of
@@ -892,7 +892,7 @@ int block_size
 	introduced with IJG JPEG 8.  Setting the block_size parameter for
 	compression works with version 8c and later.
 
-J_DCT_METHOD dct_method
+LJPEG_J_DCT_METHOD dct_method
 	Selects the algorithm used for the DCT step.  Choices are:
 		JDCT_ISLOW: slow but accurate integer algorithm
 		JDCT_IFAST: faster, less accurate integer method
@@ -916,13 +916,13 @@ unsigned int scale_num, scale_denom
 	(The library design allows for arbitrary scaling ratios but this
 	is not likely to be implemented any time soon.)
 
-J_COLOR_SPACE jpeg_color_space
+LJPEG_J_COLOR_SPACE jpeg_color_space
 int num_components
 	The JPEG color space and corresponding number of components; see
 	"Special color spaces", below, for more info.  We recommend using
 	LJPEG_jpeg_set_colorspace() if you want to change these.
 
-J_COLOR_TRANSFORM color_transform
+LJPEG_J_COLOR_TRANSFORM color_transform
 	Internal color transform identifier, writes LSE marker if nonzero
 	(requires decoder with inverse color transform support, introduced
 	with IJG JPEG 9).
@@ -954,7 +954,7 @@ int restart_in_rows
 	If you use restarts, you may want to use larger intervals in those
 	cases.
 
-const jpeg_scan_info * scan_info
+const LJPEG_jpeg_scan_info * scan_info
 int num_scans
 	By default, scan_info is NULL; this causes the compressor to write a
 	single-scan sequential JPEG file.  If not NULL, scan_info points to
@@ -1118,7 +1118,7 @@ may be useful to the application in choosing decompression parameters:
 LJPEG_JDIMENSION image_width			Width and height of image
 LJPEG_JDIMENSION image_height
 int num_components			Number of color components
-J_COLOR_SPACE jpeg_color_space		Colorspace of image
+LJPEG_J_COLOR_SPACE jpeg_color_space		Colorspace of image
 boolean saw_JFIF_marker			TRUE if a JFIF APP0 marker was seen
   UINT8 JFIF_major_version		Version information from JFIF marker
   UINT8 JFIF_minor_version
@@ -1137,7 +1137,7 @@ correctly.  See "Special color spaces", below, for more info.
 The decompression parameters that determine the basic properties of the
 returned image are:
 
-J_COLOR_SPACE out_color_space
+LJPEG_J_COLOR_SPACE out_color_space
 	Output color space.  LJPEG_jpeg_read_header() sets an appropriate default
 	based on jpeg_color_space; typically it will be RGB or grayscale.
 	The application can change this field to request output in a different
@@ -1179,7 +1179,7 @@ boolean two_pass_quantize
 	fits-all colormap that is used otherwise.  Default is TRUE.  Ignored
 	when the application supplies its own color map.
 
-J_DITHER_MODE dither_mode
+LJPEG_J_DITHER_MODE dither_mode
 	Selects color dithering method.  Supported values are:
 		JDITHER_NONE	no dithering: fast, very low quality
 		JDITHER_ORDERED	ordered dither: moderate speed and quality
@@ -1209,7 +1209,7 @@ int actual_number_of_colors
 
 Additional decompression parameters that the application may set include:
 
-J_DCT_METHOD dct_method
+LJPEG_J_DCT_METHOD dct_method
 	Selects the algorithm used for the DCT step.  Choices are the same
 	as described above for compression.
 
@@ -1524,7 +1524,7 @@ LJPEG_term_destination() is NOT called by LJPEG_jpeg_abort() or LJPEG_jpeg_destr
 want the destination manager to be cleaned up during an abort, you must do it
 yourself.
 
-You will also need code to create a jpeg_destination_mgr struct, fill in its
+You will also need code to create a LJPEG_jpeg_destination_mgr struct, fill in its
 method pointers, and insert a pointer to the struct into the "dest" field of
 the JPEG compression object.  This can be done in-line in your setup code if
 you like, but it's probably cleaner to provide a separate routine similar to
@@ -1601,7 +1601,7 @@ jdatasrc.c illustrates the recommended error recovery behavior.
 LJPEG_term_source() is NOT called by LJPEG_jpeg_abort() or LJPEG_jpeg_destroy().  If you want
 the source manager to be cleaned up during an abort, you must do it yourself.
 
-You will also need code to create a jpeg_source_mgr struct, fill in its method
+You will also need code to create a LJPEG_jpeg_source_mgr struct, fill in its method
 pointers, and insert a pointer to the struct into the "src" field of the JPEG
 decompression object.  This can be done in-line in your setup code if you
 like, but it's probably cleaner to provide a separate routine similar to the
@@ -2699,7 +2699,7 @@ and LJPEG_jpeg_read_scanlines(), call LJPEG_jpeg_read_coefficients().  This will
 entire image into a set of virtual coefficient-block arrays, one array per
 component.  The return value is a pointer to an array of virtual-array
 descriptors.  Each virtual array can be accessed directly using the JPEG
-memory manager's access_virt_barray method (see Memory management, below,
+memory manager's LJPEG_access_virt_barray method (see Memory management, below,
 and also read structure.txt's discussion of virtual array handling).  Or,
 for simple transcoding to a different JPEG file format, the array list can
 just be handed directly to LJPEG_jpeg_write_coefficients().
@@ -2797,7 +2797,7 @@ you want fine resolution in the progress count.  (If you really need to use
 the callback mechanism for time-critical tasks like mouse tracking, you could
 insert additional calls inside some of the library's inner loops.)
 
-To establish a progress-monitor callback, create a struct jpeg_progress_mgr,
+To establish a progress-monitor callback, create a struct LJPEG_jpeg_progress_mgr,
 fill in its LJPEG_progress_monitor field with a pointer to your callback routine,
 and set cinfo->progress to point to the struct.  The callback will be called
 whenever cinfo->progress is non-NULL.  (This pointer is set to NULL by
@@ -2807,7 +2807,7 @@ make sure it will live as long as the JPEG object does.  Allocating from the
 JPEG memory manager with lifetime JPOOL_PERMANENT will work nicely.)  You
 can use the same callback routine for both compression and decompression.
 
-The jpeg_progress_mgr struct contains four fields which are set by the library:
+The LJPEG_jpeg_progress_mgr struct contains four fields which are set by the library:
 	long pass_counter;	/* work units completed in this pass */
 	long pass_limit;	/* total number of work units in this pass */
 	int completed_passes;	/* passes completed so far */
@@ -2857,10 +2857,10 @@ object is destroyed.  Most data is allocated "per image" and is freed by
 LJPEG_jpeg_finish_compress, LJPEG_jpeg_finish_decompress, or LJPEG_jpeg_abort.  You can call the
 memory manager yourself to allocate structures that will automatically be
 freed at these times.  Typical code for this is
-  ptr = (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, size);
+  ptr = (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, size);
 Use JPOOL_PERMANENT to get storage that lasts as long as the JPEG object.
-Use alloc_large instead of alloc_small for anything bigger than a few Kbytes.
-There are also alloc_sarray and alloc_barray routines that automatically
+Use LJPEG_alloc_large instead of LJPEG_alloc_small for anything bigger than a few Kbytes.
+There are also LJPEG_alloc_sarray and LJPEG_alloc_barray routines that automatically
 build 2-D sample or block arrays.
 
 The library's minimum space requirements to process an image depend on the
@@ -2885,7 +2885,7 @@ the buffers, so the max-memory setting is effective only if it is bigger than
 the minimum space needed.)  If you allocate any large structures yourself, you
 must allocate them before LJPEG_jpeg_start_compress() or LJPEG_jpeg_start_decompress() in
 order to have them counted against the max memory limit.  Also keep in mind
-that space allocated with alloc_small() is ignored, on the assumption that
+that space allocated with LJPEG_alloc_small() is ignored, on the assumption that
 it's too small to be worth worrying about; so a reasonable safety margin
 should be left when setting max_memory_to_use.
 
@@ -2955,7 +2955,7 @@ A number of compile-time options are available by modifying jmorecfg.h.
 
 The JPEG standard provides for both the baseline 8-bit DCT process and
 a 12-bit DCT process.  The IJG code supports 12-bit JPEG if you define
-BITS_IN_JSAMPLE as 12 rather than 8.  Note that this causes JSAMPLE to be
+BITS_IN_JSAMPLE as 12 rather than 8.  Note that this causes LJPEG_JSAMPLE to be
 larger than a char, so it affects the surrounding application's image data.
 The sample applications cjpeg and djpeg can support 12-bit mode only for PPM
 and GIF file formats; you must disable the other file formats to compile a
@@ -2982,9 +2982,9 @@ expect that few applications will need more than four or so.
 On machines with unusual data type sizes, you may be able to improve
 performance or reduce memory space by tweaking the various typedefs in
 jmorecfg.h.  In particular, on some RISC CPUs, access to arrays of "short"s
-is quite slow; consider trading memory for speed by making JCOEF, INT16, and
+is quite slow; consider trading memory for speed by making LJPEG_JCOEF, INT16, and
 UINT16 be "int" or "unsigned int".  UINT8 is also a candidate to become int.
-You probably don't want to make JSAMPLE be int unless you have lots of memory
+You probably don't want to make LJPEG_JSAMPLE be int unless you have lots of memory
 to burn.
 
 You can reduce the size of the library by compiling out various optional

@@ -38,7 +38,7 @@ const int LJPEG_jpeg_zigzag_order[DCTSIZE2] = {
 #endif
 
 /*
- * jpeg_natural_order[i] is the natural-order position of the i'th element
+ * LJPEG_jpeg_natural_order[i] is the natural-order position of the i'th element
  * of zigzag order.
  *
  * When reading corrupted data, the Huffman decoders could attempt
@@ -51,7 +51,7 @@ const int LJPEG_jpeg_zigzag_order[DCTSIZE2] = {
  * fake entries.
  */
 
-const int jpeg_natural_order[DCTSIZE2+16] = {
+const int LJPEG_jpeg_natural_order[DCTSIZE2+16] = {
   0,  1,  8, 16,  9,  2,  3, 10,
  17, 24, 32, 25, 18, 11,  4,  5,
  12, 19, 26, 33, 40, 48, 41, 34,
@@ -64,7 +64,7 @@ const int jpeg_natural_order[DCTSIZE2+16] = {
  63, 63, 63, 63, 63, 63, 63, 63
 };
 
-const int jpeg_natural_order7[7*7+16] = {
+const int LJPEG_jpeg_natural_order7[7*7+16] = {
   0,  1,  8, 16,  9,  2,  3, 10,
  17, 24, 32, 25, 18, 11,  4,  5,
  12, 19, 26, 33, 40, 48, 41, 34,
@@ -76,7 +76,7 @@ const int jpeg_natural_order7[7*7+16] = {
  63, 63, 63, 63, 63, 63, 63, 63
 };
 
-const int jpeg_natural_order6[6*6+16] = {
+const int LJPEG_jpeg_natural_order6[6*6+16] = {
   0,  1,  8, 16,  9,  2,  3, 10,
  17, 24, 32, 25, 18, 11,  4,  5,
  12, 19, 26, 33, 40, 41, 34, 27,
@@ -86,7 +86,7 @@ const int jpeg_natural_order6[6*6+16] = {
  63, 63, 63, 63, 63, 63, 63, 63
 };
 
-const int jpeg_natural_order5[5*5+16] = {
+const int LJPEG_jpeg_natural_order5[5*5+16] = {
   0,  1,  8, 16,  9,  2,  3, 10,
  17, 24, 32, 25, 18, 11,  4, 12,
  19, 26, 33, 34, 27, 20, 28, 35,
@@ -95,21 +95,21 @@ const int jpeg_natural_order5[5*5+16] = {
  63, 63, 63, 63, 63, 63, 63, 63
 };
 
-const int jpeg_natural_order4[4*4+16] = {
+const int LJPEG_jpeg_natural_order4[4*4+16] = {
   0,  1,  8, 16,  9,  2,  3, 10,
  17, 24, 25, 18, 11, 19, 26, 27,
  63, 63, 63, 63, 63, 63, 63, 63, /* extra entries for safety in decoder */
  63, 63, 63, 63, 63, 63, 63, 63
 };
 
-const int jpeg_natural_order3[3*3+16] = {
+const int LJPEG_jpeg_natural_order3[3*3+16] = {
   0,  1,  8, 16,  9,  2, 10, 17,
  18,
  63, 63, 63, 63, 63, 63, 63, 63, /* extra entries for safety in decoder */
  63, 63, 63, 63, 63, 63, 63, 63
 };
 
-const int jpeg_natural_order2[2*2+16] = {
+const int LJPEG_jpeg_natural_order2[2*2+16] = {
   0,  1,  8,  9,
  63, 63, 63, 63, 63, 63, 63, 63, /* extra entries for safety in decoder */
  63, 63, 63, 63, 63, 63, 63, 63
@@ -121,7 +121,7 @@ const int jpeg_natural_order2[2*2+16] = {
  */
 
 LJPEG_GLOBALlong)
-jdiv_round_up (long a, long b)
+LJPEG_jdiv_round_up (long a, long b)
 /* Compute a/b rounded up to next integer, ie, ceil(a/b) */
 /* Assumes a >= 0, b > 0 */
 {
@@ -130,7 +130,7 @@ jdiv_round_up (long a, long b)
 
 
 LJPEG_GLOBALlong)
-jround_up (long a, long b)
+LJPEG_jround_up (long a, long b)
 /* Compute a rounded up to next multiple of b, ie, ceil(a/b)*b */
 /* Assumes a >= 0, b > 0 */
 {
@@ -160,7 +160,7 @@ jround_up (long a, long b)
 LJPEG_GLOBALvoid)
 jzero_far (void FAR * target, size_t bytestozero)
 /* Zero out a chunk of FAR memory. */
-/* This might be sample-array data, block-array data, or alloc_large data. */
+/* This might be sample-array data, block-array data, or LJPEG_alloc_large data. */
 {
   register char FAR * ptr = (char FAR *) target;
   register size_t count;
@@ -174,7 +174,7 @@ jzero_far (void FAR * target, size_t bytestozero)
 
 
 LJPEG_GLOBALvoid)
-jcopy_sample_rows (LJPEG_JSAMPARRAY input_array, int source_row,
+LJPEG_jcopy_sample_rows (LJPEG_JSAMPARRAY input_array, int source_row,
 		   LJPEG_JSAMPARRAY output_array, int dest_row,
 		   int num_rows, LJPEG_JDIMENSION num_cols)
 /* Copy some rows of samples from one place to another.
@@ -185,7 +185,7 @@ jcopy_sample_rows (LJPEG_JSAMPARRAY input_array, int source_row,
 {
   register LJPEG_JSAMPROW inptr, outptr;
 #ifdef FMEMCOPY
-  register size_t count = (size_t) (num_cols * SIZEOF(JSAMPLE));
+  register size_t count = (size_t) (num_cols * SIZEOF(LJPEG_JSAMPLE));
 #else
   register LJPEG_JDIMENSION count;
 #endif
@@ -208,12 +208,12 @@ jcopy_sample_rows (LJPEG_JSAMPARRAY input_array, int source_row,
 
 
 LJPEG_GLOBALvoid)
-jcopy_block_row (LJPEG_JBLOCKROW input_row, LJPEG_JBLOCKROW output_row,
+LJPEG_jcopy_block_row (LJPEG_JBLOCKROW input_row, LJPEG_JBLOCKROW output_row,
 		 LJPEG_JDIMENSION num_blocks)
 /* Copy a row of coefficient blocks from one place to another. */
 {
 #ifdef FMEMCOPY
-  FMEMCOPY(output_row, input_row, num_blocks * (DCTSIZE2 * SIZEOF(JCOEF)));
+  FMEMCOPY(output_row, input_row, num_blocks * (DCTSIZE2 * SIZEOF(LJPEG_JCOEF)));
 #else
   register LJPEG_JCOEFPTR inptr, outptr;
   register long count;

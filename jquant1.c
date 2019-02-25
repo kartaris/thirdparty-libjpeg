@@ -122,7 +122,7 @@ static const UINT8 base_dither_matrix[ODITHER_SIZE][ODITHER_SIZE] = {
  * end saves us from special-casing the first and last pixels.
  *
  * Note: on a wide image, we might not have enough room in a PC's near data
- * segment to hold the error array; so it is allocated with alloc_large.
+ * segment to hold the error array; so it is allocated with LJPEG_alloc_large.
  */
 
 #if BITS_IN_JSAMPLE == 8
@@ -141,7 +141,7 @@ typedef FSERROR FAR *FSERRPTR;	/* pointer to error array (in FAR storage!) */
 #define MAX_Q_COMPS 4		/* max components I can handle */
 
 typedef struct {
-  struct jpeg_color_quantizer pub; /* public fields */
+  struct LJPEG_jpeg_color_quantizer pub; /* public fields */
 
   /* Initially allocated colormap is saved here */
   LJPEG_JSAMPARRAY sv_colormap;	/* The color map as a 2-D pixel array */
@@ -163,20 +163,20 @@ typedef struct {
   /* Variables for Floyd-Steinberg dithering */
   FSERRPTR fserrors[MAX_Q_COMPS]; /* accumulated errors */
   boolean on_odd_row;		/* flag to remember which row we are on */
-} my_cquantizer;
+} LJPEG_my_cquantizer;
 
-typedef my_cquantizer * my_cquantize_ptr;
+typedef LJPEG_my_cquantizer * LJPEG_my_cquantize_ptr;
 
 
 /*
- * Policy-making subroutines for create_colormap and create_colorindex.
+ * Policy-making subroutines for LJPEG_create_colormap and LJPEG_create_colorindex.
  * These routines determine the colormap to be used.  The rest of the module
  * only assumes that the colormap is orthogonal.
  *
- *  * select_ncolors decides how to divvy up the available colors
+ *  * LJPEG_select_ncolors decides how to divvy up the available colors
  *    among the components.
- *  * output_value defines the set of representative values for a component.
- *  * largest_input_value defines the mapping from input values to
+ *  * LJPEG_output_value defines the set of representative values for a component.
+ *  * LJPEG_largest_input_value defines the mapping from input values to
  *    representative values for a component.
  * Note that the latter two routines may impose different policies for
  * different components, though this is not currently done.
@@ -184,7 +184,7 @@ typedef my_cquantizer * my_cquantize_ptr;
 
 
 LOCAL(int)
-select_ncolors (LJPEG_j_decompress_ptr cinfo, int Ncolors[])
+LJPEG_select_ncolors (LJPEG_j_decompress_ptr cinfo, int Ncolors[])
 /* Determine allocation of desired colors to components, */
 /* and fill in Ncolors[] array to indicate choice. */
 /* Return value is total number of colors (product of Ncolors[] values). */
@@ -243,7 +243,7 @@ select_ncolors (LJPEG_j_decompress_ptr cinfo, int Ncolors[])
 
 
 LOCAL(int)
-output_value (LJPEG_j_decompress_ptr cinfo, int ci, int j, int maxj)
+LJPEG_output_value (LJPEG_j_decompress_ptr cinfo, int ci, int j, int maxj)
 /* Return j'th output value, where j will range from 0 to maxj */
 /* The output values must fall in 0..MAXJSAMPLE in increasing order */
 {
@@ -257,11 +257,11 @@ output_value (LJPEG_j_decompress_ptr cinfo, int ci, int j, int maxj)
 
 
 LOCAL(int)
-largest_input_value (LJPEG_j_decompress_ptr cinfo, int ci, int j, int maxj)
+LJPEG_largest_input_value (LJPEG_j_decompress_ptr cinfo, int ci, int j, int maxj)
 /* Return largest input value that should map to j'th output value */
 /* Must have largest(j=0) >= 0, and largest(j=maxj) >= MAXJSAMPLE */
 {
-  /* Breakpoints are halfway between values returned by output_value */
+  /* Breakpoints are halfway between values returned by LJPEG_output_value */
   return (int) (((INT32) (2*j + 1) * MAXJSAMPLE + maxj) / (2*maxj));
 }
 
@@ -271,15 +271,15 @@ largest_input_value (LJPEG_j_decompress_ptr cinfo, int ci, int j, int maxj)
  */
 
 LOCAL(void)
-create_colormap (LJPEG_j_decompress_ptr cinfo)
+LJPEG_create_colormap (LJPEG_j_decompress_ptr cinfo)
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   LJPEG_JSAMPARRAY colormap;		/* Created colormap */
   int total_colors;		/* Number of distinct output colors */
   int i,j,k, nci, blksize, blkdist, ptr, val;
 
   /* Select number of colors for each component */
-  total_colors = select_ncolors(cinfo, cquantize->Ncolors);
+  total_colors = LJPEG_select_ncolors(cinfo, cquantize->Ncolors);
 
   /* Report selected color counts */
   if (cinfo->out_color_components == 3)
@@ -293,7 +293,7 @@ create_colormap (LJPEG_j_decompress_ptr cinfo)
   /* The colors are ordered in the map in standard row-major order, */
   /* i.e. rightmost (highest-indexed) color changes most rapidly. */
 
-  colormap = (*cinfo->mem->alloc_sarray)
+  colormap = (*cinfo->mem->LJPEG_alloc_sarray)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
      (LJPEG_JDIMENSION) total_colors, (LJPEG_JDIMENSION) cinfo->out_color_components);
 
@@ -307,12 +307,12 @@ create_colormap (LJPEG_j_decompress_ptr cinfo)
     blksize = blkdist / nci;
     for (j = 0; j < nci; j++) {
       /* Compute j'th output value (out of nci) for component */
-      val = output_value(cinfo, i, j, nci-1);
+      val = LJPEG_output_value(cinfo, i, j, nci-1);
       /* Fill in all colormap entries that have this value of this component */
       for (ptr = j * blksize; ptr < total_colors; ptr += blkdist) {
 	/* fill in blksize entries beginning at ptr */
 	for (k = 0; k < blksize; k++)
-	  colormap[i][ptr+k] = (JSAMPLE) val;
+	  colormap[i][ptr+k] = (LJPEG_JSAMPLE) val;
       }
     }
     blkdist = blksize;		/* blksize of this color is blkdist of next */
@@ -331,9 +331,9 @@ create_colormap (LJPEG_j_decompress_ptr cinfo)
  */
 
 LOCAL(void)
-create_colorindex (LJPEG_j_decompress_ptr cinfo)
+LJPEG_create_colorindex (LJPEG_j_decompress_ptr cinfo)
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   LJPEG_JSAMPROW indexptr;
   int i,j,k, nci, blksize, val, pad;
 
@@ -350,7 +350,7 @@ create_colorindex (LJPEG_j_decompress_ptr cinfo)
     cquantize->is_padded = FALSE;
   }
 
-  cquantize->colorindex = (*cinfo->mem->alloc_sarray)
+  cquantize->colorindex = (*cinfo->mem->LJPEG_alloc_sarray)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
      (LJPEG_JDIMENSION) (MAXJSAMPLE+1 + pad),
      (LJPEG_JDIMENSION) cinfo->out_color_components);
@@ -371,12 +371,12 @@ create_colorindex (LJPEG_j_decompress_ptr cinfo)
     /* and k = largest j that maps to current val */
     indexptr = cquantize->colorindex[i];
     val = 0;
-    k = largest_input_value(cinfo, i, 0, nci-1);
+    k = LJPEG_largest_input_value(cinfo, i, 0, nci-1);
     for (j = 0; j <= MAXJSAMPLE; j++) {
       while (j > k)		/* advance val if past boundary */
-	k = largest_input_value(cinfo, i, ++val, nci-1);
+	k = LJPEG_largest_input_value(cinfo, i, ++val, nci-1);
       /* premultiply so that no multiplication needed in main processing */
-      indexptr[j] = (JSAMPLE) (val * blksize);
+      indexptr[j] = (LJPEG_JSAMPLE) (val * blksize);
     }
     /* Pad at both ends if necessary */
     if (pad)
@@ -394,14 +394,14 @@ create_colorindex (LJPEG_j_decompress_ptr cinfo)
  */
 
 LOCAL(ODITHER_MATRIX_PTR)
-make_odither_array (LJPEG_j_decompress_ptr cinfo, int ncolors)
+LJPEG_make_odither_array (LJPEG_j_decompress_ptr cinfo, int ncolors)
 {
   ODITHER_MATRIX_PTR odither;
   int j,k;
   INT32 num,den;
 
   odither = (ODITHER_MATRIX_PTR)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(ODITHER_MATRIX));
   /* The inter-value distance for this color is MAXJSAMPLE/(ncolors-1).
    * Hence the dither value for the matrix cell with fill order f
@@ -430,9 +430,9 @@ make_odither_array (LJPEG_j_decompress_ptr cinfo, int ncolors)
  */
 
 LOCAL(void)
-create_odither_tables (LJPEG_j_decompress_ptr cinfo)
+LJPEG_create_odither_tables (LJPEG_j_decompress_ptr cinfo)
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   ODITHER_MATRIX_PTR odither;
   int i, j, nci;
 
@@ -446,7 +446,7 @@ create_odither_tables (LJPEG_j_decompress_ptr cinfo)
       }
     }
     if (odither == NULL)	/* need a new table? */
-      odither = make_odither_array(cinfo, nci);
+      odither = LJPEG_make_odither_array(cinfo, nci);
     cquantize->odither[i] = odither;
   }
 }
@@ -457,11 +457,11 @@ create_odither_tables (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-color_quantize (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
+LJPEG_color_quantize (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 		LJPEG_JSAMPARRAY output_buf, int num_rows)
 /* General case, no dithering */
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   LJPEG_JSAMPARRAY colorindex = cquantize->colorindex;
   register int pixcode, ci;
   register LJPEG_JSAMPROW ptrin, ptrout;
@@ -478,18 +478,18 @@ color_quantize (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
       for (ci = 0; ci < nc; ci++) {
 	pixcode += GETJSAMPLE(colorindex[ci][GETJSAMPLE(*ptrin++)]);
       }
-      *ptrout++ = (JSAMPLE) pixcode;
+      *ptrout++ = (LJPEG_JSAMPLE) pixcode;
     }
   }
 }
 
 
 LJPEG_METHODDEF(void)
-color_quantize3 (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
+LJPEG_color_quantize3 (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 		 LJPEG_JSAMPARRAY output_buf, int num_rows)
 /* Fast path for out_color_components==3, no dithering */
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   register int pixcode;
   register LJPEG_JSAMPROW ptrin, ptrout;
   LJPEG_JSAMPROW colorindex0 = cquantize->colorindex[0];
@@ -506,18 +506,18 @@ color_quantize3 (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
       pixcode  = GETJSAMPLE(colorindex0[GETJSAMPLE(*ptrin++)]);
       pixcode += GETJSAMPLE(colorindex1[GETJSAMPLE(*ptrin++)]);
       pixcode += GETJSAMPLE(colorindex2[GETJSAMPLE(*ptrin++)]);
-      *ptrout++ = (JSAMPLE) pixcode;
+      *ptrout++ = (LJPEG_JSAMPLE) pixcode;
     }
   }
 }
 
 
 LJPEG_METHODDEF(void)
-quantize_ord_dither (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
+LJPEG_quantize_ord_dither (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 		     LJPEG_JSAMPARRAY output_buf, int num_rows)
 /* General case, with ordered dithering */
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   register LJPEG_JSAMPROW input_ptr;
   register LJPEG_JSAMPROW output_ptr;
   LJPEG_JSAMPROW colorindex_ci;
@@ -532,7 +532,7 @@ quantize_ord_dither (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
   for (row = 0; row < num_rows; row++) {
     /* Initialize output values to 0 so can process components separately */
     FMEMZERO((void FAR *) output_buf[row],
-	     (size_t) (width * SIZEOF(JSAMPLE)));
+	     (size_t) (width * SIZEOF(LJPEG_JSAMPLE)));
     row_index = cquantize->row_index;
     for (ci = 0; ci < nc; ci++) {
       input_ptr = input_buf[row] + ci;
@@ -563,11 +563,11 @@ quantize_ord_dither (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 
 
 LJPEG_METHODDEF(void)
-quantize3_ord_dither (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
+LJPEG_quantize3_ord_dither (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 		      LJPEG_JSAMPARRAY output_buf, int num_rows)
 /* Fast path for out_color_components==3, with ordered dithering */
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   register int pixcode;
   register LJPEG_JSAMPROW input_ptr;
   register LJPEG_JSAMPROW output_ptr;
@@ -598,7 +598,7 @@ quantize3_ord_dither (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 					dither1[col_index]]);
       pixcode += GETJSAMPLE(colorindex2[GETJSAMPLE(*input_ptr++) +
 					dither2[col_index]]);
-      *output_ptr++ = (JSAMPLE) pixcode;
+      *output_ptr++ = (LJPEG_JSAMPLE) pixcode;
       col_index = (col_index + 1) & ODITHER_MASK;
     }
     row_index = (row_index + 1) & ODITHER_MASK;
@@ -608,11 +608,11 @@ quantize3_ord_dither (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 
 
 LJPEG_METHODDEF(void)
-quantize_fs_dither (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
+LJPEG_quantize_fs_dither (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 		    LJPEG_JSAMPARRAY output_buf, int num_rows)
 /* General case, with Floyd-Steinberg dithering */
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   register LOCFSERROR cur;	/* current error or pixel value */
   LOCFSERROR belowerr;		/* error for pixel below cur */
   LOCFSERROR bpreverr;		/* error for below/prev col */
@@ -631,13 +631,13 @@ quantize_fs_dither (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
   int row;
   LJPEG_JDIMENSION col;
   LJPEG_JDIMENSION width = cinfo->output_width;
-  JSAMPLE *range_limit = cinfo->sample_range_limit;
+  LJPEG_JSAMPLE *range_limit = cinfo->sample_range_limit;
   SHIFT_TEMPS
 
   for (row = 0; row < num_rows; row++) {
     /* Initialize output values to 0 so can process components separately */
     FMEMZERO((void FAR *) output_buf[row],
-	     (size_t) (width * SIZEOF(JSAMPLE)));
+	     (size_t) (width * SIZEOF(LJPEG_JSAMPLE)));
     for (ci = 0; ci < nc; ci++) {
       input_ptr = input_buf[row] + ci;
       output_ptr = output_buf[row];
@@ -679,7 +679,7 @@ quantize_fs_dither (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 	cur = GETJSAMPLE(range_limit[cur]);
 	/* Select output value, accumulate into output code for this pixel */
 	pixcode = GETJSAMPLE(colorindex_ci[cur]);
-	*output_ptr += (JSAMPLE) pixcode;
+	*output_ptr += (LJPEG_JSAMPLE) pixcode;
 	/* Compute actual representation error at this pixel */
 	/* Note: we can do this even though we don't have the final */
 	/* pixel code, because the colormap is orthogonal. */
@@ -720,16 +720,16 @@ quantize_fs_dither (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
  */
 
 LOCAL(void)
-alloc_fs_workspace (LJPEG_j_decompress_ptr cinfo)
+LJPEG_alloc_fs_workspace (LJPEG_j_decompress_ptr cinfo)
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   size_t arraysize;
   int i;
 
   arraysize = (size_t) ((cinfo->output_width + 2) * SIZEOF(FSERROR));
   for (i = 0; i < cinfo->out_color_components; i++) {
     cquantize->fserrors[i] = (FSERRPTR)
-      (*cinfo->mem->alloc_large)((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, arraysize);
+      (*cinfo->mem->LJPEG_alloc_large)((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, arraysize);
   }
 }
 
@@ -741,7 +741,7 @@ alloc_fs_workspace (LJPEG_j_decompress_ptr cinfo)
 LJPEG_METHODDEF(void)
 LJPEG_start_pass_1_quant (LJPEG_j_decompress_ptr cinfo, boolean is_pre_scan)
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   size_t arraysize;
   int i;
 
@@ -753,32 +753,32 @@ LJPEG_start_pass_1_quant (LJPEG_j_decompress_ptr cinfo, boolean is_pre_scan)
   switch (cinfo->dither_mode) {
   case JDITHER_NONE:
     if (cinfo->out_color_components == 3)
-      cquantize->pub.color_quantize = color_quantize3;
+      cquantize->pub.LJPEG_color_quantize = LJPEG_color_quantize3;
     else
-      cquantize->pub.color_quantize = color_quantize;
+      cquantize->pub.LJPEG_color_quantize = LJPEG_color_quantize;
     break;
   case JDITHER_ORDERED:
     if (cinfo->out_color_components == 3)
-      cquantize->pub.color_quantize = quantize3_ord_dither;
+      cquantize->pub.LJPEG_color_quantize = LJPEG_quantize3_ord_dither;
     else
-      cquantize->pub.color_quantize = quantize_ord_dither;
+      cquantize->pub.LJPEG_color_quantize = LJPEG_quantize_ord_dither;
     cquantize->row_index = 0;	/* initialize state for ordered dither */
     /* If user changed to ordered dither from another mode,
      * we must recreate the color index table with padding.
      * This will cost extra space, but probably isn't very likely.
      */
     if (! cquantize->is_padded)
-      create_colorindex(cinfo);
+      LJPEG_create_colorindex(cinfo);
     /* Create ordered-dither tables if we didn't already. */
     if (cquantize->odither[0] == NULL)
-      create_odither_tables(cinfo);
+      LJPEG_create_odither_tables(cinfo);
     break;
   case JDITHER_FS:
-    cquantize->pub.color_quantize = quantize_fs_dither;
+    cquantize->pub.LJPEG_color_quantize = LJPEG_quantize_fs_dither;
     cquantize->on_odd_row = FALSE; /* initialize state for F-S dither */
     /* Allocate Floyd-Steinberg workspace if didn't already. */
     if (cquantize->fserrors[0] == NULL)
-      alloc_fs_workspace(cinfo);
+      LJPEG_alloc_fs_workspace(cinfo);
     /* Initialize the propagated errors to zero. */
     arraysize = (size_t) ((cinfo->output_width + 2) * SIZEOF(FSERROR));
     for (i = 0; i < cinfo->out_color_components; i++)
@@ -808,7 +808,7 @@ LJPEG_finish_pass_1_quant (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(void)
-new_color_map_1_quant (LJPEG_j_decompress_ptr cinfo)
+LJPEG_new_color_map_1_quant (LJPEG_j_decompress_ptr cinfo)
 {
   ERREXIT(cinfo, JERR_MODE_CHANGE);
 }
@@ -818,17 +818,17 @@ new_color_map_1_quant (LJPEG_j_decompress_ptr cinfo)
  * Module initialization routine for 1-pass color quantization.
  */
 LJPEG_GLOBAL(void)
-jinit_1pass_quantizer (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jinit_1pass_quantizer (LJPEG_j_decompress_ptr cinfo)
 {
-  my_cquantize_ptr cquantize;
+  LJPEG_my_cquantize_ptr cquantize;
 
-  cquantize = (my_cquantize_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(my_cquantizer));
-  cinfo->cquantize = (struct jpeg_color_quantizer *) cquantize;
+  cquantize = (LJPEG_my_cquantize_ptr)
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+				SIZEOF(LJPEG_my_cquantizer));
+  cinfo->cquantize = (struct LJPEG_jpeg_color_quantizer *) cquantize;
   cquantize->pub.LJPEG_start_pass = LJPEG_start_pass_1_quant;
   cquantize->pub.LJPEG_finish_pass = LJPEG_finish_pass_1_quant;
-  cquantize->pub.new_color_map = new_color_map_1_quant;
+  cquantize->pub.new_color_map = LJPEG_new_color_map_1_quant;
   cquantize->fserrors[0] = NULL; /* Flag FS workspace not allocated */
   cquantize->odither[0] = NULL;	/* Also flag odither arrays not allocated */
 
@@ -840,8 +840,8 @@ jinit_1pass_quantizer (LJPEG_j_decompress_ptr cinfo)
     ERREXIT1(cinfo, JERR_QUANT_MANY_COLORS, MAXJSAMPLE+1);
 
   /* Create the colormap and color index table. */
-  create_colormap(cinfo);
-  create_colorindex(cinfo);
+  LJPEG_create_colormap(cinfo);
+  LJPEG_create_colorindex(cinfo);
 
   /* Allocate Floyd-Steinberg workspace now if requested.
    * We do this now since it is FAR storage and may affect the memory
@@ -850,7 +850,7 @@ jinit_1pass_quantizer (LJPEG_j_decompress_ptr cinfo)
    * possibly overrun the max_memory_to_use setting.
    */
   if (cinfo->dither_mode == JDITHER_FS)
-    alloc_fs_workspace(cinfo);
+    LJPEG_alloc_fs_workspace(cinfo);
 }
 
 #endif /* QUANT_1PASS_SUPPORTED */

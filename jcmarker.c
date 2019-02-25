@@ -86,7 +86,7 @@ typedef enum {			/* JPEG marker codes */
 /* Private state */
 
 typedef struct {
-  struct jpeg_marker_writer pub; /* public fields */
+  struct LJPEG_jpeg_marker_writer pub; /* public fields */
 
   unsigned int last_restart_interval; /* last DRI value emitted; 0 after SOI */
 } LJPEG_my_marker_writer;
@@ -110,7 +110,7 @@ LOCAL(void)
 LJPEG_emit_byte (LJPEG_j_compress_ptr cinfo, int val)
 /* Emit a byte */
 {
-  struct jpeg_destination_mgr * dest = cinfo->dest;
+  struct LJPEG_jpeg_destination_mgr * dest = cinfo->dest;
 
   *(dest->next_output_byte)++ = (JOCTET) val;
   if (--dest->free_in_buffer == 0) {
@@ -703,7 +703,7 @@ LJPEG_jinit_marker_writer (LJPEG_j_compress_ptr cinfo)
 
   /* Create the subobject */
   marker = (LJPEG_my_marker_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_my_marker_writer));
   cinfo->marker = &marker->pub;
   /* Initialize method pointers */

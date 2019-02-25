@@ -51,7 +51,7 @@
 /* Private buffer controller object */
 
 typedef struct {
-  struct jpeg_c_prep_controller pub; /* public fields */
+  struct LJPEG_jpeg_c_prep_controller pub; /* public fields */
 
   /* Downsampling input buffer.  This buffer holds color-converted data
    * until we have enough to do a downsample step.
@@ -109,7 +109,7 @@ LJPEG_expand_bottom_edge (LJPEG_JSAMPARRAY image_data, LJPEG_JDIMENSION num_cols
   register int row;
 
   for (row = input_rows; row < output_rows; row++) {
-    jcopy_sample_rows(image_data, input_rows-1, image_data, row,
+    LJPEG_jcopy_sample_rows(image_data, input_rows-1, image_data, row,
 		      1, num_cols);
   }
 }
@@ -220,7 +220,7 @@ LJPEG_pre_process_context (LJPEG_j_compress_ptr cinfo,
 	for (ci = 0; ci < cinfo->num_components; ci++) {
 	  int row;
 	  for (row = 1; row <= cinfo->max_v_samp_factor; row++) {
-	    jcopy_sample_rows(prep->color_buf[ci], 0,
+	    LJPEG_jcopy_sample_rows(prep->color_buf[ci], 0,
 			      prep->color_buf[ci], -row,
 			      1, cinfo->image_width);
 	  }
@@ -278,7 +278,7 @@ LJPEG_create_context_buffer (LJPEG_j_compress_ptr cinfo)
    * we need five row groups' worth of pointers for each component.
    */
   fake_buffer = (LJPEG_JSAMPARRAY)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				(cinfo->num_components * 5 * rgroup_height) *
 				SIZEOF(LJPEG_JSAMPROW));
 
@@ -288,7 +288,7 @@ LJPEG_create_context_buffer (LJPEG_j_compress_ptr cinfo)
      * We make the buffer wide enough to allow the downsampler to edge-expand
      * horizontally within the buffer, if it so chooses.
      */
-    true_buffer = (*cinfo->mem->alloc_sarray)
+    true_buffer = (*cinfo->mem->LJPEG_alloc_sarray)
       ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
        (LJPEG_JDIMENSION) (((long) compptr->width_in_blocks *
 		      cinfo->min_DCT_h_scaled_size *
@@ -325,9 +325,9 @@ LJPEG_jinit_c_prep_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buf
     ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
 
   prep = (LJPEG_my_prep_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_my_prep_controller));
-  cinfo->prep = (struct jpeg_c_prep_controller *) prep;
+  cinfo->prep = (struct LJPEG_jpeg_c_prep_controller *) prep;
   prep->pub.LJPEG_start_pass = LJPEG_start_pass_prep;
 
   /* Allocate the color conversion buffer.
@@ -347,7 +347,7 @@ LJPEG_jinit_c_prep_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buf
     prep->pub.LJPEG_pre_process_data = LJPEG_pre_process_data;
     for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
 	 ci++, compptr++) {
-      prep->color_buf[ci] = (*cinfo->mem->alloc_sarray)
+      prep->color_buf[ci] = (*cinfo->mem->LJPEG_alloc_sarray)
 	((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 	 (LJPEG_JDIMENSION) (((long) compptr->width_in_blocks *
 			cinfo->min_DCT_h_scaled_size *

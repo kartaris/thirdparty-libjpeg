@@ -104,17 +104,17 @@ typedef struct {		/* registers for calling EMS driver */
 	void far * ds_si;
       } EMScontext;
 
-extern short far jdos_open LJPEG_JPP((short far * handle, char far * filename));
-extern short far jdos_close LJPEG_JPP((short handle));
-extern short far jdos_seek LJPEG_JPP((short handle, long offset));
-extern short far jdos_read LJPEG_JPP((short handle, void far * buffer,
+extern short far LJPEG_jdos_open LJPEG_JPP((short far * handle, char far * filename));
+extern short far LJPEG_jdos_close LJPEG_JPP((short handle));
+extern short far LJPEG_jdos_seek LJPEG_JPP((short handle, long offset));
+extern short far LJPEG_jdos_read LJPEG_JPP((short handle, void far * buffer,
 				unsigned short count));
-extern short far jdos_write LJPEG_JPP((short handle, void far * buffer,
+extern short far LJPEG_jdos_write LJPEG_JPP((short handle, void far * buffer,
 				 unsigned short count));
-extern void far jxms_getdriver LJPEG_JPP((XMSDRIVER far *));
-extern void far jxms_calldriver LJPEG_JPP((XMSDRIVER, XMScontext far *));
-extern short far jems_available LJPEG_JPP((void));
-extern void far jems_calldriver LJPEG_JPP((EMScontext far *));
+extern void far LJPEG_jxms_getdriver LJPEG_JPP((XMSDRIVER far *));
+extern void far LJPEG_jxms_calldriver LJPEG_JPP((XMSDRIVER, XMScontext far *));
+extern short far LJPEG_jems_available LJPEG_JPP((void));
+extern void far LJPEG_jems_calldriver LJPEG_JPP((EMScontext far *));
 
 
 /*
@@ -125,7 +125,7 @@ extern void far jems_calldriver LJPEG_JPP((EMScontext far *));
 static int next_file_num;	/* to distinguish among several temp files */
 
 LOCAL(void)
-select_file_name (char * fname)
+LJPEG_select_file_name (char * fname)
 {
   const char * env;
   char * ptr;
@@ -163,13 +163,13 @@ select_file_name (char * fname)
  */
 
 LJPEG_GLOBAL(void *)
-jpeg_get_small (LJPEG_j_common_ptr cinfo, size_t sizeofobject)
+LJPEG_jpeg_get_small (LJPEG_j_common_ptr cinfo, size_t sizeofobject)
 {
   return (void *) malloc(sizeofobject);
 }
 
 LJPEG_GLOBAL(void)
-jpeg_free_small (LJPEG_j_common_ptr cinfo, void * object, size_t sizeofobject)
+LJPEG_jpeg_free_small (LJPEG_j_common_ptr cinfo, void * object, size_t sizeofobject)
 {
   free(object);
 }
@@ -180,13 +180,13 @@ jpeg_free_small (LJPEG_j_common_ptr cinfo, void * object, size_t sizeofobject)
  */
 
 LJPEG_GLOBAL(void FAR *)
-jpeg_get_large (LJPEG_j_common_ptr cinfo, size_t sizeofobject)
+LJPEG_jpeg_get_large (LJPEG_j_common_ptr cinfo, size_t sizeofobject)
 {
   return (void FAR *) far_malloc(sizeofobject);
 }
 
 LJPEG_GLOBAL(void)
-jpeg_free_large (LJPEG_j_common_ptr cinfo, void FAR * object, size_t sizeofobject)
+LJPEG_jpeg_free_large (LJPEG_j_common_ptr cinfo, void FAR * object, size_t sizeofobject)
 {
   far_free(object);
 }
@@ -205,7 +205,7 @@ jpeg_free_large (LJPEG_j_common_ptr cinfo, void FAR * object, size_t sizeofobjec
 #endif
 
 LJPEG_GLOBAL(long)
-jpeg_mem_available (LJPEG_j_common_ptr cinfo, long min_bytes_needed,
+LJPEG_jpeg_mem_available (LJPEG_j_common_ptr cinfo, long min_bytes_needed,
 		    long max_bytes_needed, long already_allocated)
 {
   return cinfo->mem->max_memory_to_use - already_allocated;
@@ -215,7 +215,7 @@ jpeg_mem_available (LJPEG_j_common_ptr cinfo, long min_bytes_needed,
 /*
  * Backing store (temporary file) management.
  * Backing store objects are only used when the value returned by
- * jpeg_mem_available is less than the total space needed.  You can dispense
+ * LJPEG_jpeg_mem_available is less than the total space needed.  You can dispense
  * with these routines if you have plenty of virtual memory; see jmemnobs.c.
  */
 
@@ -240,41 +240,41 @@ jpeg_mem_available (LJPEG_j_common_ptr cinfo, long min_bytes_needed,
 
 
 LJPEG_METHODDEF(void)
-read_file_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
+LJPEG_read_file_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
 		 void FAR * buffer_address,
 		 long file_offset, long byte_count)
 {
-  if (jdos_seek(info->handle.file_handle, file_offset))
+  if (LJPEG_jdos_seek(info->handle.file_handle, file_offset))
     ERREXIT(cinfo, JERR_TFILE_SEEK);
   /* Since MAX_ALLOC_CHUNK is less than 64K, byte_count will be too. */
   if (byte_count > 65535L)	/* safety check */
     ERREXIT(cinfo, JERR_BAD_ALLOC_CHUNK);
-  if (jdos_read(info->handle.file_handle, buffer_address,
+  if (LJPEG_jdos_read(info->handle.file_handle, buffer_address,
 		(unsigned short) byte_count))
     ERREXIT(cinfo, JERR_TFILE_READ);
 }
 
 
 LJPEG_METHODDEF(void)
-write_file_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
+LJPEG_write_file_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
 		  void FAR * buffer_address,
 		  long file_offset, long byte_count)
 {
-  if (jdos_seek(info->handle.file_handle, file_offset))
+  if (LJPEG_jdos_seek(info->handle.file_handle, file_offset))
     ERREXIT(cinfo, JERR_TFILE_SEEK);
   /* Since MAX_ALLOC_CHUNK is less than 64K, byte_count will be too. */
   if (byte_count > 65535L)	/* safety check */
     ERREXIT(cinfo, JERR_BAD_ALLOC_CHUNK);
-  if (jdos_write(info->handle.file_handle, buffer_address,
+  if (LJPEG_jdos_write(info->handle.file_handle, buffer_address,
 		 (unsigned short) byte_count))
     ERREXIT(cinfo, JERR_TFILE_WRITE);
 }
 
 
 LJPEG_METHODDEF(void)
-close_file_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info)
+LJPEG_close_file_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info)
 {
-  jdos_close(info->handle.file_handle);	/* close the file */
+  LJPEG_jdos_close(info->handle.file_handle);	/* close the file */
   remove(info->temp_name);	/* delete the file */
 /* If your system doesn't have remove(), try unlink() instead.
  * remove() is the ANSI-standard name for this function, but
@@ -285,21 +285,21 @@ close_file_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info)
 
 
 LOCAL(boolean)
-open_file_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
+LJPEG_open_file_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
 		 long total_bytes_needed)
 {
   short handle;
 
-  select_file_name(info->temp_name);
-  if (jdos_open((short far *) & handle, (char far *) info->temp_name)) {
-    /* might as well exit since jpeg_open_backing_store will fail anyway */
+  LJPEG_select_file_name(info->temp_name);
+  if (LJPEG_jdos_open((short far *) & handle, (char far *) info->temp_name)) {
+    /* might as well exit since LJPEG_jpeg_open_backing_store will fail anyway */
     ERREXITS(cinfo, JERR_TFILE_CREATE, info->temp_name);
     return FALSE;
   }
   info->handle.file_handle = handle;
-  info->read_backing_store = read_file_store;
-  info->write_backing_store = write_file_store;
-  info->close_backing_store = close_file_store;
+  info->LJPEG_read_backing_store = LJPEG_read_file_store;
+  info->LJPEG_write_backing_store = LJPEG_write_file_store;
+  info->LJPEG_close_backing_store = LJPEG_close_file_store;
   TRACEMSS(cinfo, 1, JTRC_TFILE_OPEN, info->temp_name);
   return TRUE;			/* succeeded */
 }
@@ -330,7 +330,7 @@ typedef struct {		/* XMS move specification structure */
 
 
 LJPEG_METHODDEF(void)
-read_xms_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
+LJPEG_read_xms_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
 		void FAR * buffer_address,
 		long file_offset, long byte_count)
 {
@@ -350,12 +350,12 @@ read_xms_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
   
   ctx.ds_si = (void far *) & spec;
   ctx.ax = 0x0b00;		/* EMB move */
-  jxms_calldriver(xms_driver, (XMScontext far *) & ctx);
+  LJPEG_jxms_calldriver(xms_driver, (XMScontext far *) & ctx);
   if (ctx.ax != 1)
     ERREXIT(cinfo, JERR_XMS_READ);
 
   if (ODD(byte_count)) {
-    read_xms_store(cinfo, info, (void FAR *) endbuffer,
+    LJPEG_read_xms_store(cinfo, info, (void FAR *) endbuffer,
 		   file_offset + byte_count - 1L, 2L);
     ((char FAR *) buffer_address)[byte_count - 1L] = endbuffer[0];
   }
@@ -363,7 +363,7 @@ read_xms_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 
 
 LJPEG_METHODDEF(void)
-write_xms_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
+LJPEG_write_xms_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
 		 void FAR * buffer_address,
 		 long file_offset, long byte_count)
 {
@@ -383,62 +383,62 @@ write_xms_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
 
   ctx.ds_si = (void far *) & spec;
   ctx.ax = 0x0b00;		/* EMB move */
-  jxms_calldriver(xms_driver, (XMScontext far *) & ctx);
+  LJPEG_jxms_calldriver(xms_driver, (XMScontext far *) & ctx);
   if (ctx.ax != 1)
     ERREXIT(cinfo, JERR_XMS_WRITE);
 
   if (ODD(byte_count)) {
-    read_xms_store(cinfo, info, (void FAR *) endbuffer,
+    LJPEG_read_xms_store(cinfo, info, (void FAR *) endbuffer,
 		   file_offset + byte_count - 1L, 2L);
     endbuffer[0] = ((char FAR *) buffer_address)[byte_count - 1L];
-    write_xms_store(cinfo, info, (void FAR *) endbuffer,
+    LJPEG_write_xms_store(cinfo, info, (void FAR *) endbuffer,
 		    file_offset + byte_count - 1L, 2L);
   }
 }
 
 
 LJPEG_METHODDEF(void)
-close_xms_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info)
+LJPEG_close_xms_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info)
 {
   XMScontext ctx;
 
   ctx.dx = info->handle.xms_handle;
   ctx.ax = 0x0a00;
-  jxms_calldriver(xms_driver, (XMScontext far *) & ctx);
+  LJPEG_jxms_calldriver(xms_driver, (XMScontext far *) & ctx);
   TRACEMS1(cinfo, 1, JTRC_XMS_CLOSE, info->handle.xms_handle);
   /* we ignore any error return from the driver */
 }
 
 
 LOCAL(boolean)
-open_xms_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
+open_xms_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
 		long total_bytes_needed)
 {
   XMScontext ctx;
 
   /* Get address of XMS driver */
-  jxms_getdriver((XMSDRIVER far *) & xms_driver);
+  LJPEG_jxms_getdriver((XMSDRIVER far *) & xms_driver);
   if (xms_driver == NULL)
     return FALSE;		/* no driver to be had */
 
   /* Get version number, must be >= 2.00 */
   ctx.ax = 0x0000;
-  jxms_calldriver(xms_driver, (XMScontext far *) & ctx);
+  LJPEG_jxms_calldriver(xms_driver, (XMScontext far *) & ctx);
   if (ctx.ax < (unsigned short) 0x0200)
     return FALSE;
 
   /* Try to get space (expressed in kilobytes) */
   ctx.dx = (unsigned short) ((total_bytes_needed + 1023L) >> 10);
   ctx.ax = 0x0900;
-  jxms_calldriver(xms_driver, (XMScontext far *) & ctx);
+  LJPEG_jxms_calldriver(xms_driver, (XMScontext far *) & ctx);
   if (ctx.ax != 1)
     return FALSE;
 
   /* Succeeded, save the handle and away we go */
   info->handle.xms_handle = ctx.dx;
-  info->read_backing_store = read_xms_store;
-  info->write_backing_store = write_xms_store;
-  info->close_backing_store = close_xms_store;
+  info->LJPEG_read_backing_store = LJPEG_read_xms_store;
+  info->LJPEG_write_backing_store = LJPEG_write_xms_store;
+  info->LJPEG_close_backing_store = LJPEG_close_xms_store;
   TRACEMS1(cinfo, 1, JTRC_XMS_OPEN, ctx.dx);
   return TRUE;			/* succeeded */
 }
@@ -488,7 +488,7 @@ typedef union {			/* EMS move specification structure */
 
 
 LJPEG_METHODDEF(void)
-read_ems_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
+LJPEG_read_ems_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
 		void FAR * buffer_address,
 		long file_offset, long byte_count)
 {
@@ -506,14 +506,14 @@ read_ems_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
   
   ctx.ds_si = (void far *) & spec;
   ctx.ax = 0x5700;		/* move memory region */
-  jems_calldriver((EMScontext far *) & ctx);
+  LJPEG_jems_calldriver((EMScontext far *) & ctx);
   if (HIBYTE(ctx.ax) != 0)
     ERREXIT(cinfo, JERR_EMS_READ);
 }
 
 
 LJPEG_METHODDEF(void)
-write_ems_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
+LJPEG_write_ems_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
 		 void FAR * buffer_address,
 		 long file_offset, long byte_count)
 {
@@ -531,59 +531,59 @@ write_ems_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
   
   ctx.ds_si = (void far *) & spec;
   ctx.ax = 0x5700;		/* move memory region */
-  jems_calldriver((EMScontext far *) & ctx);
+  LJPEG_jems_calldriver((EMScontext far *) & ctx);
   if (HIBYTE(ctx.ax) != 0)
     ERREXIT(cinfo, JERR_EMS_WRITE);
 }
 
 
 LJPEG_METHODDEF(void)
-close_ems_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info)
+LJPEG_close_ems_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info)
 {
   EMScontext ctx;
 
   ctx.ax = 0x4500;
   ctx.dx = info->handle.ems_handle;
-  jems_calldriver((EMScontext far *) & ctx);
+  LJPEG_jems_calldriver((EMScontext far *) & ctx);
   TRACEMS1(cinfo, 1, JTRC_EMS_CLOSE, info->handle.ems_handle);
   /* we ignore any error return from the driver */
 }
 
 
 LOCAL(boolean)
-open_ems_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
+LJPEG_open_ems_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
 		long total_bytes_needed)
 {
   EMScontext ctx;
 
   /* Is EMS driver there? */
-  if (! jems_available())
+  if (! LJPEG_jems_available())
     return FALSE;
 
   /* Get status, make sure EMS is OK */
   ctx.ax = 0x4000;
-  jems_calldriver((EMScontext far *) & ctx);
+  LJPEG_jems_calldriver((EMScontext far *) & ctx);
   if (HIBYTE(ctx.ax) != 0)
     return FALSE;
 
   /* Get version, must be >= 4.0 */
   ctx.ax = 0x4600;
-  jems_calldriver((EMScontext far *) & ctx);
+  LJPEG_jems_calldriver((EMScontext far *) & ctx);
   if (HIBYTE(ctx.ax) != 0 || LOBYTE(ctx.ax) < 0x40)
     return FALSE;
 
   /* Try to allocate requested space */
   ctx.ax = 0x4300;
   ctx.bx = (unsigned short) ((total_bytes_needed + EMSPAGESIZE-1L) / EMSPAGESIZE);
-  jems_calldriver((EMScontext far *) & ctx);
+  LJPEG_jems_calldriver((EMScontext far *) & ctx);
   if (HIBYTE(ctx.ax) != 0)
     return FALSE;
 
   /* Succeeded, save the handle and away we go */
   info->handle.ems_handle = ctx.dx;
-  info->read_backing_store = read_ems_store;
-  info->write_backing_store = write_ems_store;
-  info->close_backing_store = close_ems_store;
+  info->LJPEG_read_backing_store = LJPEG_read_ems_store;
+  info->LJPEG_write_backing_store = LJPEG_write_ems_store;
+  info->LJPEG_close_backing_store = LJPEG_close_ems_store;
   TRACEMS1(cinfo, 1, JTRC_EMS_OPEN, ctx.dx);
   return TRUE;			/* succeeded */
 }
@@ -596,7 +596,7 @@ open_ems_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
  */
 
 LJPEG_GLOBAL(void)
-jpeg_open_backing_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
+LJPEG_jpeg_open_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
 			 long total_bytes_needed)
 {
   /* Try extended memory, then expanded memory, then regular file. */
@@ -605,10 +605,10 @@ jpeg_open_backing_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
     return;
 #endif
 #if EMS_SUPPORTED
-  if (open_ems_store(cinfo, info, total_bytes_needed))
+  if (LJPEG_open_ems_store(cinfo, info, total_bytes_needed))
     return;
 #endif
-  if (open_file_store(cinfo, info, total_bytes_needed))
+  if (LJPEG_open_file_store(cinfo, info, total_bytes_needed))
     return;
   ERREXITS(cinfo, JERR_TFILE_CREATE, "");
 }
@@ -620,14 +620,14 @@ jpeg_open_backing_store (LJPEG_j_common_ptr cinfo, backing_store_ptr info,
  */
 
 LJPEG_GLOBAL(long)
-jpeg_mem_init (LJPEG_j_common_ptr cinfo)
+LJPEG_jpeg_mem_init (LJPEG_j_common_ptr cinfo)
 {
   next_file_num = 0;		/* initialize temp file name generator */
   return DEFAULT_MAX_MEM;	/* default for max_memory_to_use */
 }
 
 LJPEG_GLOBAL(void)
-jpeg_mem_term (LJPEG_j_common_ptr cinfo)
+LJPEG_jpeg_mem_term (LJPEG_j_common_ptr cinfo)
 {
   /* Microsoft C, at least in v6.00A, will not successfully reclaim freed
    * blocks of size > 32Kbytes unless we give it a kick in the rear, like so:

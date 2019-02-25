@@ -89,7 +89,7 @@ write_JPEG_file (char * filename, int quality)
   struct LJPEG_jpeg_error_mgr jerr;
   /* More stuff */
   FILE * outfile;		/* target file */
-  LJPEG_JSAMPROW row_pointer[1];	/* pointer to JSAMPLE row[s] */
+  LJPEG_JSAMPROW row_pointer[1];	/* pointer to LJPEG_JSAMPLE row[s] */
   int row_stride;		/* physical row width in image buffer */
 
   /* Step 1: allocate and initialize JPEG compression object */
@@ -217,7 +217,7 @@ write_JPEG_file (char * filename, int quality)
  * Just to make this example a little different from the first one, we'll
  * assume that we do not intend to put the whole image into an in-memory
  * buffer, but to send it line-by-line someplace else.  We need a one-
- * scanline-high JSAMPLE array as a work buffer, and we will let the JPEG
+ * scanline-high LJPEG_JSAMPLE array as a work buffer, and we will let the JPEG
  * memory manager allocate it for us.  This approach is actually quite useful
  * because we don't need to remember to deallocate the buffer separately: it
  * will go away automatically when the JPEG object is cleaned up.
@@ -360,7 +360,7 @@ LJPEG_read_JPEG_file (char * filename)
   /* JSAMPLEs per row in output buffer */
   row_stride = cinfo.output_width * cinfo.output_components;
   /* Make a one-row-high sample array that will go away when done with image */
-  buffer = (*cinfo.mem->alloc_sarray)
+  buffer = (*cinfo.mem->LJPEG_alloc_sarray)
 		((LJPEG_j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 
   /* Step 6: while (scan lines remain to be read) */
@@ -415,7 +415,7 @@ LJPEG_read_JPEG_file (char * filename)
  * this because we asked for only one line at a time and we weren't using
  * a suspending data source.  See libjpeg.txt for more info.
  *
- * We cheated a bit by calling alloc_sarray() after LJPEG_jpeg_start_decompress();
+ * We cheated a bit by calling LJPEG_alloc_sarray() after LJPEG_jpeg_start_decompress();
  * we should have done it beforehand to ensure that the space would be
  * counted against the JPEG max_memory setting.  In some systems the above
  * code would risk an out-of-memory error.  However, in general we don't

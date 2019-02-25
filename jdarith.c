@@ -21,7 +21,7 @@
 /* Expanded entropy decoder object for arithmetic decoding. */
 
 typedef struct {
-  struct jpeg_entropy_decoder pub; /* public fields */
+  struct LJPEG_jpeg_entropy_decoder pub; /* public fields */
 
   INT32 c;       /* C register, base of coding interval + input bit buffer */
   INT32 a;               /* A register, normalized size of coding interval */
@@ -65,7 +65,7 @@ LOCAL(int)
 LJPEG_get_byte (LJPEG_j_decompress_ptr cinfo)
 /* Read next input byte; we do not support suspension in this module. */
 {
-  struct jpeg_source_mgr * src = cinfo->src;
+  struct LJPEG_jpeg_source_mgr * src = cinfo->src;
 
   if (src->bytes_in_buffer == 0)
     if (! (*src->LJPEG_fill_input_buffer) (cinfo))
@@ -304,8 +304,8 @@ LJPEG_decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_da
       entropy->last_dc_val[ci] += v;
     }
 
-    /* Scale and output the DC coefficient (assumes jpeg_natural_order[0]=0) */
-    (*block)[0] = (JCOEF) (entropy->last_dc_val[ci] << cinfo->Al);
+    /* Scale and output the DC coefficient (assumes LJPEG_jpeg_natural_order[0]=0) */
+    (*block)[0] = (LJPEG_JCOEF) (entropy->last_dc_val[ci] << cinfo->Al);
   }
 
   return TRUE;
@@ -386,7 +386,7 @@ LJPEG_decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_da
       if (LJPEG_arith_decode(cinfo, st)) v |= m;
     v += 1; if (sign) v = -v;
     /* Scale and output coefficient in natural (dezigzagged) order */
-    (*block)[natural_order[k]] = (JCOEF) (v << cinfo->Al);
+    (*block)[natural_order[k]] = (LJPEG_JCOEF) (v << cinfo->Al);
   } while (k < cinfo->Se);
 
   return TRUE;
@@ -577,7 +577,7 @@ LJPEG_decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
       entropy->last_dc_val[ci] += v;
     }
 
-    (*block)[0] = (JCOEF) entropy->last_dc_val[ci];
+    (*block)[0] = (LJPEG_JCOEF) entropy->last_dc_val[ci];
 
     /* Sections F.2.4.2 & F.1.4.4.2: Decoding of AC coefficients */
 
@@ -625,7 +625,7 @@ LJPEG_decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
       while (m >>= 1)
 	if (LJPEG_arith_decode(cinfo, st)) v |= m;
       v += 1; if (sign) v = -v;
-      (*block)[natural_order[k]] = (JCOEF) v;
+      (*block)[natural_order[k]] = (LJPEG_JCOEF) v;
     } while (k < cinfo->lim_Se);
   }
 
@@ -714,7 +714,7 @@ LJPEG_start_pass (LJPEG_j_decompress_ptr cinfo)
       if (tbl < 0 || tbl >= NUM_ARITH_TBLS)
 	ERREXIT1(cinfo, JERR_NO_ARITH_TABLE, tbl);
       if (entropy->dc_stats[tbl] == NULL)
-	entropy->dc_stats[tbl] = (unsigned char *) (*cinfo->mem->alloc_small)
+	entropy->dc_stats[tbl] = (unsigned char *) (*cinfo->mem->LJPEG_alloc_small)
 	  ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, DC_STAT_BINS);
       MEMZERO(entropy->dc_stats[tbl], DC_STAT_BINS);
       /* Initialize DC predictions to 0 */
@@ -727,7 +727,7 @@ LJPEG_start_pass (LJPEG_j_decompress_ptr cinfo)
       if (tbl < 0 || tbl >= NUM_ARITH_TBLS)
 	ERREXIT1(cinfo, JERR_NO_ARITH_TABLE, tbl);
       if (entropy->ac_stats[tbl] == NULL)
-	entropy->ac_stats[tbl] = (unsigned char *) (*cinfo->mem->alloc_small)
+	entropy->ac_stats[tbl] = (unsigned char *) (*cinfo->mem->LJPEG_alloc_small)
 	  ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, AC_STAT_BINS);
       MEMZERO(entropy->ac_stats[tbl], AC_STAT_BINS);
     }
@@ -754,7 +754,7 @@ LJPEG_jinit_arith_decoder (LJPEG_j_decompress_ptr cinfo)
   int i;
 
   entropy = (LJPEG_arith_entropy_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_arith_entropy_decoder));
   cinfo->entropy = &entropy->pub;
   entropy->pub.LJPEG_start_pass = LJPEG_start_pass;
@@ -772,7 +772,7 @@ LJPEG_jinit_arith_decoder (LJPEG_j_decompress_ptr cinfo)
     /* Create progression status table */
     int *coef_bit_ptr, ci;
     cinfo->coef_bits = (int (*)[DCTSIZE2])
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  cinfo->num_components*DCTSIZE2*SIZEOF(int));
     coef_bit_ptr = & cinfo->coef_bits[0][0];
     for (ci = 0; ci < cinfo->num_components; ci++) 

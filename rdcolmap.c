@@ -64,9 +64,9 @@ add_map_entry (LJPEG_j_decompress_ptr cinfo, int R, int G, int B)
     ERREXIT1(cinfo, JERR_QUANT_MANY_COLORS, (MAXJSAMPLE+1));
 
   /* OK, add color to map. */
-  colormap0[ncolors] = (JSAMPLE) R;
-  colormap1[ncolors] = (JSAMPLE) G;
-  colormap2[ncolors] = (JSAMPLE) B;
+  colormap0[ncolors] = (LJPEG_JSAMPLE) R;
+  colormap1[ncolors] = (LJPEG_JSAMPLE) G;
+  colormap2[ncolors] = (LJPEG_JSAMPLE) B;
   cinfo->actual_number_of_colors++;
 }
 
@@ -231,7 +231,7 @@ LJPEG_GLOBAL(void)
 LJPEG_read_color_map (LJPEG_j_decompress_ptr cinfo, FILE * infile)
 {
   /* Allocate space for a color map of maximum supported size. */
-  cinfo->colormap = (*cinfo->mem->alloc_sarray)
+  cinfo->colormap = (*cinfo->mem->LJPEG_alloc_sarray)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
      (LJPEG_JDIMENSION) (MAXJSAMPLE+1), (LJPEG_JDIMENSION) 3);
   cinfo->actual_number_of_colors = 0; /* initialize map to empty */

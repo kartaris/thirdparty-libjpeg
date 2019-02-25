@@ -227,7 +227,7 @@ LJPEG_jinit_write_targa (LJPEG_j_decompress_ptr cinfo)
 
   /* Create module interface object, fill in method pointers */
   dest = (tga_dest_ptr)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(tga_dest_struct));
   dest->pub.start_output = start_output_tga;
   dest->pub.finish_output = finish_output_tga;
@@ -238,11 +238,11 @@ LJPEG_jinit_write_targa (LJPEG_j_decompress_ptr cinfo)
   /* Create I/O buffer.  Note we make this near on a PC. */
   dest->buffer_width = cinfo->output_width * cinfo->output_components;
   dest->iobuffer = (char *)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				(size_t) (dest->buffer_width * SIZEOF(char)));
 
   /* Create decompressor output buffer. */
-  dest->pub.buffer = (*cinfo->mem->alloc_sarray)
+  dest->pub.buffer = (*cinfo->mem->LJPEG_alloc_sarray)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, dest->buffer_width, (LJPEG_JDIMENSION) 1);
   dest->pub.buffer_height = 1;
 

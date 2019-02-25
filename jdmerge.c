@@ -42,7 +42,7 @@
 /* Private subobject */
 
 typedef struct {
-  struct jpeg_upsampler pub;	/* public fields */
+  struct LJPEG_jpeg_upsampler pub;	/* public fields */
 
   /* Pointer to routine to do actual upsampling/conversion of one row group */
   LJPEG_JMETHOD(void, upmethod, (LJPEG_j_decompress_ptr cinfo,
@@ -88,16 +88,16 @@ LJPEG_build_ycc_rgb_table (LJPEG_j_decompress_ptr cinfo)
   SHIFT_TEMPS
 
   upsample->Cr_r_tab = (int *)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				(MAXJSAMPLE+1) * SIZEOF(int));
   upsample->Cb_b_tab = (int *)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				(MAXJSAMPLE+1) * SIZEOF(int));
   upsample->Cr_g_tab = (INT32 *)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				(MAXJSAMPLE+1) * SIZEOF(INT32));
   upsample->Cb_g_tab = (INT32 *)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				(MAXJSAMPLE+1) * SIZEOF(INT32));
 
   for (i = 0, x = -CENTERJSAMPLE; i <= MAXJSAMPLE; i++, x++) {
@@ -154,7 +154,7 @@ LJPEG_merged_2v_upsample (LJPEG_j_decompress_ptr cinfo,
 
   if (upsample->spare_full) {
     /* If we have a spare row saved from a previous cycle, just return it. */
-    jcopy_sample_rows(& upsample->spare_row, 0, output_buf + *out_row_ctr, 0,
+    LJPEG_jcopy_sample_rows(& upsample->spare_row, 0, output_buf + *out_row_ctr, 0,
 		      1, upsample->out_row_width);
     num_rows = 1;
     upsample->spare_full = FALSE;
@@ -234,7 +234,7 @@ LJPEG_h2v1_merged_upsample (LJPEG_j_decompress_ptr cinfo,
   LJPEG_JSAMPROW inptr0, inptr1, inptr2;
   LJPEG_JDIMENSION col;
   /* copy these pointers into registers if possible */
-  register JSAMPLE * range_limit = cinfo->sample_range_limit;
+  register LJPEG_JSAMPLE * range_limit = cinfo->sample_range_limit;
   int * Crrtab = upsample->Cr_r_tab;
   int * Cbbtab = upsample->Cb_b_tab;
   INT32 * Crgtab = upsample->Cr_g_tab;
@@ -296,7 +296,7 @@ LJPEG_h2v2_merged_upsample (LJPEG_j_decompress_ptr cinfo,
   LJPEG_JSAMPROW inptr00, inptr01, inptr1, inptr2;
   LJPEG_JDIMENSION col;
   /* copy these pointers into registers if possible */
-  register JSAMPLE * range_limit = cinfo->sample_range_limit;
+  register LJPEG_JSAMPLE * range_limit = cinfo->sample_range_limit;
   int * Crrtab = upsample->Cr_r_tab;
   int * Cbbtab = upsample->Cb_b_tab;
   INT32 * Crgtab = upsample->Cr_g_tab;
@@ -372,9 +372,9 @@ LJPEG_jinit_merged_upsampler (LJPEG_j_decompress_ptr cinfo)
   LJPEG_my_upsample_ptr upsample;
 
   upsample = (LJPEG_my_upsample_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_my_upsampler));
-  cinfo->upsample = (struct jpeg_upsampler *) upsample;
+  cinfo->upsample = (struct LJPEG_jpeg_upsampler *) upsample;
   upsample->pub.LJPEG_start_pass = LJPEG_start_pass_merged_upsample;
   upsample->pub.need_context_rows = FALSE;
 
@@ -385,8 +385,8 @@ LJPEG_jinit_merged_upsampler (LJPEG_j_decompress_ptr cinfo)
     upsample->upmethod = LJPEG_h2v2_merged_upsample;
     /* Allocate a spare row buffer */
     upsample->spare_row = (LJPEG_JSAMPROW)
-      (*cinfo->mem->alloc_large) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-		(size_t) (upsample->out_row_width * SIZEOF(JSAMPLE)));
+      (*cinfo->mem->LJPEG_alloc_large) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+		(size_t) (upsample->out_row_width * SIZEOF(LJPEG_JSAMPLE)));
   } else {
     upsample->pub.upsample = LJPEG_merged_1v_upsample;
     upsample->upmethod = LJPEG_h2v1_merged_upsample;

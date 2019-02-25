@@ -51,7 +51,7 @@
  */
 
 #if BITS_IN_JSAMPLE == 8
-/* JSAMPLE should be the smallest type that will hold the values 0..255.
+/* LJPEG_JSAMPLE should be the smallest type that will hold the values 0..255.
  * You can use a signed char by having GETJSAMPLE mask it with 0xFF.
  */
 
@@ -78,7 +78,7 @@ typedef char LJPEG_JSAMPLE;
 
 
 #if BITS_IN_JSAMPLE == 12
-/* JSAMPLE should be the smallest type that will hold the values 0..4095.
+/* LJPEG_JSAMPLE should be the smallest type that will hold the values 0..4095.
  * On nearly all machines "short" will do nicely.
  */
 
@@ -97,7 +97,7 @@ typedef short LJPEG_JSAMPLE;
  * if you have memory to burn and "short" is really slow.
  */
 
-typedef short JCOEF;
+typedef short LJPEG_JCOEF;
 
 
 /* Compressed datastreams are represented as arrays of JOCTET.

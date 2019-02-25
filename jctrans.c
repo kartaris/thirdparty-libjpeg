@@ -180,7 +180,7 @@ LJPEG_transencode_master_selection (LJPEG_j_compress_ptr cinfo,
   LJPEG_jinit_marker_writer(cinfo);
 
   /* We can now tell the memory manager to allocate virtual arrays. */
-  (*cinfo->mem->realize_virt_arrays) ((LJPEG_j_common_ptr) cinfo);
+  (*cinfo->mem->LJPEG_realize_virt_arrays) ((LJPEG_j_common_ptr) cinfo);
 
   /* Write the datastream header (SOI, JFIF) immediately.
    * Frame and scan headers are postponed till later.
@@ -278,7 +278,7 @@ LJPEG_compress_output (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_buf)
   LJPEG_JDIMENSION last_iMCU_row = cinfo->total_iMCU_rows - 1;
   int blkn, ci, xindex, yindex, yoffset, blockcnt;
   LJPEG_JDIMENSION start_col;
-  JBLOCKARRAY buffer[MAX_COMPS_IN_SCAN];
+  LJPEG_JBLOCKARRAY buffer[MAX_COMPS_IN_SCAN];
   LJPEG_JBLOCKROW MCU_buffer[C_MAX_BLOCKS_IN_MCU];
   LJPEG_JBLOCKROW buffer_ptr;
   LJPEG_jpeg_component_info *compptr;
@@ -286,7 +286,7 @@ LJPEG_compress_output (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_buf)
   /* Align the virtual buffers for the components used in this scan. */
   for (ci = 0; ci < cinfo->comps_in_scan; ci++) {
     compptr = cinfo->cur_comp_info[ci];
-    buffer[ci] = (*cinfo->mem->access_virt_barray)
+    buffer[ci] = (*cinfo->mem->LJPEG_access_virt_barray)
       ((LJPEG_j_common_ptr) cinfo, coef->whole_image[compptr->component_index],
        coef->iMCU_row_num * compptr->v_samp_factor,
        (LJPEG_JDIMENSION) compptr->v_samp_factor, FALSE);
@@ -363,7 +363,7 @@ LJPEG_transencode_coef_controller (LJPEG_j_compress_ptr cinfo,
   int i;
 
   coef = (LJPEG_my_coef_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_my_coef_controller));
   cinfo->coef = &coef->pub;
   coef->pub.LJPEG_start_pass = LJPEG_start_pass_coef;
@@ -374,9 +374,9 @@ LJPEG_transencode_coef_controller (LJPEG_j_compress_ptr cinfo,
 
   /* Allocate and pre-zero space for dummy DCT blocks. */
   buffer = (LJPEG_JBLOCKROW)
-    (*cinfo->mem->alloc_large) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				C_MAX_BLOCKS_IN_MCU * SIZEOF(JBLOCK));
-  FMEMZERO((void FAR *) buffer, C_MAX_BLOCKS_IN_MCU * SIZEOF(JBLOCK));
+    (*cinfo->mem->LJPEG_alloc_large) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+				C_MAX_BLOCKS_IN_MCU * SIZEOF(LJPEG_JBLOCK));
+  FMEMZERO((void FAR *) buffer, C_MAX_BLOCKS_IN_MCU * SIZEOF(LJPEG_JBLOCK));
   for (i = 0; i < C_MAX_BLOCKS_IN_MCU; i++) {
     coef->dummy_buffer[i] = buffer + i;
   }

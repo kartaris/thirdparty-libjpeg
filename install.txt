@@ -240,7 +240,7 @@ memory managers:
 
 * jmemname.c	This version creates named temporary files.  For anything
 		except a Unix machine, you'll need to configure the
-		select_file_name() routine appropriately; see the comments
+		LJPEG_select_file_name() routine appropriately; see the comments
 		near the head of jmemname.c.  If you use this version, define
 		NEED_SIGNAL_CATCHER in jconfig.h to make sure the temp files
 		are removed if the program is aborted.
@@ -267,8 +267,8 @@ If you have plenty of (real or virtual) main memory, just use jmemnobs.c.
 "Plenty" means about ten bytes for every pixel in the largest images
 you plan to process, so a lot of systems don't meet this criterion.
 If yours doesn't, try jmemansi.c first.  If that doesn't compile, you'll have
-to use jmemname.c; be sure to adjust select_file_name() for local conditions.
-You may also need to change unlink() to remove() in close_backing_store().
+to use jmemname.c; be sure to adjust LJPEG_select_file_name() for local conditions.
+You may also need to change unlink() to remove() in LJPEG_close_backing_store().
 
 Except with jmemnobs.c or jmemmac.c, you need to adjust the DEFAULT_MAX_MEM
 setting to a reasonable value for your system (either by adding a #define for
@@ -520,7 +520,7 @@ by djpeg's -fast switch.  Don't forget to update the documentation files
 (usage.txt and/or cjpeg.1, djpeg.1) to agree with what you've done.
 
 If access to "short" arrays is slow on your machine, it may be a win to
-define type JCOEF as int rather than short.  This will cost a good deal of
+define type LJPEG_JCOEF as int rather than short.  This will cost a good deal of
 memory though, particularly in some multi-pass modes, so don't do it unless
 you have memory to burn and short is REALLY slow.
 
@@ -672,7 +672,7 @@ or mirrors thereof; see file /info-mac/dev/src/jpeg-convert-c.hqx.
 
 jmemmac.c is the recommended memory manager back end for Macintosh.  It uses
 NewPtr/DisposePtr instead of malloc/free, and has a Mac-specific
-implementation of jpeg_mem_available().  It also creates temporary files that
+implementation of LJPEG_jpeg_mem_available().  It also creates temporary files that
 follow Mac conventions.  (That part of the code relies on System-7-or-later OS
 functions.  See the comments in jmemmac.c if you need to run it on System 6.)
 NOTE that USE_MAC_MEMMGR must be defined in jconfig.h to use jmemmac.c.
@@ -905,7 +905,7 @@ models only, you'll need to put
 into jconfig.h to limit allocation chunks to 64Kb.  (Without that, you'd
 have to use huge memory model, which slows things down unnecessarily.)
 jmemnobs.c works without modification in large or flat memory models, but to
-use medium model, you need to modify its jpeg_get_large and jpeg_free_large
+use medium model, you need to modify its LJPEG_jpeg_get_large and LJPEG_jpeg_free_large
 routines to allocate far memory.  In any case, you might like to replace
 its calls to malloc and free with direct calls on Windows memory allocation
 functions.
@@ -974,7 +974,7 @@ definition of the variable range_limit in LJPEG_h2v1_merged_upsample(), at the h
 of the block that handles odd image width (about line 268 in v6 jdmerge.c):
   /* If image width is odd, do the last output column separately */
   if (cinfo->output_width & 1) {
-    register JSAMPLE * range_limit = cinfo->sample_range_limit; /* ADD THIS */
+    register LJPEG_JSAMPLE * range_limit = cinfo->sample_range_limit; /* ADD THIS */
     cb = GETJSAMPLE(*inptr1);
 Pretty bizarre, especially since the very similar routine LJPEG_h2v2_merged_upsample
 doesn't trigger the bug.

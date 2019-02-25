@@ -32,7 +32,7 @@ typedef LJPEG_JMETHOD(void, upsample1_ptr,
 /* Private subobject */
 
 typedef struct {
-  struct jpeg_upsampler pub;	/* public fields */
+  struct LJPEG_jpeg_upsampler pub;	/* public fields */
 
   /* Color conversion buffer.  When using separate upsampling and color
    * conversion steps, this buffer holds one upsampled row group until it
@@ -193,7 +193,7 @@ LJPEG_int_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * co
   LJPEG_my_upsample_ptr upsample = (LJPEG_my_upsample_ptr) cinfo->upsample;
   LJPEG_JSAMPARRAY output_data = *output_data_ptr;
   register LJPEG_JSAMPROW inptr, outptr;
-  register JSAMPLE invalue;
+  register LJPEG_JSAMPLE invalue;
   register int h;
   LJPEG_JSAMPROW outend;
   int h_expand, v_expand;
@@ -216,7 +216,7 @@ LJPEG_int_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * co
     }
     /* Generate any additional output rows by duplicating the first one */
     if (v_expand > 1) {
-      jcopy_sample_rows(output_data, outrow, output_data, outrow+1,
+      LJPEG_jcopy_sample_rows(output_data, outrow, output_data, outrow+1,
 			v_expand-1, cinfo->output_width);
     }
     inrow++;
@@ -236,7 +236,7 @@ LJPEG_h2v1_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
 {
   LJPEG_JSAMPARRAY output_data = *output_data_ptr;
   register LJPEG_JSAMPROW inptr, outptr;
-  register JSAMPLE invalue;
+  register LJPEG_JSAMPLE invalue;
   LJPEG_JSAMPROW outend;
   int outrow;
 
@@ -264,7 +264,7 @@ LJPEG_h2v1_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
 {
   LJPEG_JSAMPARRAY output_data = *output_data_ptr;
   register LJPEG_JSAMPROW inptr, outptr;
-  register JSAMPLE invalue;
+  register LJPEG_JSAMPLE invalue;
   LJPEG_JSAMPROW outend;
   int inrow, outrow;
 
@@ -278,7 +278,7 @@ LJPEG_h2v1_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
       *outptr++ = invalue;
       *outptr++ = invalue;
     }
-    jcopy_sample_rows(output_data, outrow, output_data, outrow+1,
+    LJPEG_jcopy_sample_rows(output_data, outrow, output_data, outrow+1,
 		      1, cinfo->output_width);
     inrow++;
     outrow += 2;
@@ -300,9 +300,9 @@ LJPEG_jinit_upsampler (LJPEG_j_decompress_ptr cinfo)
   int h_in_group, v_in_group, h_out_group, v_out_group;
 
   upsample = (LJPEG_my_upsample_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_my_upsampler));
-  cinfo->upsample = (struct jpeg_upsampler *) upsample;
+  cinfo->upsample = (struct LJPEG_jpeg_upsampler *) upsample;
   upsample->pub.LJPEG_start_pass = LJPEG_start_pass_upsample;
   upsample->pub.upsample = LJPEG_sep_upsample;
   upsample->pub.need_context_rows = FALSE; /* until we find out differently */
@@ -351,9 +351,9 @@ LJPEG_jinit_upsampler (LJPEG_j_decompress_ptr cinfo)
     } else
       ERREXIT(cinfo, JERR_FRACT_SAMPLE_NOTIMPL);
     if (need_buffer) {
-      upsample->color_buf[ci] = (*cinfo->mem->alloc_sarray)
+      upsample->color_buf[ci] = (*cinfo->mem->LJPEG_alloc_sarray)
 	((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-	 (LJPEG_JDIMENSION) jround_up((long) cinfo->output_width,
+	 (LJPEG_JDIMENSION) LJPEG_jround_up((long) cinfo->output_width,
 				(long) cinfo->max_h_samp_factor),
 	 (LJPEG_JDIMENSION) cinfo->max_v_samp_factor);
     }

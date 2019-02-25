@@ -26,7 +26,7 @@ typedef enum {
 } LJPEG_c_pass_type;
 
 typedef struct {
-  struct jpeg_comp_master pub;	/* public fields */
+  struct LJPEG_jpeg_comp_master pub;	/* public fields */
 
   LJPEG_c_pass_type pass_type;	/* the type of the current pass */
 
@@ -74,121 +74,121 @@ LJPEG_jpeg_calc_jpeg_dimensions (LJPEG_j_compress_ptr cinfo)
   } else if (cinfo->scale_num * 2 >= cinfo->scale_denom * cinfo->block_size) {
     /* Provide block_size/2 scaling */
     cinfo->jpeg_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 2L);
+      LJPEG_jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 2L);
     cinfo->jpeg_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 2L);
+      LJPEG_jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 2L);
     cinfo->min_DCT_h_scaled_size = 2;
     cinfo->min_DCT_v_scaled_size = 2;
   } else if (cinfo->scale_num * 3 >= cinfo->scale_denom * cinfo->block_size) {
     /* Provide block_size/3 scaling */
     cinfo->jpeg_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 3L);
+      LJPEG_jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 3L);
     cinfo->jpeg_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 3L);
+      LJPEG_jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 3L);
     cinfo->min_DCT_h_scaled_size = 3;
     cinfo->min_DCT_v_scaled_size = 3;
   } else if (cinfo->scale_num * 4 >= cinfo->scale_denom * cinfo->block_size) {
     /* Provide block_size/4 scaling */
     cinfo->jpeg_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 4L);
+      LJPEG_jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 4L);
     cinfo->jpeg_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 4L);
+      LJPEG_jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 4L);
     cinfo->min_DCT_h_scaled_size = 4;
     cinfo->min_DCT_v_scaled_size = 4;
   } else if (cinfo->scale_num * 5 >= cinfo->scale_denom * cinfo->block_size) {
     /* Provide block_size/5 scaling */
     cinfo->jpeg_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 5L);
+      LJPEG_jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 5L);
     cinfo->jpeg_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 5L);
+      LJPEG_jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 5L);
     cinfo->min_DCT_h_scaled_size = 5;
     cinfo->min_DCT_v_scaled_size = 5;
   } else if (cinfo->scale_num * 6 >= cinfo->scale_denom * cinfo->block_size) {
     /* Provide block_size/6 scaling */
     cinfo->jpeg_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 6L);
+      LJPEG_jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 6L);
     cinfo->jpeg_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 6L);
+      LJPEG_jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 6L);
     cinfo->min_DCT_h_scaled_size = 6;
     cinfo->min_DCT_v_scaled_size = 6;
   } else if (cinfo->scale_num * 7 >= cinfo->scale_denom * cinfo->block_size) {
     /* Provide block_size/7 scaling */
     cinfo->jpeg_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 7L);
+      LJPEG_jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 7L);
     cinfo->jpeg_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 7L);
+      LJPEG_jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 7L);
     cinfo->min_DCT_h_scaled_size = 7;
     cinfo->min_DCT_v_scaled_size = 7;
   } else if (cinfo->scale_num * 8 >= cinfo->scale_denom * cinfo->block_size) {
     /* Provide block_size/8 scaling */
     cinfo->jpeg_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 8L);
+      LJPEG_jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 8L);
     cinfo->jpeg_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 8L);
+      LJPEG_jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 8L);
     cinfo->min_DCT_h_scaled_size = 8;
     cinfo->min_DCT_v_scaled_size = 8;
   } else if (cinfo->scale_num * 9 >= cinfo->scale_denom * cinfo->block_size) {
     /* Provide block_size/9 scaling */
     cinfo->jpeg_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 9L);
+      LJPEG_jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 9L);
     cinfo->jpeg_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 9L);
+      LJPEG_jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 9L);
     cinfo->min_DCT_h_scaled_size = 9;
     cinfo->min_DCT_v_scaled_size = 9;
   } else if (cinfo->scale_num * 10 >= cinfo->scale_denom * cinfo->block_size) {
     /* Provide block_size/10 scaling */
     cinfo->jpeg_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 10L);
+      LJPEG_jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 10L);
     cinfo->jpeg_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 10L);
+      LJPEG_jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 10L);
     cinfo->min_DCT_h_scaled_size = 10;
     cinfo->min_DCT_v_scaled_size = 10;
   } else if (cinfo->scale_num * 11 >= cinfo->scale_denom * cinfo->block_size) {
     /* Provide block_size/11 scaling */
     cinfo->jpeg_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 11L);
+      LJPEG_jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 11L);
     cinfo->jpeg_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 11L);
+      LJPEG_jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 11L);
     cinfo->min_DCT_h_scaled_size = 11;
     cinfo->min_DCT_v_scaled_size = 11;
   } else if (cinfo->scale_num * 12 >= cinfo->scale_denom * cinfo->block_size) {
     /* Provide block_size/12 scaling */
     cinfo->jpeg_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 12L);
+      LJPEG_jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 12L);
     cinfo->jpeg_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 12L);
+      LJPEG_jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 12L);
     cinfo->min_DCT_h_scaled_size = 12;
     cinfo->min_DCT_v_scaled_size = 12;
   } else if (cinfo->scale_num * 13 >= cinfo->scale_denom * cinfo->block_size) {
     /* Provide block_size/13 scaling */
     cinfo->jpeg_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 13L);
+      LJPEG_jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 13L);
     cinfo->jpeg_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 13L);
+      LJPEG_jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 13L);
     cinfo->min_DCT_h_scaled_size = 13;
     cinfo->min_DCT_v_scaled_size = 13;
   } else if (cinfo->scale_num * 14 >= cinfo->scale_denom * cinfo->block_size) {
     /* Provide block_size/14 scaling */
     cinfo->jpeg_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 14L);
+      LJPEG_jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 14L);
     cinfo->jpeg_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 14L);
+      LJPEG_jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 14L);
     cinfo->min_DCT_h_scaled_size = 14;
     cinfo->min_DCT_v_scaled_size = 14;
   } else if (cinfo->scale_num * 15 >= cinfo->scale_denom * cinfo->block_size) {
     /* Provide block_size/15 scaling */
     cinfo->jpeg_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 15L);
+      LJPEG_jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 15L);
     cinfo->jpeg_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 15L);
+      LJPEG_jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 15L);
     cinfo->min_DCT_h_scaled_size = 15;
     cinfo->min_DCT_v_scaled_size = 15;
   } else {
     /* Provide block_size/16 scaling */
     cinfo->jpeg_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 16L);
+      LJPEG_jdiv_round_up((long) cinfo->image_width * cinfo->block_size, 16L);
     cinfo->jpeg_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 16L);
+      LJPEG_jdiv_round_up((long) cinfo->image_height * cinfo->block_size, 16L);
     cinfo->min_DCT_h_scaled_size = 16;
     cinfo->min_DCT_v_scaled_size = 16;
   }
@@ -236,13 +236,13 @@ LJPEG_initial_setup (LJPEG_j_compress_ptr cinfo, boolean transcode_only)
 
   /* Derive natural_order from block_size */
   switch (cinfo->block_size) {
-  case 2: cinfo->natural_order = jpeg_natural_order2; break;
-  case 3: cinfo->natural_order = jpeg_natural_order3; break;
-  case 4: cinfo->natural_order = jpeg_natural_order4; break;
-  case 5: cinfo->natural_order = jpeg_natural_order5; break;
-  case 6: cinfo->natural_order = jpeg_natural_order6; break;
-  case 7: cinfo->natural_order = jpeg_natural_order7; break;
-  default: cinfo->natural_order = jpeg_natural_order; break;
+  case 2: cinfo->natural_order = LJPEG_jpeg_natural_order2; break;
+  case 3: cinfo->natural_order = LJPEG_jpeg_natural_order3; break;
+  case 4: cinfo->natural_order = LJPEG_jpeg_natural_order4; break;
+  case 5: cinfo->natural_order = LJPEG_jpeg_natural_order5; break;
+  case 6: cinfo->natural_order = LJPEG_jpeg_natural_order6; break;
+  case 7: cinfo->natural_order = LJPEG_jpeg_natural_order7; break;
+  default: cinfo->natural_order = LJPEG_jpeg_natural_order; break;
   }
 
   /* Derive lim_Se from block_size */
@@ -325,18 +325,18 @@ LJPEG_initial_setup (LJPEG_j_compress_ptr cinfo, boolean transcode_only)
 
     /* Size in DCT blocks */
     compptr->width_in_blocks = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->jpeg_width * (long) compptr->h_samp_factor,
+      LJPEG_jdiv_round_up((long) cinfo->jpeg_width * (long) compptr->h_samp_factor,
 		    (long) (cinfo->max_h_samp_factor * cinfo->block_size));
     compptr->height_in_blocks = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->jpeg_height * (long) compptr->v_samp_factor,
+      LJPEG_jdiv_round_up((long) cinfo->jpeg_height * (long) compptr->v_samp_factor,
 		    (long) (cinfo->max_v_samp_factor * cinfo->block_size));
     /* Size in samples */
     compptr->downsampled_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->jpeg_width *
+      LJPEG_jdiv_round_up((long) cinfo->jpeg_width *
 		    (long) (compptr->h_samp_factor * compptr->DCT_h_scaled_size),
 		    (long) (cinfo->max_h_samp_factor * cinfo->block_size));
     compptr->downsampled_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->jpeg_height *
+      LJPEG_jdiv_round_up((long) cinfo->jpeg_height *
 		    (long) (compptr->v_samp_factor * compptr->DCT_v_scaled_size),
 		    (long) (cinfo->max_v_samp_factor * cinfo->block_size));
     /* Mark component needed (this flag isn't actually used for compression) */
@@ -347,7 +347,7 @@ LJPEG_initial_setup (LJPEG_j_compress_ptr cinfo, boolean transcode_only)
    * main controller will call coefficient controller).
    */
   cinfo->total_iMCU_rows = (LJPEG_JDIMENSION)
-    jdiv_round_up((long) cinfo->jpeg_height,
+    LJPEG_jdiv_round_up((long) cinfo->jpeg_height,
 		  (long) (cinfo->max_v_samp_factor * cinfo->block_size));
 }
 
@@ -360,7 +360,7 @@ LJPEG_validate_script (LJPEG_j_compress_ptr cinfo)
  * determine whether it uses progressive JPEG, and set cinfo->progressive_mode.
  */
 {
-  const jpeg_scan_info * scanptr;
+  const LJPEG_jpeg_scan_info * scanptr;
   int scanno, ncomps, ci, coefi, thisi;
   int Ss, Se, Ah, Al;
   boolean component_sent[MAX_COMPONENTS];
@@ -495,11 +495,11 @@ LJPEG_reduce_script (LJPEG_j_compress_ptr cinfo)
  * assume that script has been validated before.
  */
 {
-  jpeg_scan_info * scanptr;
+  LJPEG_jpeg_scan_info * scanptr;
   int idxout, idxin;
 
   /* Circumvent const declaration for this function */
-  scanptr = (jpeg_scan_info *) cinfo->scan_info;
+  scanptr = (LJPEG_jpeg_scan_info *) cinfo->scan_info;
   idxout = 0;
 
   for (idxin = 0; idxin < cinfo->num_scans; idxin++) {
@@ -534,7 +534,7 @@ LJPEG_select_scan_parameters (LJPEG_j_compress_ptr cinfo)
   if (cinfo->scan_info != NULL) {
     /* Prepare for current scan --- the script is already validated */
     LJPEG_my_master_ptr master = (LJPEG_my_master_ptr) cinfo->master;
-    const jpeg_scan_info * scanptr = cinfo->scan_info + master->scan_number;
+    const LJPEG_jpeg_scan_info * scanptr = cinfo->scan_info + master->scan_number;
 
     cinfo->comps_in_scan = scanptr->comps_in_scan;
     for (ci = 0; ci < scanptr->comps_in_scan; ci++) {
@@ -611,10 +611,10 @@ LJPEG_per_scan_setup (LJPEG_j_compress_ptr cinfo)
     
     /* Overall image size in MCUs */
     cinfo->MCUs_per_row = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->jpeg_width,
+      LJPEG_jdiv_round_up((long) cinfo->jpeg_width,
 		    (long) (cinfo->max_h_samp_factor * cinfo->block_size));
     cinfo->MCU_rows_in_scan = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->jpeg_height,
+      LJPEG_jdiv_round_up((long) cinfo->jpeg_height,
 		    (long) (cinfo->max_v_samp_factor * cinfo->block_size));
     
     cinfo->blocks_in_MCU = 0;
@@ -809,9 +809,9 @@ LJPEG_jinit_c_master_control (LJPEG_j_compress_ptr cinfo, boolean transcode_only
   LJPEG_my_master_ptr master;
 
   master = (LJPEG_my_master_ptr)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(LJPEG_my_comp_master));
-  cinfo->master = (struct jpeg_comp_master *) master;
+  cinfo->master = (struct LJPEG_jpeg_comp_master *) master;
   master->pub.LJPEG_prepare_for_pass = LJPEG_prepare_for_pass;
   master->pub.LJPEG_pass_startup = LJPEG_pass_startup;
   master->pub.LJPEG_finish_pass = LJPEG_finish_pass_master;

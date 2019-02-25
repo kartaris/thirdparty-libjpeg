@@ -25,7 +25,7 @@
 #include <rle.h>
 
 /*
- * We assume that JSAMPLE has the same representation as rle_pixel,
+ * We assume that LJPEG_JSAMPLE has the same representation as rle_pixel,
  * to wit, "unsigned char".  Hence we can't cope with 12- or 16-bit samples.
  */
 
@@ -114,7 +114,7 @@ start_output_rle (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
   if (cinfo->quantize_colors) {
     /* Allocate storage for RLE-style cmap, zero any extra entries */
     cmapsize = cinfo->out_color_components * CMAPLENGTH * SIZEOF(rle_map);
-    dest->colormap = (rle_map *) (*cinfo->mem->alloc_small)
+    dest->colormap = (rle_map *) (*cinfo->mem->LJPEG_alloc_small)
       ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, cmapsize);
     MEMZERO(dest->colormap, cmapsize);
 
@@ -129,7 +129,7 @@ start_output_rle (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
   }
 
   /* Set the output buffer to the first row */
-  dest->pub.buffer = (*cinfo->mem->access_virt_sarray)
+  dest->pub.buffer = (*cinfo->mem->LJPEG_access_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, dest->image, (LJPEG_JDIMENSION) 0, (LJPEG_JDIMENSION) 1, TRUE);
   dest->pub.buffer_height = 1;
 
@@ -156,7 +156,7 @@ rle_put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
   rle_dest_ptr dest = (rle_dest_ptr) dinfo;
 
   if (cinfo->output_scanline < cinfo->output_height) {
-    dest->pub.buffer = (*cinfo->mem->access_virt_sarray)
+    dest->pub.buffer = (*cinfo->mem->LJPEG_access_virt_sarray)
       ((LJPEG_j_common_ptr) cinfo, dest->image,
        cinfo->output_scanline, (LJPEG_JDIMENSION) 1, TRUE);
   }
@@ -207,7 +207,7 @@ finish_output_rle (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
   rle_put_setup(&header);
 
   /* Now output the RLE data from our virtual array.
-   * We assume here that (a) rle_pixel is represented the same as JSAMPLE,
+   * We assume here that (a) rle_pixel is represented the same as LJPEG_JSAMPLE,
    * and (b) we are not on a machine where FAR pointers differ from regular.
    */
 
@@ -221,7 +221,7 @@ finish_output_rle (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 
   if (cinfo->output_components == 1) {
     for (row = cinfo->output_height-1; row >= 0; row--) {
-      rle_row = (rle_pixel **) (*cinfo->mem->access_virt_sarray)
+      rle_row = (rle_pixel **) (*cinfo->mem->LJPEG_access_virt_sarray)
         ((LJPEG_j_common_ptr) cinfo, dest->image,
 	 (LJPEG_JDIMENSION) row, (LJPEG_JDIMENSION) 1, FALSE);
       rle_putrow(rle_row, (int) cinfo->output_width, &header);
@@ -235,7 +235,7 @@ finish_output_rle (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
   } else {
     for (row = cinfo->output_height-1; row >= 0; row--) {
       rle_row = (rle_pixel **) dest->rle_row;
-      output_row = * (*cinfo->mem->access_virt_sarray)
+      output_row = * (*cinfo->mem->LJPEG_access_virt_sarray)
         ((LJPEG_j_common_ptr) cinfo, dest->image,
 	 (LJPEG_JDIMENSION) row, (LJPEG_JDIMENSION) 1, FALSE);
       red = rle_row[0];
@@ -279,7 +279,7 @@ LJPEG_jinit_write_rle (LJPEG_j_decompress_ptr cinfo)
 
   /* Create module interface object, fill in method pointers */
   dest = (rle_dest_ptr)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
                                   SIZEOF(rle_dest_struct));
   dest->pub.start_output = start_output_rle;
   dest->pub.finish_output = finish_output_rle;
@@ -288,12 +288,12 @@ LJPEG_jinit_write_rle (LJPEG_j_decompress_ptr cinfo)
   LJPEG_jpeg_calc_output_dimensions(cinfo);
 
   /* Allocate a work array for output to the RLE library. */
-  dest->rle_row = (*cinfo->mem->alloc_sarray)
+  dest->rle_row = (*cinfo->mem->LJPEG_alloc_sarray)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
      cinfo->output_width, (LJPEG_JDIMENSION) cinfo->output_components);
 
   /* Allocate a virtual array to hold the image. */
-  dest->image = (*cinfo->mem->request_virt_sarray)
+  dest->image = (*cinfo->mem->LJPEG_request_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
      (LJPEG_JDIMENSION) (cinfo->output_width * cinfo->output_components),
      cinfo->output_height, (LJPEG_JDIMENSION) 1);

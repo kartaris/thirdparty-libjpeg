@@ -38,7 +38,7 @@ LJPEG_jpeg_abort (LJPEG_j_common_ptr cinfo)
    * with some (brain-damaged) malloc libraries.
    */
   for (pool = JPOOL_NUMPOOLS-1; pool > JPOOL_PERMANENT; pool--) {
-    (*cinfo->mem->free_pool) (cinfo, pool);
+    (*cinfo->mem->LJPEG_free_pool) (cinfo, pool);
   }
 
   /* Reset overall state for possible reuse of object */
@@ -71,7 +71,7 @@ LJPEG_jpeg_destroy (LJPEG_j_common_ptr cinfo)
   /* We need only tell the memory manager to release everything. */
   /* NB: mem pointer is NULL if memory mgr failed to initialize. */
   if (cinfo->mem != NULL)
-    (*cinfo->mem->self_destruct) (cinfo);
+    (*cinfo->mem->LJPEG_self_destruct) (cinfo);
   cinfo->mem = NULL;		/* be safe if LJPEG_jpeg_destroy is called twice */
   cinfo->global_state = 0;	/* mark it destroyed */
 }
@@ -88,7 +88,7 @@ LJPEG_jpeg_alloc_quant_table (LJPEG_j_common_ptr cinfo)
   LJPEG_JQUANT_TBL *tbl;
 
   tbl = (LJPEG_JQUANT_TBL *)
-    (*cinfo->mem->alloc_small) (cinfo, JPOOL_PERMANENT, SIZEOF(LJPEG_JQUANT_TBL));
+    (*cinfo->mem->LJPEG_alloc_small) (cinfo, JPOOL_PERMANENT, SIZEOF(LJPEG_JQUANT_TBL));
   tbl->sent_table = FALSE;	/* make sure this is false in any new table */
   return tbl;
 }
@@ -100,7 +100,7 @@ LJPEG_jpeg_alloc_huff_table (LJPEG_j_common_ptr cinfo)
   LJPEG_JHUFF_TBL *tbl;
 
   tbl = (LJPEG_JHUFF_TBL *)
-    (*cinfo->mem->alloc_small) (cinfo, JPOOL_PERMANENT, SIZEOF(LJPEG_JHUFF_TBL));
+    (*cinfo->mem->LJPEG_alloc_small) (cinfo, JPOOL_PERMANENT, SIZEOF(LJPEG_JHUFF_TBL));
   tbl->sent_table = FALSE;	/* make sure this is false in any new table */
   return tbl;
 }

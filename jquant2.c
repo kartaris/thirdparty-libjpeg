@@ -175,7 +175,7 @@ typedef hist2d * hist3d;	/* type for top-level pointer */
  * Each entry is three values long, one value for each color component.
  *
  * Note: on a wide image, we might not have enough room in a PC's near data
- * segment to hold the error array; so it is allocated with alloc_large.
+ * segment to hold the error array; so it is allocated with LJPEG_alloc_large.
  */
 
 #if BITS_IN_JSAMPLE == 8
@@ -192,7 +192,7 @@ typedef FSERROR FAR *FSERRPTR;	/* pointer to error array (in FAR storage!) */
 /* Private subobject */
 
 typedef struct {
-  struct jpeg_color_quantizer pub; /* public fields */
+  struct LJPEG_jpeg_color_quantizer pub; /* public fields */
 
   /* Space for the eventually created colormap is stashed here */
   LJPEG_JSAMPARRAY sv_colormap;	/* colormap allocated at init time */
@@ -207,9 +207,9 @@ typedef struct {
   FSERRPTR fserrors;		/* accumulated errors */
   boolean on_odd_row;		/* flag to remember which row we are on */
   int * error_limiter;		/* table for clamping the applied error */
-} my_cquantizer;
+} LJPEG_my_cquantizer;
 
-typedef my_cquantizer * my_cquantize_ptr;
+typedef LJPEG_my_cquantizer * LJPEG_my_cquantize_ptr;
 
 
 /*
@@ -225,7 +225,7 @@ LJPEG_METHODDEF(void)
 prescan_quantize (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY input_buf,
 		  LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   register LJPEG_JSAMPROW ptr;
   register histptr histp;
   register hist3d histogram = cquantize->histogram;
@@ -315,7 +315,7 @@ update_box (LJPEG_j_decompress_ptr cinfo, boxptr boxp)
 /* Shrink the min/max bounds of a box to enclose only nonzero elements, */
 /* and recompute its volume and population */
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   hist3d histogram = cquantize->histogram;
   histptr histp;
   int c0,c1,c2;
@@ -502,7 +502,7 @@ compute_color (LJPEG_j_decompress_ptr cinfo, boxptr boxp, int icolor)
 {
   /* Current algorithm: mean weighted by pixels (not colors) */
   /* Note it is important to get the rounding correct! */
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   hist3d histogram = cquantize->histogram;
   histptr histp;
   int c0,c1,c2;
@@ -545,7 +545,7 @@ select_colors (LJPEG_j_decompress_ptr cinfo, int desired_colors)
   int i;
 
   /* Allocate workspace for box list */
-  boxlist = (boxptr) (*cinfo->mem->alloc_small)
+  boxlist = (boxptr) (*cinfo->mem->LJPEG_alloc_small)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, desired_colors * SIZEOF(box));
   /* Initialize one box containing whole space */
   numboxes = 1;
@@ -858,7 +858,7 @@ fill_inverse_cmap (LJPEG_j_decompress_ptr cinfo, int c0, int c1, int c2)
 /* histogram cell c0/c1/c2.  (Only that one cell MUST be filled, but */
 /* we can fill as many others as we wish.) */
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   hist3d histogram = cquantize->histogram;
   int minc0, minc1, minc2;	/* lower left corner of update box */
   int ic0, ic1, ic2;
@@ -917,7 +917,7 @@ pass2_no_dither (LJPEG_j_decompress_ptr cinfo,
 		 LJPEG_JSAMPARRAY input_buf, LJPEG_JSAMPARRAY output_buf, int num_rows)
 /* This version performs no dithering */
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   hist3d histogram = cquantize->histogram;
   register LJPEG_JSAMPROW inptr, outptr;
   register histptr cachep;
@@ -951,7 +951,7 @@ pass2_fs_dither (LJPEG_j_decompress_ptr cinfo,
 		 LJPEG_JSAMPARRAY input_buf, LJPEG_JSAMPARRAY output_buf, int num_rows)
 /* This version performs Floyd-Steinberg dithering */
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   hist3d histogram = cquantize->histogram;
   register LOCFSERROR cur0, cur1, cur2;	/* current error or pixel value */
   LOCFSERROR belowerr0, belowerr1, belowerr2; /* error for pixel below cur */
@@ -1109,11 +1109,11 @@ LOCAL(void)
 init_error_limit (LJPEG_j_decompress_ptr cinfo)
 /* Allocate and fill in the error_limiter table */
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   int * table;
   int in, out;
 
-  table = (int *) (*cinfo->mem->alloc_small)
+  table = (int *) (*cinfo->mem->LJPEG_alloc_small)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, (MAXJSAMPLE*2+1) * SIZEOF(int));
   table += MAXJSAMPLE;		/* so can index -MAXJSAMPLE .. +MAXJSAMPLE */
   cquantize->error_limiter = table;
@@ -1143,7 +1143,7 @@ init_error_limit (LJPEG_j_decompress_ptr cinfo)
 LJPEG_METHODDEF(void)
 LJPEG_finish_pass1 (LJPEG_j_decompress_ptr cinfo)
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
 
   /* Select the representative colors and fill in cinfo->colormap */
   cinfo->colormap = cquantize->sv_colormap;
@@ -1167,7 +1167,7 @@ LJPEG_finish_pass2 (LJPEG_j_decompress_ptr cinfo)
 LJPEG_METHODDEF(void)
 LJPEG_start_pass_2_quant (LJPEG_j_decompress_ptr cinfo, boolean is_pre_scan)
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
   hist3d histogram = cquantize->histogram;
   int i;
 
@@ -1178,15 +1178,15 @@ LJPEG_start_pass_2_quant (LJPEG_j_decompress_ptr cinfo, boolean is_pre_scan)
 
   if (is_pre_scan) {
     /* Set up method pointers */
-    cquantize->pub.color_quantize = prescan_quantize;
+    cquantize->pub.LJPEG_color_quantize = prescan_quantize;
     cquantize->pub.LJPEG_finish_pass = LJPEG_finish_pass1;
     cquantize->needs_zeroed = TRUE; /* Always zero histogram */
   } else {
     /* Set up method pointers */
     if (cinfo->dither_mode == JDITHER_FS)
-      cquantize->pub.color_quantize = pass2_fs_dither;
+      cquantize->pub.LJPEG_color_quantize = pass2_fs_dither;
     else
-      cquantize->pub.color_quantize = pass2_no_dither;
+      cquantize->pub.LJPEG_color_quantize = pass2_no_dither;
     cquantize->pub.LJPEG_finish_pass = LJPEG_finish_pass2;
 
     /* Make sure color count is acceptable */
@@ -1201,7 +1201,7 @@ LJPEG_start_pass_2_quant (LJPEG_j_decompress_ptr cinfo, boolean is_pre_scan)
 				   (3 * SIZEOF(FSERROR)));
       /* Allocate Floyd-Steinberg workspace if we didn't already. */
       if (cquantize->fserrors == NULL)
-	cquantize->fserrors = (FSERRPTR) (*cinfo->mem->alloc_large)
+	cquantize->fserrors = (FSERRPTR) (*cinfo->mem->LJPEG_alloc_large)
 	  ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, arraysize);
       /* Initialize the propagated errors to zero. */
       FMEMZERO((void FAR *) cquantize->fserrors, arraysize);
@@ -1230,7 +1230,7 @@ LJPEG_start_pass_2_quant (LJPEG_j_decompress_ptr cinfo, boolean is_pre_scan)
 LJPEG_METHODDEF(void)
 new_color_map_2_quant (LJPEG_j_decompress_ptr cinfo)
 {
-  my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
+  LJPEG_my_cquantize_ptr cquantize = (LJPEG_my_cquantize_ptr) cinfo->cquantize;
 
   /* Reset the inverse color map */
   cquantize->needs_zeroed = TRUE;
@@ -1242,15 +1242,15 @@ new_color_map_2_quant (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(void)
-jinit_2pass_quantizer (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jinit_2pass_quantizer (LJPEG_j_decompress_ptr cinfo)
 {
-  my_cquantize_ptr cquantize;
+  LJPEG_my_cquantize_ptr cquantize;
   int i;
 
-  cquantize = (my_cquantize_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(my_cquantizer));
-  cinfo->cquantize = (struct jpeg_color_quantizer *) cquantize;
+  cquantize = (LJPEG_my_cquantize_ptr)
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+				SIZEOF(LJPEG_my_cquantizer));
+  cinfo->cquantize = (struct LJPEG_jpeg_color_quantizer *) cquantize;
   cquantize->pub.LJPEG_start_pass = LJPEG_start_pass_2_quant;
   cquantize->pub.new_color_map = new_color_map_2_quant;
   cquantize->fserrors = NULL;	/* flag optional arrays not allocated */
@@ -1261,10 +1261,10 @@ jinit_2pass_quantizer (LJPEG_j_decompress_ptr cinfo)
     ERREXIT(cinfo, JERR_NOTIMPL);
 
   /* Allocate the histogram/inverse colormap storage */
-  cquantize->histogram = (hist3d) (*cinfo->mem->alloc_small)
+  cquantize->histogram = (hist3d) (*cinfo->mem->LJPEG_alloc_small)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, HIST_C0_ELEMS * SIZEOF(hist2d));
   for (i = 0; i < HIST_C0_ELEMS; i++) {
-    cquantize->histogram[i] = (hist2d) (*cinfo->mem->alloc_large)
+    cquantize->histogram[i] = (hist2d) (*cinfo->mem->LJPEG_alloc_large)
       ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
        HIST_C1_ELEMS*HIST_C2_ELEMS * SIZEOF(histcell));
   }
@@ -1283,7 +1283,7 @@ jinit_2pass_quantizer (LJPEG_j_decompress_ptr cinfo)
     /* Make sure colormap indexes can be represented by JSAMPLEs */
     if (desired > MAXNUMCOLORS)
       ERREXIT1(cinfo, JERR_QUANT_MANY_COLORS, MAXNUMCOLORS);
-    cquantize->sv_colormap = (*cinfo->mem->alloc_sarray)
+    cquantize->sv_colormap = (*cinfo->mem->LJPEG_alloc_sarray)
       ((LJPEG_j_common_ptr) cinfo,JPOOL_IMAGE, (LJPEG_JDIMENSION) desired, (LJPEG_JDIMENSION) 3);
     cquantize->desired = desired;
   } else
@@ -1300,7 +1300,7 @@ jinit_2pass_quantizer (LJPEG_j_decompress_ptr cinfo)
    * we do not promise to honor max_memory_to_use if dither_mode changes.
    */
   if (cinfo->dither_mode == JDITHER_FS) {
-    cquantize->fserrors = (FSERRPTR) (*cinfo->mem->alloc_large)
+    cquantize->fserrors = (FSERRPTR) (*cinfo->mem->LJPEG_alloc_large)
       ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
        (size_t) ((cinfo->output_width + 2) * (3 * SIZEOF(FSERROR))));
     /* Might as well create the error-limiting table too. */

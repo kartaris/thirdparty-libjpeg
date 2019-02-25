@@ -20,7 +20,7 @@
 /* Private state */
 
 typedef struct {
-  struct jpeg_decomp_master pub; /* public fields */
+  struct LJPEG_jpeg_decomp_master pub; /* public fields */
 
   int pass_number;		/* # of passes completed */
 
@@ -29,8 +29,8 @@ typedef struct {
   /* Saved references to initialized quantizer modules,
    * in case we need to switch modes.
    */
-  struct jpeg_color_quantizer * quantizer_1pass;
-  struct jpeg_color_quantizer * quantizer_2pass;
+  struct LJPEG_jpeg_color_quantizer * quantizer_1pass;
+  struct LJPEG_jpeg_color_quantizer * quantizer_2pass;
 } LJPEG_my_decomp_master;
 
 typedef LJPEG_my_decomp_master * LJPEG_my_master_ptr;
@@ -139,11 +139,11 @@ LJPEG_jpeg_calc_output_dimensions (LJPEG_j_decompress_ptr cinfo)
        ci++, compptr++) {
     /* Size in samples, after IDCT scaling */
     compptr->downsampled_width = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_width *
+      LJPEG_jdiv_round_up((long) cinfo->image_width *
 		    (long) (compptr->h_samp_factor * compptr->DCT_h_scaled_size),
 		    (long) (cinfo->max_h_samp_factor * cinfo->block_size));
     compptr->downsampled_height = (LJPEG_JDIMENSION)
-      jdiv_round_up((long) cinfo->image_height *
+      LJPEG_jdiv_round_up((long) cinfo->image_height *
 		    (long) (compptr->v_samp_factor * compptr->DCT_v_scaled_size),
 		    (long) (cinfo->max_v_samp_factor * cinfo->block_size));
   }
@@ -228,28 +228,28 @@ LOCAL(void)
 LJPEG_prepare_range_limit_table (LJPEG_j_decompress_ptr cinfo)
 /* Allocate and fill in the sample_range_limit table */
 {
-  JSAMPLE * table;
+  LJPEG_JSAMPLE * table;
   int i;
 
-  table = (JSAMPLE *)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-		(5 * (MAXJSAMPLE+1) + CENTERJSAMPLE) * SIZEOF(JSAMPLE));
+  table = (LJPEG_JSAMPLE *)
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+		(5 * (MAXJSAMPLE+1) + CENTERJSAMPLE) * SIZEOF(LJPEG_JSAMPLE));
   table += (MAXJSAMPLE+1);	/* allow negative subscripts of simple table */
   cinfo->sample_range_limit = table;
   /* First segment of "simple" table: limit[x] = 0 for x < 0 */
-  MEMZERO(table - (MAXJSAMPLE+1), (MAXJSAMPLE+1) * SIZEOF(JSAMPLE));
+  MEMZERO(table - (MAXJSAMPLE+1), (MAXJSAMPLE+1) * SIZEOF(LJPEG_JSAMPLE));
   /* Main part of "simple" table: limit[x] = x */
   for (i = 0; i <= MAXJSAMPLE; i++)
-    table[i] = (JSAMPLE) i;
+    table[i] = (LJPEG_JSAMPLE) i;
   table += CENTERJSAMPLE;	/* Point to where post-IDCT table starts */
   /* End of simple table, rest of first half of post-IDCT table */
   for (i = CENTERJSAMPLE; i < 2*(MAXJSAMPLE+1); i++)
     table[i] = MAXJSAMPLE;
   /* Second half of post-IDCT table */
   MEMZERO(table + (2 * (MAXJSAMPLE+1)),
-	  (2 * (MAXJSAMPLE+1) - CENTERJSAMPLE) * SIZEOF(JSAMPLE));
+	  (2 * (MAXJSAMPLE+1) - CENTERJSAMPLE) * SIZEOF(LJPEG_JSAMPLE));
   MEMCOPY(table + (4 * (MAXJSAMPLE+1) - CENTERJSAMPLE),
-	  cinfo->sample_range_limit, CENTERJSAMPLE * SIZEOF(JSAMPLE));
+	  cinfo->sample_range_limit, CENTERJSAMPLE * SIZEOF(LJPEG_JSAMPLE));
 }
 
 
@@ -314,7 +314,7 @@ LJPEG_master_selection (LJPEG_j_decompress_ptr cinfo)
 
     if (cinfo->enable_1pass_quant) {
 #ifdef QUANT_1PASS_SUPPORTED
-      jinit_1pass_quantizer(cinfo);
+      LJPEG_jinit_1pass_quantizer(cinfo);
       master->quantizer_1pass = cinfo->cquantize;
 #else
       ERREXIT(cinfo, JERR_NOT_COMPILED);
@@ -324,7 +324,7 @@ LJPEG_master_selection (LJPEG_j_decompress_ptr cinfo)
     /* We use the 2-pass code to map to external colormaps. */
     if (cinfo->enable_2pass_quant || cinfo->enable_external_quant) {
 #ifdef QUANT_2PASS_SUPPORTED
-      jinit_2pass_quantizer(cinfo);
+      LJPEG_jinit_2pass_quantizer(cinfo);
       master->quantizer_2pass = cinfo->cquantize;
 #else
       ERREXIT(cinfo, JERR_NOT_COMPILED);
@@ -366,7 +366,7 @@ LJPEG_master_selection (LJPEG_j_decompress_ptr cinfo)
     LJPEG_jinit_d_main_controller(cinfo, FALSE /* never need full buffer here */);
 
   /* We can now tell the memory manager to allocate virtual arrays. */
-  (*cinfo->mem->realize_virt_arrays) ((LJPEG_j_common_ptr) cinfo);
+  (*cinfo->mem->LJPEG_realize_virt_arrays) ((LJPEG_j_common_ptr) cinfo);
 
   /* Initialize input side of decompressor to consume first scan. */
   (*cinfo->inputctl->LJPEG_start_input_pass) (cinfo);
@@ -516,9 +516,9 @@ LJPEG_jinit_master_decompress (LJPEG_j_decompress_ptr cinfo)
   LJPEG_my_master_ptr master;
 
   master = (LJPEG_my_master_ptr)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(LJPEG_my_decomp_master));
-  cinfo->master = (struct jpeg_decomp_master *) master;
+  cinfo->master = (struct LJPEG_jpeg_decomp_master *) master;
   master->pub.LJPEG_prepare_for_output_pass = LJPEG_prepare_for_output_pass;
   master->pub.LJPEG_finish_output_pass = LJPEG_finish_output_pass;
 

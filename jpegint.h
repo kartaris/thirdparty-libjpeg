@@ -43,7 +43,7 @@ typedef enum {			/* Operating modes for buffer controllers */
 /* Declarations for compression modules */
 
 /* Master control module */
-struct jpeg_comp_master {
+struct LJPEG_jpeg_comp_master {
   LJPEG_JMETHOD(void, LJPEG_prepare_for_pass, (LJPEG_j_compress_ptr cinfo));
   LJPEG_JMETHOD(void, LJPEG_pass_startup, (LJPEG_j_compress_ptr cinfo));
   LJPEG_JMETHOD(void, LJPEG_finish_pass, (LJPEG_j_compress_ptr cinfo));
@@ -54,7 +54,7 @@ struct jpeg_comp_master {
 };
 
 /* Main buffer control (downsampled-data buffer) */
-struct jpeg_c_main_controller {
+struct LJPEG_jpeg_c_main_controller {
   LJPEG_JMETHOD(void, LJPEG_start_pass, (LJPEG_j_compress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode));
   LJPEG_JMETHOD(void, process_data, (LJPEG_j_compress_ptr cinfo,
 			       LJPEG_JSAMPARRAY input_buf, LJPEG_JDIMENSION *in_row_ctr,
@@ -62,7 +62,7 @@ struct jpeg_c_main_controller {
 };
 
 /* Compression preprocessing (downsampling input buffer control) */
-struct jpeg_c_prep_controller {
+struct LJPEG_jpeg_c_prep_controller {
   LJPEG_JMETHOD(void, LJPEG_start_pass, (LJPEG_j_compress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode));
   LJPEG_JMETHOD(void, LJPEG_pre_process_data, (LJPEG_j_compress_ptr cinfo,
 				   LJPEG_JSAMPARRAY input_buf,
@@ -89,7 +89,7 @@ struct LJPEG_jpeg_color_converter {
 };
 
 /* Downsampling */
-struct jpeg_downsampler {
+struct LJPEG_jpeg_downsampler {
   LJPEG_JMETHOD(void, LJPEG_start_pass, (LJPEG_j_compress_ptr cinfo));
   LJPEG_JMETHOD(void, downsample, (LJPEG_j_compress_ptr cinfo,
 			     LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION in_row_index,
@@ -120,7 +120,7 @@ struct LJPEG_jpeg_entropy_encoder {
 };
 
 /* Marker writing */
-struct jpeg_marker_writer {
+struct LJPEG_jpeg_marker_writer {
   LJPEG_JMETHOD(void, LJPEG_write_file_header, (LJPEG_j_compress_ptr cinfo));
   LJPEG_JMETHOD(void, LJPEG_write_frame_header, (LJPEG_j_compress_ptr cinfo));
   LJPEG_JMETHOD(void, LJPEG_write_scan_header, (LJPEG_j_compress_ptr cinfo));
@@ -137,7 +137,7 @@ struct jpeg_marker_writer {
 /* Declarations for decompression modules */
 
 /* Master control module */
-struct jpeg_decomp_master {
+struct LJPEG_jpeg_decomp_master {
   LJPEG_JMETHOD(void, LJPEG_prepare_for_output_pass, (LJPEG_j_decompress_ptr cinfo));
   LJPEG_JMETHOD(void, LJPEG_finish_output_pass, (LJPEG_j_decompress_ptr cinfo));
 
@@ -146,7 +146,7 @@ struct jpeg_decomp_master {
 };
 
 /* Input control module */
-struct jpeg_input_controller {
+struct LJPEG_jpeg_input_controller {
   LJPEG_JMETHOD(int, consume_input, (LJPEG_j_decompress_ptr cinfo));
   LJPEG_JMETHOD(void, LJPEG_reset_input_controller, (LJPEG_j_decompress_ptr cinfo));
   LJPEG_JMETHOD(void, LJPEG_start_input_pass, (LJPEG_j_decompress_ptr cinfo));
@@ -158,7 +158,7 @@ struct jpeg_input_controller {
 };
 
 /* Main buffer control (downsampled-data buffer) */
-struct jpeg_d_main_controller {
+struct LJPEG_jpeg_d_main_controller {
   LJPEG_JMETHOD(void, LJPEG_start_pass, (LJPEG_j_decompress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode));
   LJPEG_JMETHOD(void, process_data, (LJPEG_j_decompress_ptr cinfo,
 			       LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION *out_row_ctr,
@@ -166,7 +166,7 @@ struct jpeg_d_main_controller {
 };
 
 /* Coefficient buffer control */
-struct jpeg_d_coef_controller {
+struct LJPEG_jpeg_d_coef_controller {
   LJPEG_JMETHOD(void, LJPEG_start_input_pass, (LJPEG_j_decompress_ptr cinfo));
   LJPEG_JMETHOD(int, LJPEG_consume_data, (LJPEG_j_decompress_ptr cinfo));
   LJPEG_JMETHOD(void, LJPEG_start_output_pass, (LJPEG_j_decompress_ptr cinfo));
@@ -177,7 +177,7 @@ struct jpeg_d_coef_controller {
 };
 
 /* Decompression postprocessing (color quantization buffer control) */
-struct jpeg_d_post_controller {
+struct LJPEG_jpeg_d_post_controller {
   LJPEG_JMETHOD(void, LJPEG_start_pass, (LJPEG_j_decompress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode));
   LJPEG_JMETHOD(void, post_process_data, (LJPEG_j_decompress_ptr cinfo,
 				    LJPEG_JSAMPIMAGE input_buf,
@@ -189,7 +189,7 @@ struct jpeg_d_post_controller {
 };
 
 /* Marker reading & parsing */
-struct jpeg_marker_reader {
+struct LJPEG_jpeg_marker_reader {
   LJPEG_JMETHOD(void, LJPEG_reset_marker_reader, (LJPEG_j_decompress_ptr cinfo));
   /* Read markers until SOS or EOI.
    * Returns same codes as are defined for LJPEG_jpeg_consume_input:
@@ -209,7 +209,7 @@ struct jpeg_marker_reader {
 };
 
 /* Entropy decoding */
-struct jpeg_entropy_decoder {
+struct LJPEG_jpeg_entropy_decoder {
   LJPEG_JMETHOD(void, LJPEG_start_pass, (LJPEG_j_decompress_ptr cinfo));
   LJPEG_JMETHOD(boolean, LJPEG_decode_mcu, (LJPEG_j_decompress_ptr cinfo,
 				LJPEG_JBLOCKROW *MCU_data));
@@ -221,14 +221,14 @@ typedef LJPEG_JMETHOD(void, inverse_DCT_method_ptr,
 		 LJPEG_JCOEFPTR coef_block,
 		 LJPEG_JSAMPARRAY output_buf, LJPEG_JDIMENSION output_col));
 
-struct jpeg_inverse_dct {
+struct LJPEG_jpeg_inverse_dct {
   LJPEG_JMETHOD(void, LJPEG_start_pass, (LJPEG_j_decompress_ptr cinfo));
   /* It is useful to allow each component to have a separate IDCT method. */
   inverse_DCT_method_ptr inverse_DCT[MAX_COMPONENTS];
 };
 
 /* Upsampling (note that upsampler must also call color converter) */
-struct jpeg_upsampler {
+struct LJPEG_jpeg_upsampler {
   LJPEG_JMETHOD(void, LJPEG_start_pass, (LJPEG_j_decompress_ptr cinfo));
   LJPEG_JMETHOD(void, upsample, (LJPEG_j_decompress_ptr cinfo,
 			   LJPEG_JSAMPIMAGE input_buf,
@@ -242,7 +242,7 @@ struct jpeg_upsampler {
 };
 
 /* Colorspace conversion */
-struct jpeg_color_deconverter {
+struct LJPEG_jpeg_color_deconverter {
   LJPEG_JMETHOD(void, LJPEG_start_pass, (LJPEG_j_decompress_ptr cinfo));
   LJPEG_JMETHOD(void, color_convert, (LJPEG_j_decompress_ptr cinfo,
 				LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
@@ -250,9 +250,9 @@ struct jpeg_color_deconverter {
 };
 
 /* Color quantization or color precision reduction */
-struct jpeg_color_quantizer {
+struct LJPEG_jpeg_color_quantizer {
   LJPEG_JMETHOD(void, LJPEG_start_pass, (LJPEG_j_decompress_ptr cinfo, boolean is_pre_scan));
-  LJPEG_JMETHOD(void, color_quantize, (LJPEG_j_decompress_ptr cinfo,
+  LJPEG_JMETHOD(void, LJPEG_color_quantize, (LJPEG_j_decompress_ptr cinfo,
 				 LJPEG_JSAMPARRAY input_buf, LJPEG_JSAMPARRAY output_buf,
 				 int num_rows));
   LJPEG_JMETHOD(void, LJPEG_finish_pass, (LJPEG_j_decompress_ptr cinfo));
@@ -315,23 +315,23 @@ struct jpeg_color_quantizer {
 #define LJPEG_jinit_inverse_dct	jIIDCT
 #define LJPEG_jinit_upsampler		jIUpsampler
 #define LJPEG_jinit_color_deconverter	jIDColor
-#define jinit_1pass_quantizer	jI1Quant
-#define jinit_2pass_quantizer	jI2Quant
+#define LJPEG_jinit_1pass_quantizer	jI1Quant
+#define LJPEG_jinit_2pass_quantizer	jI2Quant
 #define LJPEG_jinit_merged_upsampler	jIMUpsampler
-#define jinit_memory_mgr	jIMemMgr
-#define jdiv_round_up		jDivRound
-#define jround_up		jRound
+#define LJPEG_jinit_memory_mgr	jIMemMgr
+#define LJPEG_jdiv_round_up		jDivRound
+#define LJPEG_jround_up		jRound
 #define jzero_far		jZeroFar
-#define jcopy_sample_rows	jCopySamples
-#define jcopy_block_row		jCopyBlocks
+#define LJPEG_jcopy_sample_rows	jCopySamples
+#define LJPEG_jcopy_block_row		jCopyBlocks
 #define LJPEG_jpeg_zigzag_order	jZIGTable
-#define jpeg_natural_order	jZAGTable
-#define jpeg_natural_order7	jZAG7Table
-#define jpeg_natural_order6	jZAG6Table
-#define jpeg_natural_order5	jZAG5Table
-#define jpeg_natural_order4	jZAG4Table
-#define jpeg_natural_order3	jZAG3Table
-#define jpeg_natural_order2	jZAG2Table
+#define LJPEG_jpeg_natural_order	jZAGTable
+#define LJPEG_jpeg_natural_order7	jZAG7Table
+#define LJPEG_jpeg_natural_order6	jZAG6Table
+#define LJPEG_jpeg_natural_order5	jZAG5Table
+#define LJPEG_jpeg_natural_order4	jZAG4Table
+#define LJPEG_jpeg_natural_order3	jZAG3Table
+#define LJPEG_jpeg_natural_order2	jZAG2Table
 #define LJPEG_jpeg_aritab		jAriTab
 #endif /* NEED_SHORT_EXTERNAL_NAMES */
 
@@ -387,31 +387,31 @@ EXTERN(void) LJPEG_jinit_arith_decoder LJPEG_JPP((LJPEG_j_decompress_ptr cinfo))
 EXTERN(void) LJPEG_jinit_inverse_dct LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) LJPEG_jinit_upsampler LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) LJPEG_jinit_color_deconverter LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
-EXTERN(void) jinit_1pass_quantizer LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
-EXTERN(void) jinit_2pass_quantizer LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(void) LJPEG_jinit_1pass_quantizer LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(void) LJPEG_jinit_2pass_quantizer LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) LJPEG_jinit_merged_upsampler LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 /* Memory manager initialization */
-EXTERN(void) jinit_memory_mgr LJPEG_JPP((LJPEG_j_common_ptr cinfo));
+EXTERN(void) LJPEG_jinit_memory_mgr LJPEG_JPP((LJPEG_j_common_ptr cinfo));
 
 /* Utility routines in jutils.c */
-EXTERN(long) jdiv_round_up LJPEG_JPP((long a, long b));
-EXTERN(long) jround_up LJPEG_JPP((long a, long b));
-EXTERN(void) jcopy_sample_rows LJPEG_JPP((LJPEG_JSAMPARRAY input_array, int source_row,
+EXTERN(long) LJPEG_jdiv_round_up LJPEG_JPP((long a, long b));
+EXTERN(long) LJPEG_jround_up LJPEG_JPP((long a, long b));
+EXTERN(void) LJPEG_jcopy_sample_rows LJPEG_JPP((LJPEG_JSAMPARRAY input_array, int source_row,
 				    LJPEG_JSAMPARRAY output_array, int dest_row,
 				    int num_rows, LJPEG_JDIMENSION num_cols));
-EXTERN(void) jcopy_block_row LJPEG_JPP((LJPEG_JBLOCKROW input_row, LJPEG_JBLOCKROW output_row,
+EXTERN(void) LJPEG_jcopy_block_row LJPEG_JPP((LJPEG_JBLOCKROW input_row, LJPEG_JBLOCKROW output_row,
 				  LJPEG_JDIMENSION num_blocks));
 /* Constant tables in jutils.c */
 #if 0				/* This table is not actually needed in v6a */
 extern const int LJPEG_jpeg_zigzag_order[]; /* natural coef order to zigzag order */
 #endif
-extern const int jpeg_natural_order[]; /* zigzag coef order to natural order */
-extern const int jpeg_natural_order7[]; /* zz to natural order for 7x7 block */
-extern const int jpeg_natural_order6[]; /* zz to natural order for 6x6 block */
-extern const int jpeg_natural_order5[]; /* zz to natural order for 5x5 block */
-extern const int jpeg_natural_order4[]; /* zz to natural order for 4x4 block */
-extern const int jpeg_natural_order3[]; /* zz to natural order for 3x3 block */
-extern const int jpeg_natural_order2[]; /* zz to natural order for 2x2 block */
+extern const int LJPEG_jpeg_natural_order[]; /* zigzag coef order to natural order */
+extern const int LJPEG_jpeg_natural_order7[]; /* zz to natural order for 7x7 block */
+extern const int LJPEG_jpeg_natural_order6[]; /* zz to natural order for 6x6 block */
+extern const int LJPEG_jpeg_natural_order5[]; /* zz to natural order for 5x5 block */
+extern const int LJPEG_jpeg_natural_order4[]; /* zz to natural order for 4x4 block */
+extern const int LJPEG_jpeg_natural_order3[]; /* zz to natural order for 3x3 block */
+extern const int LJPEG_jpeg_natural_order2[]; /* zz to natural order for 2x2 block */
 
 /* Arithmetic coding probability estimation tables in jaricom.c */
 extern const INT32 LJPEG_jpeg_aritab[];
@@ -420,7 +420,7 @@ extern const INT32 LJPEG_jpeg_aritab[];
 
 #ifdef INCOMPLETE_TYPES_BROKEN
 #ifndef AM_MEMORY_MANAGER	/* only jmemmgr.c defines these */
-struct jvirt_sarray_control { long dummy; };
-struct jvirt_barray_control { long dummy; };
+struct LJPEG_jvirt_sarray_control { long dummy; };
+struct LJPEG_jvirt_barray_control { long dummy; };
 #endif
 #endif /* INCOMPLETE_TYPES_BROKEN */

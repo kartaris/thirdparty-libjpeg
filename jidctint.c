@@ -188,7 +188,7 @@ LJPEG_jpeg_idct_islow (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info *
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[DCTSIZE2];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -326,7 +326,7 @@ LJPEG_jpeg_idct_islow (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info *
     if (wsptr[1] == 0 && wsptr[2] == 0 && wsptr[3] == 0 && wsptr[4] == 0 &&
 	wsptr[5] == 0 && wsptr[6] == 0 && wsptr[7] == 0) {
       /* AC terms all zero */
-      JSAMPLE dcval = range_limit[(int) DESCALE((INT32) wsptr[0], PASS1_BITS+3)
+      LJPEG_JSAMPLE dcval = range_limit[(int) DESCALE((INT32) wsptr[0], PASS1_BITS+3)
 				  & RANGE_MASK];
 
       outptr[0] = dcval;
@@ -448,7 +448,7 @@ LJPEG_jpeg_idct_7x7 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[7*7];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -599,7 +599,7 @@ LJPEG_jpeg_idct_6x6 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[6*6];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -722,7 +722,7 @@ LJPEG_jpeg_idct_5x5 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[5*5];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -839,7 +839,7 @@ LJPEG_jpeg_idct_4x4 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[4*4];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -945,7 +945,7 @@ LJPEG_jpeg_idct_3x3 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[3*3];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -1034,7 +1034,7 @@ LJPEG_jpeg_idct_2x2 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
   INT32 tmp0, tmp1, tmp2, tmp3, tmp4, tmp5;
   ISLOW_MULT_TYPE * quantptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   SHIFT_TEMPS
 
   /* Pass 1: process columns from input. */
@@ -1089,7 +1089,7 @@ LJPEG_jpeg_idct_1x1 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
 {
   int dcval;
   ISLOW_MULT_TYPE * quantptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   SHIFT_TEMPS
 
   /* 1x1 is trivial: just take the DC coefficient divided by 8. */
@@ -1121,7 +1121,7 @@ LJPEG_jpeg_idct_9x9 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[8*9];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -1295,7 +1295,7 @@ LJPEG_jpeg_idct_10x10 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info *
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[8*10];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -1492,7 +1492,7 @@ LJPEG_jpeg_idct_11x11 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info *
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[8*11];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -1688,7 +1688,7 @@ LJPEG_jpeg_idct_12x12 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info *
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[8*12];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -1906,7 +1906,7 @@ LJPEG_jpeg_idct_13x13 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info *
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[8*13];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -2136,7 +2136,7 @@ LJPEG_jpeg_idct_14x14 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info *
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[8*14];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -2364,7 +2364,7 @@ LJPEG_jpeg_idct_15x15 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info *
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[8*15];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -2608,7 +2608,7 @@ LJPEG_jpeg_idct_16x16 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info *
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[8*16];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -2871,7 +2871,7 @@ LJPEG_jpeg_idct_16x8 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * 
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[8*8];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -3146,7 +3146,7 @@ LJPEG_jpeg_idct_14x7 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * 
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[8*7];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -3343,7 +3343,7 @@ LJPEG_jpeg_idct_12x6 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * 
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[8*6];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -3521,7 +3521,7 @@ LJPEG_jpeg_idct_10x5 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * 
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[8*5];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -3684,7 +3684,7 @@ LJPEG_jpeg_idct_8x4 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[8*4];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -3838,7 +3838,7 @@ LJPEG_jpeg_idct_6x3 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[6*3];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -3950,7 +3950,7 @@ LJPEG_jpeg_idct_4x2 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
   ISLOW_MULT_TYPE * quantptr;
   INT32 * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   INT32 workspace[4*2];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -4039,7 +4039,7 @@ LJPEG_jpeg_idct_2x1 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
   INT32 tmp0, tmp10;
   ISLOW_MULT_TYPE * quantptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   SHIFT_TEMPS
 
   /* Pass 1: empty. */
@@ -4086,7 +4086,7 @@ LJPEG_jpeg_idct_8x16 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * 
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[8*16];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -4306,7 +4306,7 @@ LJPEG_jpeg_idct_7x14 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * 
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[7*14];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -4491,7 +4491,7 @@ LJPEG_jpeg_idct_6x12 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * 
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[6*12];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -4657,7 +4657,7 @@ LJPEG_jpeg_idct_5x10 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * 
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[5*10];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -4811,7 +4811,7 @@ LJPEG_jpeg_idct_4x8 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[4*8];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -4994,7 +4994,7 @@ LJPEG_jpeg_idct_3x6 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
   ISLOW_MULT_TYPE * quantptr;
   int * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   int workspace[3*6];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -5100,7 +5100,7 @@ LJPEG_jpeg_idct_2x4 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
   ISLOW_MULT_TYPE * quantptr;
   INT32 * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   int ctr;
   INT32 workspace[2*4];	/* buffers data between passes */
   SHIFT_TEMPS
@@ -5182,7 +5182,7 @@ LJPEG_jpeg_idct_1x2 (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
 {
   INT32 tmp0, tmp10;
   ISLOW_MULT_TYPE * quantptr;
-  JSAMPLE *range_limit = IDCT_range_limit(cinfo);
+  LJPEG_JSAMPLE *range_limit = IDCT_range_limit(cinfo);
   SHIFT_TEMPS
 
   /* Process 1 column from input, store into output array. */

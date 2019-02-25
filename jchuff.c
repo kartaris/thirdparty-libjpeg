@@ -183,7 +183,7 @@ LJPEG_jpeg_make_c_derived_tbl (LJPEG_j_compress_ptr cinfo, boolean isDC, int tbl
   /* Allocate a workspace if we haven't already done so. */
   if (*pdtbl == NULL)
     *pdtbl = (LJPEG_c_derived_tbl *)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(LJPEG_c_derived_tbl));
   dtbl = *pdtbl;
   
@@ -269,7 +269,7 @@ LOCAL(boolean)
 LJPEG_dump_buffer_s (LJPEG_working_state * state)
 /* Empty the output buffer; return TRUE if successful, FALSE if must suspend */
 {
-  struct jpeg_destination_mgr * dest = state->cinfo->dest;
+  struct LJPEG_jpeg_destination_mgr * dest = state->cinfo->dest;
 
   if (! (*dest->LJPEG_empty_output_buffer) (state->cinfo))
     return FALSE;
@@ -284,7 +284,7 @@ LOCAL(void)
 LJPEG_dump_buffer_e (LJPEG_huff_entropy_ptr entropy)
 /* Empty the output buffer; we do not support suspension in this case. */
 {
-  struct jpeg_destination_mgr * dest = entropy->cinfo->dest;
+  struct LJPEG_jpeg_destination_mgr * dest = entropy->cinfo->dest;
 
   if (! (*dest->LJPEG_empty_output_buffer) (entropy->cinfo))
     ERREXIT(entropy->cinfo, JERR_CANT_SUSPEND);
@@ -1479,7 +1479,7 @@ LJPEG_start_pass_huff (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
 	/* AC refinement needs a correction bit buffer */
 	if (entropy->bit_buffer == NULL)
 	  entropy->bit_buffer = (char *)
-	    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+	    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 					MAX_CORR_BITS * SIZEOF(char));
       }
     }
@@ -1509,7 +1509,7 @@ LJPEG_start_pass_huff (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
 	/* Note that LJPEG_jpeg_gen_optimal_table expects 257 entries in each table! */
 	if (entropy->dc_count_ptrs[tbl] == NULL)
 	  entropy->dc_count_ptrs[tbl] = (long *)
-	    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+	    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 					257 * SIZEOF(long));
 	MEMZERO(entropy->dc_count_ptrs[tbl], 257 * SIZEOF(long));
       } else {
@@ -1529,7 +1529,7 @@ LJPEG_start_pass_huff (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
 	  ERREXIT1(cinfo, JERR_NO_HUFF_TABLE, tbl);
 	if (entropy->ac_count_ptrs[tbl] == NULL)
 	  entropy->ac_count_ptrs[tbl] = (long *)
-	    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+	    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 					257 * SIZEOF(long));
 	MEMZERO(entropy->ac_count_ptrs[tbl], 257 * SIZEOF(long));
       } else {
@@ -1560,7 +1560,7 @@ LJPEG_jinit_huff_encoder (LJPEG_j_compress_ptr cinfo)
   int i;
 
   entropy = (LJPEG_huff_entropy_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_huff_entropy_encoder));
   cinfo->entropy = (struct LJPEG_jpeg_entropy_encoder *) entropy;
   entropy->pub.LJPEG_start_pass = LJPEG_start_pass_huff;

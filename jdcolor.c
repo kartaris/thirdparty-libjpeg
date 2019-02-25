@@ -17,7 +17,7 @@
 /* Private subobject */
 
 typedef struct {
-  struct jpeg_color_deconverter pub; /* public fields */
+  struct LJPEG_jpeg_color_deconverter pub; /* public fields */
 
   /* Private state for YCC->RGB conversion */
   int * Cr_r_tab;		/* => table for Cr to R conversion */
@@ -71,7 +71,7 @@ typedef LJPEG_my_color_deconverter * LJPEG_my_cconvert_ptr;
 #define FIX(x)		((INT32) ((x) * (1L<<SCALEBITS) + 0.5))
 
 /* We allocate one big table for RGB->Y conversion and divide it up into
- * three parts, instead of doing three alloc_small requests.  This lets us
+ * three parts, instead of doing three LJPEG_alloc_small requests.  This lets us
  * use a single table base address, which can be held in a register in the
  * inner loops on many machines (more than can hold all three addresses,
  * anyway).
@@ -96,16 +96,16 @@ LJPEG_build_ycc_rgb_table (LJPEG_j_decompress_ptr cinfo)
   SHIFT_TEMPS
 
   cconvert->Cr_r_tab = (int *)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				(MAXJSAMPLE+1) * SIZEOF(int));
   cconvert->Cb_b_tab = (int *)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				(MAXJSAMPLE+1) * SIZEOF(int));
   cconvert->Cr_g_tab = (INT32 *)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				(MAXJSAMPLE+1) * SIZEOF(INT32));
   cconvert->Cb_g_tab = (INT32 *)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				(MAXJSAMPLE+1) * SIZEOF(INT32));
 
   for (i = 0, x = -CENTERJSAMPLE; i <= MAXJSAMPLE; i++, x++) {
@@ -149,7 +149,7 @@ LJPEG_ycc_rgb_convert (LJPEG_j_decompress_ptr cinfo,
   register LJPEG_JDIMENSION col;
   LJPEG_JDIMENSION num_cols = cinfo->output_width;
   /* copy these pointers into registers if possible */
-  register JSAMPLE * range_limit = cinfo->sample_range_limit;
+  register LJPEG_JSAMPLE * range_limit = cinfo->sample_range_limit;
   register int * Crrtab = cconvert->Cr_r_tab;
   register int * Cbbtab = cconvert->Cb_b_tab;
   register INT32 * Crgtab = cconvert->Cr_g_tab;
@@ -194,7 +194,7 @@ LJPEG_build_rgb_y_table (LJPEG_j_decompress_ptr cinfo)
 
   /* Allocate and fill in the conversion tables. */
   cconvert->rgb_y_tab = rgb_y_tab = (INT32 *)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				(TABLE_SIZE * SIZEOF(INT32)));
 
   for (i = 0; i <= MAXJSAMPLE; i++) {
@@ -233,7 +233,7 @@ LJPEG_rgb_gray_convert (LJPEG_j_decompress_ptr cinfo,
       g = GETJSAMPLE(inptr1[col]);
       b = GETJSAMPLE(inptr2[col]);
       /* Y */
-      outptr[col] = (JSAMPLE)
+      outptr[col] = (LJPEG_JSAMPLE)
 		((ctab[r+R_Y_OFF] + ctab[g+G_Y_OFF] + ctab[b+B_Y_OFF])
 		 >> SCALEBITS);
     }
@@ -270,9 +270,9 @@ LJPEG_rgb1_rgb_convert (LJPEG_j_decompress_ptr cinfo,
       /* Assume that MAXJSAMPLE+1 is a power of 2, so that the MOD
        * (modulo) operator is equivalent to the bitmask operator AND.
        */
-      outptr[RGB_RED]   = (JSAMPLE) ((r + g - CENTERJSAMPLE) & MAXJSAMPLE);
-      outptr[RGB_GREEN] = (JSAMPLE) g;
-      outptr[RGB_BLUE]  = (JSAMPLE) ((b + g - CENTERJSAMPLE) & MAXJSAMPLE);
+      outptr[RGB_RED]   = (LJPEG_JSAMPLE) ((r + g - CENTERJSAMPLE) & MAXJSAMPLE);
+      outptr[RGB_GREEN] = (LJPEG_JSAMPLE) g;
+      outptr[RGB_BLUE]  = (LJPEG_JSAMPLE) ((b + g - CENTERJSAMPLE) & MAXJSAMPLE);
       outptr += RGB_PIXELSIZE;
     }
   }
@@ -313,7 +313,7 @@ LJPEG_rgb1_gray_convert (LJPEG_j_decompress_ptr cinfo,
       r = (r + g - CENTERJSAMPLE) & MAXJSAMPLE;
       b = (b + g - CENTERJSAMPLE) & MAXJSAMPLE;
       /* Y */
-      outptr[col] = (JSAMPLE)
+      outptr[col] = (LJPEG_JSAMPLE)
 		((ctab[r+R_Y_OFF] + ctab[g+G_Y_OFF] + ctab[b+B_Y_OFF])
 		 >> SCALEBITS);
     }
@@ -396,7 +396,7 @@ LJPEG_grayscale_convert (LJPEG_j_decompress_ptr cinfo,
 		   LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION input_row,
 		   LJPEG_JSAMPARRAY output_buf, int num_rows)
 {
-  jcopy_sample_rows(input_buf[0], (int) input_row, output_buf, 0,
+  LJPEG_jcopy_sample_rows(input_buf[0], (int) input_row, output_buf, 0,
 		    num_rows, cinfo->output_width);
 }
 
@@ -448,7 +448,7 @@ LJPEG_ycck_cmyk_convert (LJPEG_j_decompress_ptr cinfo,
   register LJPEG_JDIMENSION col;
   LJPEG_JDIMENSION num_cols = cinfo->output_width;
   /* copy these pointers into registers if possible */
-  register JSAMPLE * range_limit = cinfo->sample_range_limit;
+  register LJPEG_JSAMPLE * range_limit = cinfo->sample_range_limit;
   register int * Crrtab = cconvert->Cr_r_tab;
   register int * Cbbtab = cconvert->Cb_b_tab;
   register INT32 * Crgtab = cconvert->Cr_g_tab;
@@ -501,7 +501,7 @@ LJPEG_jinit_color_deconverter (LJPEG_j_decompress_ptr cinfo)
   int ci;
 
   cconvert = (LJPEG_my_cconvert_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_my_color_deconverter));
   cinfo->cconvert = &cconvert->pub;
   cconvert->pub.LJPEG_start_pass = LJPEG_start_pass_dcolor;

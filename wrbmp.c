@@ -35,7 +35,7 @@
  * Since BMP stores scanlines bottom-to-top, we have to invert the image
  * from JPEG's top-to-bottom order.  To do this, we save the outgoing data
  * in a virtual array during put_pixel_row calls, then actually emit the
- * BMP file during finish_output.  The virtual array contains one JSAMPLE per
+ * BMP file during finish_output.  The virtual array contains one LJPEG_JSAMPLE per
  * pixel if the output is grayscale or colormapped, three if it is full color.
  */
 
@@ -79,7 +79,7 @@ put_pixel_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
   int pad;
 
   /* Access next row in virtual array */
-  image_ptr = (*cinfo->mem->access_virt_sarray)
+  image_ptr = (*cinfo->mem->LJPEG_access_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, dest->whole_image,
      dest->cur_output_row, (LJPEG_JDIMENSION) 1, TRUE);
   dest->cur_output_row++;
@@ -114,7 +114,7 @@ put_gray_rows (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo,
   int pad;
 
   /* Access next row in virtual array */
-  image_ptr = (*cinfo->mem->access_virt_sarray)
+  image_ptr = (*cinfo->mem->LJPEG_access_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, dest->whole_image,
      dest->cur_output_row, (LJPEG_JDIMENSION) 1, TRUE);
   dest->cur_output_row++;
@@ -364,7 +364,7 @@ finish_output_bmp (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
       progress->pub.pass_limit = (long) cinfo->output_height;
       (*progress->pub.LJPEG_progress_monitor) ((LJPEG_j_common_ptr) cinfo);
     }
-    image_ptr = (*cinfo->mem->access_virt_sarray)
+    image_ptr = (*cinfo->mem->LJPEG_access_virt_sarray)
       ((LJPEG_j_common_ptr) cinfo, dest->whole_image, row-1, (LJPEG_JDIMENSION) 1, FALSE);
     data_ptr = image_ptr[0];
     for (col = dest->row_width; col > 0; col--) {
@@ -393,7 +393,7 @@ LJPEG_jinit_write_bmp (LJPEG_j_decompress_ptr cinfo, boolean is_os2)
 
   /* Create module interface object, fill in method pointers */
   dest = (bmp_dest_ptr)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(bmp_dest_struct));
   dest->pub.start_output = start_output_bmp;
   dest->pub.finish_output = finish_output_bmp;
@@ -421,7 +421,7 @@ LJPEG_jinit_write_bmp (LJPEG_j_decompress_ptr cinfo, boolean is_os2)
   dest->pad_bytes = (int) (row_width - dest->data_width);
 
   /* Allocate space for inversion array, prepare for write pass */
-  dest->whole_image = (*cinfo->mem->request_virt_sarray)
+  dest->whole_image = (*cinfo->mem->LJPEG_request_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
      row_width, cinfo->output_height, (LJPEG_JDIMENSION) 1);
   dest->cur_output_row = 0;
@@ -431,7 +431,7 @@ LJPEG_jinit_write_bmp (LJPEG_j_decompress_ptr cinfo, boolean is_os2)
   }
 
   /* Create decompressor output buffer. */
-  dest->pub.buffer = (*cinfo->mem->alloc_sarray)
+  dest->pub.buffer = (*cinfo->mem->LJPEG_alloc_sarray)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, row_width, (LJPEG_JDIMENSION) 1);
   dest->pub.buffer_height = 1;
 

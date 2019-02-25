@@ -79,7 +79,7 @@ struct LJPEG_djpeg_dest_struct {
  */
 
 struct LJPEG_cdjpeg_progress_mgr {
-  struct jpeg_progress_mgr pub;	/* fields known to JPEG library */
+  struct LJPEG_jpeg_progress_mgr pub;	/* fields known to JPEG library */
   int completed_extra_passes;	/* extra passes completed */
   int total_extra_passes;	/* total extra */
   /* last printed percentage stored here to avoid multiple printouts */

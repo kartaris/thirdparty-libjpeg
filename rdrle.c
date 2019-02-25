@@ -28,7 +28,7 @@
 #include <rle.h>
 
 /*
- * We assume that JSAMPLE has the same representation as rle_pixel,
+ * We assume that LJPEG_JSAMPLE has the same representation as rle_pixel,
  * to wit, "unsigned char".  Hence we can't cope with 12- or 16-bit samples.
  */
 
@@ -155,13 +155,13 @@ start_input_rle (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
    * (GRAYSCALE scanlines don't need converting)
    */
   if (source->visual != GRAYSCALE) {
-    source->rle_row = (rle_pixel**) (*cinfo->mem->alloc_sarray)
+    source->rle_row = (rle_pixel**) (*cinfo->mem->LJPEG_alloc_sarray)
       ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
        (LJPEG_JDIMENSION) width, (LJPEG_JDIMENSION) cinfo->input_components);
   }
 
   /* request a virtual array to hold the image */
-  source->image = (*cinfo->mem->request_virt_sarray)
+  source->image = (*cinfo->mem->LJPEG_request_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
      (LJPEG_JDIMENSION) (width * source->header.ncolors),
      (LJPEG_JDIMENSION) height, (LJPEG_JDIMENSION) 1);
@@ -189,7 +189,7 @@ get_rle_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   rle_source_ptr source = (rle_source_ptr) sinfo;
 
   source->row--;
-  source->pub.buffer = (*cinfo->mem->access_virt_sarray)
+  source->pub.buffer = (*cinfo->mem->LJPEG_access_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, source->image, source->row, (LJPEG_JDIMENSION) 1, FALSE);
 
   return 1;
@@ -213,14 +213,14 @@ get_pseudocolor_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   colormap = source->header.cmap;
   dest_row = source->pub.buffer[0];
   source->row--;
-  src_row = * (*cinfo->mem->access_virt_sarray)
+  src_row = * (*cinfo->mem->LJPEG_access_virt_sarray)
     ((LJPEG_j_common_ptr) cinfo, source->image, source->row, (LJPEG_JDIMENSION) 1, FALSE);
 
   for (col = cinfo->image_width; col > 0; col--) {
     val = GETJSAMPLE(*src_row++);
-    *dest_row++ = (JSAMPLE) (colormap[val      ] >> 8);
-    *dest_row++ = (JSAMPLE) (colormap[val + 256] >> 8);
-    *dest_row++ = (JSAMPLE) (colormap[val + 512] >> 8);
+    *dest_row++ = (LJPEG_JSAMPLE) (colormap[val      ] >> 8);
+    *dest_row++ = (LJPEG_JSAMPLE) (colormap[val + 256] >> 8);
+    *dest_row++ = (LJPEG_JSAMPLE) (colormap[val + 512] >> 8);
   }
 
   return 1;
@@ -254,7 +254,7 @@ load_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   rle_row = source->rle_row;
 
   /* Read the RLE data into our virtual array.
-   * We assume here that (a) rle_pixel is represented the same as JSAMPLE,
+   * We assume here that (a) rle_pixel is represented the same as LJPEG_JSAMPLE,
    * and (b) we are not on a machine where FAR pointers differ from regular.
    */
   RLE_CLR_BIT(source->header, RLE_ALPHA); /* don't read the alpha channel */
@@ -272,7 +272,7 @@ load_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   case GRAYSCALE:
   case PSEUDOCOLOR:
     for (row = 0; row < cinfo->image_height; row++) {
-      rle_row = (rle_pixel **) (*cinfo->mem->access_virt_sarray)
+      rle_row = (rle_pixel **) (*cinfo->mem->LJPEG_access_virt_sarray)
          ((LJPEG_j_common_ptr) cinfo, source->image, row, (LJPEG_JDIMENSION) 1, TRUE);
       rle_getrow(&source->header, rle_row);
 #ifdef PROGRESS_REPORT
@@ -287,14 +287,14 @@ load_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   case MAPPEDGRAY:
   case TRUECOLOR:
     for (row = 0; row < cinfo->image_height; row++) {
-      scanline = * (*cinfo->mem->access_virt_sarray)
+      scanline = * (*cinfo->mem->LJPEG_access_virt_sarray)
         ((LJPEG_j_common_ptr) cinfo, source->image, row, (LJPEG_JDIMENSION) 1, TRUE);
       rle_row = source->rle_row;
       rle_getrow(&source->header, rle_row);
 
       for (col = 0; col < cinfo->image_width; col++) {
         for (channel = 0; channel < source->header.ncolors; channel++) {
-          *scanline++ = (JSAMPLE)
+          *scanline++ = (LJPEG_JSAMPLE)
             (colormap[GETJSAMPLE(rle_row[channel][col]) + 256 * channel] >> 8);
         }
       }
@@ -310,7 +310,7 @@ load_image (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
   case DIRECTCOLOR:
     for (row = 0; row < cinfo->image_height; row++) {
-      scanline = * (*cinfo->mem->access_virt_sarray)
+      scanline = * (*cinfo->mem->LJPEG_access_virt_sarray)
         ((LJPEG_j_common_ptr) cinfo, source->image, row, (LJPEG_JDIMENSION) 1, TRUE);
       rle_getrow(&source->header, rle_row);
 
@@ -374,7 +374,7 @@ LJPEG_jinit_read_rle (LJPEG_j_compress_ptr cinfo)
 
   /* Create module interface object */
   source = (rle_source_ptr)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
                                   SIZEOF(rle_source_struct));
   /* Fill in method ptrs */
   source->pub.start_input = start_input_rle;

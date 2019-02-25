@@ -115,7 +115,7 @@ LJPEG_forward_DCT (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compp
 	  temp += qval>>1;	/* for rounding */
 	  DIVIDE_BY(temp, qval);
 	}
-	output_ptr[i] = (JCOEF) temp;
+	output_ptr[i] = (LJPEG_JCOEF) temp;
       }
     }
   }
@@ -158,7 +158,7 @@ LJPEG_forward_DCT_float (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info *
 	 * The maximum coefficient size is +-16K (for 12-bit data), so this
 	 * code should work for either 16-bit or 32-bit ints.
 	 */
-	output_ptr[i] = (JCOEF) ((int) (temp + (FAST_FLOAT) 16384.5) - 16384);
+	output_ptr[i] = (LJPEG_JCOEF) ((int) (temp + (FAST_FLOAT) 16384.5) - 16384);
       }
     }
   }
@@ -362,7 +362,7 @@ LJPEG_start_pass_fdctmgr (LJPEG_j_compress_ptr cinfo)
        */
       if (fdct->divisors[qtblno] == NULL) {
 	fdct->divisors[qtblno] = (DCTELEM *)
-	  (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+	  (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				      DCTSIZE2 * SIZEOF(DCTELEM));
       }
       dtbl = fdct->divisors[qtblno];
@@ -397,7 +397,7 @@ LJPEG_start_pass_fdctmgr (LJPEG_j_compress_ptr cinfo)
 
 	if (fdct->divisors[qtblno] == NULL) {
 	  fdct->divisors[qtblno] = (DCTELEM *)
-	    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+	    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 					DCTSIZE2 * SIZEOF(DCTELEM));
 	}
 	dtbl = fdct->divisors[qtblno];
@@ -431,7 +431,7 @@ LJPEG_start_pass_fdctmgr (LJPEG_j_compress_ptr cinfo)
 
 	if (fdct->float_divisors[qtblno] == NULL) {
 	  fdct->float_divisors[qtblno] = (FAST_FLOAT *)
-	    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+	    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 					DCTSIZE2 * SIZEOF(FAST_FLOAT));
 	}
 	fdtbl = fdct->float_divisors[qtblno];
@@ -467,7 +467,7 @@ LJPEG_jinit_forward_dct (LJPEG_j_compress_ptr cinfo)
   int i;
 
   fdct = (LJPEG_my_fdct_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_my_fdct_controller));
   cinfo->fdct = (struct LJPEG_jpeg_forward_dct *) fdct;
   fdct->pub.LJPEG_start_pass = LJPEG_start_pass_fdctmgr;

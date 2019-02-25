@@ -75,7 +75,7 @@ typedef struct {
   U_CHAR *iobuffer;		/* non-FAR pointer to I/O buffer */
   LJPEG_JSAMPROW pixrow;		/* FAR pointer to same */
   size_t buffer_width;		/* width of I/O buffer */
-  JSAMPLE *rescale;		/* => maxval-remapping array, or NULL */
+  LJPEG_JSAMPLE *rescale;		/* => maxval-remapping array, or NULL */
 } ppm_source_struct;
 
 typedef ppm_source_struct * ppm_source_ptr;
@@ -131,7 +131,7 @@ read_pbm_integer (LJPEG_j_compress_ptr cinfo, FILE * infile)
  * Read one row of pixels.
  *
  * We provide several different versions depending on input file format.
- * In all cases, input is scaled to the size of JSAMPLE.
+ * In all cases, input is scaled to the size of LJPEG_JSAMPLE.
  *
  * A really fast path is provided for reading byte/sample raw files with
  * maxval = MAXJSAMPLE, which is the normal case for 8-bit data.
@@ -145,7 +145,7 @@ get_text_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
   FILE * infile = source->pub.input_file;
   register LJPEG_JSAMPROW ptr;
-  register JSAMPLE *rescale = source->rescale;
+  register LJPEG_JSAMPLE *rescale = source->rescale;
   LJPEG_JDIMENSION col;
 
   ptr = source->pub.buffer[0];
@@ -163,7 +163,7 @@ get_text_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
   FILE * infile = source->pub.input_file;
   register LJPEG_JSAMPROW ptr;
-  register JSAMPLE *rescale = source->rescale;
+  register LJPEG_JSAMPLE *rescale = source->rescale;
   LJPEG_JDIMENSION col;
 
   ptr = source->pub.buffer[0];
@@ -183,7 +183,7 @@ get_scaled_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
   register LJPEG_JSAMPROW ptr;
   register U_CHAR * bufferptr;
-  register JSAMPLE *rescale = source->rescale;
+  register LJPEG_JSAMPLE *rescale = source->rescale;
   LJPEG_JDIMENSION col;
 
   if (! ReadOK(source->pub.input_file, source->iobuffer, source->buffer_width))
@@ -204,7 +204,7 @@ get_scaled_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
   register LJPEG_JSAMPROW ptr;
   register U_CHAR * bufferptr;
-  register JSAMPLE *rescale = source->rescale;
+  register LJPEG_JSAMPLE *rescale = source->rescale;
   LJPEG_JDIMENSION col;
 
   if (! ReadOK(source->pub.input_file, source->iobuffer, source->buffer_width))
@@ -223,7 +223,7 @@ get_scaled_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 LJPEG_METHODDEF(LJPEG_JDIMENSION)
 get_raw_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 /* This version is for reading raw-byte-format files with maxval = MAXJSAMPLE.
- * In this case we just read right into the JSAMPLE buffer!
+ * In this case we just read right into the LJPEG_JSAMPLE buffer!
  * Note that same code works for PPM and PGM files.
  */
 {
@@ -242,7 +242,7 @@ get_word_gray_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
   register LJPEG_JSAMPROW ptr;
   register U_CHAR * bufferptr;
-  register JSAMPLE *rescale = source->rescale;
+  register LJPEG_JSAMPLE *rescale = source->rescale;
   LJPEG_JDIMENSION col;
 
   if (! ReadOK(source->pub.input_file, source->iobuffer, source->buffer_width))
@@ -266,7 +266,7 @@ get_word_rgb_row (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   ppm_source_ptr source = (ppm_source_ptr) sinfo;
   register LJPEG_JSAMPROW ptr;
   register U_CHAR * bufferptr;
-  register JSAMPLE *rescale = source->rescale;
+  register LJPEG_JSAMPLE *rescale = source->rescale;
   LJPEG_JDIMENSION col;
 
   if (! ReadOK(source->pub.input_file, source->iobuffer, source->buffer_width))
@@ -358,7 +358,7 @@ start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     TRACEMS2(cinfo, 1, JTRC_PGM, w, h);
     if (maxval > 255) {
       source->pub.get_pixel_rows = get_word_gray_row;
-    } else if (maxval == MAXJSAMPLE && SIZEOF(JSAMPLE) == SIZEOF(U_CHAR)) {
+    } else if (maxval == MAXJSAMPLE && SIZEOF(LJPEG_JSAMPLE) == SIZEOF(U_CHAR)) {
       source->pub.get_pixel_rows = get_raw_row;
       use_raw_buffer = TRUE;
       need_rescale = FALSE;
@@ -373,7 +373,7 @@ start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     TRACEMS2(cinfo, 1, JTRC_PPM, w, h);
     if (maxval > 255) {
       source->pub.get_pixel_rows = get_word_rgb_row;
-    } else if (maxval == MAXJSAMPLE && SIZEOF(JSAMPLE) == SIZEOF(U_CHAR)) {
+    } else if (maxval == MAXJSAMPLE && SIZEOF(LJPEG_JSAMPLE) == SIZEOF(U_CHAR)) {
       source->pub.get_pixel_rows = get_raw_row;
       use_raw_buffer = TRUE;
       need_rescale = FALSE;
@@ -388,7 +388,7 @@ start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     source->buffer_width = (size_t) w * cinfo->input_components *
       ((maxval<=255) ? SIZEOF(U_CHAR) : (2*SIZEOF(U_CHAR)));
     source->iobuffer = (U_CHAR *)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  source->buffer_width);
   }
 
@@ -402,7 +402,7 @@ start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     source->pub.buffer_height = 1;
   } else {
     /* Need to translate anyway, so make a separate sample buffer. */
-    source->pub.buffer = (*cinfo->mem->alloc_sarray)
+    source->pub.buffer = (*cinfo->mem->LJPEG_alloc_sarray)
       ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
        (LJPEG_JDIMENSION) w * cinfo->input_components, (LJPEG_JDIMENSION) 1);
     source->pub.buffer_height = 1;
@@ -413,13 +413,13 @@ start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     INT32 val, half_maxval;
 
     /* On 16-bit-int machines we have to be careful of maxval = 65535 */
-    source->rescale = (JSAMPLE *)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				  (size_t) (((long) maxval + 1L) * SIZEOF(JSAMPLE)));
+    source->rescale = (LJPEG_JSAMPLE *)
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+				  (size_t) (((long) maxval + 1L) * SIZEOF(LJPEG_JSAMPLE)));
     half_maxval = maxval / 2;
     for (val = 0; val <= (INT32) maxval; val++) {
       /* The multiplication here must be done in 32 bits to avoid overflow */
-      source->rescale[val] = (JSAMPLE) ((val*MAXJSAMPLE + half_maxval)/maxval);
+      source->rescale[val] = (LJPEG_JSAMPLE) ((val*MAXJSAMPLE + half_maxval)/maxval);
     }
   }
 }
@@ -447,7 +447,7 @@ LJPEG_jinit_read_ppm (LJPEG_j_compress_ptr cinfo)
 
   /* Create module interface object */
   source = (ppm_source_ptr)
-      (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+      (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				  SIZEOF(ppm_source_struct));
   /* Fill in method ptrs, except get_pixel_rows which start_input sets */
   source->pub.start_input = start_input_ppm;

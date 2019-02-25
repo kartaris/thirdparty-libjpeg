@@ -24,7 +24,7 @@
 /* Private buffer controller object */
 
 typedef struct {
-  struct jpeg_d_post_controller pub; /* public fields */
+  struct LJPEG_jpeg_d_post_controller pub; /* public fields */
 
   /* Color quantization source buffer: this holds output data from
    * the upsample/color conversion step to be passed to the quantizer.
@@ -84,7 +84,7 @@ LJPEG_start_pass_dpost (LJPEG_j_decompress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode
        * allocate a strip buffer.  Use the virtual-array buffer as workspace.
        */
       if (post->buffer == NULL) {
-	post->buffer = (*cinfo->mem->access_virt_sarray)
+	post->buffer = (*cinfo->mem->LJPEG_access_virt_sarray)
 	  ((LJPEG_j_common_ptr) cinfo, post->whole_image,
 	   (LJPEG_JDIMENSION) 0, post->strip_height, TRUE);
       }
@@ -142,7 +142,7 @@ LJPEG_post_process_1pass (LJPEG_j_decompress_ptr cinfo,
 		input_buf, in_row_group_ctr, in_row_groups_avail,
 		post->buffer, &num_rows, max_rows);
   /* Quantize and emit data. */
-  (*cinfo->cquantize->color_quantize) (cinfo,
+  (*cinfo->cquantize->LJPEG_color_quantize) (cinfo,
 		post->buffer, output_buf + *out_row_ctr, (int) num_rows);
   *out_row_ctr += num_rows;
 }
@@ -166,7 +166,7 @@ LJPEG_post_process_prepass (LJPEG_j_decompress_ptr cinfo,
 
   /* Reposition virtual buffer if at start of strip. */
   if (post->next_row == 0) {
-    post->buffer = (*cinfo->mem->access_virt_sarray)
+    post->buffer = (*cinfo->mem->LJPEG_access_virt_sarray)
 	((LJPEG_j_common_ptr) cinfo, post->whole_image,
 	 post->starting_row, post->strip_height, TRUE);
   }
@@ -181,7 +181,7 @@ LJPEG_post_process_prepass (LJPEG_j_decompress_ptr cinfo,
   /* but we advance out_row_ctr so outer loop can tell when we're done. */
   if (post->next_row > old_next_row) {
     num_rows = post->next_row - old_next_row;
-    (*cinfo->cquantize->color_quantize) (cinfo, post->buffer + old_next_row,
+    (*cinfo->cquantize->LJPEG_color_quantize) (cinfo, post->buffer + old_next_row,
 					 (LJPEG_JSAMPARRAY) NULL, (int) num_rows);
     *out_row_ctr += num_rows;
   }
@@ -210,7 +210,7 @@ LJPEG_post_process_2pass (LJPEG_j_decompress_ptr cinfo,
 
   /* Reposition virtual buffer if at start of strip. */
   if (post->next_row == 0) {
-    post->buffer = (*cinfo->mem->access_virt_sarray)
+    post->buffer = (*cinfo->mem->LJPEG_access_virt_sarray)
 	((LJPEG_j_common_ptr) cinfo, post->whole_image,
 	 post->starting_row, post->strip_height, FALSE);
   }
@@ -226,7 +226,7 @@ LJPEG_post_process_2pass (LJPEG_j_decompress_ptr cinfo,
     num_rows = max_rows;
 
   /* Quantize and emit data. */
-  (*cinfo->cquantize->color_quantize) (cinfo,
+  (*cinfo->cquantize->LJPEG_color_quantize) (cinfo,
 		post->buffer + post->next_row, output_buf + *out_row_ctr,
 		(int) num_rows);
   *out_row_ctr += num_rows;
@@ -252,9 +252,9 @@ LJPEG_jinit_d_post_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_b
   LJPEG_my_post_ptr post;
 
   post = (LJPEG_my_post_ptr)
-    (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
+    (*cinfo->mem->LJPEG_alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 				SIZEOF(LJPEG_my_post_controller));
-  cinfo->post = (struct jpeg_d_post_controller *) post;
+  cinfo->post = (struct LJPEG_jpeg_d_post_controller *) post;
   post->pub.LJPEG_start_pass = LJPEG_start_pass_dpost;
   post->whole_image = NULL;	/* flag for no virtual arrays */
   post->buffer = NULL;		/* flag for no strip buffer */
@@ -270,10 +270,10 @@ LJPEG_jinit_d_post_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_b
       /* Two-pass color quantization: need full-image storage. */
       /* We round up the number of rows to a multiple of the strip height. */
 #ifdef QUANT_2PASS_SUPPORTED
-      post->whole_image = (*cinfo->mem->request_virt_sarray)
+      post->whole_image = (*cinfo->mem->LJPEG_request_virt_sarray)
 	((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE, FALSE,
 	 cinfo->output_width * cinfo->out_color_components,
-	 (LJPEG_JDIMENSION) jround_up((long) cinfo->output_height,
+	 (LJPEG_JDIMENSION) LJPEG_jround_up((long) cinfo->output_height,
 				(long) post->strip_height),
 	 post->strip_height);
 #else
@@ -281,7 +281,7 @@ LJPEG_jinit_d_post_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_b
 #endif /* QUANT_2PASS_SUPPORTED */
     } else {
       /* One-pass color quantization: just make a strip buffer. */
-      post->buffer = (*cinfo->mem->alloc_sarray)
+      post->buffer = (*cinfo->mem->LJPEG_alloc_sarray)
 	((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
 	 cinfo->output_width * cinfo->out_color_components,
 	 post->strip_height);

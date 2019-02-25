@@ -76,7 +76,7 @@ LJPEG_jpeg_idct_float (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info *
   FLOAT_MULT_TYPE * quantptr;
   FAST_FLOAT * wsptr;
   LJPEG_JSAMPROW outptr;
-  JSAMPLE *range_limit = cinfo->sample_range_limit;
+  LJPEG_JSAMPLE *range_limit = cinfo->sample_range_limit;
   int ctr;
   FAST_FLOAT workspace[DCTSIZE2]; /* buffers data between passes */
 
