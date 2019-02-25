@@ -147,7 +147,7 @@ LJPEG_emit_dqt (LJPEG_j_compress_ptr cinfo, int index)
 /* Emit a DQT marker */
 /* Returns the precision used (0 = 8bits, 1 = 16bits) for baseline checking */
 {
-  JQUANT_TBL * qtbl = cinfo->quant_tbl_ptrs[index];
+  LJPEG_JQUANT_TBL * qtbl = cinfo->quant_tbl_ptrs[index];
   int prec;
   int i;
 
@@ -187,7 +187,7 @@ LOCAL(void)
 LJPEG_emit_dht (LJPEG_j_compress_ptr cinfo, int index, boolean is_ac)
 /* Emit a DHT marker */
 {
-  JHUFF_TBL * htbl;
+  LJPEG_JHUFF_TBL * htbl;
   int length, i;
   
   if (is_ac) {
@@ -463,10 +463,10 @@ LJPEG_emit_adobe_app14 (LJPEG_j_compress_ptr cinfo)
   LJPEG_emit_2bytes(cinfo, 0);	/* Flags0 */
   LJPEG_emit_2bytes(cinfo, 0);	/* Flags1 */
   switch (cinfo->jpeg_color_space) {
-  case JCS_YCbCr:
+  case LJPEG_JCS_YCbCr:
     LJPEG_emit_byte(cinfo, 1);	/* Color transform = 1 */
     break;
-  case JCS_YCCK:
+  case LJPEG_JCS_YCCK:
     LJPEG_emit_byte(cinfo, 2);	/* Color transform = 2 */
     break;
   default:

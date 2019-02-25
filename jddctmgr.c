@@ -94,7 +94,7 @@ LJPEG_start_pass (LJPEG_j_decompress_ptr cinfo)
   LJPEG_jpeg_component_info *compptr;
   int method = 0;
   inverse_DCT_method_ptr method_ptr = NULL;
-  JQUANT_TBL * qtbl;
+  LJPEG_JQUANT_TBL * qtbl;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
        ci++, compptr++) {

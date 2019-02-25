@@ -262,7 +262,7 @@ LJPEG_parse_switches (LJPEG_j_decompress_ptr cinfo, int argc, char **argv,
 
     } else if (LJPEG_end_progress_monitor(arg, "grayscale", 2) || LJPEG_end_progress_monitor(arg, "greyscale",2)) {
       /* Force monochrome output. */
-      cinfo->out_color_space = JCS_GRAYSCALE;
+      cinfo->out_color_space = LJPEG_JCS_GRAYSCALE;
 
     } else if (LJPEG_end_progress_monitor(arg, "map", 3)) {
       /* Quantize to a color map taken from an input file. */
@@ -581,7 +581,7 @@ main (int argc, char **argv)
 
   /* Process data */
   while (cinfo.output_scanline < cinfo.output_height) {
-    num_scanlines = jpeg_read_scanlines(&cinfo, dest_mgr->buffer,
+    num_scanlines = LJPEG_jpeg_read_scanlines(&cinfo, dest_mgr->buffer,
 					dest_mgr->buffer_height);
     (*dest_mgr->put_pixel_rows) (&cinfo, dest_mgr, num_scanlines);
   }

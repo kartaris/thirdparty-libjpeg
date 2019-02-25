@@ -65,9 +65,9 @@ typedef struct {
   int this_row_group;		/* starting row index of group to process */
   int next_buf_stop;		/* downsample when we reach this index */
 #endif
-} my_prep_controller;
+} LJPEG_my_prep_controller;
 
-typedef my_prep_controller * my_prep_ptr;
+typedef LJPEG_my_prep_controller * LJPEG_my_prep_ptr;
 
 
 /*
@@ -77,7 +77,7 @@ typedef my_prep_controller * my_prep_ptr;
 LJPEG_METHODDEF(void)
 LJPEG_start_pass_prep (LJPEG_j_compress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode)
 {
-  my_prep_ptr prep = (my_prep_ptr) cinfo->prep;
+  LJPEG_my_prep_ptr prep = (LJPEG_my_prep_ptr) cinfo->prep;
 
   if (pass_mode != LJPEG_JBUF_PASS_THRU)
     ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
@@ -103,7 +103,7 @@ LJPEG_start_pass_prep (LJPEG_j_compress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode)
  */
 
 LOCAL(void)
-expand_bottom_edge (LJPEG_JSAMPARRAY image_data, LJPEG_JDIMENSION num_cols,
+LJPEG_expand_bottom_edge (LJPEG_JSAMPARRAY image_data, LJPEG_JDIMENSION num_cols,
 		    int input_rows, int output_rows)
 {
   register int row;
@@ -125,13 +125,13 @@ expand_bottom_edge (LJPEG_JSAMPARRAY image_data, LJPEG_JDIMENSION num_cols,
  */
 
 LJPEG_METHODDEF(void)
-pre_process_data (LJPEG_j_compress_ptr cinfo,
+LJPEG_pre_process_data (LJPEG_j_compress_ptr cinfo,
 		  LJPEG_JSAMPARRAY input_buf, LJPEG_JDIMENSION *in_row_ctr,
 		  LJPEG_JDIMENSION in_rows_avail,
 		  LJPEG_JSAMPIMAGE output_buf, LJPEG_JDIMENSION *out_row_group_ctr,
 		  LJPEG_JDIMENSION out_row_groups_avail)
 {
-  my_prep_ptr prep = (my_prep_ptr) cinfo->prep;
+  LJPEG_my_prep_ptr prep = (LJPEG_my_prep_ptr) cinfo->prep;
   int numrows, ci;
   LJPEG_JDIMENSION inrows;
   LJPEG_jpeg_component_info * compptr;
@@ -153,7 +153,7 @@ pre_process_data (LJPEG_j_compress_ptr cinfo,
     if (prep->rows_to_go == 0 &&
 	prep->next_buf_row < cinfo->max_v_samp_factor) {
       for (ci = 0; ci < cinfo->num_components; ci++) {
-	expand_bottom_edge(prep->color_buf[ci], cinfo->image_width,
+	LJPEG_expand_bottom_edge(prep->color_buf[ci], cinfo->image_width,
 			   prep->next_buf_row, cinfo->max_v_samp_factor);
       }
       prep->next_buf_row = cinfo->max_v_samp_factor;
@@ -175,7 +175,7 @@ pre_process_data (LJPEG_j_compress_ptr cinfo,
 	   ci++, compptr++) {
 	numrows = (compptr->v_samp_factor * compptr->DCT_v_scaled_size) /
 		  cinfo->min_DCT_v_scaled_size;
-	expand_bottom_edge(output_buf[ci],
+	LJPEG_expand_bottom_edge(output_buf[ci],
 			   compptr->width_in_blocks * compptr->DCT_h_scaled_size,
 			   (int) (*out_row_group_ctr * numrows),
 			   (int) (out_row_groups_avail * numrows));
@@ -194,13 +194,13 @@ pre_process_data (LJPEG_j_compress_ptr cinfo,
  */
 
 LJPEG_METHODDEF(void)
-pre_process_context (LJPEG_j_compress_ptr cinfo,
+LJPEG_pre_process_context (LJPEG_j_compress_ptr cinfo,
 		     LJPEG_JSAMPARRAY input_buf, LJPEG_JDIMENSION *in_row_ctr,
 		     LJPEG_JDIMENSION in_rows_avail,
 		     LJPEG_JSAMPIMAGE output_buf, LJPEG_JDIMENSION *out_row_group_ctr,
 		     LJPEG_JDIMENSION out_row_groups_avail)
 {
-  my_prep_ptr prep = (my_prep_ptr) cinfo->prep;
+  LJPEG_my_prep_ptr prep = (LJPEG_my_prep_ptr) cinfo->prep;
   int numrows, ci;
   int buf_height = cinfo->max_v_samp_factor * 3;
   LJPEG_JDIMENSION inrows;
@@ -236,7 +236,7 @@ pre_process_context (LJPEG_j_compress_ptr cinfo,
       /* When at bottom of image, pad to fill the conversion buffer. */
       if (prep->next_buf_row < prep->next_buf_stop) {
 	for (ci = 0; ci < cinfo->num_components; ci++) {
-	  expand_bottom_edge(prep->color_buf[ci], cinfo->image_width,
+	  LJPEG_expand_bottom_edge(prep->color_buf[ci], cinfo->image_width,
 			     prep->next_buf_row, prep->next_buf_stop);
 	}
 	prep->next_buf_row = prep->next_buf_stop;
@@ -266,9 +266,9 @@ pre_process_context (LJPEG_j_compress_ptr cinfo,
  */
 
 LOCAL(void)
-create_context_buffer (LJPEG_j_compress_ptr cinfo)
+LJPEG_create_context_buffer (LJPEG_j_compress_ptr cinfo)
 {
-  my_prep_ptr prep = (my_prep_ptr) cinfo->prep;
+  LJPEG_my_prep_ptr prep = (LJPEG_my_prep_ptr) cinfo->prep;
   int rgroup_height = cinfo->max_v_samp_factor;
   int ci, i;
   LJPEG_jpeg_component_info * compptr;
@@ -317,16 +317,16 @@ create_context_buffer (LJPEG_j_compress_ptr cinfo)
 LJPEG_GLOBAL(void)
 LJPEG_jinit_c_prep_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buffer)
 {
-  my_prep_ptr prep;
+  LJPEG_my_prep_ptr prep;
   int ci;
   LJPEG_jpeg_component_info * compptr;
 
   if (need_full_buffer)		/* safety check */
     ERREXIT(cinfo, JERR_BAD_BUFFER_MODE);
 
-  prep = (my_prep_ptr)
+  prep = (LJPEG_my_prep_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(my_prep_controller));
+				SIZEOF(LJPEG_my_prep_controller));
   cinfo->prep = (struct jpeg_c_prep_controller *) prep;
   prep->pub.LJPEG_start_pass = LJPEG_start_pass_prep;
 
@@ -337,14 +337,14 @@ LJPEG_jinit_c_prep_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buf
   if (cinfo->downsample->need_context_rows) {
     /* Set up to provide context rows */
 #ifdef CONTEXT_ROWS_SUPPORTED
-    prep->pub.pre_process_data = pre_process_context;
-    create_context_buffer(cinfo);
+    prep->pub.LJPEG_pre_process_data = LJPEG_pre_process_context;
+    LJPEG_create_context_buffer(cinfo);
 #else
     ERREXIT(cinfo, JERR_NOT_COMPILED);
 #endif
   } else {
     /* No context, just make it tall enough for one row group */
-    prep->pub.pre_process_data = pre_process_data;
+    prep->pub.LJPEG_pre_process_data = LJPEG_pre_process_data;
     for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
 	 ci++, compptr++) {
       prep->color_buf[ci] = (*cinfo->mem->alloc_sarray)

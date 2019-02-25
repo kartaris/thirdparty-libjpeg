@@ -146,7 +146,7 @@ typedef struct {
 
   /* Internal workspace: caller should not touch these */
   int num_components;		/* # of components in workspace */
-  jvirt_barray_ptr * workspace_coef_arrays; /* workspace for transformations */
+  LJPEG_jvirt_barray_ptr * workspace_coef_arrays; /* workspace for transformations */
   LJPEG_JDIMENSION output_width;	/* cropped destination dimensions */
   LJPEG_JDIMENSION output_height;
   LJPEG_JDIMENSION x_crop_offset;	/* destination crop offsets measured in iMCUs */
@@ -165,14 +165,14 @@ EXTERN(boolean) jtransform_parse_crop_spec
 EXTERN(boolean) jtransform_request_workspace
 	LJPEG_JPP((LJPEG_j_decompress_ptr srcinfo, jpeg_transform_info *info));
 /* Adjust output image parameters */
-EXTERN(jvirt_barray_ptr *) jtransform_adjust_parameters
+EXTERN(LJPEG_jvirt_barray_ptr *) jtransform_adjust_parameters
 	LJPEG_JPP((LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
-	     jvirt_barray_ptr *src_coef_arrays,
+	     LJPEG_jvirt_barray_ptr *src_coef_arrays,
 	     jpeg_transform_info *info));
 /* Execute the actual transformation, if any */
 EXTERN(void) jtransform_execute_transform
 	LJPEG_JPP((LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
-	     jvirt_barray_ptr *src_coef_arrays,
+	     LJPEG_jvirt_barray_ptr *src_coef_arrays,
 	     jpeg_transform_info *info));
 /* Determine whether lossless transformation is perfectly
  * possible for a specified image and transformation.

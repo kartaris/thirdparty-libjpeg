@@ -120,7 +120,7 @@ LJPEG_process_data_simple_main (LJPEG_j_compress_ptr cinfo,
   while (mainp->cur_iMCU_row < cinfo->total_iMCU_rows) {
     /* Read input data if we haven't filled the main buffer yet */
     if (mainp->rowgroup_ctr < (LJPEG_JDIMENSION) cinfo->min_DCT_v_scaled_size)
-      (*cinfo->prep->pre_process_data) (cinfo,
+      (*cinfo->prep->LJPEG_pre_process_data) (cinfo,
 					input_buf, in_row_ctr, in_rows_avail,
 					mainp->buffer, &mainp->rowgroup_ctr,
 					(LJPEG_JDIMENSION) cinfo->min_DCT_v_scaled_size);
@@ -198,7 +198,7 @@ LJPEG_process_data_buffer_main (LJPEG_j_compress_ptr cinfo,
     /* If a write pass, read input data until the current iMCU row is full. */
     /* Note: preprocessor will pad if necessary to fill the last iMCU row. */
     if (writing) {
-      (*cinfo->prep->pre_process_data) (cinfo,
+      (*cinfo->prep->LJPEG_pre_process_data) (cinfo,
 					input_buf, in_row_ctr, in_rows_avail,
 					mainp->buffer, &mainp->rowgroup_ctr,
 					(LJPEG_JDIMENSION) cinfo->min_DCT_v_scaled_size);

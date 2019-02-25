@@ -66,14 +66,14 @@ typedef struct {
   /* Height of an output row group for each component. */
   int rowgroup_height[MAX_COMPONENTS];
 
-  /* These arrays save pixel expansion factors so that int_downsample need not
+  /* These arrays save pixel expansion factors so that LJPEG_int_downsample need not
    * recompute them each time.  They are unused for other downsampling methods.
    */
   UINT8 h_expand[MAX_COMPONENTS];
   UINT8 v_expand[MAX_COMPONENTS];
-} my_downsampler;
+} LJPEG_my_downsampler;
 
-typedef my_downsampler * my_downsample_ptr;
+typedef LJPEG_my_downsampler * LJPEG_my_downsample_ptr;
 
 
 /*
@@ -93,7 +93,7 @@ LJPEG_start_pass_downsample (LJPEG_j_compress_ptr cinfo)
  */
 
 LOCAL(void)
-expand_right_edge (LJPEG_JSAMPARRAY image_data, int num_rows,
+LJPEG_expand_right_edge (LJPEG_JSAMPARRAY image_data, int num_rows,
 		   LJPEG_JDIMENSION input_cols, LJPEG_JDIMENSION output_cols)
 {
   register LJPEG_JSAMPROW ptr;
@@ -120,11 +120,11 @@ expand_right_edge (LJPEG_JSAMPARRAY image_data, int num_rows,
  */
 
 LJPEG_METHODDEF(void)
-sep_downsample (LJPEG_j_compress_ptr cinfo,
+LJPEG_sep_downsample (LJPEG_j_compress_ptr cinfo,
 		LJPEG_JSAMPIMAGE input_buf, LJPEG_JDIMENSION in_row_index,
 		LJPEG_JSAMPIMAGE output_buf, LJPEG_JDIMENSION out_row_group_index)
 {
-  my_downsample_ptr downsample = (my_downsample_ptr) cinfo->downsample;
+  LJPEG_my_downsample_ptr downsample = (LJPEG_my_downsample_ptr) cinfo->downsample;
   int ci;
   LJPEG_jpeg_component_info * compptr;
   LJPEG_JSAMPARRAY in_ptr, out_ptr;
@@ -147,10 +147,10 @@ sep_downsample (LJPEG_j_compress_ptr cinfo,
  */
 
 LJPEG_METHODDEF(void)
-int_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_int_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
-  my_downsample_ptr downsample = (my_downsample_ptr) cinfo->downsample;
+  LJPEG_my_downsample_ptr downsample = (LJPEG_my_downsample_ptr) cinfo->downsample;
   int inrow, outrow, h_expand, v_expand, numpix, numpix2, h, v;
   LJPEG_JDIMENSION outcol, outcol_h;	/* outcol_h == outcol*h_expand */
   LJPEG_JDIMENSION output_cols = compptr->width_in_blocks * compptr->DCT_h_scaled_size;
@@ -166,7 +166,7 @@ int_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
    * by the standard loop.  Special-casing padded output would be more
    * efficient.
    */
-  expand_right_edge(input_data, cinfo->max_v_samp_factor,
+  LJPEG_expand_right_edge(input_data, cinfo->max_v_samp_factor,
 		    cinfo->image_width, output_cols * h_expand);
 
   inrow = outrow = 0;
@@ -196,14 +196,14 @@ int_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
  */
 
 LJPEG_METHODDEF(void)
-fullsize_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_fullsize_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		     LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   /* Copy the data */
   jcopy_sample_rows(input_data, 0, output_data, 0,
 		    cinfo->max_v_samp_factor, cinfo->image_width);
   /* Edge-expand */
-  expand_right_edge(output_data, cinfo->max_v_samp_factor, cinfo->image_width,
+  LJPEG_expand_right_edge(output_data, cinfo->max_v_samp_factor, cinfo->image_width,
 		    compptr->width_in_blocks * compptr->DCT_h_scaled_size);
 }
 
@@ -221,7 +221,7 @@ fullsize_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * com
  */
 
 LJPEG_METHODDEF(void)
-h2v1_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_h2v1_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		 LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   int inrow;
@@ -234,7 +234,7 @@ h2v1_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr
    * by the standard loop.  Special-casing padded output would be more
    * efficient.
    */
-  expand_right_edge(input_data, cinfo->max_v_samp_factor,
+  LJPEG_expand_right_edge(input_data, cinfo->max_v_samp_factor,
 		    cinfo->image_width, output_cols * 2);
 
   for (inrow = 0; inrow < cinfo->max_v_samp_factor; inrow++) {
@@ -258,7 +258,7 @@ h2v1_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_METHODDEF(void)
-h2v2_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_h2v2_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 		 LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   int inrow, outrow;
@@ -271,7 +271,7 @@ h2v2_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr
    * by the standard loop.  Special-casing padded output would be more
    * efficient.
    */
-  expand_right_edge(input_data, cinfo->max_v_samp_factor,
+  LJPEG_expand_right_edge(input_data, cinfo->max_v_samp_factor,
 		    cinfo->image_width, output_cols * 2);
 
   inrow = outrow = 0;
@@ -302,7 +302,7 @@ h2v2_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr
  */
 
 LJPEG_METHODDEF(void)
-h2v2_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_h2v2_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 			LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   int inrow, outrow;
@@ -315,7 +315,7 @@ h2v2_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * 
    * by the standard loop.  Special-casing padded output would be more
    * efficient.
    */
-  expand_right_edge(input_data - 1, cinfo->max_v_samp_factor + 2,
+  LJPEG_expand_right_edge(input_data - 1, cinfo->max_v_samp_factor + 2,
 		    cinfo->image_width, output_cols * 2);
 
   /* We don't bother to form the individual "smoothed" input pixel values;
@@ -403,7 +403,7 @@ h2v2_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info * 
  */
 
 LJPEG_METHODDEF(void)
-fullsize_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info *compptr,
+LJPEG_fullsize_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_info *compptr,
 			    LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY output_data)
 {
   int inrow;
@@ -417,7 +417,7 @@ fullsize_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_inf
    * by the standard loop.  Special-casing padded output would be more
    * efficient.
    */
-  expand_right_edge(input_data - 1, cinfo->max_v_samp_factor + 2,
+  LJPEG_expand_right_edge(input_data - 1, cinfo->max_v_samp_factor + 2,
 		    cinfo->image_width, output_cols);
 
   /* Each of the eight neighbor pixels contributes a fraction SF to the
@@ -477,18 +477,18 @@ fullsize_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_component_inf
 LJPEG_GLOBAL(void)
 LJPEG_jinit_downsampler (LJPEG_j_compress_ptr cinfo)
 {
-  my_downsample_ptr downsample;
+  LJPEG_my_downsample_ptr downsample;
   int ci;
   LJPEG_jpeg_component_info * compptr;
   boolean smoothok = TRUE;
   int h_in_group, v_in_group, h_out_group, v_out_group;
 
-  downsample = (my_downsample_ptr)
+  downsample = (LJPEG_my_downsample_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(my_downsampler));
+				SIZEOF(LJPEG_my_downsampler));
   cinfo->downsample = (struct jpeg_downsampler *) downsample;
   downsample->pub.LJPEG_start_pass = LJPEG_start_pass_downsample;
-  downsample->pub.downsample = sep_downsample;
+  downsample->pub.downsample = LJPEG_sep_downsample;
   downsample->pub.need_context_rows = FALSE;
 
   if (cinfo->CCIR601_sampling)
@@ -510,28 +510,28 @@ LJPEG_jinit_downsampler (LJPEG_j_compress_ptr cinfo)
     if (h_in_group == h_out_group && v_in_group == v_out_group) {
 #ifdef INPUT_SMOOTHING_SUPPORTED
       if (cinfo->smoothing_factor) {
-	downsample->methods[ci] = fullsize_smooth_downsample;
+	downsample->methods[ci] = LJPEG_fullsize_smooth_downsample;
 	downsample->pub.need_context_rows = TRUE;
       } else
 #endif
-	downsample->methods[ci] = fullsize_downsample;
+	downsample->methods[ci] = LJPEG_fullsize_downsample;
     } else if (h_in_group == h_out_group * 2 &&
 	       v_in_group == v_out_group) {
       smoothok = FALSE;
-      downsample->methods[ci] = h2v1_downsample;
+      downsample->methods[ci] = LJPEG_h2v1_downsample;
     } else if (h_in_group == h_out_group * 2 &&
 	       v_in_group == v_out_group * 2) {
 #ifdef INPUT_SMOOTHING_SUPPORTED
       if (cinfo->smoothing_factor) {
-	downsample->methods[ci] = h2v2_smooth_downsample;
+	downsample->methods[ci] = LJPEG_h2v2_smooth_downsample;
 	downsample->pub.need_context_rows = TRUE;
       } else
 #endif
-	downsample->methods[ci] = h2v2_downsample;
+	downsample->methods[ci] = LJPEG_h2v2_downsample;
     } else if ((h_in_group % h_out_group) == 0 &&
 	       (v_in_group % v_out_group) == 0) {
       smoothok = FALSE;
-      downsample->methods[ci] = int_downsample;
+      downsample->methods[ci] = LJPEG_int_downsample;
       downsample->h_expand[ci] = (UINT8) (h_in_group / h_out_group);
       downsample->v_expand[ci] = (UINT8) (v_in_group / v_out_group);
     } else

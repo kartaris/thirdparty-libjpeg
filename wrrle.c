@@ -100,8 +100,8 @@ start_output_rle (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
     ERREXIT2(cinfo, JERR_RLE_DIMENSIONS, cinfo->output_width, 
 	     cinfo->output_height);
 
-  if (cinfo->out_color_space != JCS_GRAYSCALE &&
-      cinfo->out_color_space != JCS_RGB)
+  if (cinfo->out_color_space != LJPEG_JCS_GRAYSCALE &&
+      cinfo->out_color_space != LJPEG_JCS_RGB)
     ERREXIT(cinfo, JERR_RLE_COLORSPACE);
 
   if (cinfo->output_components != 1 && cinfo->output_components != 3)

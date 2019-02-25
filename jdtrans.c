@@ -27,13 +27,13 @@ LOCAL(void) transdecode_master_selection LJPEG_JPP((LJPEG_j_decompress_ptr cinfo
  * The entire image is read into a set of virtual coefficient-block arrays,
  * one per component.  The return value is a pointer to the array of
  * virtual-array descriptors.  These can be manipulated directly via the
- * JPEG memory manager, or handed off to jpeg_write_coefficients().
+ * JPEG memory manager, or handed off to LJPEG_jpeg_write_coefficients().
  * To release the memory occupied by the virtual arrays, call
  * LJPEG_jpeg_finish_decompress() when done with the data.
  *
  * An alternative usage is to simply obtain access to the coefficient arrays
  * during a buffered-image-mode decompression operation.  This is allowed
- * after any jpeg_finish_output() call.  The arrays can be accessed until
+ * after any LJPEG_jpeg_finish_output() call.  The arrays can be accessed until
  * LJPEG_jpeg_finish_decompress() is called.  (Note that any call to the library
  * may reposition the arrays, so don't rely on access_virt_barray() results
  * to stay valid across library calls.)
@@ -41,7 +41,7 @@ LOCAL(void) transdecode_master_selection LJPEG_JPP((LJPEG_j_decompress_ptr cinfo
  * Returns NULL if suspended.  This case need be checked only if
  * a suspending data source is used.
  */
-LJPEG_GLOBAL(jvirt_barray_ptr *)
+LJPEG_GLOBAL(LJPEG_jvirt_barray_ptr *)
 jpeg_read_coefficients (LJPEG_j_decompress_ptr cinfo)
 {
   if (cinfo->global_state == DSTATE_READY) {
@@ -104,7 +104,7 @@ transdecode_master_selection (LJPEG_j_decompress_ptr cinfo)
 
   /* Entropy decoding: either Huffman or arithmetic coding. */
   if (cinfo->arith_code)
-    jinit_arith_decoder(cinfo);
+    LJPEG_jinit_arith_decoder(cinfo);
   else {
     jinit_huff_decoder(cinfo);
   }

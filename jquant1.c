@@ -226,7 +226,7 @@ select_ncolors (LJPEG_j_decompress_ptr cinfo, int Ncolors[])
   do {
     changed = FALSE;
     for (i = 0; i < nc; i++) {
-      j = (cinfo->out_color_space == JCS_RGB ? RGB_order[i] : i);
+      j = (cinfo->out_color_space == LJPEG_JCS_RGB ? RGB_order[i] : i);
       /* calculate new total_colors if Ncolors[j] is incremented */
       temp = total_colors / Ncolors[j];
       temp *= Ncolors[j]+1;	/* done in long arith to avoid oflo */

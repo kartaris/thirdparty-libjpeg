@@ -40,9 +40,9 @@ typedef struct {
 
   /* Statistics bin for coding with fixed probability 0.5 */
   unsigned char fixed_bin[4];
-} arith_entropy_decoder;
+} LJPEG_arith_entropy_decoder;
 
-typedef arith_entropy_decoder * LJPEG_arith_entropy_ptr;
+typedef LJPEG_arith_entropy_decoder * LJPEG_arith_entropy_ptr;
 
 /* The following two definitions specify the allocation chunk size
  * for the statistics area.
@@ -62,7 +62,7 @@ typedef arith_entropy_decoder * LJPEG_arith_entropy_ptr;
 
 
 LOCAL(int)
-get_byte (LJPEG_j_decompress_ptr cinfo)
+LJPEG_get_byte (LJPEG_j_decompress_ptr cinfo)
 /* Read next input byte; we do not support suspension in this module. */
 {
   struct jpeg_source_mgr * src = cinfo->src;
@@ -103,7 +103,7 @@ get_byte (LJPEG_j_decompress_ptr cinfo)
  */
 
 LOCAL(int)
-arith_decode (LJPEG_j_decompress_ptr cinfo, unsigned char *st)
+LJPEG_arith_decode (LJPEG_j_decompress_ptr cinfo, unsigned char *st)
 {
   register LJPEG_arith_entropy_ptr e = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   register unsigned char nl, nm;
@@ -117,9 +117,9 @@ arith_decode (LJPEG_j_decompress_ptr cinfo, unsigned char *st)
       if (cinfo->unread_marker)
 	data = 0;		/* stuff zero data */
       else {
-	data = get_byte(cinfo);	/* read next input byte */
+	data = LJPEG_get_byte(cinfo);	/* read next input byte */
 	if (data == 0xFF) {	/* zero stuff or marker code */
-	  do data = get_byte(cinfo);
+	  do data = LJPEG_get_byte(cinfo);
 	  while (data == 0xFF);	/* swallow extra 0xFF bytes */
 	  if (data == 0)
 	    data = 0xFF;	/* discard stuffed zero byte */
@@ -187,7 +187,7 @@ arith_decode (LJPEG_j_decompress_ptr cinfo, unsigned char *st)
  */
 
 LOCAL(void)
-process_restart (LJPEG_j_decompress_ptr cinfo)
+LJPEG_process_restart (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   int ci;
@@ -239,7 +239,7 @@ process_restart (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   LJPEG_JBLOCKROW block;
@@ -250,7 +250,7 @@ decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
   /* Process restart marker if needed */
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0)
-      process_restart(cinfo);
+      LJPEG_process_restart(cinfo);
     entropy->restarts_to_go--;
   }
 
@@ -269,17 +269,17 @@ decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
     st = entropy->dc_stats[tbl] + entropy->dc_context[ci];
 
     /* Figure F.19: Decode_DC_DIFF */
-    if (arith_decode(cinfo, st) == 0)
+    if (LJPEG_arith_decode(cinfo, st) == 0)
       entropy->dc_context[ci] = 0;
     else {
       /* Figure F.21: Decoding nonzero value v */
       /* Figure F.22: Decoding the sign of v */
-      sign = arith_decode(cinfo, st + 1);
+      sign = LJPEG_arith_decode(cinfo, st + 1);
       st += 2; st += sign;
       /* Figure F.23: Decoding the magnitude category of v */
-      if ((m = arith_decode(cinfo, st)) != 0) {
+      if ((m = LJPEG_arith_decode(cinfo, st)) != 0) {
 	st = entropy->dc_stats[tbl] + 20;	/* Table F.4: X1 = 20 */
-	while (arith_decode(cinfo, st)) {
+	while (LJPEG_arith_decode(cinfo, st)) {
 	  if ((m <<= 1) == 0x8000) {
 	    WARNMS(cinfo, JWRN_ARITH_BAD_CODE);
 	    entropy->ct = -1;			/* magnitude overflow */
@@ -299,7 +299,7 @@ decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
       /* Figure F.24: Decoding the magnitude bit pattern of v */
       st += 14;
       while (m >>= 1)
-	if (arith_decode(cinfo, st)) v |= m;
+	if (LJPEG_arith_decode(cinfo, st)) v |= m;
       v += 1; if (sign) v = -v;
       entropy->last_dc_val[ci] += v;
     }
@@ -318,7 +318,7 @@ decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   LJPEG_JBLOCKROW block;
@@ -330,7 +330,7 @@ decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
   /* Process restart marker if needed */
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0)
-      process_restart(cinfo);
+      LJPEG_process_restart(cinfo);
     entropy->restarts_to_go--;
   }
 
@@ -348,10 +348,10 @@ decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
   k = cinfo->Ss - 1;
   do {
     st = entropy->ac_stats[tbl] + 3 * k;
-    if (arith_decode(cinfo, st)) break;		/* EOB flag */
+    if (LJPEG_arith_decode(cinfo, st)) break;		/* EOB flag */
     for (;;) {
       k++;
-      if (arith_decode(cinfo, st + 1)) break;
+      if (LJPEG_arith_decode(cinfo, st + 1)) break;
       st += 3;
       if (k >= cinfo->Se) {
 	WARNMS(cinfo, JWRN_ARITH_BAD_CODE);
@@ -361,15 +361,15 @@ decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
     }
     /* Figure F.21: Decoding nonzero value v */
     /* Figure F.22: Decoding the sign of v */
-    sign = arith_decode(cinfo, entropy->fixed_bin);
+    sign = LJPEG_arith_decode(cinfo, entropy->fixed_bin);
     st += 2;
     /* Figure F.23: Decoding the magnitude category of v */
-    if ((m = arith_decode(cinfo, st)) != 0) {
-      if (arith_decode(cinfo, st)) {
+    if ((m = LJPEG_arith_decode(cinfo, st)) != 0) {
+      if (LJPEG_arith_decode(cinfo, st)) {
 	m <<= 1;
 	st = entropy->ac_stats[tbl] +
 	     (k <= cinfo->arith_ac_K[tbl] ? 189 : 217);
-	while (arith_decode(cinfo, st)) {
+	while (LJPEG_arith_decode(cinfo, st)) {
 	  if ((m <<= 1) == 0x8000) {
 	    WARNMS(cinfo, JWRN_ARITH_BAD_CODE);
 	    entropy->ct = -1;			/* magnitude overflow */
@@ -383,7 +383,7 @@ decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
     /* Figure F.24: Decoding the magnitude bit pattern of v */
     st += 14;
     while (m >>= 1)
-      if (arith_decode(cinfo, st)) v |= m;
+      if (LJPEG_arith_decode(cinfo, st)) v |= m;
     v += 1; if (sign) v = -v;
     /* Scale and output coefficient in natural (dezigzagged) order */
     (*block)[natural_order[k]] = (JCOEF) (v << cinfo->Al);
@@ -398,7 +398,7 @@ decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   unsigned char *st;
@@ -407,7 +407,7 @@ decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
   /* Process restart marker if needed */
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0)
-      process_restart(cinfo);
+      LJPEG_process_restart(cinfo);
     entropy->restarts_to_go--;
   }
 
@@ -418,7 +418,7 @@ decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 
   for (blkn = 0; blkn < cinfo->blocks_in_MCU; blkn++) {
     /* Encoded data is simply the next bit of the two's-complement DC value */
-    if (arith_decode(cinfo, st))
+    if (LJPEG_arith_decode(cinfo, st))
       MCU_data[blkn][0][0] |= p1;
   }
 
@@ -431,7 +431,7 @@ decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   LJPEG_JBLOCKROW block;
@@ -444,7 +444,7 @@ decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
   /* Process restart marker if needed */
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0)
-      process_restart(cinfo);
+      LJPEG_process_restart(cinfo);
     entropy->restarts_to_go--;
   }
 
@@ -469,11 +469,11 @@ decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
   do {
     st = entropy->ac_stats[tbl] + 3 * k;
     if (k >= kex)
-      if (arith_decode(cinfo, st)) break;	/* EOB flag */
+      if (LJPEG_arith_decode(cinfo, st)) break;	/* EOB flag */
     for (;;) {
       thiscoef = *block + natural_order[++k];
       if (*thiscoef) {				/* previously nonzero coef */
-	if (arith_decode(cinfo, st + 2)) {
+	if (LJPEG_arith_decode(cinfo, st + 2)) {
 	  if (*thiscoef < 0)
 	    *thiscoef += m1;
 	  else
@@ -481,8 +481,8 @@ decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 	}
 	break;
       }
-      if (arith_decode(cinfo, st + 1)) {	/* newly nonzero coef */
-	if (arith_decode(cinfo, entropy->fixed_bin))
+      if (LJPEG_arith_decode(cinfo, st + 1)) {	/* newly nonzero coef */
+	if (LJPEG_arith_decode(cinfo, entropy->fixed_bin))
 	  *thiscoef = m1;
 	else
 	  *thiscoef = p1;
@@ -506,7 +506,7 @@ decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
   LJPEG_arith_entropy_ptr entropy = (LJPEG_arith_entropy_ptr) cinfo->entropy;
   LJPEG_jpeg_component_info * compptr;
@@ -519,7 +519,7 @@ decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
   /* Process restart marker if needed */
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0)
-      process_restart(cinfo);
+      LJPEG_process_restart(cinfo);
     entropy->restarts_to_go--;
   }
 
@@ -542,17 +542,17 @@ decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
     st = entropy->dc_stats[tbl] + entropy->dc_context[ci];
 
     /* Figure F.19: Decode_DC_DIFF */
-    if (arith_decode(cinfo, st) == 0)
+    if (LJPEG_arith_decode(cinfo, st) == 0)
       entropy->dc_context[ci] = 0;
     else {
       /* Figure F.21: Decoding nonzero value v */
       /* Figure F.22: Decoding the sign of v */
-      sign = arith_decode(cinfo, st + 1);
+      sign = LJPEG_arith_decode(cinfo, st + 1);
       st += 2; st += sign;
       /* Figure F.23: Decoding the magnitude category of v */
-      if ((m = arith_decode(cinfo, st)) != 0) {
+      if ((m = LJPEG_arith_decode(cinfo, st)) != 0) {
 	st = entropy->dc_stats[tbl] + 20;	/* Table F.4: X1 = 20 */
-	while (arith_decode(cinfo, st)) {
+	while (LJPEG_arith_decode(cinfo, st)) {
 	  if ((m <<= 1) == 0x8000) {
 	    WARNMS(cinfo, JWRN_ARITH_BAD_CODE);
 	    entropy->ct = -1;			/* magnitude overflow */
@@ -572,7 +572,7 @@ decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
       /* Figure F.24: Decoding the magnitude bit pattern of v */
       st += 14;
       while (m >>= 1)
-	if (arith_decode(cinfo, st)) v |= m;
+	if (LJPEG_arith_decode(cinfo, st)) v |= m;
       v += 1; if (sign) v = -v;
       entropy->last_dc_val[ci] += v;
     }
@@ -588,10 +588,10 @@ decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
     /* Figure F.20: Decode_AC_coefficients */
     do {
       st = entropy->ac_stats[tbl] + 3 * k;
-      if (arith_decode(cinfo, st)) break;	/* EOB flag */
+      if (LJPEG_arith_decode(cinfo, st)) break;	/* EOB flag */
       for (;;) {
 	k++;
-	if (arith_decode(cinfo, st + 1)) break;
+	if (LJPEG_arith_decode(cinfo, st + 1)) break;
 	st += 3;
 	if (k >= cinfo->lim_Se) {
 	  WARNMS(cinfo, JWRN_ARITH_BAD_CODE);
@@ -601,15 +601,15 @@ decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
       }
       /* Figure F.21: Decoding nonzero value v */
       /* Figure F.22: Decoding the sign of v */
-      sign = arith_decode(cinfo, entropy->fixed_bin);
+      sign = LJPEG_arith_decode(cinfo, entropy->fixed_bin);
       st += 2;
       /* Figure F.23: Decoding the magnitude category of v */
-      if ((m = arith_decode(cinfo, st)) != 0) {
-	if (arith_decode(cinfo, st)) {
+      if ((m = LJPEG_arith_decode(cinfo, st)) != 0) {
+	if (LJPEG_arith_decode(cinfo, st)) {
 	  m <<= 1;
 	  st = entropy->ac_stats[tbl] +
 	       (k <= cinfo->arith_ac_K[tbl] ? 189 : 217);
-	  while (arith_decode(cinfo, st)) {
+	  while (LJPEG_arith_decode(cinfo, st)) {
 	    if ((m <<= 1) == 0x8000) {
 	      WARNMS(cinfo, JWRN_ARITH_BAD_CODE);
 	      entropy->ct = -1;			/* magnitude overflow */
@@ -623,7 +623,7 @@ decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
       /* Figure F.24: Decoding the magnitude bit pattern of v */
       st += 14;
       while (m >>= 1)
-	if (arith_decode(cinfo, st)) v |= m;
+	if (LJPEG_arith_decode(cinfo, st)) v |= m;
       v += 1; if (sign) v = -v;
       (*block)[natural_order[k]] = (JCOEF) v;
     } while (k < cinfo->lim_Se);
@@ -686,14 +686,14 @@ LJPEG_start_pass (LJPEG_j_decompress_ptr cinfo)
     /* Select MCU decoding routine */
     if (cinfo->Ah == 0) {
       if (cinfo->Ss == 0)
-	entropy->pub.decode_mcu = decode_mcu_DC_first;
+	entropy->pub.LJPEG_decode_mcu = LJPEG_decode_mcu_DC_first;
       else
-	entropy->pub.decode_mcu = decode_mcu_AC_first;
+	entropy->pub.LJPEG_decode_mcu = LJPEG_decode_mcu_AC_first;
     } else {
       if (cinfo->Ss == 0)
-	entropy->pub.decode_mcu = decode_mcu_DC_refine;
+	entropy->pub.LJPEG_decode_mcu = LJPEG_decode_mcu_DC_refine;
       else
-	entropy->pub.decode_mcu = decode_mcu_AC_refine;
+	entropy->pub.LJPEG_decode_mcu = LJPEG_decode_mcu_AC_refine;
     }
   } else {
     /* Check that the scan parameters Ss, Se, Ah/Al are OK for sequential JPEG.
@@ -703,7 +703,7 @@ LJPEG_start_pass (LJPEG_j_decompress_ptr cinfo)
 	(cinfo->Se < DCTSIZE2 && cinfo->Se != cinfo->lim_Se))
       WARNMS(cinfo, JWRN_NOT_SEQUENTIAL);
     /* Select MCU decoding routine */
-    entropy->pub.decode_mcu = decode_mcu;
+    entropy->pub.LJPEG_decode_mcu = LJPEG_decode_mcu;
   }
 
   /* Allocate & initialize requested statistics areas */
@@ -748,14 +748,14 @@ LJPEG_start_pass (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBALvoid)
-jinit_arith_decoder (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jinit_arith_decoder (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_arith_entropy_ptr entropy;
   int i;
 
   entropy = (LJPEG_arith_entropy_ptr)
     (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				SIZEOF(arith_entropy_decoder));
+				SIZEOF(LJPEG_arith_entropy_decoder));
   cinfo->entropy = &entropy->pub;
   entropy->pub.LJPEG_start_pass = LJPEG_start_pass;
 

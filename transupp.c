@@ -78,8 +78,8 @@
 LOCAL(void)
 do_crop (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	 LJPEG_JDIMENSION x_crop_offset, LJPEG_JDIMENSION y_crop_offset,
-	 jvirt_barray_ptr *src_coef_arrays,
-	 jvirt_barray_ptr *dst_coef_arrays)
+	 LJPEG_jvirt_barray_ptr *src_coef_arrays,
+	 LJPEG_jvirt_barray_ptr *dst_coef_arrays)
 /* Crop.  This is only used when no rotate/flip is requested with the crop. */
 {
   LJPEG_JDIMENSION dst_blk_y, x_crop_blocks, y_crop_blocks;
@@ -116,7 +116,7 @@ do_crop (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 LOCAL(void)
 do_flip_h_no_crop (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 		   LJPEG_JDIMENSION x_crop_offset,
-		   jvirt_barray_ptr *src_coef_arrays)
+		   LJPEG_jvirt_barray_ptr *src_coef_arrays)
 /* Horizontal flip; done in-place, so no separate dest array is required.
  * NB: this only works when y_crop_offset is zero.
  */
@@ -183,8 +183,8 @@ do_flip_h_no_crop (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 LOCAL(void)
 do_flip_h (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	   LJPEG_JDIMENSION x_crop_offset, LJPEG_JDIMENSION y_crop_offset,
-	   jvirt_barray_ptr *src_coef_arrays,
-	   jvirt_barray_ptr *dst_coef_arrays)
+	   LJPEG_jvirt_barray_ptr *src_coef_arrays,
+	   LJPEG_jvirt_barray_ptr *dst_coef_arrays)
 /* Horizontal flip in general cropping case */
 {
   LJPEG_JDIMENSION MCU_cols, comp_width, dst_blk_x, dst_blk_y;
@@ -245,8 +245,8 @@ do_flip_h (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 LOCAL(void)
 do_flip_v (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	   LJPEG_JDIMENSION x_crop_offset, LJPEG_JDIMENSION y_crop_offset,
-	   jvirt_barray_ptr *src_coef_arrays,
-	   jvirt_barray_ptr *dst_coef_arrays)
+	   LJPEG_jvirt_barray_ptr *src_coef_arrays,
+	   LJPEG_jvirt_barray_ptr *dst_coef_arrays)
 /* Vertical flip */
 {
   LJPEG_JDIMENSION MCU_rows, comp_height, dst_blk_x, dst_blk_y;
@@ -325,8 +325,8 @@ do_flip_v (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 LOCAL(void)
 do_transpose (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	      LJPEG_JDIMENSION x_crop_offset, LJPEG_JDIMENSION y_crop_offset,
-	      jvirt_barray_ptr *src_coef_arrays,
-	      jvirt_barray_ptr *dst_coef_arrays)
+	      LJPEG_jvirt_barray_ptr *src_coef_arrays,
+	      LJPEG_jvirt_barray_ptr *dst_coef_arrays)
 /* Transpose source into destination */
 {
   LJPEG_JDIMENSION dst_blk_x, dst_blk_y, x_crop_blocks, y_crop_blocks;
@@ -373,8 +373,8 @@ do_transpose (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 LOCAL(void)
 do_rot_90 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	   LJPEG_JDIMENSION x_crop_offset, LJPEG_JDIMENSION y_crop_offset,
-	   jvirt_barray_ptr *src_coef_arrays,
-	   jvirt_barray_ptr *dst_coef_arrays)
+	   LJPEG_jvirt_barray_ptr *src_coef_arrays,
+	   LJPEG_jvirt_barray_ptr *dst_coef_arrays)
 /* 90 degree rotation is equivalent to
  *   1. Transposing the image;
  *   2. Horizontal mirroring.
@@ -454,8 +454,8 @@ do_rot_90 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 LOCAL(void)
 do_rot_270 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	    LJPEG_JDIMENSION x_crop_offset, LJPEG_JDIMENSION y_crop_offset,
-	    jvirt_barray_ptr *src_coef_arrays,
-	    jvirt_barray_ptr *dst_coef_arrays)
+	    LJPEG_jvirt_barray_ptr *src_coef_arrays,
+	    LJPEG_jvirt_barray_ptr *dst_coef_arrays)
 /* 270 degree rotation is equivalent to
  *   1. Horizontal mirroring;
  *   2. Transposing the image.
@@ -525,8 +525,8 @@ do_rot_270 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 LOCAL(void)
 do_rot_180 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	    LJPEG_JDIMENSION x_crop_offset, LJPEG_JDIMENSION y_crop_offset,
-	    jvirt_barray_ptr *src_coef_arrays,
-	    jvirt_barray_ptr *dst_coef_arrays)
+	    LJPEG_jvirt_barray_ptr *src_coef_arrays,
+	    LJPEG_jvirt_barray_ptr *dst_coef_arrays)
 /* 180 degree rotation is equivalent to
  *   1. Vertical mirroring;
  *   2. Horizontal mirroring.
@@ -633,8 +633,8 @@ do_rot_180 (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 LOCAL(void)
 do_transverse (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 	       LJPEG_JDIMENSION x_crop_offset, LJPEG_JDIMENSION y_crop_offset,
-	       jvirt_barray_ptr *src_coef_arrays,
-	       jvirt_barray_ptr *dst_coef_arrays)
+	       LJPEG_jvirt_barray_ptr *src_coef_arrays,
+	       LJPEG_jvirt_barray_ptr *dst_coef_arrays)
 /* Transverse transpose is equivalent to
  *   1. 180 degree rotation;
  *   2. Transposition;
@@ -878,7 +878,7 @@ LJPEG_GLOBAL(boolean)
 jtransform_request_workspace (LJPEG_j_decompress_ptr srcinfo,
 			      jpeg_transform_info *info)
 {
-  jvirt_barray_ptr *coef_arrays;
+  LJPEG_jvirt_barray_ptr *coef_arrays;
   boolean need_workspace, transpose_it;
   LJPEG_jpeg_component_info *compptr;
   LJPEG_JDIMENSION xoffset, yoffset;
@@ -888,7 +888,7 @@ jtransform_request_workspace (LJPEG_j_decompress_ptr srcinfo,
 
   /* Determine number of components in output image */
   if (info->force_grayscale &&
-      srcinfo->jpeg_color_space == JCS_YCbCr &&
+      srcinfo->jpeg_color_space == LJPEG_JCS_YCbCr &&
       srcinfo->num_components == 3)
     /* We'll only process the first component */
     info->num_components = 1;
@@ -1074,9 +1074,9 @@ jtransform_request_workspace (LJPEG_j_decompress_ptr srcinfo,
    * so that transform routines need not worry about missing edge blocks.
    */
   if (need_workspace) {
-    coef_arrays = (jvirt_barray_ptr *)
+    coef_arrays = (LJPEG_jvirt_barray_ptr *)
       (*srcinfo->mem->alloc_small) ((LJPEG_j_common_ptr) srcinfo, JPOOL_IMAGE,
-	SIZEOF(jvirt_barray_ptr) * info->num_components);
+	SIZEOF(LJPEG_jvirt_barray_ptr) * info->num_components);
     width_in_iMCUs = (LJPEG_JDIMENSION)
       jdiv_round_up((long) info->output_width,
 		    (long) info->iMCU_sample_width);
@@ -1116,7 +1116,7 @@ transpose_critical_parameters (LJPEG_j_compress_ptr dstinfo)
 {
   int tblno, i, j, ci, itemp;
   LJPEG_jpeg_component_info *compptr;
-  JQUANT_TBL *qtblptr;
+  LJPEG_JQUANT_TBL *qtblptr;
   LJPEG_JDIMENSION jtemp;
   UINT16 qtemp;
 
@@ -1310,19 +1310,19 @@ adjust_exif_parameters (JOCTET FAR * data, unsigned int length,
 
 /* Adjust output image parameters as needed.
  *
- * This must be called after jpeg_copy_critical_parameters()
- * and before jpeg_write_coefficients().
+ * This must be called after LJPEG_jpeg_copy_critical_parameters()
+ * and before LJPEG_jpeg_write_coefficients().
  *
  * The return value is the set of virtual coefficient arrays to be written
  * (either the ones allocated by jtransform_request_workspace, or the
  * original source data arrays).  The caller will need to pass this value
- * to jpeg_write_coefficients().
+ * to LJPEG_jpeg_write_coefficients().
  */
 
-LJPEG_GLOBALjvirt_barray_ptr *)
+LJPEG_GLOBALLJPEG_jvirt_barray_ptr *)
 jtransform_adjust_parameters (LJPEG_j_decompress_ptr srcinfo,
 			      LJPEG_j_compress_ptr dstinfo,
-			      jvirt_barray_ptr *src_coef_arrays,
+			      LJPEG_jvirt_barray_ptr *src_coef_arrays,
 			      jpeg_transform_info *info)
 {
   /* If force-to-grayscale is requested, adjust destination parameters */
@@ -1332,19 +1332,19 @@ jtransform_adjust_parameters (LJPEG_j_decompress_ptr srcinfo,
      * be less than full resolution, so actually coping with that case
      * isn't worth extra code space.  But we check it to avoid crashing.)
      */
-    if (((dstinfo->jpeg_color_space == JCS_YCbCr &&
+    if (((dstinfo->jpeg_color_space == LJPEG_JCS_YCbCr &&
 	  dstinfo->num_components == 3) ||
-	 (dstinfo->jpeg_color_space == JCS_GRAYSCALE &&
+	 (dstinfo->jpeg_color_space == LJPEG_JCS_GRAYSCALE &&
 	  dstinfo->num_components == 1)) &&
 	srcinfo->comp_info[0].h_samp_factor == srcinfo->max_h_samp_factor &&
 	srcinfo->comp_info[0].v_samp_factor == srcinfo->max_v_samp_factor) {
-      /* We use jpeg_set_colorspace to make sure subsidiary settings get fixed
+      /* We use LJPEG_jpeg_set_colorspace to make sure subsidiary settings get fixed
        * properly.  Among other things, it sets the target h_samp_factor &
        * v_samp_factor to 1, which typically won't match the source.
        * We have to preserve the source's quantization table number, however.
        */
       int sv_quant_tbl_no = dstinfo->comp_info[0].quant_tbl_no;
-      jpeg_set_colorspace(dstinfo, JCS_GRAYSCALE);
+      LJPEG_jpeg_set_colorspace(dstinfo, LJPEG_JCS_GRAYSCALE);
       dstinfo->comp_info[0].quant_tbl_no = sv_quant_tbl_no;
     } else {
       /* Sorry, can't do it */
@@ -1407,8 +1407,8 @@ jtransform_adjust_parameters (LJPEG_j_decompress_ptr srcinfo,
 
 /* Execute the actual transformation, if any.
  *
- * This must be called *after* jpeg_write_coefficients, because it depends
- * on jpeg_write_coefficients to have computed subsidiary values such as
+ * This must be called *after* LJPEG_jpeg_write_coefficients, because it depends
+ * on LJPEG_jpeg_write_coefficients to have computed subsidiary values such as
  * the per-component width and height fields in the destination object.
  *
  * Note that some transformations will modify the source data arrays!
@@ -1417,10 +1417,10 @@ jtransform_adjust_parameters (LJPEG_j_decompress_ptr srcinfo,
 LJPEG_GLOBALvoid)
 jtransform_execute_transform (LJPEG_j_decompress_ptr srcinfo,
 			      LJPEG_j_compress_ptr dstinfo,
-			      jvirt_barray_ptr *src_coef_arrays,
+			      LJPEG_jvirt_barray_ptr *src_coef_arrays,
 			      jpeg_transform_info *info)
 {
-  jvirt_barray_ptr *dst_coef_arrays = info->workspace_coef_arrays;
+  LJPEG_jvirt_barray_ptr *dst_coef_arrays = info->workspace_coef_arrays;
 
   /* Note: conditions tested here should match those in switch statement
    * in jtransform_request_workspace()
@@ -1546,7 +1546,7 @@ jcopy_markers_setup (LJPEG_j_decompress_ptr srcinfo, JCOPY_OPTION option)
 
 /* Copy markers saved in the given source object to the destination object.
  * This should be called just after LJPEG_jpeg_start_compress() or
- * jpeg_write_coefficients().
+ * LJPEG_jpeg_write_coefficients().
  * Note that those routines will have written the SOI, and also the
  * JFIF APP0 or Adobe APP14 markers if selected.
  */

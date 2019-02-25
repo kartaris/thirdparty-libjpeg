@@ -180,13 +180,13 @@ start_output_ppm (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
 
   /* Emit file header */
   switch (cinfo->out_color_space) {
-  case JCS_GRAYSCALE:
+  case LJPEG_JCS_GRAYSCALE:
     /* emit header for raw PGM format */
     fprintf(dest->pub.output_file, "P5\n%ld %ld\n%d\n",
 	    (long) cinfo->output_width, (long) cinfo->output_height,
 	    PPM_MAXVAL);
     break;
-  case JCS_RGB:
+  case LJPEG_JCS_RGB:
     /* emit header for raw PPM format */
     fprintf(dest->pub.output_file, "P6\n%ld %ld\n%d\n",
 	    (long) cinfo->output_width, (long) cinfo->output_height,
@@ -249,7 +249,7 @@ LJPEG_jinit_write_ppm (LJPEG_j_decompress_ptr cinfo)
     dest->pub.buffer_height = 1;
     if (! cinfo->quantize_colors)
       dest->pub.put_pixel_rows = copy_pixel_rows;
-    else if (cinfo->out_color_space == JCS_GRAYSCALE)
+    else if (cinfo->out_color_space == LJPEG_JCS_GRAYSCALE)
       dest->pub.put_pixel_rows = put_demapped_gray;
     else
       dest->pub.put_pixel_rows = put_demapped_rgb;

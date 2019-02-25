@@ -20,7 +20,7 @@
  * Quantization table setup routines
  */
 LJPEG_GLOBAL(void)
-jpeg_add_quant_table (LJPEG_j_compress_ptr cinfo, int which_tbl,
+LJPEG_jpeg_add_quant_table (LJPEG_j_compress_ptr cinfo, int which_tbl,
 		      const unsigned int *basic_table,
 		      int scale_factor, boolean force_baseline)
 /* Define a quantization table equal to the basic_table times
@@ -29,7 +29,7 @@ jpeg_add_quant_table (LJPEG_j_compress_ptr cinfo, int which_tbl,
  * are limited to 1..255 for JPEG baseline compatibility.
  */
 {
-  JQUANT_TBL ** qtblptr;
+  LJPEG_JQUANT_TBL ** qtblptr;
   int i;
   long temp;
 
@@ -64,7 +64,7 @@ jpeg_add_quant_table (LJPEG_j_compress_ptr cinfo, int which_tbl,
  * The spec says that the values given produce "good" quality, and
  * when divided by 2, "very good" quality.
  */
-static const unsigned int std_luminance_quant_tbl[DCTSIZE2] = {
+static const unsigned int LJPEG_std_luminance_quant_tbl[DCTSIZE2] = {
   16,  11,  10,  16,  24,  40,  51,  61,
   12,  12,  14,  19,  26,  58,  60,  55,
   14,  13,  16,  24,  40,  57,  69,  56,
@@ -74,7 +74,7 @@ static const unsigned int std_luminance_quant_tbl[DCTSIZE2] = {
   49,  64,  78,  87, 103, 121, 120, 101,
   72,  92,  95,  98, 112, 100, 103,  99
 };
-static const unsigned int std_chrominance_quant_tbl[DCTSIZE2] = {
+static const unsigned int LJPEG_std_chrominance_quant_tbl[DCTSIZE2] = {
   17,  18,  24,  47,  99,  99,  99,  99,
   18,  21,  26,  66,  99,  99,  99,  99,
   24,  26,  56,  99,  99,  99,  99,  99,
@@ -86,21 +86,21 @@ static const unsigned int std_chrominance_quant_tbl[DCTSIZE2] = {
 };
 
 LJPEG_GLOBAL(void)
-jpeg_default_qtables (LJPEG_j_compress_ptr cinfo, boolean force_baseline)
+LJPEG_jpeg_default_qtables (LJPEG_j_compress_ptr cinfo, boolean force_baseline)
 /* Set or change the 'quality' (quantization) setting, using default tables
  * and straight percentage-scaling quality scales.
  * This entry point allows different scalings for luminance and chrominance.
  */
 {
   /* Set up two quantization tables using the specified scaling */
-  jpeg_add_quant_table(cinfo, 0, std_luminance_quant_tbl,
+  LJPEG_jpeg_add_quant_table(cinfo, 0, LJPEG_std_luminance_quant_tbl,
 		       cinfo->q_scale_factor[0], force_baseline);
-  jpeg_add_quant_table(cinfo, 1, std_chrominance_quant_tbl,
+  LJPEG_jpeg_add_quant_table(cinfo, 1, LJPEG_std_chrominance_quant_tbl,
 		       cinfo->q_scale_factor[1], force_baseline);
 }
 
 LJPEG_GLOBAL(void)
-jpeg_set_linear_quality (LJPEG_j_compress_ptr cinfo, int scale_factor,
+LJPEG_jpeg_set_linear_quality (LJPEG_j_compress_ptr cinfo, int scale_factor,
 			 boolean force_baseline)
 /* Set or change the 'quality' (quantization) setting, using default tables
  * and a straight percentage-scaling quality scale.  In most cases it's better
@@ -109,14 +109,14 @@ jpeg_set_linear_quality (LJPEG_j_compress_ptr cinfo, int scale_factor,
  */
 {
   /* Set up two quantization tables using the specified scaling */
-  jpeg_add_quant_table(cinfo, 0, std_luminance_quant_tbl,
+  LJPEG_jpeg_add_quant_table(cinfo, 0, LJPEG_std_luminance_quant_tbl,
 		       scale_factor, force_baseline);
-  jpeg_add_quant_table(cinfo, 1, std_chrominance_quant_tbl,
+  LJPEG_jpeg_add_quant_table(cinfo, 1, LJPEG_std_chrominance_quant_tbl,
 		       scale_factor, force_baseline);
 }
 
 LJPEG_GLOBAL(int)
-jpeg_quality_scaling (int quality)
+LJPEG_jpeg_quality_scaling (int quality)
 /* Convert a user-specified quality rating to a percentage scaling factor
  * for an underlying quantization table, using our recommended scaling curve.
  * The input 'quality' factor should be 0 (terrible) to 100 (very good).
@@ -128,7 +128,7 @@ jpeg_quality_scaling (int quality)
 
   /* The basic table is used as-is (scaling 100) for a quality of 50.
    * Qualities 50..100 are converted to scaling percentage 200 - 2*Q;
-   * note that at Q=100 the scaling is 0, which will cause jpeg_add_quant_table
+   * note that at Q=100 the scaling is 0, which will cause LJPEG_jpeg_add_quant_table
    * to make all the table entries 1 (hence, minimum quantization loss).
    * Qualities 1..50 are converted to scaling percentage 5000/Q.
    */
@@ -149,10 +149,10 @@ LJPEG_jpeg_set_quality (LJPEG_j_compress_ptr cinfo, int quality, boolean force_b
  */
 {
   /* Convert user 0-100 rating to percentage scaling */
-  quality = jpeg_quality_scaling(quality);
+  quality = LJPEG_jpeg_quality_scaling(quality);
 
   /* Set up standard quality tables */
-  jpeg_set_linear_quality(cinfo, quality, force_baseline);
+  LJPEG_jpeg_set_linear_quality(cinfo, quality, force_baseline);
 }
 
 
@@ -161,8 +161,8 @@ LJPEG_jpeg_set_quality (LJPEG_j_compress_ptr cinfo, int quality, boolean force_b
  */
 
 LOCAL(void)
-add_huff_table (LJPEG_j_compress_ptr cinfo,
-		JHUFF_TBL **htblptr, const UINT8 *bits, const UINT8 *val)
+LJPEG_add_huff_table (LJPEG_j_compress_ptr cinfo,
+		LJPEG_JHUFF_TBL **htblptr, const UINT8 *bits, const UINT8 *val)
 /* Define a Huffman table */
 {
   int nsymbols, len;
@@ -191,7 +191,7 @@ add_huff_table (LJPEG_j_compress_ptr cinfo,
 
 
 LOCAL(void)
-std_huff_tables (LJPEG_j_compress_ptr cinfo)
+LJPEG_std_huff_tables (LJPEG_j_compress_ptr cinfo)
 /* Set up the standard Huffman tables (cf. JPEG standard section K.3) */
 /* IMPORTANT: these are only valid for 8-bit data precision! */
 {
@@ -255,13 +255,13 @@ std_huff_tables (LJPEG_j_compress_ptr cinfo)
       0xea, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8,
       0xf9, 0xfa };
   
-  add_huff_table(cinfo, &cinfo->dc_huff_tbl_ptrs[0],
+  LJPEG_add_huff_table(cinfo, &cinfo->dc_huff_tbl_ptrs[0],
 		 bits_dc_luminance, val_dc_luminance);
-  add_huff_table(cinfo, &cinfo->ac_huff_tbl_ptrs[0],
+  LJPEG_add_huff_table(cinfo, &cinfo->ac_huff_tbl_ptrs[0],
 		 bits_ac_luminance, val_ac_luminance);
-  add_huff_table(cinfo, &cinfo->dc_huff_tbl_ptrs[1],
+  LJPEG_add_huff_table(cinfo, &cinfo->dc_huff_tbl_ptrs[1],
 		 bits_dc_chrominance, val_dc_chrominance);
-  add_huff_table(cinfo, &cinfo->ac_huff_tbl_ptrs[1],
+  LJPEG_add_huff_table(cinfo, &cinfo->ac_huff_tbl_ptrs[1],
 		 bits_ac_chrominance, val_ac_chrominance);
 }
 
@@ -301,7 +301,7 @@ LJPEG_jpeg_set_defaults (LJPEG_j_compress_ptr cinfo)
   /* Set up two quantization tables using default quality of 75 */
   LJPEG_jpeg_set_quality(cinfo, 75, TRUE);
   /* Set up two Huffman tables */
-  std_huff_tables(cinfo);
+  LJPEG_std_huff_tables(cinfo);
 
   /* Initialize default arithmetic coding conditioning */
   for (i = 0; i < NUM_ARITH_TBLS; i++) {
@@ -347,7 +347,7 @@ LJPEG_jpeg_set_defaults (LJPEG_j_compress_ptr cinfo)
   cinfo->restart_in_rows = 0;
 
   /* Fill in default JFIF marker parameters.  Note that whether the marker
-   * will actually be written is determined by jpeg_set_colorspace.
+   * will actually be written is determined by LJPEG_jpeg_set_colorspace.
    *
    * By default, the library emits JFIF version code 1.01.
    * An application that wants to emit JFIF 1.02 extension markers should set
@@ -377,23 +377,23 @@ LJPEG_GLOBAL(void)
 LJPEG_jpeg_default_colorspace (LJPEG_j_compress_ptr cinfo)
 {
   switch (cinfo->in_color_space) {
-  case JCS_GRAYSCALE:
-    jpeg_set_colorspace(cinfo, JCS_GRAYSCALE);
+  case LJPEG_JCS_GRAYSCALE:
+    LJPEG_jpeg_set_colorspace(cinfo, LJPEG_JCS_GRAYSCALE);
     break;
-  case JCS_RGB:
-    jpeg_set_colorspace(cinfo, JCS_YCbCr);
+  case LJPEG_JCS_RGB:
+    LJPEG_jpeg_set_colorspace(cinfo, LJPEG_JCS_YCbCr);
     break;
-  case JCS_YCbCr:
-    jpeg_set_colorspace(cinfo, JCS_YCbCr);
+  case LJPEG_JCS_YCbCr:
+    LJPEG_jpeg_set_colorspace(cinfo, LJPEG_JCS_YCbCr);
     break;
-  case JCS_CMYK:
-    jpeg_set_colorspace(cinfo, JCS_CMYK); /* By default, no translation */
+  case LJPEG_JCS_CMYK:
+    LJPEG_jpeg_set_colorspace(cinfo, LJPEG_JCS_CMYK); /* By default, no translation */
     break;
-  case JCS_YCCK:
-    jpeg_set_colorspace(cinfo, JCS_YCCK);
+  case LJPEG_JCS_YCCK:
+    LJPEG_jpeg_set_colorspace(cinfo, LJPEG_JCS_YCCK);
     break;
-  case JCS_UNKNOWN:
-    jpeg_set_colorspace(cinfo, JCS_UNKNOWN);
+  case LJPEG_JCS_YCCK:
+    LJPEG_jpeg_set_colorspace(cinfo, LJPEG_JCS_YCCK);
     break;
   default:
     ERREXIT(cinfo, JERR_BAD_IN_COLORSPACE);
@@ -405,7 +405,7 @@ LJPEG_jpeg_default_colorspace (LJPEG_j_compress_ptr cinfo)
  * Set the JPEG colorspace, and choose colorspace-dependent default values.
  */
 LJPEG_GLOBAL(void)
-jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
+LJPEG_jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
 {
   LJPEG_jpeg_component_info * compptr;
   int ci;
@@ -433,13 +433,13 @@ jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
   cinfo->write_Adobe_marker = FALSE; /* write no Adobe marker by default */
 
   switch (colorspace) {
-  case JCS_GRAYSCALE:
+  case LJPEG_JCS_GRAYSCALE:
     cinfo->write_JFIF_header = TRUE; /* Write a JFIF marker */
     cinfo->num_components = 1;
     /* JFIF specifies component ID 1 */
     SET_COMP(0, 1, 1,1, 0, 0,0);
     break;
-  case JCS_RGB:
+  case LJPEG_JCS_RGB:
     cinfo->write_Adobe_marker = TRUE; /* write Adobe marker to flag RGB */
     cinfo->num_components = 3;
     SET_COMP(0, 0x52 /* 'R' */, 1,1, 0, 0,0);
@@ -448,7 +448,7 @@ jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
 		cinfo->color_transform == JCT_SUBTRACT_GREEN ? 1 : 0);
     SET_COMP(2, 0x42 /* 'B' */, 1,1, 0, 0,0);
     break;
-  case JCS_YCbCr:
+  case LJPEG_JCS_YCbCr:
     cinfo->write_JFIF_header = TRUE; /* Write a JFIF marker */
     cinfo->num_components = 3;
     /* JFIF specifies component IDs 1,2,3 */
@@ -457,7 +457,7 @@ jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
     SET_COMP(1, 2, 1,1, 1, 1,1);
     SET_COMP(2, 3, 1,1, 1, 1,1);
     break;
-  case JCS_CMYK:
+  case LJPEG_JCS_CMYK:
     cinfo->write_Adobe_marker = TRUE; /* write Adobe marker to flag CMYK */
     cinfo->num_components = 4;
     SET_COMP(0, 0x43 /* 'C' */, 1,1, 0, 0,0);
@@ -465,7 +465,7 @@ jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
     SET_COMP(2, 0x59 /* 'Y' */, 1,1, 0, 0,0);
     SET_COMP(3, 0x4B /* 'K' */, 1,1, 0, 0,0);
     break;
-  case JCS_YCCK:
+  case LJPEG_JCS_YCCK:
     cinfo->write_Adobe_marker = TRUE; /* write Adobe marker to flag YCCK */
     cinfo->num_components = 4;
     SET_COMP(0, 1, 2,2, 0, 0,0);
@@ -473,7 +473,7 @@ jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
     SET_COMP(2, 3, 1,1, 1, 1,1);
     SET_COMP(3, 4, 2,2, 0, 0,0);
     break;
-  case JCS_UNKNOWN:
+  case LJPEG_JCS_YCCK:
     cinfo->num_components = cinfo->input_components;
     if (cinfo->num_components < 1 || cinfo->num_components > MAX_COMPONENTS)
       ERREXIT2(cinfo, JERR_COMPONENT_COUNT, cinfo->num_components,
@@ -491,7 +491,7 @@ jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
 #ifdef C_PROGRESSIVE_SUPPORTED
 
 LOCAL(jpeg_scan_info *)
-fill_a_scan (jpeg_scan_info * scanptr, int ci,
+LJPEG_fill_a_scan (jpeg_scan_info * scanptr, int ci,
 	     int Ss, int Se, int Ah, int Al)
 /* Support routine: generate one scan for specified component */
 {
@@ -506,7 +506,7 @@ fill_a_scan (jpeg_scan_info * scanptr, int ci,
 }
 
 LOCAL(jpeg_scan_info *)
-fill_scans (jpeg_scan_info * scanptr, int ncomps,
+LJPEG_fill_scans (jpeg_scan_info * scanptr, int ncomps,
 	    int Ss, int Se, int Ah, int Al)
 /* Support routine: generate one scan for each component */
 {
@@ -525,7 +525,7 @@ fill_scans (jpeg_scan_info * scanptr, int ncomps,
 }
 
 LOCAL(jpeg_scan_info *)
-fill_dc_scans (jpeg_scan_info * scanptr, int ncomps, int Ah, int Al)
+LJPEG_fill_dc_scans (jpeg_scan_info * scanptr, int ncomps, int Ah, int Al)
 /* Support routine: generate interleaved DC scan if possible, else N scans */
 {
   int ci;
@@ -541,7 +541,7 @@ fill_dc_scans (jpeg_scan_info * scanptr, int ncomps, int Ah, int Al)
     scanptr++;
   } else {
     /* Noninterleaved DC scan for each component */
-    scanptr = fill_scans(scanptr, ncomps, 0, 0, Ah, Al);
+    scanptr = LJPEG_fill_scans(scanptr, ncomps, 0, 0, Ah, Al);
   }
   return scanptr;
 }
@@ -552,7 +552,7 @@ fill_dc_scans (jpeg_scan_info * scanptr, int ncomps, int Ah, int Al)
  * cinfo->num_components and cinfo->jpeg_color_space must be correct.
  */
 LJPEG_GLOBAL(void)
-jpeg_simple_progression (LJPEG_j_compress_ptr cinfo)
+LJPEG_jpeg_simple_progression (LJPEG_j_compress_ptr cinfo)
 {
   int ncomps = cinfo->num_components;
   int nscans;
@@ -563,7 +563,7 @@ jpeg_simple_progression (LJPEG_j_compress_ptr cinfo)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
 
   /* Figure space needed for script.  Calculation must match code below! */
-  if (ncomps == 3 && cinfo->jpeg_color_space == JCS_YCbCr) {
+  if (ncomps == 3 && cinfo->jpeg_color_space == LJPEG_JCS_YCbCr) {
     /* Custom script for YCbCr color images. */
     nscans = 10;
   } else {
@@ -577,7 +577,7 @@ jpeg_simple_progression (LJPEG_j_compress_ptr cinfo)
   /* Allocate space for script.
    * We need to put it in the permanent pool in case the application performs
    * multiple compressions without changing the settings.  To avoid a memory
-   * leak if jpeg_simple_progression is called repeatedly for the same JPEG
+   * leak if LJPEG_jpeg_simple_progression is called repeatedly for the same JPEG
    * object, we try to re-use previously allocated space, and we allocate
    * enough space to handle YCbCr even if initially asked for grayscale.
    */
@@ -591,37 +591,37 @@ jpeg_simple_progression (LJPEG_j_compress_ptr cinfo)
   cinfo->scan_info = scanptr;
   cinfo->num_scans = nscans;
 
-  if (ncomps == 3 && cinfo->jpeg_color_space == JCS_YCbCr) {
+  if (ncomps == 3 && cinfo->jpeg_color_space == LJPEG_JCS_YCbCr) {
     /* Custom script for YCbCr color images. */
     /* Initial DC scan */
-    scanptr = fill_dc_scans(scanptr, ncomps, 0, 1);
+    scanptr = LJPEG_fill_dc_scans(scanptr, ncomps, 0, 1);
     /* Initial AC scan: get some luma data out in a hurry */
-    scanptr = fill_a_scan(scanptr, 0, 1, 5, 0, 2);
+    scanptr = LJPEG_fill_a_scan(scanptr, 0, 1, 5, 0, 2);
     /* Chroma data is too small to be worth expending many scans on */
-    scanptr = fill_a_scan(scanptr, 2, 1, 63, 0, 1);
-    scanptr = fill_a_scan(scanptr, 1, 1, 63, 0, 1);
+    scanptr = LJPEG_fill_a_scan(scanptr, 2, 1, 63, 0, 1);
+    scanptr = LJPEG_fill_a_scan(scanptr, 1, 1, 63, 0, 1);
     /* Complete spectral selection for luma AC */
-    scanptr = fill_a_scan(scanptr, 0, 6, 63, 0, 2);
+    scanptr = LJPEG_fill_a_scan(scanptr, 0, 6, 63, 0, 2);
     /* Refine next bit of luma AC */
-    scanptr = fill_a_scan(scanptr, 0, 1, 63, 2, 1);
+    scanptr = LJPEG_fill_a_scan(scanptr, 0, 1, 63, 2, 1);
     /* Finish DC successive approximation */
-    scanptr = fill_dc_scans(scanptr, ncomps, 1, 0);
+    scanptr = LJPEG_fill_dc_scans(scanptr, ncomps, 1, 0);
     /* Finish AC successive approximation */
-    scanptr = fill_a_scan(scanptr, 2, 1, 63, 1, 0);
-    scanptr = fill_a_scan(scanptr, 1, 1, 63, 1, 0);
+    scanptr = LJPEG_fill_a_scan(scanptr, 2, 1, 63, 1, 0);
+    scanptr = LJPEG_fill_a_scan(scanptr, 1, 1, 63, 1, 0);
     /* Luma bottom bit comes last since it's usually largest scan */
-    scanptr = fill_a_scan(scanptr, 0, 1, 63, 1, 0);
+    scanptr = LJPEG_fill_a_scan(scanptr, 0, 1, 63, 1, 0);
   } else {
     /* All-purpose script for other color spaces. */
     /* Successive approximation first pass */
-    scanptr = fill_dc_scans(scanptr, ncomps, 0, 1);
-    scanptr = fill_scans(scanptr, ncomps, 1, 5, 0, 2);
-    scanptr = fill_scans(scanptr, ncomps, 6, 63, 0, 2);
+    scanptr = LJPEG_fill_dc_scans(scanptr, ncomps, 0, 1);
+    scanptr = LJPEG_fill_scans(scanptr, ncomps, 1, 5, 0, 2);
+    scanptr = LJPEG_fill_scans(scanptr, ncomps, 6, 63, 0, 2);
     /* Successive approximation second pass */
-    scanptr = fill_scans(scanptr, ncomps, 1, 63, 2, 1);
+    scanptr = LJPEG_fill_scans(scanptr, ncomps, 1, 63, 2, 1);
     /* Successive approximation final pass */
-    scanptr = fill_dc_scans(scanptr, ncomps, 1, 0);
-    scanptr = fill_scans(scanptr, ncomps, 1, 63, 1, 0);
+    scanptr = LJPEG_fill_dc_scans(scanptr, ncomps, 1, 0);
+    scanptr = LJPEG_fill_scans(scanptr, ncomps, 1, 63, 1, 0);
   }
 }
 

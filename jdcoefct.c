@@ -50,7 +50,7 @@ typedef struct {
 
 #ifdef D_MULTISCAN_FILES_SUPPORTED
   /* In multi-pass modes, we need a virtual block array for each component. */
-  jvirt_barray_ptr whole_image[MAX_COMPONENTS];
+  LJPEG_jvirt_barray_ptr whole_image[MAX_COMPONENTS];
 #endif
 
 #ifdef BLOCK_SMOOTHING_SUPPORTED
@@ -166,7 +166,7 @@ decompress_onepass (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_buf)
       if (cinfo->lim_Se)	/* can bypass in DC only case */
 	FMEMZERO((void FAR *) coef->MCU_buffer[0],
 		 (size_t) (cinfo->blocks_in_MCU * SIZEOF(JBLOCK)));
-      if (! (*cinfo->entropy->decode_mcu) (cinfo, coef->MCU_buffer)) {
+      if (! (*cinfo->entropy->LJPEG_decode_mcu) (cinfo, coef->MCU_buffer)) {
 	/* Suspension forced; update state counters and exit */
 	coef->MCU_vert_offset = yoffset;
 	coef->MCU_ctr = MCU_col_num;
@@ -284,7 +284,7 @@ consume_data (LJPEG_j_decompress_ptr cinfo)
 	}
       }
       /* Try to fetch the MCU. */
-      if (! (*cinfo->entropy->decode_mcu) (cinfo, coef->MCU_buffer)) {
+      if (! (*cinfo->entropy->LJPEG_decode_mcu) (cinfo, coef->MCU_buffer)) {
 	/* Suspension forced; update state counters and exit */
 	coef->MCU_vert_offset = yoffset;
 	coef->MCU_ctr = MCU_col_num;
@@ -410,7 +410,7 @@ smoothing_ok (LJPEG_j_decompress_ptr cinfo)
   boolean smoothing_useful = FALSE;
   int ci, coefi;
   LJPEG_jpeg_component_info *compptr;
-  JQUANT_TBL * qtable;
+  LJPEG_JQUANT_TBL * qtable;
   int * coef_bits;
   int * coef_bits_latch;
 
@@ -475,7 +475,7 @@ decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE output_bu
   boolean first_row, last_row;
   JBLOCK workspace;
   int *coef_bits;
-  JQUANT_TBL *quanttbl;
+  LJPEG_JQUANT_TBL *quanttbl;
   INT32 Q00,Q01,Q02,Q10,Q11,Q20, num;
   int DC1,DC2,DC3,DC4,DC5,DC6,DC7,DC8,DC9;
   int Al, pred;

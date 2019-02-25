@@ -161,7 +161,7 @@ LOCAL(void)
 LJPEG_jpeg_make_c_derived_tbl (LJPEG_j_compress_ptr cinfo, boolean isDC, int tblno,
 			 LJPEG_c_derived_tbl ** pdtbl)
 {
-  JHUFF_TBL *htbl;
+  LJPEG_JHUFF_TBL *htbl;
   LJPEG_c_derived_tbl *dtbl;
   int p, i, l, lastp, si, maxsymbol;
   char huffsize[257];
@@ -1253,7 +1253,7 @@ LJPEG_encode_mcu_gather (LJPEG_j_compress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
  */
 
 LOCAL(void)
-LJPEG_jpeg_gen_optimal_table (LJPEG_j_compress_ptr cinfo, JHUFF_TBL * htbl, long freq[])
+LJPEG_jpeg_gen_optimal_table (LJPEG_j_compress_ptr cinfo, LJPEG_JHUFF_TBL * htbl, long freq[])
 {
 #define MAX_CLEN 32		/* assumed maximum initial code length */
   UINT8 bits[MAX_CLEN+1];	/* bits[k] = # of symbols with code length k */
@@ -1399,7 +1399,7 @@ LJPEG_finish_pass_gather (LJPEG_j_compress_ptr cinfo)
   LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   int ci, tbl;
   LJPEG_jpeg_component_info * compptr;
-  JHUFF_TBL **htblptr;
+  LJPEG_JHUFF_TBL **htblptr;
   boolean did_dc[NUM_HUFF_TBLS];
   boolean did_ac[NUM_HUFF_TBLS];
 

@@ -217,7 +217,7 @@ get_soi (LJPEG_j_decompress_ptr cinfo)
 
   /* Set initial assumptions for colorspace etc */
 
-  cinfo->jpeg_color_space = JCS_UNKNOWN;
+  cinfo->jpeg_color_space = LJPEG_JCS_YCCK;
   cinfo->color_transform = JCT_NONE;
   cinfo->CCIR601_sampling = FALSE; /* Assume non-CCIR sampling??? */
 
@@ -460,7 +460,7 @@ get_dht (LJPEG_j_decompress_ptr cinfo)
   UINT8 bits[17];
   UINT8 huffval[256];
   int i, index, count;
-  JHUFF_TBL **htblptr;
+  LJPEG_JHUFF_TBL **htblptr;
   INPUT_VARS(cinfo);
 
   INPUT_2BYTES(cinfo, length, return FALSE);
@@ -530,7 +530,7 @@ get_dqt (LJPEG_j_decompress_ptr cinfo)
   INT32 length, count, i;
   int n, prec;
   unsigned int tmp;
-  JQUANT_TBL *quant_ptr;
+  LJPEG_JQUANT_TBL *quant_ptr;
   const int *natural_order;
   INPUT_VARS(cinfo);
 
@@ -1075,7 +1075,7 @@ first_marker (LJPEG_j_decompress_ptr cinfo)
 /*
  * Read markers until SOS or EOI.
  *
- * Returns same codes as are defined for jpeg_consume_input:
+ * Returns same codes as are defined for LJPEG_jpeg_consume_input:
  * JPEG_SUSPENDED, JPEG_REACHED_SOS, or JPEG_REACHED_EOI.
  *
  * Note: This function may return a pseudo SOS marker (with zero

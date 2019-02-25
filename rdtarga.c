@@ -378,7 +378,7 @@ start_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
   /* Now should have subtype 1, 2, or 3 */
   components = 3;		/* until proven different */
-  cinfo->in_color_space = JCS_RGB;
+  cinfo->in_color_space = LJPEG_JCS_RGB;
 
   switch (subtype) {
   case 1:			/* Colormapped image */
@@ -407,7 +407,7 @@ start_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     break;
   case 3:			/* Grayscale image */
     components = 1;
-    cinfo->in_color_space = JCS_GRAYSCALE;
+    cinfo->in_color_space = LJPEG_JCS_GRAYSCALE;
     if (source->pixel_size == 1)
       source->get_pixel_rows = get_8bit_gray_row;
     else

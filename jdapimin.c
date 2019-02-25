@@ -28,7 +28,7 @@
  */
 
 LJPEG_GLOBAL(void)
-jpeg_CreateDecompress (LJPEG_j_decompress_ptr cinfo, int version, size_t structsize)
+LJPEG_jpeg_CreateDecompress (LJPEG_j_decompress_ptr cinfo, int version, size_t structsize)
 {
   int i;
 
@@ -112,31 +112,31 @@ LJPEG_jpeg_abort_decompress (LJPEG_j_decompress_ptr cinfo)
  */
 
 LOCAL(void)
-default_decompress_parms (LJPEG_j_decompress_ptr cinfo)
+LJPEG_default_decompress_parms (LJPEG_j_decompress_ptr cinfo)
 {
   /* Guess the input colorspace, and set output colorspace accordingly. */
   /* (Wish JPEG committee had provided a real way to specify this...) */
   /* Note application may override our guesses. */
   switch (cinfo->num_components) {
   case 1:
-    cinfo->jpeg_color_space = JCS_GRAYSCALE;
-    cinfo->out_color_space = JCS_GRAYSCALE;
+    cinfo->jpeg_color_space = LJPEG_JCS_GRAYSCALE;
+    cinfo->out_color_space = LJPEG_JCS_GRAYSCALE;
     break;
     
   case 3:
     if (cinfo->saw_JFIF_marker) {
-      cinfo->jpeg_color_space = JCS_YCbCr; /* JFIF implies YCbCr */
+      cinfo->jpeg_color_space = LJPEG_JCS_YCbCr; /* JFIF implies YCbCr */
     } else if (cinfo->saw_Adobe_marker) {
       switch (cinfo->Adobe_transform) {
       case 0:
-	cinfo->jpeg_color_space = JCS_RGB;
+	cinfo->jpeg_color_space = LJPEG_JCS_RGB;
 	break;
       case 1:
-	cinfo->jpeg_color_space = JCS_YCbCr;
+	cinfo->jpeg_color_space = LJPEG_JCS_YCbCr;
 	break;
       default:
 	WARNMS1(cinfo, JWRN_ADOBE_XFORM, cinfo->Adobe_transform);
-	cinfo->jpeg_color_space = JCS_YCbCr; /* assume it's YCbCr */
+	cinfo->jpeg_color_space = LJPEG_JCS_YCbCr; /* assume it's YCbCr */
 	break;
       }
     } else {
@@ -146,42 +146,42 @@ default_decompress_parms (LJPEG_j_decompress_ptr cinfo)
       int cid2 = cinfo->comp_info[2].component_id;
 
       if (cid0 == 1 && cid1 == 2 && cid2 == 3)
-	cinfo->jpeg_color_space = JCS_YCbCr; /* assume JFIF w/out marker */
+	cinfo->jpeg_color_space = LJPEG_JCS_YCbCr; /* assume JFIF w/out marker */
       else if (cid0 == 82 && cid1 == 71 && cid2 == 66)
-	cinfo->jpeg_color_space = JCS_RGB; /* ASCII 'R', 'G', 'B' */
+	cinfo->jpeg_color_space = LJPEG_JCS_RGB; /* ASCII 'R', 'G', 'B' */
       else {
 	TRACEMS3(cinfo, 1, JTRC_UNKNOWN_IDS, cid0, cid1, cid2);
-	cinfo->jpeg_color_space = JCS_YCbCr; /* assume it's YCbCr */
+	cinfo->jpeg_color_space = LJPEG_JCS_YCbCr; /* assume it's YCbCr */
       }
     }
     /* Always guess RGB is proper output colorspace. */
-    cinfo->out_color_space = JCS_RGB;
+    cinfo->out_color_space = LJPEG_JCS_RGB;
     break;
     
   case 4:
     if (cinfo->saw_Adobe_marker) {
       switch (cinfo->Adobe_transform) {
       case 0:
-	cinfo->jpeg_color_space = JCS_CMYK;
+	cinfo->jpeg_color_space = LJPEG_JCS_CMYK;
 	break;
       case 2:
-	cinfo->jpeg_color_space = JCS_YCCK;
+	cinfo->jpeg_color_space = LJPEG_JCS_YCCK;
 	break;
       default:
 	WARNMS1(cinfo, JWRN_ADOBE_XFORM, cinfo->Adobe_transform);
-	cinfo->jpeg_color_space = JCS_YCCK; /* assume it's YCCK */
+	cinfo->jpeg_color_space = LJPEG_JCS_YCCK; /* assume it's YCCK */
 	break;
       }
     } else {
       /* No special markers, assume straight CMYK. */
-      cinfo->jpeg_color_space = JCS_CMYK;
+      cinfo->jpeg_color_space = LJPEG_JCS_CMYK;
     }
-    cinfo->out_color_space = JCS_CMYK;
+    cinfo->out_color_space = LJPEG_JCS_CMYK;
     break;
     
   default:
-    cinfo->jpeg_color_space = JCS_UNKNOWN;
-    cinfo->out_color_space = JCS_UNKNOWN;
+    cinfo->jpeg_color_space = LJPEG_JCS_YCCK;
+    cinfo->out_color_space = LJPEG_JCS_YCCK;
     break;
   }
 
@@ -234,7 +234,7 @@ default_decompress_parms (LJPEG_j_decompress_ptr cinfo)
  * If a non-suspending data source is used and require_image is TRUE, then the
  * return code need not be inspected since only JPEG_HEADER_OK is possible.
  *
- * This routine is now just a front end to jpeg_consume_input, with some
+ * This routine is now just a front end to LJPEG_jpeg_consume_input, with some
  * extra error checking.
  */
 
@@ -247,7 +247,7 @@ LJPEG_jpeg_read_header (LJPEG_j_decompress_ptr cinfo, boolean require_image)
       cinfo->global_state != DSTATE_INHEADER)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
 
-  retcode = jpeg_consume_input(cinfo);
+  retcode = LJPEG_jpeg_consume_input(cinfo);
 
   switch (retcode) {
   case JPEG_REACHED_SOS:
@@ -285,7 +285,7 @@ LJPEG_jpeg_read_header (LJPEG_j_decompress_ptr cinfo, boolean require_image)
  */
 
 LJPEG_GLOBAL(int)
-jpeg_consume_input (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jpeg_consume_input (LJPEG_j_decompress_ptr cinfo)
 {
   int retcode = JPEG_SUSPENDED;
 
@@ -302,7 +302,7 @@ jpeg_consume_input (LJPEG_j_decompress_ptr cinfo)
     retcode = (*cinfo->inputctl->consume_input) (cinfo);
     if (retcode == JPEG_REACHED_SOS) { /* Found SOS, prepare to decompress */
       /* Set up default parameters based on header data */
-      default_decompress_parms(cinfo);
+      LJPEG_default_decompress_parms(cinfo);
       /* Set global state: ready for start_decompress */
       cinfo->global_state = DSTATE_READY;
     }
@@ -332,7 +332,7 @@ jpeg_consume_input (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(boolean)
-jpeg_input_complete (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jpeg_input_complete (LJPEG_j_decompress_ptr cinfo)
 {
   /* Check for valid jpeg object */
   if (cinfo->global_state < DSTATE_START ||
@@ -347,7 +347,7 @@ jpeg_input_complete (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_GLOBAL(boolean)
-jpeg_has_multiple_scans (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jpeg_has_multiple_scans (LJPEG_j_decompress_ptr cinfo)
 {
   /* Only valid after LJPEG_jpeg_read_header completes */
   if (cinfo->global_state < DSTATE_READY ||

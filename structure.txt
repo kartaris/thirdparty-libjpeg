@@ -528,7 +528,7 @@ decompressor is divided into two sections that can run independently:
 
 For a progressive JPEG file, the data input processing is allowed to get
 arbitrarily far ahead of the data output processing.  (This occurs only
-if the application calls jpeg_consume_input(); otherwise input and output
+if the application calls LJPEG_jpeg_consume_input(); otherwise input and output
 run in lockstep, since the input section is called only when the output
 section needs more data.)  In this way the application can avoid making
 extra display passes when data is arriving faster than the display pass
@@ -540,7 +540,7 @@ A full-image coefficient array is only created if the JPEG file has multiple
 scans (or if the application specifies buffered-image mode anyway).  When
 reading a single-scan file, the coefficient controller normally creates only
 a one-MCU buffer, so input and output processing must run in lockstep in this
-case.  jpeg_consume_input() is effectively a no-op in this situation.
+case.  LJPEG_jpeg_consume_input() is effectively a no-op in this situation.
 
 The main impact of dividing the decompressor in this fashion is that we must
 be very careful with shared variables in the cinfo data structure.  Each

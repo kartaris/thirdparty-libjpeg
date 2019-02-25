@@ -36,7 +36,7 @@ typedef struct {
    */
 
   /* Link to public Huffman table (needed only in jpeg_huff_decode) */
-  JHUFF_TBL *pub;
+  LJPEG_JHUFF_TBL *pub;
 
   /* Lookahead tables: indexed by the next HUFF_LOOKAHEAD bits of
    * the input data stream.  If the next Huffman code is no more
@@ -245,7 +245,7 @@ typedef struct {
   d_derived_tbl * dc_derived_tbls[NUM_HUFF_TBLS];
   d_derived_tbl * ac_derived_tbls[NUM_HUFF_TBLS];
 
-  /* Precalculated info set up by LJPEG_start_pass for use in decode_mcu: */
+  /* Precalculated info set up by LJPEG_start_pass for use in LJPEG_decode_mcu: */
 
   /* Pointers to derived tables to be used for each block within an MCU */
   d_derived_tbl * dc_cur_tbls[D_MAX_BLOCKS_IN_MCU];
@@ -323,7 +323,7 @@ LOCAL(void)
 jpeg_make_d_derived_tbl (LJPEG_j_decompress_ptr cinfo, boolean isDC, int tblno,
 			 d_derived_tbl ** pdtbl)
 {
-  JHUFF_TBL *htbl;
+  LJPEG_JHUFF_TBL *htbl;
   d_derived_tbl *dtbl;
   int p, i, l, si, numsymbols;
   int lookbits, ctr;
@@ -633,7 +633,7 @@ jpeg_huff_decode (bitread_LJPEG_working_state * state,
  */
 
 LOCAL(boolean)
-process_restart (LJPEG_j_decompress_ptr cinfo)
+LJPEG_process_restart (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   int ci;
@@ -692,7 +692,7 @@ process_restart (LJPEG_j_decompress_ptr cinfo)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {   
   LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   int Al = cinfo->Al;
@@ -707,7 +707,7 @@ decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
   /* Process restart marker if needed; may have to suspend */
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0)
-      if (! process_restart(cinfo))
+      if (! LJPEG_process_restart(cinfo))
 	return FALSE;
   }
 
@@ -763,7 +763,7 @@ decode_mcu_DC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {   
   LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   register int s, k, r;
@@ -777,7 +777,7 @@ decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
   /* Process restart marker if needed; may have to suspend */
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0)
-      if (! process_restart(cinfo))
+      if (! LJPEG_process_restart(cinfo))
 	return FALSE;
   }
 
@@ -851,7 +851,7 @@ decode_mcu_AC_first (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {   
   LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   int p1 = 1 << cinfo->Al;	/* 1 in the bit position being coded */
@@ -862,7 +862,7 @@ decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
   /* Process restart marker if needed; may have to suspend */
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0)
-      if (! process_restart(cinfo))
+      if (! LJPEG_process_restart(cinfo))
 	return FALSE;
   }
 
@@ -900,7 +900,7 @@ decode_mcu_DC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {   
   LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   register int s, k, r;
@@ -917,7 +917,7 @@ decode_mcu_AC_refine (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
   /* Process restart marker if needed; may have to suspend */
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0)
-      if (! process_restart(cinfo))
+      if (! LJPEG_process_restart(cinfo))
 	return FALSE;
   }
 
@@ -1068,7 +1068,7 @@ decode_mcu_sub (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
   /* Process restart marker if needed; may have to suspend */
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0)
-      if (! process_restart(cinfo))
+      if (! LJPEG_process_restart(cinfo))
 	return FALSE;
   }
 
@@ -1185,7 +1185,7 @@ decode_mcu_sub (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
  */
 
 LJPEG_METHODDEF(boolean)
-decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
+LJPEG_decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
 {
   LJPEG_huff_entropy_ptr entropy = (LJPEG_huff_entropy_ptr) cinfo->entropy;
   int blkn;
@@ -1195,7 +1195,7 @@ decode_mcu (LJPEG_j_decompress_ptr cinfo, LJPEG_JBLOCKROW *MCU_data)
   /* Process restart marker if needed; may have to suspend */
   if (cinfo->restart_interval) {
     if (entropy->restarts_to_go == 0)
-      if (! process_restart(cinfo))
+      if (! LJPEG_process_restart(cinfo))
 	return FALSE;
   }
 
@@ -1363,14 +1363,14 @@ LJPEG_start_pass_huff_decoder (LJPEG_j_decompress_ptr cinfo)
     /* Select MCU decoding routine */
     if (cinfo->Ah == 0) {
       if (cinfo->Ss == 0)
-	entropy->pub.decode_mcu = decode_mcu_DC_first;
+	entropy->pub.LJPEG_decode_mcu = LJPEG_decode_mcu_DC_first;
       else
-	entropy->pub.decode_mcu = decode_mcu_AC_first;
+	entropy->pub.LJPEG_decode_mcu = LJPEG_decode_mcu_AC_first;
     } else {
       if (cinfo->Ss == 0)
-	entropy->pub.decode_mcu = decode_mcu_DC_refine;
+	entropy->pub.LJPEG_decode_mcu = LJPEG_decode_mcu_DC_refine;
       else
-	entropy->pub.decode_mcu = decode_mcu_AC_refine;
+	entropy->pub.LJPEG_decode_mcu = LJPEG_decode_mcu_AC_refine;
     }
 
     for (ci = 0; ci < cinfo->comps_in_scan; ci++) {
@@ -1415,9 +1415,9 @@ LJPEG_start_pass_huff_decoder (LJPEG_j_decompress_ptr cinfo)
      * function.
      */
     if (cinfo->lim_Se != DCTSIZE2-1)
-      entropy->pub.decode_mcu = decode_mcu_sub;
+      entropy->pub.LJPEG_decode_mcu = decode_mcu_sub;
     else
-      entropy->pub.decode_mcu = decode_mcu;
+      entropy->pub.LJPEG_decode_mcu = LJPEG_decode_mcu;
 
     for (ci = 0; ci < cinfo->comps_in_scan; ci++) {
       compptr = cinfo->cur_comp_info[ci];

@@ -260,7 +260,7 @@ emit_header (gif_dest_ptr dinfo, int num_colors, LJPEG_JSAMPARRAY colormap)
   for (i=0; i < ColorMapSize; i++) {
     if (i < num_colors) {
       if (colormap != NULL) {
-	if (dinfo->cinfo->out_color_space == JCS_RGB) {
+	if (dinfo->cinfo->out_color_space == LJPEG_JCS_RGB) {
 	  /* Normal case: RGB color map */
 	  putc(GETJSAMPLE(colormap[0][i]) >> cshift, dinfo->pub.output_file);
 	  putc(GETJSAMPLE(colormap[1][i]) >> cshift, dinfo->pub.output_file);
@@ -370,12 +370,12 @@ LJPEG_jinit_write_gif (LJPEG_j_decompress_ptr cinfo)
   dest->pub.put_pixel_rows = put_pixel_rows;
   dest->pub.finish_output = finish_output_gif;
 
-  if (cinfo->out_color_space != JCS_GRAYSCALE &&
-      cinfo->out_color_space != JCS_RGB)
+  if (cinfo->out_color_space != LJPEG_JCS_GRAYSCALE &&
+      cinfo->out_color_space != LJPEG_JCS_RGB)
     ERREXIT(cinfo, JERR_GIF_COLORSPACE);
 
   /* Force quantization if color or if > 8 bits input */
-  if (cinfo->out_color_space != JCS_GRAYSCALE || cinfo->data_precision > 8) {
+  if (cinfo->out_color_space != LJPEG_JCS_GRAYSCALE || cinfo->data_precision > 8) {
     /* Force quantization to at most 256 colors */
     cinfo->quantize_colors = TRUE;
     if (cinfo->desired_number_of_colors > 256)

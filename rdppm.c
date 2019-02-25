@@ -338,7 +338,7 @@ start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
   switch (c) {
   case '2':			/* it's a text-format PGM file */
     cinfo->input_components = 1;
-    cinfo->in_color_space = JCS_GRAYSCALE;
+    cinfo->in_color_space = LJPEG_JCS_GRAYSCALE;
     TRACEMS2(cinfo, 1, JTRC_PGM_TEXT, w, h);
     source->pub.get_pixel_rows = get_text_gray_row;
     need_iobuffer = FALSE;
@@ -346,7 +346,7 @@ start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
   case '3':			/* it's a text-format PPM file */
     cinfo->input_components = 3;
-    cinfo->in_color_space = JCS_RGB;
+    cinfo->in_color_space = LJPEG_JCS_RGB;
     TRACEMS2(cinfo, 1, JTRC_PPM_TEXT, w, h);
     source->pub.get_pixel_rows = get_text_rgb_row;
     need_iobuffer = FALSE;
@@ -354,7 +354,7 @@ start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
   case '5':			/* it's a raw-format PGM file */
     cinfo->input_components = 1;
-    cinfo->in_color_space = JCS_GRAYSCALE;
+    cinfo->in_color_space = LJPEG_JCS_GRAYSCALE;
     TRACEMS2(cinfo, 1, JTRC_PGM, w, h);
     if (maxval > 255) {
       source->pub.get_pixel_rows = get_word_gray_row;
@@ -369,7 +369,7 @@ start_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
 
   case '6':			/* it's a raw-format PPM file */
     cinfo->input_components = 3;
-    cinfo->in_color_space = JCS_RGB;
+    cinfo->in_color_space = LJPEG_JCS_RGB;
     TRACEMS2(cinfo, 1, JTRC_PPM, w, h);
     if (maxval > 255) {
       source->pub.get_pixel_rows = get_word_rgb_row;

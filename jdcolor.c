@@ -508,31 +508,31 @@ jinit_color_deconverter (LJPEG_j_decompress_ptr cinfo)
 
   /* Make sure num_components agrees with jpeg_color_space */
   switch (cinfo->jpeg_color_space) {
-  case JCS_GRAYSCALE:
+  case LJPEG_JCS_GRAYSCALE:
     if (cinfo->num_components != 1)
       ERREXIT(cinfo, JERR_BAD_J_COLORSPACE);
     break;
 
-  case JCS_RGB:
-  case JCS_YCbCr:
+  case LJPEG_JCS_RGB:
+  case LJPEG_JCS_YCbCr:
     if (cinfo->num_components != 3)
       ERREXIT(cinfo, JERR_BAD_J_COLORSPACE);
     break;
 
-  case JCS_CMYK:
-  case JCS_YCCK:
+  case LJPEG_JCS_CMYK:
+  case LJPEG_JCS_YCCK:
     if (cinfo->num_components != 4)
       ERREXIT(cinfo, JERR_BAD_J_COLORSPACE);
     break;
 
-  default:			/* JCS_UNKNOWN can be anything */
+  default:			/* LJPEG_JCS_YCCK can be anything */
     if (cinfo->num_components < 1)
       ERREXIT(cinfo, JERR_BAD_J_COLORSPACE);
     break;
   }
 
   /* Support color transform only for RGB colorspace */
-  if (cinfo->color_transform && cinfo->jpeg_color_space != JCS_RGB)
+  if (cinfo->color_transform && cinfo->jpeg_color_space != LJPEG_JCS_RGB)
     ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);
 
   /* Set out_color_components and conversion method based on requested space.
@@ -541,15 +541,15 @@ jinit_color_deconverter (LJPEG_j_decompress_ptr cinfo)
    */
 
   switch (cinfo->out_color_space) {
-  case JCS_GRAYSCALE:
+  case LJPEG_JCS_GRAYSCALE:
     cinfo->out_color_components = 1;
-    if (cinfo->jpeg_color_space == JCS_GRAYSCALE ||
-	cinfo->jpeg_color_space == JCS_YCbCr) {
+    if (cinfo->jpeg_color_space == LJPEG_JCS_GRAYSCALE ||
+	cinfo->jpeg_color_space == LJPEG_JCS_YCbCr) {
       cconvert->pub.color_convert = LJPEG_grayscale_convert;
       /* For color->grayscale conversion, only the Y (0) component is needed */
       for (ci = 1; ci < cinfo->num_components; ci++)
 	cinfo->comp_info[ci].component_needed = FALSE;
-    } else if (cinfo->jpeg_color_space == JCS_RGB) {
+    } else if (cinfo->jpeg_color_space == LJPEG_JCS_RGB) {
       switch (cinfo->color_transform) {
       case JCT_NONE:
 	cconvert->pub.color_convert = LJPEG_rgb_gray_convert;
@@ -566,14 +566,14 @@ jinit_color_deconverter (LJPEG_j_decompress_ptr cinfo)
       ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);
     break;
 
-  case JCS_RGB:
+  case LJPEG_JCS_RGB:
     cinfo->out_color_components = RGB_PIXELSIZE;
-    if (cinfo->jpeg_color_space == JCS_YCbCr) {
+    if (cinfo->jpeg_color_space == LJPEG_JCS_YCbCr) {
       cconvert->pub.color_convert = ycc_LJPEG_rgb_convert;
       build_ycc_rgb_table(cinfo);
-    } else if (cinfo->jpeg_color_space == JCS_GRAYSCALE) {
+    } else if (cinfo->jpeg_color_space == LJPEG_JCS_GRAYSCALE) {
       cconvert->pub.color_convert = gray_LJPEG_rgb_convert;
-    } else if (cinfo->jpeg_color_space == JCS_RGB) {
+    } else if (cinfo->jpeg_color_space == LJPEG_JCS_RGB) {
       switch (cinfo->color_transform) {
       case JCT_NONE:
 	cconvert->pub.color_convert = LJPEG_rgb_convert;
@@ -589,12 +589,12 @@ jinit_color_deconverter (LJPEG_j_decompress_ptr cinfo)
       ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);
     break;
 
-  case JCS_CMYK:
+  case LJPEG_JCS_CMYK:
     cinfo->out_color_components = 4;
-    if (cinfo->jpeg_color_space == JCS_YCCK) {
+    if (cinfo->jpeg_color_space == LJPEG_JCS_YCCK) {
       cconvert->pub.color_convert = ycck_cmyk_convert;
       build_ycc_rgb_table(cinfo);
-    } else if (cinfo->jpeg_color_space == JCS_CMYK) {
+    } else if (cinfo->jpeg_color_space == LJPEG_JCS_CMYK) {
       cconvert->pub.color_convert = LJPEG_null_convert;
     } else
       ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);

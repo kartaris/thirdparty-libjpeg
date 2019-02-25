@@ -26,7 +26,7 @@ typedef enum {			/* Operating modes for buffer controllers */
 #define CSTATE_START	100	/* after create_compress */
 #define CSTATE_SCANNING	101	/* start_compress done, write_scanlines OK */
 #define CSTATE_RAW_OK	102	/* start_compress done, write_raw_data OK */
-#define CSTATE_WRCOEFS	103	/* jpeg_write_coefficients done */
+#define CSTATE_WRCOEFS	103	/* LJPEG_jpeg_write_coefficients done */
 #define DSTATE_START	200	/* after create_decompress */
 #define DSTATE_INHEADER	201	/* reading header markers, no SOS yet */
 #define DSTATE_READY	202	/* found SOS, ready for start_decompress */
@@ -34,8 +34,8 @@ typedef enum {			/* Operating modes for buffer controllers */
 #define DSTATE_PRESCAN	204	/* performing dummy pass for 2-pass quant */
 #define DSTATE_SCANNING	205	/* start_decompress done, read_scanlines OK */
 #define DSTATE_RAW_OK	206	/* start_decompress done, read_raw_data OK */
-#define DSTATE_BUFIMAGE	207	/* expecting jpeg_start_output */
-#define DSTATE_BUFPOST	208	/* looking for SOS/EOI in jpeg_finish_output */
+#define DSTATE_BUFIMAGE	207	/* expecting LJPEG_jpeg_start_output */
+#define DSTATE_BUFPOST	208	/* looking for SOS/EOI in LJPEG_jpeg_finish_output */
 #define DSTATE_RDCOEFS	209	/* reading file in jpeg_read_coefficients */
 #define DSTATE_STOPPING	210	/* looking for EOI in LJPEG_jpeg_finish_decompress */
 
@@ -64,7 +64,7 @@ struct jpeg_c_main_controller {
 /* Compression preprocessing (downsampling input buffer control) */
 struct jpeg_c_prep_controller {
   LJPEG_JMETHOD(void, LJPEG_start_pass, (LJPEG_j_compress_ptr cinfo, LJPEG_J_BUF_MODE pass_mode));
-  LJPEG_JMETHOD(void, pre_process_data, (LJPEG_j_compress_ptr cinfo,
+  LJPEG_JMETHOD(void, LJPEG_pre_process_data, (LJPEG_j_compress_ptr cinfo,
 				   LJPEG_JSAMPARRAY input_buf,
 				   LJPEG_JDIMENSION *in_row_ctr,
 				   LJPEG_JDIMENSION in_rows_avail,
@@ -173,7 +173,7 @@ struct jpeg_d_coef_controller {
   LJPEG_JMETHOD(int, decompress_data, (LJPEG_j_decompress_ptr cinfo,
 				 LJPEG_JSAMPIMAGE output_buf));
   /* Pointer to array of coefficient virtual arrays, or NULL if none */
-  jvirt_barray_ptr *coef_arrays;
+  LJPEG_jvirt_barray_ptr *coef_arrays;
 };
 
 /* Decompression postprocessing (color quantization buffer control) */
@@ -192,7 +192,7 @@ struct jpeg_d_post_controller {
 struct jpeg_marker_reader {
   LJPEG_JMETHOD(void, reset_marker_reader, (LJPEG_j_decompress_ptr cinfo));
   /* Read markers until SOS or EOI.
-   * Returns same codes as are defined for jpeg_consume_input:
+   * Returns same codes as are defined for LJPEG_jpeg_consume_input:
    * JPEG_SUSPENDED, JPEG_REACHED_SOS, or JPEG_REACHED_EOI.
    */
   LJPEG_JMETHOD(int, read_markers, (LJPEG_j_decompress_ptr cinfo));
@@ -211,7 +211,7 @@ struct jpeg_marker_reader {
 /* Entropy decoding */
 struct jpeg_entropy_decoder {
   LJPEG_JMETHOD(void, LJPEG_start_pass, (LJPEG_j_decompress_ptr cinfo));
-  LJPEG_JMETHOD(boolean, decode_mcu, (LJPEG_j_decompress_ptr cinfo,
+  LJPEG_JMETHOD(boolean, LJPEG_decode_mcu, (LJPEG_j_decompress_ptr cinfo,
 				LJPEG_JBLOCKROW *MCU_data));
 };
 
@@ -311,7 +311,7 @@ struct jpeg_color_quantizer {
 #define jinit_input_controller	jIInCtlr
 #define jinit_marker_reader	jIMReader
 #define jinit_huff_decoder	jIHDecoder
-#define jinit_arith_decoder	jIADecoder
+#define LJPEG_jinit_arith_decoder	jIADecoder
 #define jinit_inverse_dct	jIIDCT
 #define jinit_upsampler		jIUpsampler
 #define jinit_color_deconverter	jIDColor
@@ -383,7 +383,7 @@ EXTERN(void) jinit_d_post_controller LJPEG_JPP((LJPEG_j_decompress_ptr cinfo,
 EXTERN(void) jinit_input_controller LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) jinit_marker_reader LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) jinit_huff_decoder LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
-EXTERN(void) jinit_arith_decoder LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+EXTERN(void) LJPEG_jinit_arith_decoder LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) jinit_inverse_dct LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) jinit_upsampler LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 EXTERN(void) jinit_color_deconverter LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));

@@ -311,17 +311,17 @@ LJPEG_parse_switches (LJPEG_j_compress_ptr cinfo, int argc, char **argv,
 
     } else if (LJPEG_end_progress_monitor(arg, "grayscale", 2) || LJPEG_end_progress_monitor(arg, "greyscale",2)) {
       /* Force a monochrome JPEG file to be generated. */
-      jpeg_set_colorspace(cinfo, JCS_GRAYSCALE);
+      LJPEG_jpeg_set_colorspace(cinfo, LJPEG_JCS_GRAYSCALE);
 
     } else if (LJPEG_end_progress_monitor(arg, "rgb", 3) || LJPEG_end_progress_monitor(arg, "rgb1", 4)) {
       /* Force an RGB JPEG file to be generated. */
 #if JPEG_LIB_VERSION_MAJOR >= 9
-      /* Note: Entropy table assignment in jpeg_set_colorspace depends
+      /* Note: Entropy table assignment in LJPEG_jpeg_set_colorspace depends
        * on color_transform.
        */
       cinfo->color_transform = arg[3] ? JCT_SUBTRACT_GREEN : JCT_NONE;
 #endif
-      jpeg_set_colorspace(cinfo, JCS_RGB);
+      LJPEG_jpeg_set_colorspace(cinfo, LJPEG_JCS_RGB);
 
     } else if (LJPEG_end_progress_monitor(arg, "maxmemory", 3)) {
       /* Maximum memory in Kb (or Mb with 'm'). */
@@ -379,7 +379,7 @@ LJPEG_parse_switches (LJPEG_j_compress_ptr cinfo, int argc, char **argv,
 	usage();
       qslotsarg = argv[argn];
       /* Must delay setting qslots until after we have processed any
-       * colorspace-determining switches, since jpeg_set_colorspace sets
+       * colorspace-determining switches, since LJPEG_jpeg_set_colorspace sets
        * default quant table numbers.
        */
 
@@ -415,7 +415,7 @@ LJPEG_parse_switches (LJPEG_j_compress_ptr cinfo, int argc, char **argv,
 	usage();
       samplearg = argv[argn];
       /* Must delay setting sample factors until after we have processed any
-       * colorspace-determining switches, since jpeg_set_colorspace sets
+       * colorspace-determining switches, since LJPEG_jpeg_set_colorspace sets
        * default sampling factors.
        */
 
@@ -485,7 +485,7 @@ LJPEG_parse_switches (LJPEG_j_compress_ptr cinfo, int argc, char **argv,
 
 #ifdef C_PROGRESSIVE_SUPPORTED
     if (simple_progressive)	/* process -progressive; -scans can override */
-      jpeg_simple_progression(cinfo);
+      LJPEG_jpeg_simple_progression(cinfo);
 #endif
 
 #ifdef C_MULTISCAN_FILES_SUPPORTED
@@ -545,7 +545,7 @@ main (int argc, char **argv)
    * but we need to provide some value for LJPEG_jpeg_set_defaults() to work.
    */
 
-  cinfo.in_color_space = JCS_RGB; /* arbitrary guess */
+  cinfo.in_color_space = LJPEG_JCS_RGB; /* arbitrary guess */
   LJPEG_jpeg_set_defaults(&cinfo);
 
   /* Scan command line to find file names.

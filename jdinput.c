@@ -488,7 +488,7 @@ latch_quant_tables (LJPEG_j_decompress_ptr cinfo)
 {
   int ci, qtblno;
   LJPEG_jpeg_component_info *compptr;
-  JQUANT_TBL * qtbl;
+  LJPEG_JQUANT_TBL * qtbl;
 
   for (ci = 0; ci < cinfo->comps_in_scan; ci++) {
     compptr = cinfo->cur_comp_info[ci];
@@ -501,10 +501,10 @@ latch_quant_tables (LJPEG_j_decompress_ptr cinfo)
 	cinfo->quant_tbl_ptrs[qtblno] == NULL)
       ERREXIT1(cinfo, JERR_NO_QUANT_TABLE, qtblno);
     /* OK, save away the quantization table */
-    qtbl = (JQUANT_TBL *)
+    qtbl = (LJPEG_JQUANT_TBL *)
       (*cinfo->mem->alloc_small) ((LJPEG_j_common_ptr) cinfo, JPOOL_IMAGE,
-				  SIZEOF(JQUANT_TBL));
-    MEMCOPY(qtbl, cinfo->quant_tbl_ptrs[qtblno], SIZEOF(JQUANT_TBL));
+				  SIZEOF(LJPEG_JQUANT_TBL));
+    MEMCOPY(qtbl, cinfo->quant_tbl_ptrs[qtblno], SIZEOF(LJPEG_JQUANT_TBL));
     compptr->quant_table = qtbl;
   }
 }

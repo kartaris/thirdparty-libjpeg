@@ -17,10 +17,10 @@
 
 
 /* Forward declarations */
-LOCAL(void) transencode_master_selection
-	LJPEG_JPP((LJPEG_j_compress_ptr cinfo, jvirt_barray_ptr * coef_arrays));
-LOCAL(void) transencode_coef_controller
-	LJPEG_JPP((LJPEG_j_compress_ptr cinfo, jvirt_barray_ptr * coef_arrays));
+LOCAL(void) LJPEG_transencode_master_selection
+	LJPEG_JPP((LJPEG_j_compress_ptr cinfo, LJPEG_jvirt_barray_ptr * coef_arrays));
+LOCAL(void) LJPEG_transencode_coef_controller
+	LJPEG_JPP((LJPEG_j_compress_ptr cinfo, LJPEG_jvirt_barray_ptr * coef_arrays));
 
 
 /*
@@ -35,7 +35,7 @@ LOCAL(void) transencode_coef_controller
  * typically will be realized during this routine and filled afterwards.
  */
 LJPEG_GLOBAL(void)
-jpeg_write_coefficients (LJPEG_j_compress_ptr cinfo, jvirt_barray_ptr * coef_arrays)
+LJPEG_jpeg_write_coefficients (LJPEG_j_compress_ptr cinfo, LJPEG_jvirt_barray_ptr * coef_arrays)
 {
   if (cinfo->global_state != CSTATE_START)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
@@ -45,7 +45,7 @@ jpeg_write_coefficients (LJPEG_j_compress_ptr cinfo, jvirt_barray_ptr * coef_arr
   (*cinfo->err->reset_error_mgr) ((LJPEG_j_common_ptr) cinfo);
   (*cinfo->dest->init_destination) (cinfo);
   /* Perform master selection of active modules */
-  transencode_master_selection(cinfo, coef_arrays);
+  LJPEG_transencode_master_selection(cinfo, coef_arrays);
   /* Wait for LJPEG_jpeg_finish_compress() call */
   cinfo->next_scanline = 0;	/* so LJPEG_jpeg_write_marker works */
   cinfo->global_state = CSTATE_WRCOEFS;
@@ -59,12 +59,12 @@ jpeg_write_coefficients (LJPEG_j_compress_ptr cinfo, jvirt_barray_ptr * coef_arr
  * scan script and Huffman optimization) are left in their default states.
  */
 LJPEG_GLOBAL(void)
-jpeg_copy_critical_parameters (LJPEG_j_decompress_ptr srcinfo,
+LJPEG_jpeg_copy_critical_parameters (LJPEG_j_decompress_ptr srcinfo,
 			       LJPEG_j_compress_ptr dstinfo)
 {
-  JQUANT_TBL ** qtblptr;
+  LJPEG_JQUANT_TBL ** qtblptr;
   LJPEG_jpeg_component_info *incomp, *outcomp;
-  JQUANT_TBL *c_quant, *slot_quant;
+  LJPEG_JQUANT_TBL *c_quant, *slot_quant;
   int tblno, ci, coefi;
 
   /* Safety check to ensure start_compress not called yet. */
@@ -83,11 +83,11 @@ jpeg_copy_critical_parameters (LJPEG_j_decompress_ptr srcinfo,
   LJPEG_jpeg_set_defaults(dstinfo);
   /* LJPEG_jpeg_set_defaults may choose wrong colorspace, eg YCbCr if input is RGB.
    * Fix it to get the right header markers for the image colorspace.
-   * Note: Entropy table assignment in jpeg_set_colorspace depends
+   * Note: Entropy table assignment in LJPEG_jpeg_set_colorspace depends
    * on color_transform.
    */
   dstinfo->color_transform = srcinfo->color_transform;
-  jpeg_set_colorspace(dstinfo, srcinfo->jpeg_color_space);
+  LJPEG_jpeg_set_colorspace(dstinfo, srcinfo->jpeg_color_space);
   dstinfo->data_precision = srcinfo->data_precision;
   dstinfo->CCIR601_sampling = srcinfo->CCIR601_sampling;
   /* Copy the source's quantization tables. */
@@ -132,7 +132,7 @@ jpeg_copy_critical_parameters (LJPEG_j_decompress_ptr srcinfo,
       }
     }
     /* Note: we do not copy the source's entropy table assignments;
-     * instead we rely on jpeg_set_colorspace to have made a suitable choice.
+     * instead we rely on LJPEG_jpeg_set_colorspace to have made a suitable choice.
      */
   }
   /* Also copy JFIF version and resolution information, if available.
@@ -161,8 +161,8 @@ jpeg_copy_critical_parameters (LJPEG_j_decompress_ptr srcinfo,
  */
 
 LOCAL(void)
-transencode_master_selection (LJPEG_j_compress_ptr cinfo,
-			      jvirt_barray_ptr * coef_arrays)
+LJPEG_transencode_master_selection (LJPEG_j_compress_ptr cinfo,
+			      LJPEG_jvirt_barray_ptr * coef_arrays)
 {
   /* Initialize master control (includes parameter checking/processing) */
   LJPEG_jinit_c_master_control(cinfo, TRUE /* transcode only */);
@@ -175,7 +175,7 @@ transencode_master_selection (LJPEG_j_compress_ptr cinfo,
   }
 
   /* We need a special coefficient buffer controller. */
-  transencode_coef_controller(cinfo, coef_arrays);
+  LJPEG_transencode_coef_controller(cinfo, coef_arrays);
 
   LJPEG_jinit_marker_writer(cinfo);
 
@@ -209,7 +209,7 @@ typedef struct {
   int MCU_rows_per_iMCU_row;	/* number of such rows needed */
 
   /* Virtual block array for each component. */
-  jvirt_barray_ptr * whole_image;
+  LJPEG_jvirt_barray_ptr * whole_image;
 
   /* Workspace for constructing dummy blocks at right/bottom edges. */
   LJPEG_JBLOCKROW dummy_buffer[C_MAX_BLOCKS_IN_MCU];
@@ -355,8 +355,8 @@ LJPEG_compress_output (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_buf)
  */
 
 LOCAL(void)
-transencode_coef_controller (LJPEG_j_compress_ptr cinfo,
-			     jvirt_barray_ptr * coef_arrays)
+LJPEG_transencode_coef_controller (LJPEG_j_compress_ptr cinfo,
+			     LJPEG_jvirt_barray_ptr * coef_arrays)
 {
   LJPEG_my_coef_ptr coef;
   LJPEG_JBLOCKROW buffer;

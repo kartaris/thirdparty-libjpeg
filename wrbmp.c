@@ -171,7 +171,7 @@ write_bmp_header (LJPEG_j_decompress_ptr cinfo, bmp_dest_ptr dest)
   int bits_per_pixel, cmap_entries;
 
   /* Compute colormap size and total file size */
-  if (cinfo->out_color_space == JCS_RGB) {
+  if (cinfo->out_color_space == LJPEG_JCS_RGB) {
     if (cinfo->quantize_colors) {
       /* Colormapped RGB */
       bits_per_pixel = 8;
@@ -236,7 +236,7 @@ write_os2_header (LJPEG_j_decompress_ptr cinfo, bmp_dest_ptr dest)
   int bits_per_pixel, cmap_entries;
 
   /* Compute colormap size and total file size */
-  if (cinfo->out_color_space == JCS_RGB) {
+  if (cinfo->out_color_space == LJPEG_JCS_RGB) {
     if (cinfo->quantize_colors) {
       /* Colormapped RGB */
       bits_per_pixel = 8;
@@ -399,9 +399,9 @@ LJPEG_jinit_write_bmp (LJPEG_j_decompress_ptr cinfo, boolean is_os2)
   dest->pub.finish_output = finish_output_bmp;
   dest->is_os2 = is_os2;
 
-  if (cinfo->out_color_space == JCS_GRAYSCALE) {
+  if (cinfo->out_color_space == LJPEG_JCS_GRAYSCALE) {
     dest->pub.put_pixel_rows = put_gray_rows;
-  } else if (cinfo->out_color_space == JCS_RGB) {
+  } else if (cinfo->out_color_space == LJPEG_JCS_RGB) {
     if (cinfo->quantize_colors)
       dest->pub.put_pixel_rows = put_gray_rows;
     else

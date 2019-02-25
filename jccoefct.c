@@ -52,7 +52,7 @@ typedef struct {
   LJPEG_JBLOCKROW MCU_buffer[C_MAX_BLOCKS_IN_MCU];
 
   /* In multi-pass modes, we need a virtual block array for each component. */
-  jvirt_barray_ptr whole_image[MAX_COMPONENTS];
+  LJPEG_jvirt_barray_ptr whole_image[MAX_COMPONENTS];
 } LJPEG_my_coef_controller;
 
 typedef LJPEG_my_coef_controller * LJPEG_my_coef_ptr;

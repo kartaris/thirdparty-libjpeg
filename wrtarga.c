@@ -72,7 +72,7 @@ write_header (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo, int num_
   targaheader[15] = (char) (cinfo->output_height >> 8);
   targaheader[17] = 0x20;	/* Top-down, non-interlaced */
 
-  if (cinfo->out_color_space == JCS_GRAYSCALE) {
+  if (cinfo->out_color_space == LJPEG_JCS_GRAYSCALE) {
     targaheader[2] = 3;		/* image type = uncompressed gray-scale */
     targaheader[16] = 8;	/* bits per pixel */
   } else {			/* must be RGB */
@@ -170,7 +170,7 @@ start_output_tga (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
   int num_colors, i;
   FILE *outfile;
 
-  if (cinfo->out_color_space == JCS_GRAYSCALE) {
+  if (cinfo->out_color_space == LJPEG_JCS_GRAYSCALE) {
     /* Targa doesn't have a mapped grayscale format, so we will */
     /* demap quantized gray output.  Never emit a colormap. */
     write_header(cinfo, dinfo, 0);
@@ -178,7 +178,7 @@ start_output_tga (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinfo)
       dest->pub.put_pixel_rows = put_demapped_gray;
     else
       dest->pub.put_pixel_rows = put_gray_rows;
-  } else if (cinfo->out_color_space == JCS_RGB) {
+  } else if (cinfo->out_color_space == LJPEG_JCS_RGB) {
     if (cinfo->quantize_colors) {
       /* We only support 8-bit colormap indexes, so only 256 colors */
       num_colors = cinfo->actual_number_of_colors;

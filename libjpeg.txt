@@ -143,7 +143,7 @@ Similarly, the rough outline of a JPEG decompression operation is:
 	Set parameters for decompression
 	LJPEG_jpeg_start_decompress(...);
 	while (scan lines remain to be read)
-		jpeg_read_scanlines(...);
+		LJPEG_jpeg_read_scanlines(...);
 	LJPEG_jpeg_finish_decompress(...);
 	Release the JPEG decompression object
 
@@ -156,7 +156,7 @@ output scaling ratio that will fit the image into the available screen size.
 The decompression library obtains compressed data by calling a data source
 manager, which typically will read the data from a file; but other behaviors
 can be obtained with a custom source manager.  Decompressed data is delivered
-into in-memory buffers passed to jpeg_read_scanlines().
+into in-memory buffers passed to LJPEG_jpeg_read_scanlines().
 
 It is possible to abort an incomplete compression or decompression operation
 by calling LJPEG_jpeg_abort(); or, if you do not need to retain the JPEG object,
@@ -327,8 +327,8 @@ The image dimensions are, hopefully, obvious.  JPEG supports image dimensions
 of 1 to 64K pixels in either direction.  The input color space is typically
 RGB or grayscale, and input_components is 3 or 1 accordingly.  (See "Special
 color spaces", later, for more info.)  The in_color_space field must be
-assigned one of the J_COLOR_SPACE enum constants, typically JCS_RGB or
-JCS_GRAYSCALE.
+assigned one of the J_COLOR_SPACE enum constants, typically LJPEG_JCS_RGB or
+LJPEG_JCS_GRAYSCALE.
 
 JPEG has a large number of compression parameters that determine how the
 image is encoded.  Most applications don't need or want to know about all
@@ -348,7 +348,7 @@ Typical code for a 24-bit RGB source image is
 	cinfo.image_width = Width; 	/* image width and height, in pixels */
 	cinfo.image_height = Height;
 	cinfo.input_components = 3;	/* # of color components per pixel */
-	cinfo.in_color_space = JCS_RGB; /* colorspace of input image */
+	cinfo.in_color_space = LJPEG_JCS_RGB; /* colorspace of input image */
 
 	LJPEG_jpeg_set_defaults(&cinfo);
 	/* Make optional parameter settings here */
@@ -652,11 +652,11 @@ relevant parameters (scaling, output color space, and quantization flag).
 
 
 6. while (scan lines remain to be read)
-	jpeg_read_scanlines(...);
+	LJPEG_jpeg_read_scanlines(...);
 
-Now you can read the decompressed image data by calling jpeg_read_scanlines()
+Now you can read the decompressed image data by calling LJPEG_jpeg_read_scanlines()
 one or more times.  At each call, you pass in the maximum number of scanlines
-to be read (ie, the height of your working buffer); jpeg_read_scanlines()
+to be read (ie, the height of your working buffer); LJPEG_jpeg_read_scanlines()
 will return up to that many lines.  The return value is the number of lines
 actually read.  The format of the returned data is discussed under "Data
 formats", above.  Don't forget that grayscale and color JPEGs will return
@@ -676,13 +676,13 @@ image_height field is the height of the original unscaled image.)
 The return value always equals the change in the value of output_scanline.
 
 If you don't use a suspending data source, it is safe to assume that
-jpeg_read_scanlines() reads at least one scanline per call, until the
+LJPEG_jpeg_read_scanlines() reads at least one scanline per call, until the
 bottom of the image has been reached.
 
 If you use a buffer larger than one scanline, it is NOT safe to assume that
-jpeg_read_scanlines() fills it.  (The current implementation returns only a
+LJPEG_jpeg_read_scanlines() fills it.  (The current implementation returns only a
 few scanlines per call, no matter how large a buffer you pass.)  So you must
-always provide a loop that calls jpeg_read_scanlines() repeatedly until the
+always provide a loop that calls LJPEG_jpeg_read_scanlines() repeatedly until the
 whole image has been read.
 
 
@@ -803,17 +803,17 @@ LJPEG_jpeg_set_defaults (LJPEG_j_compress_ptr cinfo)
 	already be set in cinfo).  Many applications will only need to use
 	this routine and perhaps LJPEG_jpeg_set_quality().
 
-jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
+LJPEG_jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, J_COLOR_SPACE colorspace)
 	Sets the JPEG file's colorspace (field jpeg_color_space) as specified,
 	and sets other color-space-dependent parameters appropriately.  See
 	"Special color spaces", below, before using this.  A large number of
 	parameters, including all per-component parameters, are set by this
 	routine; if you want to twiddle individual parameters you should call
-	jpeg_set_colorspace() before rather than after.
+	LJPEG_jpeg_set_colorspace() before rather than after.
 
 LJPEG_jpeg_default_colorspace (LJPEG_j_compress_ptr cinfo)
 	Selects an appropriate JPEG colorspace based on cinfo->in_color_space,
-	and calls jpeg_set_colorspace().  This is actually a subroutine of
+	and calls LJPEG_jpeg_set_colorspace().  This is actually a subroutine of
 	LJPEG_jpeg_set_defaults().  It's broken out in case you want to change
 	just the colorspace-dependent JPEG parameters.
 
@@ -831,7 +831,7 @@ LJPEG_jpeg_set_quality (LJPEG_j_compress_ptr cinfo, int quality, boolean force_b
 	is capable of reading the non-baseline files generated at low quality
 	settings when force_baseline is FALSE, but other decoders may not be.
 
-jpeg_set_linear_quality (LJPEG_j_compress_ptr cinfo, int scale_factor,
+LJPEG_jpeg_set_linear_quality (LJPEG_j_compress_ptr cinfo, int scale_factor,
 			 boolean force_baseline)
 	Same as LJPEG_jpeg_set_quality() except that the generated tables are the
 	sample tables given in the JPEC spec section K.1, multiplied by the
@@ -842,18 +842,18 @@ jpeg_set_linear_quality (LJPEG_j_compress_ptr cinfo, int scale_factor,
 	recommend linear scaling as a user-visible quality scale otherwise.
 	force_baseline again constrains the computed table entries to 1..255.
 
-int jpeg_quality_scaling (int quality)
+int LJPEG_jpeg_quality_scaling (int quality)
 	Converts a value on the IJG-recommended quality scale to a linear
 	scaling percentage.  Note that this routine may change or go away
 	in future releases --- IJG may choose to adopt a scaling method that
 	can't be expressed as a simple scalar multiplier, in which case the
 	premise of this routine collapses.  Caveat user.
 
-jpeg_default_qtables (LJPEG_j_compress_ptr cinfo, boolean force_baseline)
+LJPEG_jpeg_default_qtables (LJPEG_j_compress_ptr cinfo, boolean force_baseline)
 	Set default quantization tables with linear q_scale_factor[] values
 	(see below).
 
-jpeg_add_quant_table (LJPEG_j_compress_ptr cinfo, int which_tbl,
+LJPEG_jpeg_add_quant_table (LJPEG_j_compress_ptr cinfo, int which_tbl,
 		      const unsigned int *basic_table,
 		      int scale_factor, boolean force_baseline)
 	Allows an arbitrary quantization table to be created.  which_tbl
@@ -861,13 +861,13 @@ jpeg_add_quant_table (LJPEG_j_compress_ptr cinfo, int which_tbl,
 	of 64 unsigned ints given in normal array order.  These values are
 	multiplied by scale_factor/100 and then clamped to the range 1..65535
 	(or to 1..255 if force_baseline is TRUE).
-	CAUTION: prior to library version 6a, jpeg_add_quant_table expected
+	CAUTION: prior to library version 6a, LJPEG_jpeg_add_quant_table expected
 	the basic table to be given in JPEG zigzag order.  If you need to
 	write code that works with either older or newer versions of this
 	routine, you must check the library version number.  Something like
 	"#if JPEG_LIB_VERSION >= 61" is the right test.
 
-jpeg_simple_progression (LJPEG_j_compress_ptr cinfo)
+LJPEG_jpeg_simple_progression (LJPEG_j_compress_ptr cinfo)
 	Generates a default scan script for writing a progressive-JPEG file.
 	This is the recommended method of creating a progressive file,
 	unless you want to make a custom scan sequence.  You must ensure that
@@ -920,7 +920,7 @@ J_COLOR_SPACE jpeg_color_space
 int num_components
 	The JPEG color space and corresponding number of components; see
 	"Special color spaces", below, for more info.  We recommend using
-	jpeg_set_colorspace() if you want to change these.
+	LJPEG_jpeg_set_colorspace() if you want to change these.
 
 J_COLOR_TRANSFORM color_transform
 	Internal color transform identifier, writes LSE marker if nonzero
@@ -928,8 +928,8 @@ J_COLOR_TRANSFORM color_transform
 	with IJG JPEG 9).
 	Two values are currently possible: JCT_NONE and JCT_SUBTRACT_GREEN.
 	Set this value for lossless RGB application *before* calling
-	jpeg_set_colorspace(), because entropy table assignment in
-	jpeg_set_colorspace() depends on color_transform.
+	LJPEG_jpeg_set_colorspace(), because entropy table assignment in
+	LJPEG_jpeg_set_colorspace() depends on color_transform.
 
 boolean optimize_coding
 	TRUE causes the compressor to compute optimal Huffman coding tables
@@ -962,7 +962,7 @@ int num_scans
 	compressor will then write a JPEG file having one scan for each scan
 	definition record.  This is used to generate noninterleaved or
 	progressive JPEG files.  The library checks that the scan array
-	defines a valid JPEG scan sequence.  (jpeg_simple_progression creates
+	defines a valid JPEG scan sequence.  (LJPEG_jpeg_simple_progression creates
 	a suitable scan definition array for progressive JPEG.)  This is
 	discussed further under "Progressive JPEG support".
 
@@ -982,7 +982,7 @@ int smoothing_factor
 
 boolean write_JFIF_header
 	If TRUE, a JFIF APP0 marker is emitted.  LJPEG_jpeg_set_defaults() and
-	jpeg_set_colorspace() set this TRUE if a JFIF-legal JPEG color space
+	LJPEG_jpeg_set_colorspace() set this TRUE if a JFIF-legal JPEG color space
 	(ie, YCbCr or grayscale) is selected, otherwise FALSE.
 
 UINT8 JFIF_major_version
@@ -1002,37 +1002,37 @@ UINT16 Y_density
 
 boolean write_Adobe_marker
 	If TRUE, an Adobe APP14 marker is emitted.  LJPEG_jpeg_set_defaults() and
-	jpeg_set_colorspace() set this TRUE if JPEG color space RGB, CMYK,
+	LJPEG_jpeg_set_colorspace() set this TRUE if JPEG color space RGB, CMYK,
 	or YCCK is selected, otherwise FALSE.  It is generally a bad idea
 	to set both write_JFIF_header and write_Adobe_marker.  In fact,
 	you probably shouldn't change the default settings at all --- the
 	default behavior ensures that the JPEG file's color space can be
 	recognized by the decoder.
 
-JQUANT_TBL * quant_tbl_ptrs[NUM_QUANT_TBLS]
+LJPEG_JQUANT_TBL * quant_tbl_ptrs[NUM_QUANT_TBLS]
 	Pointers to coefficient quantization tables, one per table slot,
 	or NULL if no table is defined for a slot.  Usually these should
-	be set via one of the above helper routines; jpeg_add_quant_table()
+	be set via one of the above helper routines; LJPEG_jpeg_add_quant_table()
 	is general enough to define any quantization table.  The other
 	routines will set up table slot 0 for luminance quality and table
 	slot 1 for chrominance.
 
 int q_scale_factor[NUM_QUANT_TBLS]
 	Linear quantization scaling factors (percentage, initialized 100)
-	for use with jpeg_default_qtables().
+	for use with LJPEG_jpeg_default_qtables().
 	See rdswitch.c and cjpeg.c for an example of usage.
 	Note that the q_scale_factor[] fields are the "linear" scales, so you
-	have to convert from user-defined ratings via jpeg_quality_scaling().
+	have to convert from user-defined ratings via LJPEG_jpeg_quality_scaling().
 	Here is an example code which corresponds to cjpeg -quality 90,70:
 
 		LJPEG_jpeg_set_defaults(cinfo);
 
 		/* Set luminance quality 90. */
-		cinfo->q_scale_factor[0] = jpeg_quality_scaling(90);
+		cinfo->q_scale_factor[0] = LJPEG_jpeg_quality_scaling(90);
 		/* Set chrominance quality 70. */
-		cinfo->q_scale_factor[1] = jpeg_quality_scaling(70);
+		cinfo->q_scale_factor[1] = LJPEG_jpeg_quality_scaling(70);
 
-		jpeg_default_qtables(cinfo, force_baseline);
+		LJPEG_jpeg_default_qtables(cinfo, force_baseline);
 
 	CAUTION: You must also set 1x1 subsampling for efficient separate
 	color quality selection, since the default value used by library
@@ -1041,8 +1041,8 @@ int q_scale_factor[NUM_QUANT_TBLS]
 		cinfo->comp_info[0].v_samp_factor = 1;
 		cinfo->comp_info[0].h_samp_factor = 1;
 
-JHUFF_TBL * dc_huff_tbl_ptrs[NUM_HUFF_TBLS]
-JHUFF_TBL * ac_huff_tbl_ptrs[NUM_HUFF_TBLS]
+LJPEG_JHUFF_TBL * dc_huff_tbl_ptrs[NUM_HUFF_TBLS]
+LJPEG_JHUFF_TBL * ac_huff_tbl_ptrs[NUM_HUFF_TBLS]
 	Pointers to Huffman coding tables, one per table slot, or NULL if
 	no table is defined for a slot.  Slots 0 and 1 are filled with the
 	JPEG sample tables by LJPEG_jpeg_set_defaults().  If you need to allocate
@@ -1141,7 +1141,7 @@ J_COLOR_SPACE out_color_space
 	Output color space.  LJPEG_jpeg_read_header() sets an appropriate default
 	based on jpeg_color_space; typically it will be RGB or grayscale.
 	The application can change this field to request output in a different
-	colorspace.  For example, set it to JCS_GRAYSCALE to get grayscale
+	colorspace.  For example, set it to LJPEG_JCS_GRAYSCALE to get grayscale
 	output from a color file.  (This is useful for previewing: grayscale
 	output is faster than full color since the color components need not
 	be processed.)  Note that not all possible color space transforms are
@@ -1257,7 +1257,7 @@ index per pixel.  Otherwise it equals out_color_components.  The output arrays
 are required to be output_width * output_components JSAMPLEs wide.
 
 rec_outbuf_height is the recommended minimum height (in scanlines) of the
-buffer passed to jpeg_read_scanlines().  If the buffer is smaller, the
+buffer passed to LJPEG_jpeg_read_scanlines().  If the buffer is smaller, the
 library will still work, but time will be wasted due to unnecessary data
 copying.  In high-quality modes, rec_outbuf_height is always 1, but some
 faster, lower-quality modes set it to larger values (typically 2 to 4).
@@ -1288,7 +1288,7 @@ For compression, the source data's color space is specified by field
 in_color_space.  This is transformed to the JPEG file's color space given
 by jpeg_color_space.  LJPEG_jpeg_set_defaults() chooses a reasonable JPEG color
 space depending on in_color_space, but you can override this by calling
-jpeg_set_colorspace().  Of course you must select a supported transformation.
+LJPEG_jpeg_set_colorspace().  Of course you must select a supported transformation.
 jccolor.c currently supports the following transformations:
 	RGB => YCbCr
 	RGB => GRAYSCALE
@@ -1300,19 +1300,19 @@ YCbCr => YCbCr, CMYK => CMYK, YCCK => YCCK, and UNKNOWN => UNKNOWN.
 The de-facto file format standards (JFIF and Adobe) specify APPn markers that
 indicate the color space of the JPEG file.  It is important to ensure that
 these are written correctly, or omitted if the JPEG file's color space is not
-one of the ones supported by the de-facto standards.  jpeg_set_colorspace()
+one of the ones supported by the de-facto standards.  LJPEG_jpeg_set_colorspace()
 will set the compression parameters to include or omit the APPn markers
 properly, so long as it is told the truth about the JPEG color space.
 For example, if you are writing some random 3-component color space without
 conversion, don't try to fake out the library by setting in_color_space and
-jpeg_color_space to JCS_YCbCr; use JCS_UNKNOWN.  You may want to write an
+jpeg_color_space to LJPEG_JCS_YCbCr; use LJPEG_JCS_YCCK.  You may want to write an
 APPn marker of your own devising to identify the colorspace --- see "Special
 markers", below.
 
 When told that the color space is UNKNOWN, the library will default to using
 luminance-quality compression parameters for all color components.  You may
 well want to change these parameters.  See the source code for
-jpeg_set_colorspace(), in jcparam.c, for details.
+LJPEG_jpeg_set_colorspace(), in jcparam.c, for details.
 
 For decompression, the JPEG file's color space is given in jpeg_color_space,
 and this is transformed to the output color space out_color_space.
@@ -1694,11 +1694,11 @@ This will cause the decompressor to return to its caller with an indication
 that suspension has occurred.  This can happen at four places:
   * LJPEG_jpeg_read_header(): will return JPEG_SUSPENDED.
   * LJPEG_jpeg_start_decompress(): will return FALSE, rather than its usual TRUE.
-  * jpeg_read_scanlines(): will return the number of scanlines already
+  * LJPEG_jpeg_read_scanlines(): will return the number of scanlines already
 	completed (possibly 0).
   * LJPEG_jpeg_finish_decompress(): will return FALSE, rather than its usual TRUE.
 The surrounding application must recognize these cases, load more data into
-the input buffer, and repeat the call.  In the case of jpeg_read_scanlines(),
+the input buffer, and repeat the call.  In the case of LJPEG_jpeg_read_scanlines(),
 increment the passed pointers past any scanlines successfully read.
 
 Just as with compression, the decompressor will typically backtrack to a
@@ -1828,7 +1828,7 @@ Progressive compression:
 To create a progressive JPEG file (or a multiple-scan sequential JPEG file),
 set the scan_info cinfo field to point to an array of scan descriptors, and
 perform compression as usual.  Instead of constructing your own scan list,
-you can call the jpeg_simple_progression() helper routine to create a
+you can call the LJPEG_jpeg_simple_progression() helper routine to create a
 recommended progression sequence; this method should be used by all
 applications that don't want to get involved in the nitty-gritty of
 progressive scan sequence design.  (If you want to provide user control of
@@ -1881,12 +1881,12 @@ The basic control flow for buffered-image decoding is
 	LJPEG_jpeg_start_decompress()
 	for (each output pass) {
 	    adjust output decompression parameters if required
-	    jpeg_start_output()		/* start a new output pass */
+	    LJPEG_jpeg_start_output()		/* start a new output pass */
 	    for (all scanlines in image) {
-	        jpeg_read_scanlines()
+	        LJPEG_jpeg_read_scanlines()
 	        display scanlines
 	    }
-	    jpeg_finish_output()	/* terminate output pass */
+	    LJPEG_jpeg_finish_output()	/* terminate output pass */
 	}
 	LJPEG_jpeg_finish_decompress()
 	LJPEG_jpeg_destroy_decompress()
@@ -1898,22 +1898,22 @@ and how to display each pass.
 The simplest approach to displaying progressive images is to do one display
 pass for each scan appearing in the input file.  In this case the outer loop
 condition is typically
-	while (! jpeg_input_complete(&cinfo))
+	while (! LJPEG_jpeg_input_complete(&cinfo))
 and the start-output call should read
-	jpeg_start_output(&cinfo, cinfo.input_scan_number);
-The second parameter to jpeg_start_output() indicates which scan of the input
+	LJPEG_jpeg_start_output(&cinfo, cinfo.input_scan_number);
+The second parameter to LJPEG_jpeg_start_output() indicates which scan of the input
 file is to be displayed; the scans are numbered starting at 1 for this
 purpose.  (You can use a loop counter starting at 1 if you like, but using
 the library's input scan counter is easier.)  The library automatically reads
-data as necessary to complete each requested scan, and jpeg_finish_output()
+data as necessary to complete each requested scan, and LJPEG_jpeg_finish_output()
 advances to the next scan or end-of-image marker (hence input_scan_number
-will be incremented by the time control arrives back at jpeg_start_output()).
+will be incremented by the time control arrives back at LJPEG_jpeg_start_output()).
 With this technique, data is read from the input file only as needed, and
 input and output processing run in lockstep.
 
 After reading the final scan and reaching the end of the input file, the
 buffered image remains available; it can be read additional times by
-repeating the jpeg_start_output()/jpeg_read_scanlines()/jpeg_finish_output()
+repeating the LJPEG_jpeg_start_output()/LJPEG_jpeg_read_scanlines()/LJPEG_jpeg_finish_output()
 sequence.  For example, a useful technique is to use fast one-pass color
 quantization for display passes made while the image is arriving, followed by
 a final display pass using two-pass quantization for highest quality.  This
@@ -1929,7 +1929,7 @@ the buffered image (or just use LJPEG_jpeg_destroy_decompress()).
 
 If input data arrives faster than it can be displayed, the application can
 cause the library to decode input data in advance of what's needed to produce
-output.  This is done by calling the routine jpeg_consume_input().
+output.  This is done by calling the routine LJPEG_jpeg_consume_input().
 The return value is one of the following:
 	JPEG_REACHED_SOS:    reached an SOS marker (the start of a new scan)
 	JPEG_REACHED_EOI:    reached the EOI marker (end of image)
@@ -1942,37 +1942,37 @@ reads some additional data and returns when one of the indicated significant
 events occurs.  (If called after the EOI marker is reached, it will
 immediately return JPEG_REACHED_EOI without attempting to read more data.)
 
-The library's output processing will automatically call jpeg_consume_input()
+The library's output processing will automatically call LJPEG_jpeg_consume_input()
 whenever the output processing overtakes the input; thus, simple lockstep
-display requires no direct calls to jpeg_consume_input().  But by adding
-calls to jpeg_consume_input(), you can absorb data in advance of what is
+display requires no direct calls to LJPEG_jpeg_consume_input().  But by adding
+calls to LJPEG_jpeg_consume_input(), you can absorb data in advance of what is
 being displayed.  This has two benefits:
   * You can limit buildup of unprocessed data in your input buffer.
   * You can eliminate extra display passes by paying attention to the
     state of the library's input processing.
 
 The first of these benefits only requires interspersing calls to
-jpeg_consume_input() with your display operations and any other processing
+LJPEG_jpeg_consume_input() with your display operations and any other processing
 you may be doing.  To avoid wasting cycles due to backtracking, it's best to
-call jpeg_consume_input() only after a hundred or so new bytes have arrived.
+call LJPEG_jpeg_consume_input() only after a hundred or so new bytes have arrived.
 This is discussed further under "I/O suspension", above.  (Note: the JPEG
-library currently is not thread-safe.  You must not call jpeg_consume_input()
+library currently is not thread-safe.  You must not call LJPEG_jpeg_consume_input()
 from one thread of control if a different library routine is working on the
 same JPEG object in another thread.)
 
 When input arrives fast enough that more than one new scan is available
 before you start a new output pass, you may as well skip the output pass
 corresponding to the completed scan.  This occurs for free if you pass
-cinfo.input_scan_number as the target scan number to jpeg_start_output().
+cinfo.input_scan_number as the target scan number to LJPEG_jpeg_start_output().
 The input_scan_number field is simply the index of the scan currently being
 consumed by the input processor.  You can ensure that this is up-to-date by
-emptying the input buffer just before calling jpeg_start_output(): call
-jpeg_consume_input() repeatedly until it returns JPEG_SUSPENDED or
+emptying the input buffer just before calling LJPEG_jpeg_start_output(): call
+LJPEG_jpeg_consume_input() repeatedly until it returns JPEG_SUSPENDED or
 JPEG_REACHED_EOI.
 
-The target scan number passed to jpeg_start_output() is saved in the
+The target scan number passed to LJPEG_jpeg_start_output() is saved in the
 cinfo.output_scan_number field.  The library's output processing calls
-jpeg_consume_input() whenever the current input scan number and row within
+LJPEG_jpeg_consume_input() whenever the current input scan number and row within
 that scan is less than or equal to the current output scan number and row.
 Thus, input processing can "get ahead" of the output processing but is not
 allowed to "fall behind".  You can achieve several different effects by
@@ -1993,7 +1993,7 @@ waiting for input.  (However, the library will not accept a target scan
 number less than one, so you can't avoid waiting for the first scan.)
 
 When data is arriving faster than the output display processing can advance
-through the image, jpeg_consume_input() will store data into the buffered
+through the image, LJPEG_jpeg_consume_input() will store data into the buffered
 image beyond the point at which the output processing is reading data out
 again.  If the input arrives fast enough, it may "wrap around" the buffer to
 the point where the input is more than one whole scan ahead of the output.
@@ -2013,23 +2013,23 @@ output pass after receiving all the data; otherwise your last display may not
 be full quality across the whole screen.  So the right outer loop logic is
 something like this:
 	do {
-	    absorb any waiting input by calling jpeg_consume_input()
-	    final_pass = jpeg_input_complete(&cinfo);
+	    absorb any waiting input by calling LJPEG_jpeg_consume_input()
+	    final_pass = LJPEG_jpeg_input_complete(&cinfo);
 	    adjust output decompression parameters if required
-	    jpeg_start_output(&cinfo, cinfo.input_scan_number);
+	    LJPEG_jpeg_start_output(&cinfo, cinfo.input_scan_number);
 	    ...
-	    jpeg_finish_output()
+	    LJPEG_jpeg_finish_output()
 	} while (! final_pass);
-rather than quitting as soon as jpeg_input_complete() returns TRUE.  This
+rather than quitting as soon as LJPEG_jpeg_input_complete() returns TRUE.  This
 arrangement makes it simple to use higher-quality decoding parameters
 for the final pass.  But if you don't want to use special parameters for
 the final pass, the right loop logic is like this:
 	for (;;) {
-	    absorb any waiting input by calling jpeg_consume_input()
-	    jpeg_start_output(&cinfo, cinfo.input_scan_number);
+	    absorb any waiting input by calling LJPEG_jpeg_consume_input()
+	    LJPEG_jpeg_start_output(&cinfo, cinfo.input_scan_number);
 	    ...
-	    jpeg_finish_output()
-	    if (jpeg_input_complete(&cinfo) &&
+	    LJPEG_jpeg_finish_output()
+	    if (LJPEG_jpeg_input_complete(&cinfo) &&
 	        cinfo.input_scan_number == cinfo.output_scan_number)
 	      break;
 	}
@@ -2043,10 +2043,10 @@ to keep up with the incoming data.
 When the data transmission speed is high, you might begin a display pass,
 then find that much or all of the file has arrived before you can complete
 the pass.  (You can detect this by noting the JPEG_REACHED_EOI return code
-from jpeg_consume_input(), or equivalently by testing jpeg_input_complete().)
+from LJPEG_jpeg_consume_input(), or equivalently by testing LJPEG_jpeg_input_complete().)
 In this situation you may wish to abort the current display pass and start a
 new one using the newly arrived information.  To do so, just call
-jpeg_finish_output() and then start a new pass with jpeg_start_output().
+LJPEG_jpeg_finish_output() and then start a new pass with LJPEG_jpeg_start_output().
 
 A variant strategy is to abort and restart display if more than one complete
 scan arrives during an output pass; this can be detected by noting
@@ -2065,9 +2065,9 @@ many other strategies are possible.  For example, the application can examine
 the parameters of the current input scan and decide whether to display it or
 not.  If the scan contains only chroma data, one might choose not to use it
 as the target scan, expecting that the scan will be small and will arrive
-quickly.  To skip to the next scan, call jpeg_consume_input() until it
+quickly.  To skip to the next scan, call LJPEG_jpeg_consume_input() until it
 returns JPEG_REACHED_SOS or JPEG_REACHED_EOI.  Or just use the next higher
-number as the target scan for jpeg_start_output(); but that method doesn't
+number as the target scan for LJPEG_jpeg_start_output(); but that method doesn't
 let you inspect the next scan's parameters before deciding to display it.
 
 
@@ -2075,18 +2075,18 @@ In buffered-image mode, LJPEG_jpeg_start_decompress() never performs input and
 thus never suspends.  An application that uses input suspension with
 buffered-image mode must be prepared for suspension returns from these
 routines:
-* jpeg_start_output() performs input only if you request 2-pass quantization
+* LJPEG_jpeg_start_output() performs input only if you request 2-pass quantization
   and the target scan isn't fully read yet.  (This is discussed below.)
-* jpeg_read_scanlines(), as always, returns the number of scanlines that it
+* LJPEG_jpeg_read_scanlines(), as always, returns the number of scanlines that it
   was able to produce before suspending.
-* jpeg_finish_output() will read any markers following the target scan,
+* LJPEG_jpeg_finish_output() will read any markers following the target scan,
   up to the end of the file or the SOS marker that begins another scan.
-  (But it reads no input if jpeg_consume_input() has already reached the
+  (But it reads no input if LJPEG_jpeg_consume_input() has already reached the
   end of the file or a SOS marker beyond the target output scan.)
 * LJPEG_jpeg_finish_decompress() will read until the end of file, and thus can
   suspend if the end hasn't already been reached (as can be tested by
-  calling jpeg_input_complete()).
-jpeg_start_output(), jpeg_finish_output(), and LJPEG_jpeg_finish_decompress()
+  calling LJPEG_jpeg_input_complete()).
+LJPEG_jpeg_start_output(), LJPEG_jpeg_finish_output(), and LJPEG_jpeg_finish_decompress()
 all return TRUE if they completed their tasks, FALSE if they had to suspend.
 In the event of a FALSE return, the application must load more input data
 and repeat the call.  Applications that use non-suspending data sources need
@@ -2097,10 +2097,10 @@ It is possible to change decoding parameters between output passes in the
 buffered-image mode.  The decoder library currently supports only very
 limited changes of parameters.  ONLY THE FOLLOWING parameter changes are
 allowed after LJPEG_jpeg_start_decompress() is called:
-* dct_method can be changed before each call to jpeg_start_output().
+* dct_method can be changed before each call to LJPEG_jpeg_start_output().
   For example, one could use a fast DCT method for early scans, changing
   to a higher quality method for the final scan.
-* dither_mode can be changed before each call to jpeg_start_output();
+* dither_mode can be changed before each call to LJPEG_jpeg_start_output();
   of course this has no impact if not using color quantization.  Typically
   one would use ordered dither for initial passes, then switch to
   Floyd-Steinberg dither for the final pass.  Caution: changing dither mode
@@ -2108,7 +2108,7 @@ allowed after LJPEG_jpeg_start_decompress() is called:
   of memory involved is not large (a scanline or so), it may cause the
   initial max_memory_to_use specification to be exceeded, which in the worst
   case would result in an out-of-memory failure.
-* do_block_smoothing can be changed before each call to jpeg_start_output().
+* do_block_smoothing can be changed before each call to LJPEG_jpeg_start_output().
   This setting is relevant only when decoding a progressive JPEG image.
   During the first DC-only scan, block smoothing provides a very "fuzzy" look
   instead of the very "blocky" look seen without it; which is better seems a
@@ -2151,7 +2151,7 @@ enable flags for any other quantization methods you plan to change to later.
 
 After setting the enable flags correctly at LJPEG_jpeg_start_decompress() time, you
 can change to any enabled quantization method by setting two_pass_quantize
-and colormap properly just before calling jpeg_start_output().  The following
+and colormap properly just before calling LJPEG_jpeg_start_output().  The following
 special rules apply:
 1. You must explicitly set cinfo.colormap to NULL when switching to 1-pass
    or 2-pass mode from a different mode, or when you want the 2-pass
@@ -2170,18 +2170,18 @@ Yup, it's a bit klugy, but it's necessary to do it this way for backwards
 compatibility.)
 
 Note that in buffered-image mode, the library generates any requested colormap
-during jpeg_start_output(), not during LJPEG_jpeg_start_decompress().
+during LJPEG_jpeg_start_output(), not during LJPEG_jpeg_start_decompress().
 
-When using two-pass quantization, jpeg_start_output() makes a pass over the
+When using two-pass quantization, LJPEG_jpeg_start_output() makes a pass over the
 buffered image to determine the optimum color map; it therefore may take a
 significant amount of time, whereas ordinarily it does little work.  The
 progress monitor hook is called during this pass, if defined.  It is also
 important to realize that if the specified target scan number is greater than
-or equal to the current input scan number, jpeg_start_output() will attempt
+or equal to the current input scan number, LJPEG_jpeg_start_output() will attempt
 to consume input as it makes this pass.  If you use a suspending data source,
-you need to check for a FALSE return from jpeg_start_output() under these
+you need to check for a FALSE return from LJPEG_jpeg_start_output() under these
 conditions.  The combination of 2-pass quantization and a not-yet-fully-read
-target scan is the only case in which jpeg_start_output() will consume input.
+target scan is the only case in which LJPEG_jpeg_start_output() will consume input.
 
 
 Application authors who support buffered-image mode may be tempted to use it
@@ -2192,10 +2192,10 @@ memory.  Worse, it can cost time on large images, since the buffered data has
 to be swapped out or written to a temporary file.  If you are concerned about
 maximum performance on baseline JPEG files, you should use buffered-image
 mode only when the incoming file actually has multiple scans.  This can be
-tested by calling jpeg_has_multiple_scans(), which will return a correct
+tested by calling LJPEG_jpeg_has_multiple_scans(), which will return a correct
 result at any time after LJPEG_jpeg_read_header() completes.
 
-It is also worth noting that when you use jpeg_consume_input() to let input
+It is also worth noting that when you use LJPEG_jpeg_consume_input() to let input
 processing get ahead of output processing, the resulting pattern of access to
 the coefficient buffer is quite nonsequential.  It's best to use the memory
 manager jmemnobs.c if you can (ie, if you have enough real or virtual main
@@ -2205,18 +2205,18 @@ probably see a lot of disk traffic and poor performance.  (This could be
 improved with additional work on the memory manager, but we haven't gotten
 around to it yet.)
 
-In some applications it may be convenient to use jpeg_consume_input() for all
+In some applications it may be convenient to use LJPEG_jpeg_consume_input() for all
 input processing, including reading the initial markers; that is, you may
-wish to call jpeg_consume_input() instead of LJPEG_jpeg_read_header() during
+wish to call LJPEG_jpeg_consume_input() instead of LJPEG_jpeg_read_header() during
 startup.  This works, but note that you must check for JPEG_REACHED_SOS and
 JPEG_REACHED_EOI return codes as the equivalent of LJPEG_jpeg_read_header's codes.
 Once the first SOS marker has been reached, you must call
-LJPEG_jpeg_start_decompress() before jpeg_consume_input() will consume more input;
+LJPEG_jpeg_start_decompress() before LJPEG_jpeg_consume_input() will consume more input;
 it'll just keep returning JPEG_REACHED_SOS until you do.  If you read a
-tables-only file this way, jpeg_consume_input() will return JPEG_REACHED_EOI
+tables-only file this way, LJPEG_jpeg_consume_input() will return JPEG_REACHED_EOI
 without ever returning JPEG_REACHED_SOS; be sure to check for this case.
 If this happens, the decompressor will not read any more input until you call
-LJPEG_jpeg_abort() to reset it.  It is OK to call jpeg_consume_input() even when not
+LJPEG_jpeg_abort() to reset it.  It is OK to call LJPEG_jpeg_consume_input() even when not
 using buffered-image mode, but in that case it's basically a no-op after the
 initial markers have been read: it will just return JPEG_SUSPENDED.
 
@@ -2317,7 +2317,7 @@ In some cases you might want to compress an image using tables which are
 not stored in the application, but are defined in an interchange or
 tables-only file readable by the application.  This can be done by setting up
 a JPEG decompression object to read the specification file, then copying the
-tables into your compression object.  See jpeg_copy_critical_parameters()
+tables into your compression object.  See LJPEG_jpeg_copy_critical_parameters()
 for an example of copying quantization tables.
 
 
@@ -2329,7 +2329,7 @@ to load a fixed quantization table into table slot "n":
 
     if (cinfo.quant_tbl_ptrs[n] == NULL)
       cinfo.quant_tbl_ptrs[n] = LJPEG_jpeg_alloc_quant_table((LJPEG_j_common_ptr) &cinfo);
-    quant_ptr = cinfo.quant_tbl_ptrs[n];	/* quant_ptr is JQUANT_TBL* */
+    quant_ptr = cinfo.quant_tbl_ptrs[n];	/* quant_ptr is LJPEG_JQUANT_TBL* */
     for (i = 0; i < 64; i++) {
       /* Qtable[] is desired quantization table, in natural array order */
       quant_ptr->quantval[i] = Qtable[i];
@@ -2339,7 +2339,7 @@ Code to load a fixed Huffman table is typically (for AC table "n"):
 
     if (cinfo.ac_huff_tbl_ptrs[n] == NULL)
       cinfo.ac_huff_tbl_ptrs[n] = LJPEG_jpeg_alloc_huff_table((LJPEG_j_common_ptr) &cinfo);
-    huff_ptr = cinfo.ac_huff_tbl_ptrs[n];	/* huff_ptr is JHUFF_TBL* */
+    huff_ptr = cinfo.ac_huff_tbl_ptrs[n];	/* huff_ptr is LJPEG_JHUFF_TBL* */
     for (i = 1; i <= 16; i++) {
       /* counts[i] is number of Huffman codes of length i bits, i=1..16 */
       huff_ptr->bits[i] = counts[i];
@@ -2350,7 +2350,7 @@ Code to load a fixed Huffman table is typically (for AC table "n"):
     }
 
 (Note that trying to set cinfo.quant_tbl_ptrs[n] to point directly at a
-constant JQUANT_TBL object is not safe.  If the incoming file happened to
+constant LJPEG_JQUANT_TBL object is not safe.  If the incoming file happened to
 contain a quantization table definition, your master table would get
 overwritten!  Instead allocate a working table copy and copy the master table
 into it, as illustrated above.  Ditto for Huffman tables, of course.)
@@ -2598,7 +2598,7 @@ the following:
     This notifies the library that you will be supplying raw data.
     Furthermore, set cinfo->do_fancy_downsampling to FALSE if you want to use
     real downsampled data.  (It is set TRUE by LJPEG_jpeg_set_defaults().)
-  * Ensure jpeg_color_space is correct --- an explicit jpeg_set_colorspace()
+  * Ensure jpeg_color_space is correct --- an explicit LJPEG_jpeg_set_colorspace()
     call is a good idea.  Note that since color conversion is bypassed,
     in_color_space is ignored, except that LJPEG_jpeg_set_defaults() uses it to
     choose the default jpeg_color_space setting.
@@ -2667,10 +2667,10 @@ LJPEG_jpeg_start_decompress() (it is set FALSE by LJPEG_jpeg_read_header()).  Be
 verify that the color space and sampling factors are ones you can handle.
 Furthermore, set cinfo->do_fancy_upsampling = FALSE if you want to get real
 downsampled data (it is set TRUE by LJPEG_jpeg_read_header()).
-Then call jpeg_read_raw_data() in place of jpeg_read_scanlines().  The
+Then call LJPEG_jpeg_read_raw_data() in place of LJPEG_jpeg_read_scanlines().  The
 decompression process is otherwise the same as usual.
 
-jpeg_read_raw_data() returns one MCU row per call, and thus you must pass a
+LJPEG_jpeg_read_raw_data() returns one MCU row per call, and thus you must pass a
 buffer of at least max_v_samp_factor*DCTSIZE scanlines (scanline counting is
 the same as for raw-data compression).  The buffer you pass must be large
 enough to hold the actual data plus padding to DCT-block boundaries.  As with
@@ -2680,7 +2680,7 @@ above example of computing buffer dimensions for raw-data compression is
 equally valid for decompression.
 
 Input suspension is supported with raw-data decompression: if the data source
-module suspends, jpeg_read_raw_data() will return 0.  You can also use
+module suspends, LJPEG_jpeg_read_raw_data() will return 0.  You can also use
 buffered-image mode to read raw data in multiple passes.
 
 
@@ -2695,14 +2695,14 @@ multi-strip or multi-tile TIFF/JPEG file into a single JPEG datastream, etc.
 
 To read the contents of a JPEG file as DCT coefficients, open the file and do
 LJPEG_jpeg_read_header() as usual.  But instead of calling LJPEG_jpeg_start_decompress()
-and jpeg_read_scanlines(), call jpeg_read_coefficients().  This will read the
+and LJPEG_jpeg_read_scanlines(), call jpeg_read_coefficients().  This will read the
 entire image into a set of virtual coefficient-block arrays, one array per
 component.  The return value is a pointer to an array of virtual-array
 descriptors.  Each virtual array can be accessed directly using the JPEG
 memory manager's access_virt_barray method (see Memory management, below,
 and also read structure.txt's discussion of virtual array handling).  Or,
 for simple transcoding to a different JPEG file format, the array list can
-just be handed directly to jpeg_write_coefficients().
+just be handed directly to LJPEG_jpeg_write_coefficients().
 
 Each block in the block arrays contains quantized coefficient values in
 normal array order (not JPEG zigzag order).  The block arrays contain only
@@ -2711,7 +2711,7 @@ interleaved MCUs at the right or bottom edges of the image are discarded
 during reading and are not stored in the block arrays.  (The size of each
 block array can be determined from the width_in_blocks and height_in_blocks
 fields of the component's comp_info entry.)  This is also the data format
-expected by jpeg_write_coefficients().
+expected by LJPEG_jpeg_write_coefficients().
 
 When you are done using the virtual arrays, call LJPEG_jpeg_finish_decompress()
 to release the array storage and return the decompression object to an idle
@@ -2727,7 +2727,7 @@ decoder's coefficient arrays during a normal decode cycle in buffered-image
 mode.  This frammish might be useful for progressively displaying an incoming
 image and then re-encoding it without loss.  To do this, decode in buffered-
 image mode as discussed previously, then call jpeg_read_coefficients() after
-the last jpeg_finish_output() call.  The arrays will be available for your use
+the last LJPEG_jpeg_finish_output() call.  The arrays will be available for your use
 until you call LJPEG_jpeg_finish_decompress().
 
 
@@ -2735,41 +2735,41 @@ To write the contents of a JPEG file as DCT coefficients, you must provide
 the DCT coefficients stored in virtual block arrays.  You can either pass
 block arrays read from an input JPEG file by jpeg_read_coefficients(), or
 allocate virtual arrays from the JPEG compression object and fill them
-yourself.  In either case, jpeg_write_coefficients() is substituted for
+yourself.  In either case, LJPEG_jpeg_write_coefficients() is substituted for
 LJPEG_jpeg_start_compress() and LJPEG_jpeg_write_scanlines().  Thus the sequence is
   * Create compression object
   * Set all compression parameters as necessary
   * Request virtual arrays if needed
-  * jpeg_write_coefficients()
+  * LJPEG_jpeg_write_coefficients()
   * LJPEG_jpeg_finish_compress()
   * Destroy or re-use compression object
-jpeg_write_coefficients() is passed a pointer to an array of virtual block
+LJPEG_jpeg_write_coefficients() is passed a pointer to an array of virtual block
 array descriptors; the number of arrays is equal to cinfo.num_components.
 
 The virtual arrays need only have been requested, not realized, before
-jpeg_write_coefficients() is called.  A side-effect of
-jpeg_write_coefficients() is to realize any virtual arrays that have been
+LJPEG_jpeg_write_coefficients() is called.  A side-effect of
+LJPEG_jpeg_write_coefficients() is to realize any virtual arrays that have been
 requested from the compression object's memory manager.  Thus, when obtaining
 the virtual arrays from the compression object, you should fill the arrays
-after calling jpeg_write_coefficients().  The data is actually written out
-when you call LJPEG_jpeg_finish_compress(); jpeg_write_coefficients() only writes
+after calling LJPEG_jpeg_write_coefficients().  The data is actually written out
+when you call LJPEG_jpeg_finish_compress(); LJPEG_jpeg_write_coefficients() only writes
 the file header.
 
 When writing raw DCT coefficients, it is crucial that the JPEG quantization
 tables and sampling factors match the way the data was encoded, or the
 resulting file will be invalid.  For transcoding from an existing JPEG file,
-we recommend using jpeg_copy_critical_parameters().  This routine initializes
+we recommend using LJPEG_jpeg_copy_critical_parameters().  This routine initializes
 all the compression parameters to default values (like LJPEG_jpeg_set_defaults()),
 then copies the critical information from a source decompression object.
 The decompression object should have just been used to read the entire
 JPEG input file --- that is, it should be awaiting LJPEG_jpeg_finish_decompress().
 
-jpeg_write_coefficients() marks all tables stored in the compression object
+LJPEG_jpeg_write_coefficients() marks all tables stored in the compression object
 as needing to be written to the output file (thus, it acts like
 LJPEG_jpeg_start_compress(cinfo, TRUE)).  This is for safety's sake, to avoid
 emitting abbreviated JPEG files by accident.  If you really want to emit an
 abbreviated JPEG file, call LJPEG_jpeg_suppress_tables(), or set the tables'
-individual sent_table flags, between calling jpeg_write_coefficients() and
+individual sent_table flags, between calling LJPEG_jpeg_write_coefficients() and
 LJPEG_jpeg_finish_compress().
 
 
@@ -2780,7 +2780,7 @@ Some applications may need to regain control from the JPEG library every so
 often.  The typical use of this feature is to produce a percent-done bar or
 other progress display.  (For a simple example, see cjpeg.c or djpeg.c.)
 Although you do get control back frequently during the data-transferring pass
-(the jpeg_read_scanlines or LJPEG_jpeg_write_scanlines loop), any additional passes
+(the LJPEG_jpeg_read_scanlines or LJPEG_jpeg_write_scanlines loop), any additional passes
 will occur inside LJPEG_jpeg_finish_compress or LJPEG_jpeg_start_decompress; those
 routines may take a long time to execute, and you don't get control back
 until they are done.
@@ -2791,7 +2791,7 @@ so we don't recommend you use it for mouse tracking or anything like that.
 At present, a call will occur once per MCU row, scanline, or sample row
 group, whichever unit is convenient for the current processing mode; so the
 wider the image, the longer the time between calls.  During the data
-transferring pass, only one call occurs per call of jpeg_read_scanlines or
+transferring pass, only one call occurs per call of LJPEG_jpeg_read_scanlines or
 LJPEG_jpeg_write_scanlines, so don't pass a large number of scanlines at once if
 you want fine resolution in the progress count.  (If you really need to use
 the callback mechanism for time-critical tasks like mouse tracking, you could
@@ -2832,7 +2832,7 @@ When using the decompressor's buffered-image mode, the progress monitor work
 estimate is likely to be completely unhelpful, because the library has no way
 to know how many output passes will be demanded of it.  Currently, the library
 sets total_passes based on the assumption that there will be one more output
-pass if the input file end hasn't yet been read (jpeg_input_complete() isn't
+pass if the input file end hasn't yet been read (LJPEG_jpeg_input_complete() isn't
 TRUE), but no more output passes if the file end has been reached when the
 output pass is started.  This means that total_passes will rise as additional
 output passes are requested.  If you have a way of determining the input file

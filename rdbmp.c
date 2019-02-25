@@ -437,7 +437,7 @@ start_input_bmp (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
      (LJPEG_JDIMENSION) (biWidth * 3), (LJPEG_JDIMENSION) 1);
   source->pub.buffer_height = 1;
 
-  cinfo->in_color_space = JCS_RGB;
+  cinfo->in_color_space = LJPEG_JCS_RGB;
   cinfo->input_components = 3;
   cinfo->data_precision = 8;
   cinfo->image_width = (LJPEG_JDIMENSION) biWidth;

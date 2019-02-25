@@ -130,7 +130,7 @@ spatial resampling.
 cjpeg -quality option has been extended for support of separate quality
 settings for luminance and chrominance (or in general, for every provided
 quantization table slot).
-New API function jpeg_default_qtables() and q_scale_factor array in library.
+New API function LJPEG_jpeg_default_qtables() and q_scale_factor array in library.
 
 Added -nosmooth option to cjpeg, complementary to djpeg.
 New variable "do_fancy_downsampling" in library, complement to fancy
@@ -227,7 +227,7 @@ djpeg's -map switch is now able to read raw-format PPM files reliably.
 
 cjpeg -progressive -restart no longer generates any unnecessary DRI markers.
 
-Multiple calls to jpeg_simple_progression for a single JPEG object
+Multiple calls to LJPEG_jpeg_simple_progression for a single JPEG object
 no longer leak memory.
 
 
@@ -247,7 +247,7 @@ these macros.  Note that any application code that was using these macros
 will have to be changed.
 
 DCT coefficient quantization tables are now stored in normal array order
-rather than zigzag order.  Application code that calls jpeg_add_quant_table,
+rather than zigzag order.  Application code that calls LJPEG_jpeg_add_quant_table,
 or otherwise manipulates quantization tables directly, will need to be
 changed.  If you need to make such code work with either older or newer
 versions of the library, a test like "#if JPEG_LIB_VERSION >= 61" is

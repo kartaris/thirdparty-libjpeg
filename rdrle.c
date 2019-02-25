@@ -143,10 +143,10 @@ start_input_rle (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
     ERREXIT(cinfo, JERR_RLE_UNSUPPORTED);
   
   if (source->visual == GRAYSCALE || source->visual == MAPPEDGRAY) {
-    cinfo->in_color_space   = JCS_GRAYSCALE;
+    cinfo->in_color_space   = LJPEG_JCS_GRAYSCALE;
     cinfo->input_components = 1;
   } else {
-    cinfo->in_color_space   = JCS_RGB;
+    cinfo->in_color_space   = LJPEG_JCS_RGB;
     cinfo->input_components = 3;
   }
 

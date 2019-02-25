@@ -108,7 +108,7 @@ LJPEG_read_quant_tables (LJPEG_j_compress_ptr cinfo, char * filename, boolean fo
       }
       table[i] = (unsigned int) val;
     }
-    jpeg_add_quant_table(cinfo, tblno, table, cinfo->q_scale_factor[tblno],
+    LJPEG_jpeg_add_quant_table(cinfo, tblno, table, cinfo->q_scale_factor[tblno],
 			 force_baseline);
     tblno++;
   }
@@ -282,15 +282,15 @@ LJPEG_set_quality_ratings (LJPEG_j_compress_ptr cinfo, char *arg, boolean force_
       if (ch != ',')		/* syntax check */
 	return FALSE;
       /* Convert user 0-100 rating to percentage scaling */
-      cinfo->q_scale_factor[tblno] = jpeg_quality_scaling(val);
+      cinfo->q_scale_factor[tblno] = LJPEG_jpeg_quality_scaling(val);
       while (*arg && *arg++ != ',') /* advance to next segment of arg string */
 	;
     } else {
       /* reached end of parameter, set remaining factors to last value */
-      cinfo->q_scale_factor[tblno] = jpeg_quality_scaling(val);
+      cinfo->q_scale_factor[tblno] = LJPEG_jpeg_quality_scaling(val);
     }
   }
-  jpeg_default_qtables(cinfo, force_baseline);
+  LJPEG_jpeg_default_qtables(cinfo, force_baseline);
   return TRUE;
 }
 

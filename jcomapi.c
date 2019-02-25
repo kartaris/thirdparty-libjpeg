@@ -82,25 +82,25 @@ LJPEG_jpeg_destroy (LJPEG_j_common_ptr cinfo)
  * (Would jutils.c be a more reasonable place to put these?)
  */
 
-LJPEG_GLOBAL(JQUANT_TBL *)
+LJPEG_GLOBAL(LJPEG_JQUANT_TBL *)
 LJPEG_jpeg_alloc_quant_table (LJPEG_j_common_ptr cinfo)
 {
-  JQUANT_TBL *tbl;
+  LJPEG_JQUANT_TBL *tbl;
 
-  tbl = (JQUANT_TBL *)
-    (*cinfo->mem->alloc_small) (cinfo, JPOOL_PERMANENT, SIZEOF(JQUANT_TBL));
+  tbl = (LJPEG_JQUANT_TBL *)
+    (*cinfo->mem->alloc_small) (cinfo, JPOOL_PERMANENT, SIZEOF(LJPEG_JQUANT_TBL));
   tbl->sent_table = FALSE;	/* make sure this is false in any new table */
   return tbl;
 }
 
 
-LJPEG_GLOBAL(JHUFF_TBL *)
+LJPEG_GLOBAL(LJPEG_JHUFF_TBL *)
 LJPEG_jpeg_alloc_huff_table (LJPEG_j_common_ptr cinfo)
 {
-  JHUFF_TBL *tbl;
+  LJPEG_JHUFF_TBL *tbl;
 
-  tbl = (JHUFF_TBL *)
-    (*cinfo->mem->alloc_small) (cinfo, JPOOL_PERMANENT, SIZEOF(JHUFF_TBL));
+  tbl = (LJPEG_JHUFF_TBL *)
+    (*cinfo->mem->alloc_small) (cinfo, JPOOL_PERMANENT, SIZEOF(LJPEG_JHUFF_TBL));
   tbl->sent_table = FALSE;	/* make sure this is false in any new table */
   return tbl;
 }

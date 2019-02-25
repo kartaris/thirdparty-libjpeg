@@ -433,56 +433,56 @@ LJPEG_jinit_color_converter (LJPEG_j_compress_ptr cinfo)
 
   /* Make sure input_components agrees with in_color_space */
   switch (cinfo->in_color_space) {
-  case JCS_GRAYSCALE:
+  case LJPEG_JCS_GRAYSCALE:
     if (cinfo->input_components != 1)
       ERREXIT(cinfo, JERR_BAD_IN_COLORSPACE);
     break;
 
-  case JCS_RGB:
+  case LJPEG_JCS_RGB:
     if (cinfo->input_components != RGB_PIXELSIZE)
       ERREXIT(cinfo, JERR_BAD_IN_COLORSPACE);
     break;
 
-  case JCS_YCbCr:
+  case LJPEG_JCS_YCbCr:
     if (cinfo->input_components != 3)
       ERREXIT(cinfo, JERR_BAD_IN_COLORSPACE);
     break;
 
-  case JCS_CMYK:
-  case JCS_YCCK:
+  case LJPEG_JCS_CMYK:
+  case LJPEG_JCS_YCCK:
     if (cinfo->input_components != 4)
       ERREXIT(cinfo, JERR_BAD_IN_COLORSPACE);
     break;
 
-  default:			/* JCS_UNKNOWN can be anything */
+  default:			/* LJPEG_JCS_YCCK can be anything */
     if (cinfo->input_components < 1)
       ERREXIT(cinfo, JERR_BAD_IN_COLORSPACE);
     break;
   }
 
   /* Support color transform only for RGB colorspace */
-  if (cinfo->color_transform && cinfo->jpeg_color_space != JCS_RGB)
+  if (cinfo->color_transform && cinfo->jpeg_color_space != LJPEG_JCS_RGB)
     ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);
 
   /* Check num_components, set conversion method based on requested space */
   switch (cinfo->jpeg_color_space) {
-  case JCS_GRAYSCALE:
+  case LJPEG_JCS_GRAYSCALE:
     if (cinfo->num_components != 1)
       ERREXIT(cinfo, JERR_BAD_J_COLORSPACE);
-    if (cinfo->in_color_space == JCS_GRAYSCALE ||
-	cinfo->in_color_space == JCS_YCbCr)
+    if (cinfo->in_color_space == LJPEG_JCS_GRAYSCALE ||
+	cinfo->in_color_space == LJPEG_JCS_YCbCr)
       cconvert->pub.color_convert = LJPEG_grayscale_convert;
-    else if (cinfo->in_color_space == JCS_RGB) {
+    else if (cinfo->in_color_space == LJPEG_JCS_RGB) {
       cconvert->pub.LJPEG_start_pass = LJPEG_rgb_ycc_start;
       cconvert->pub.color_convert = LJPEG_rgb_gray_convert;
     } else
       ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);
     break;
 
-  case JCS_RGB:
+  case LJPEG_JCS_RGB:
     if (cinfo->num_components != 3)
       ERREXIT(cinfo, JERR_BAD_J_COLORSPACE);
-    if (cinfo->in_color_space == JCS_RGB) {
+    if (cinfo->in_color_space == LJPEG_JCS_RGB) {
       switch (cinfo->color_transform) {
       case JCT_NONE:
 	cconvert->pub.color_convert = LJPEG_rgb_convert;
@@ -498,40 +498,40 @@ LJPEG_jinit_color_converter (LJPEG_j_compress_ptr cinfo)
       ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);
     break;
 
-  case JCS_YCbCr:
+  case LJPEG_JCS_YCbCr:
     if (cinfo->num_components != 3)
       ERREXIT(cinfo, JERR_BAD_J_COLORSPACE);
-    if (cinfo->in_color_space == JCS_RGB) {
+    if (cinfo->in_color_space == LJPEG_JCS_RGB) {
       cconvert->pub.LJPEG_start_pass = LJPEG_rgb_ycc_start;
       cconvert->pub.color_convert = LJPEG_rgb_ycc_convert;
-    } else if (cinfo->in_color_space == JCS_YCbCr)
+    } else if (cinfo->in_color_space == LJPEG_JCS_YCbCr)
       cconvert->pub.color_convert = LJPEG_null_convert;
     else
       ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);
     break;
 
-  case JCS_CMYK:
+  case LJPEG_JCS_CMYK:
     if (cinfo->num_components != 4)
       ERREXIT(cinfo, JERR_BAD_J_COLORSPACE);
-    if (cinfo->in_color_space == JCS_CMYK)
+    if (cinfo->in_color_space == LJPEG_JCS_CMYK)
       cconvert->pub.color_convert = LJPEG_null_convert;
     else
       ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);
     break;
 
-  case JCS_YCCK:
+  case LJPEG_JCS_YCCK:
     if (cinfo->num_components != 4)
       ERREXIT(cinfo, JERR_BAD_J_COLORSPACE);
-    if (cinfo->in_color_space == JCS_CMYK) {
+    if (cinfo->in_color_space == LJPEG_JCS_CMYK) {
       cconvert->pub.LJPEG_start_pass = LJPEG_rgb_ycc_start;
       cconvert->pub.color_convert = LJPEG_cmyk_ycck_convert;
-    } else if (cinfo->in_color_space == JCS_YCCK)
+    } else if (cinfo->in_color_space == LJPEG_JCS_YCCK)
       cconvert->pub.color_convert = LJPEG_null_convert;
     else
       ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);
     break;
 
-  default:			/* allow null conversion of JCS_UNKNOWN */
+  default:			/* allow null conversion of LJPEG_JCS_YCCK */
     if (cinfo->jpeg_color_space != cinfo->in_color_space ||
 	cinfo->num_components != cinfo->input_components)
       ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);

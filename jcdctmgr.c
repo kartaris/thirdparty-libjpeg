@@ -183,7 +183,7 @@ LJPEG_start_pass_fdctmgr (LJPEG_j_compress_ptr cinfo)
   int ci, qtblno, i;
   LJPEG_jpeg_component_info *compptr;
   int method = 0;
-  JQUANT_TBL * qtbl;
+  LJPEG_JQUANT_TBL * qtbl;
   DCTELEM * dtbl;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;

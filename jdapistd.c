@@ -20,7 +20,7 @@
 
 
 /* Forward declarations */
-LOCAL(boolean) output_pass_setup LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
+LOCAL(boolean) LJPEG_output_pass_setup LJPEG_JPP((LJPEG_j_decompress_ptr cinfo));
 
 
 /*
@@ -40,7 +40,7 @@ LJPEG_jpeg_start_decompress (LJPEG_j_decompress_ptr cinfo)
     /* First call: initialize master control, select active modules */
     jinit_master_decompress(cinfo);
     if (cinfo->buffered_image) {
-      /* No more work here; expecting jpeg_start_output next */
+      /* No more work here; expecting LJPEG_jpeg_start_output next */
       cinfo->global_state = DSTATE_BUFIMAGE;
       return TRUE;
     }
@@ -78,20 +78,20 @@ LJPEG_jpeg_start_decompress (LJPEG_j_decompress_ptr cinfo)
   } else if (cinfo->global_state != DSTATE_PRESCAN)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
   /* Perform any dummy output passes, and set up for the final pass */
-  return output_pass_setup(cinfo);
+  return LJPEG_output_pass_setup(cinfo);
 }
 
 
 /*
  * Set up for an output pass, and perform any dummy pass(es) needed.
- * Common subroutine for LJPEG_jpeg_start_decompress and jpeg_start_output.
+ * Common subroutine for LJPEG_jpeg_start_decompress and LJPEG_jpeg_start_output.
  * Entry: global_state = DSTATE_PRESCAN only if previously suspended.
  * Exit: If done, returns TRUE and sets global_state for proper output mode.
  *       If suspended, returns FALSE and sets global_state = DSTATE_PRESCAN.
  */
 
 LOCAL(boolean)
-output_pass_setup (LJPEG_j_decompress_ptr cinfo)
+LJPEG_output_pass_setup (LJPEG_j_decompress_ptr cinfo)
 {
   if (cinfo->global_state != DSTATE_PRESCAN) {
     /* First call: do pass setup */
@@ -127,7 +127,7 @@ output_pass_setup (LJPEG_j_decompress_ptr cinfo)
 #endif /* QUANT_2PASS_SUPPORTED */
   }
   /* Ready for application to drive output pass through
-   * jpeg_read_scanlines or jpeg_read_raw_data.
+   * LJPEG_jpeg_read_scanlines or LJPEG_jpeg_read_raw_data.
    */
   cinfo->global_state = cinfo->raw_data_out ? DSTATE_RAW_OK : DSTATE_SCANNING;
   return TRUE;
@@ -142,12 +142,12 @@ output_pass_setup (LJPEG_j_decompress_ptr cinfo)
  * including bottom of image, data source suspension, and operating
  * modes that emit multiple scanlines at a time.
  *
- * Note: we warn about excess calls to jpeg_read_scanlines() since
+ * Note: we warn about excess calls to LJPEG_jpeg_read_scanlines() since
  * this likely signals an application programmer error.  However,
  * an oversize buffer (max_lines > scanlines remaining) is not an error.
  */
 LJPEG_GLOBAL(LJPEG_JDIMENSION)
-jpeg_read_scanlines (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY scanlines,
+LJPEG_jpeg_read_scanlines (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY scanlines,
 		     LJPEG_JDIMENSION max_lines)
 {
   LJPEG_JDIMENSION row_ctr;
@@ -179,7 +179,7 @@ jpeg_read_scanlines (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY scanlines,
  * Processes exactly one iMCU row per call, unless suspended.
  */
 LJPEG_GLOBAL(LJPEG_JDIMENSION)
-jpeg_read_raw_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE data,
+LJPEG_jpeg_read_raw_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE data,
 		    LJPEG_JDIMENSION max_lines)
 {
   LJPEG_JDIMENSION lines_per_iMCU_row;
@@ -221,7 +221,7 @@ jpeg_read_raw_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE data,
  * Initialize for an output pass in buffered-image mode.
  */
 LJPEG_GLOBAL(boolean)
-jpeg_start_output (LJPEG_j_decompress_ptr cinfo, int scan_number)
+LJPEG_jpeg_start_output (LJPEG_j_decompress_ptr cinfo, int scan_number)
 {
   if (cinfo->global_state != DSTATE_BUFIMAGE &&
       cinfo->global_state != DSTATE_PRESCAN)
@@ -234,7 +234,7 @@ jpeg_start_output (LJPEG_j_decompress_ptr cinfo, int scan_number)
     scan_number = cinfo->input_scan_number;
   cinfo->output_scan_number = scan_number;
   /* Perform any dummy output passes, and set up for the real pass */
-  return output_pass_setup(cinfo);
+  return LJPEG_output_pass_setup(cinfo);
 }
 
 
@@ -245,7 +245,7 @@ jpeg_start_output (LJPEG_j_decompress_ptr cinfo, int scan_number)
  * a suspending data source is used.
  */
 LJPEG_GLOBAL(boolean)
-jpeg_finish_output (LJPEG_j_decompress_ptr cinfo)
+LJPEG_jpeg_finish_output (LJPEG_j_decompress_ptr cinfo)
 {
   if ((cinfo->global_state == DSTATE_SCANNING ||
        cinfo->global_state == DSTATE_RAW_OK) && cinfo->buffered_image) {

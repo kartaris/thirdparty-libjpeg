@@ -127,8 +127,8 @@ LJPEG_GLOBAL(void)
 LJPEG_jpeg_suppress_tables (LJPEG_j_compress_ptr cinfo, boolean suppress)
 {
   int i;
-  JQUANT_TBL * qtbl;
-  JHUFF_TBL * htbl;
+  LJPEG_JQUANT_TBL * qtbl;
+  LJPEG_JHUFF_TBL * htbl;
 
   for (i = 0; i < NUM_QUANT_TBLS; i++) {
     if ((qtbl = cinfo->quant_tbl_ptrs[i]) != NULL)

@@ -347,7 +347,7 @@ LJPEG_parse_switches (LJPEG_j_compress_ptr cinfo, int argc, char **argv,
 
 #ifdef C_PROGRESSIVE_SUPPORTED
     if (simple_progressive)	/* process -progressive; -scans can override */
-      jpeg_simple_progression(cinfo);
+      LJPEG_jpeg_simple_progression(cinfo);
 #endif
 
 #ifdef C_MULTISCAN_FILES_SUPPORTED
@@ -374,8 +374,8 @@ main (int argc, char **argv)
 #ifdef PROGRESS_REPORT
   struct LJPEG_cdjpeg_progress_mgr progress;
 #endif
-  jvirt_barray_ptr * src_coef_arrays;
-  jvirt_barray_ptr * dst_coef_arrays;
+  LJPEG_jvirt_barray_ptr * src_coef_arrays;
+  LJPEG_jvirt_barray_ptr * dst_coef_arrays;
   int file_index;
   /* We assume all-in-memory processing and can therefore use only a
    * single file pointer for sequential input and output operation. 
@@ -487,7 +487,7 @@ main (int argc, char **argv)
   src_coef_arrays = jpeg_read_coefficients(&srcinfo);
 
   /* Initialize destination compression parameters from source values */
-  jpeg_copy_critical_parameters(&srcinfo, &dstinfo);
+  LJPEG_jpeg_copy_critical_parameters(&srcinfo, &dstinfo);
 
   /* Adjust destination parameters if required by transform options;
    * also find out which set of coefficient arrays will hold the output.
@@ -528,7 +528,7 @@ main (int argc, char **argv)
   LJPEG_jpeg_stdio_dest(&dstinfo, fp);
 
   /* Start compressor (note no image data is actually written here) */
-  jpeg_write_coefficients(&dstinfo, dst_coef_arrays);
+  LJPEG_jpeg_write_coefficients(&dstinfo, dst_coef_arrays);
 
   /* Copy to the output file any extra markers that we want to preserve */
   jcopy_markers_execute(&srcinfo, &dstinfo, copyoption);

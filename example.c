@@ -125,7 +125,7 @@ write_JPEG_file (char * filename, int quality)
   cinfo.image_width = image_width; 	/* image width and height, in pixels */
   cinfo.image_height = image_height;
   cinfo.input_components = 3;		/* # of color components per pixel */
-  cinfo.in_color_space = JCS_RGB; 	/* colorspace of input image */
+  cinfo.in_color_space = LJPEG_JCS_RGB; 	/* colorspace of input image */
   /* Now use the library's routine to set default compression parameters.
    * (You must set at least cinfo.in_color_space before calling this,
    * since the defaults depend on the source color space.)
@@ -364,17 +364,17 @@ LJPEG_read_JPEG_file (char * filename)
 		((LJPEG_j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 
   /* Step 6: while (scan lines remain to be read) */
-  /*           jpeg_read_scanlines(...); */
+  /*           LJPEG_jpeg_read_scanlines(...); */
 
   /* Here we use the library's state variable cinfo.output_scanline as the
    * loop counter, so that we don't have to keep track ourselves.
    */
   while (cinfo.output_scanline < cinfo.output_height) {
-    /* jpeg_read_scanlines expects an array of pointers to scanlines.
+    /* LJPEG_jpeg_read_scanlines expects an array of pointers to scanlines.
      * Here the array is only one element long, but you could ask for
      * more than one scanline at a time if that's more convenient.
      */
-    (void) jpeg_read_scanlines(&cinfo, buffer, 1);
+    (void) LJPEG_jpeg_read_scanlines(&cinfo, buffer, 1);
     /* Assume put_scanline_someplace wants a pointer and sample count. */
     put_scanline_someplace(buffer[0], row_stride);
   }
@@ -410,7 +410,7 @@ LJPEG_read_JPEG_file (char * filename)
 /*
  * SOME FINE POINTS:
  *
- * In the above code, we ignored the return value of jpeg_read_scanlines,
+ * In the above code, we ignored the return value of LJPEG_jpeg_read_scanlines,
  * which is the number of scanlines actually read.  We could get away with
  * this because we asked for only one line at a time and we weren't using
  * a suspending data source.  See libjpeg.txt for more info.

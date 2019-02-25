@@ -49,8 +49,8 @@ use_merged_upsample (LJPEG_j_decompress_ptr cinfo)
   if (cinfo->do_fancy_upsampling || cinfo->CCIR601_sampling)
     return FALSE;
   /* jdmerge.c only supports YCC=>RGB color conversion */
-  if (cinfo->jpeg_color_space != JCS_YCbCr || cinfo->num_components != 3 ||
-      cinfo->out_color_space != JCS_RGB ||
+  if (cinfo->jpeg_color_space != LJPEG_JCS_YCbCr || cinfo->num_components != 3 ||
+      cinfo->out_color_space != LJPEG_JCS_RGB ||
       cinfo->out_color_components != RGB_PIXELSIZE)
     return FALSE;
   /* and it only handles 2h1v or 2h2v sampling ratios */
@@ -153,17 +153,17 @@ jpeg_calc_output_dimensions (LJPEG_j_decompress_ptr cinfo)
   /* Report number of components in selected colorspace. */
   /* Probably this should be in the color conversion module... */
   switch (cinfo->out_color_space) {
-  case JCS_GRAYSCALE:
+  case LJPEG_JCS_GRAYSCALE:
     cinfo->out_color_components = 1;
     break;
-  case JCS_RGB:
+  case LJPEG_JCS_RGB:
     cinfo->out_color_components = RGB_PIXELSIZE;
     break;
-  case JCS_YCbCr:
+  case LJPEG_JCS_YCbCr:
     cinfo->out_color_components = 3;
     break;
-  case JCS_CMYK:
-  case JCS_YCCK:
+  case LJPEG_JCS_CMYK:
+  case LJPEG_JCS_YCCK:
     cinfo->out_color_components = 4;
     break;
   default:			/* else must be same colorspace as in file */
@@ -353,7 +353,7 @@ master_selection (LJPEG_j_decompress_ptr cinfo)
   jinit_inverse_dct(cinfo);
   /* Entropy decoding: either Huffman or arithmetic coding. */
   if (cinfo->arith_code)
-    jinit_arith_decoder(cinfo);
+    LJPEG_jinit_arith_decoder(cinfo);
   else {
     jinit_huff_decoder(cinfo);
   }
