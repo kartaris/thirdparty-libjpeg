@@ -674,7 +674,7 @@ LJPEG_decompress_smooth_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE out
  * Initialize coefficient buffer controller.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_d_coef_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
 {
   LJPEG_my_coef_ptr coef;

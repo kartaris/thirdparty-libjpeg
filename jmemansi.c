@@ -31,12 +31,12 @@ extern void free LJPEG_JPP((void *ptr));
  * Memory allocation and freeing are controlled by the regular library
  * routines malloc() and free().
  */
-LJPEG_GLOBAL(void *)
+GLOBAL(void *)
 LJPEG_jpeg_get_small (LJPEG_j_common_ptr cinfo, size_t sizeofobject)
 {
   return (void *) malloc(sizeofobject);
 }
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_free_small (LJPEG_j_common_ptr cinfo, void * object, size_t sizeofobject)
 {
   free(object);
@@ -49,12 +49,12 @@ LJPEG_jpeg_free_small (LJPEG_j_common_ptr cinfo, void * object, size_t sizeofobj
  * this file won't actually work in 80x86 small/medium model; at least,
  * you probably won't be able to process useful-size images in only 64KB.
  */
-LJPEG_GLOBAL(void FAR *)
+GLOBAL(void FAR *)
 LJPEG_jpeg_get_large (LJPEG_j_common_ptr cinfo, size_t sizeofobject)
 {
   return (void FAR *) malloc(sizeofobject);
 }
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_free_large (LJPEG_j_common_ptr cinfo, void FAR * object, size_t sizeofobject)
 {
   free(object);
@@ -72,7 +72,7 @@ LJPEG_jpeg_free_large (LJPEG_j_common_ptr cinfo, void FAR * object, size_t sizeo
 #ifndef DEFAULT_MAX_MEM		/* so can override from makefile */
 #define DEFAULT_MAX_MEM		1000000L /* default: one megabyte */
 #endif
-LJPEG_GLOBAL(long)
+GLOBAL(long)
 LJPEG_jpeg_mem_available (LJPEG_j_common_ptr cinfo, long min_bytes_needed,
 		    long max_bytes_needed, long already_allocated)
 {
@@ -89,7 +89,7 @@ LJPEG_jpeg_mem_available (LJPEG_j_common_ptr cinfo, long min_bytes_needed,
 
 
 LJPEG_METHODDEF(void)
-LJPEG_read_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
+LJPEG_read_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info,
 		    void FAR * buffer_address,
 		    long file_offset, long byte_count)
 {
@@ -102,7 +102,7 @@ LJPEG_read_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_pt
 
 
 LJPEG_METHODDEF(void)
-LJPEG_write_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
+LJPEG_write_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info,
 		     void FAR * buffer_address,
 		     long file_offset, long byte_count)
 {
@@ -115,7 +115,7 @@ LJPEG_write_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_p
 
 
 LJPEG_METHODDEF(void)
-LJPEG_close_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info)
+LJPEG_close_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info)
 {
   fclose(info->temp_file);
   /* Since this implementation uses tmpfile() to create the file,
@@ -131,8 +131,8 @@ LJPEG_close_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_p
  * behind the scenes.  We don't have to use info->temp_name[] at all;
  * indeed, we can't even find out the actual name of the temp file.
  */
-LJPEG_GLOBAL(void)
-LJPEG_jpeg_open_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
+GLOBAL(void)
+LJPEG_jpeg_open_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info,
 			 long total_bytes_needed)
 {
   if ((info->temp_file = tmpfile()) == NULL)
@@ -147,12 +147,12 @@ LJPEG_jpeg_open_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_sto
  * These routines take care of any system-dependent initialization and
  * cleanup required.
  */
-LJPEG_GLOBAL(long)
+GLOBAL(long)
 LJPEG_jpeg_mem_init (LJPEG_j_common_ptr cinfo)
 {
   return DEFAULT_MAX_MEM;	/* default for max_memory_to_use */
 }
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_mem_term (LJPEG_j_common_ptr cinfo)
 {
   /* no work */

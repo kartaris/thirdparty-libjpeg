@@ -460,7 +460,7 @@ LJPEG_start_pass_fdctmgr (LJPEG_j_compress_ptr cinfo)
  * Initialize FDCT manager.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_forward_dct (LJPEG_j_compress_ptr cinfo)
 {
   LJPEG_my_fdct_ptr fdct;

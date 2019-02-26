@@ -68,7 +68,7 @@ extern int image_width;		/* Number of columns in image */
  * and a compression quality factor are passed in.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 write_JPEG_file (char * filename, int quality)
 {
   /* This struct contains the JPEG compression parameters and pointers to
@@ -280,7 +280,7 @@ LJPEG_my_error_exit (LJPEG_j_common_ptr cinfo)
  */
 
 
-LJPEG_GLOBAL(int)
+GLOBAL(int)
 LJPEG_read_JPEG_file (char * filename)
 {
   /* This struct contains the JPEG decompression parameters and pointers to

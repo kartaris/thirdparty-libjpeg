@@ -25,7 +25,7 @@
  * responsibility.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_abort (LJPEG_j_common_ptr cinfo)
 {
   int pool;
@@ -65,7 +65,7 @@ LJPEG_jpeg_abort (LJPEG_j_common_ptr cinfo)
  * responsibility.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_destroy (LJPEG_j_common_ptr cinfo)
 {
   /* We need only tell the memory manager to release everything. */
@@ -82,7 +82,7 @@ LJPEG_jpeg_destroy (LJPEG_j_common_ptr cinfo)
  * (Would jutils.c be a more reasonable place to put these?)
  */
 
-LJPEG_GLOBAL(LJPEG_JQUANT_TBL *)
+GLOBAL(LJPEG_JQUANT_TBL *)
 LJPEG_jpeg_alloc_quant_table (LJPEG_j_common_ptr cinfo)
 {
   LJPEG_JQUANT_TBL *tbl;
@@ -94,7 +94,7 @@ LJPEG_jpeg_alloc_quant_table (LJPEG_j_common_ptr cinfo)
 }
 
 
-LJPEG_GLOBAL(LJPEG_JHUFF_TBL *)
+GLOBAL(LJPEG_JHUFF_TBL *)
 LJPEG_jpeg_alloc_huff_table (LJPEG_j_common_ptr cinfo)
 {
   LJPEG_JHUFF_TBL *tbl;

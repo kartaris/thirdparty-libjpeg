@@ -43,7 +43,7 @@ LJPEG_METHODDEF(int) LJPEG_consume_markers LJPEG_JPP((LJPEG_j_decompress_ptr cin
  * Hence it mustn't do anything that can't be done twice.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_core_output_dimensions (LJPEG_j_decompress_ptr cinfo)
 /* Do computations that are needed before master selection phase.
  * This function is used for transcoding and full decompression.
@@ -637,7 +637,7 @@ LJPEG_reset_input_controller (LJPEG_j_decompress_ptr cinfo)
  * This is called only once, when the decompression object is created.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_input_controller (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_inputctl_ptr inputctl;

@@ -1305,7 +1305,7 @@ will set the compression parameters to include or omit the APPn markers
 properly, so long as it is told the truth about the JPEG color space.
 For example, if you are writing some random 3-component color space without
 conversion, don't try to fake out the library by setting in_color_space and
-jpeg_color_space to LJPEG_JCS_YCbCr; use LJPEG_JCS_YCCK.  You may want to write an
+jpeg_color_space to LJPEG_JCS_YCbCr; use LJPEG_JCS_UNKNOWN.  You may want to write an
 APPn marker of your own devising to identify the colorspace --- see "Special
 markers", below.
 

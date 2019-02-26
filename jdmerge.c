@@ -366,7 +366,7 @@ LJPEG_h2v2_merged_upsample (LJPEG_j_decompress_ptr cinfo,
  * of this module; no safety checks are made here.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_merged_upsampler (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_upsample_ptr upsample;

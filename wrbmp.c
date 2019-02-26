@@ -385,7 +385,7 @@ LJPEG_finish_output_bmp (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinf
 /*
  * The module selection routine for BMP format output.
  */
-LJPEG_GLOBAL(LJPEG_djpeg_dest_ptr)
+GLOBAL(LJPEG_djpeg_dest_ptr)
 LJPEG_jinit_write_bmp (LJPEG_j_decompress_ptr cinfo, boolean is_os2)
 {
   LJPEG_bmp_dest_ptr dest;

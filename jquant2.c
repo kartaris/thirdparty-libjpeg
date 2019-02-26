@@ -1241,7 +1241,7 @@ LJPEG_new_color_map_2_quant (LJPEG_j_decompress_ptr cinfo)
  * Module initialization routine for 2-pass color quantization.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_2pass_quantizer (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_cquantize_ptr cquantize;

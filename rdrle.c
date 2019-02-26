@@ -367,7 +367,7 @@ finish_input_rle (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo)
  * The module selection routine for RLE format input.
  */
 
-LJPEG_GLOBAL(LJPEG_cjpeg_source_ptr)
+GLOBAL(LJPEG_cjpeg_source_ptr)
 LJPEG_jinit_read_rle (LJPEG_j_compress_ptr cinfo)
 {
   rle_source_ptr source;

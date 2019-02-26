@@ -272,7 +272,7 @@ LJPEG_finish_output_rle (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinf
 /*
  * The module selection routine for RLE format output.
  */
-LJPEG_GLOBAL(LJPEG_djpeg_dest_ptr)
+GLOBAL(LJPEG_djpeg_dest_ptr)
 LJPEG_jinit_write_rle (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_rle_dest_ptr dest;

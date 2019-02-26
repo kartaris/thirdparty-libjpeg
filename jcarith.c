@@ -919,7 +919,7 @@ LJPEG_start_pass (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
  * Module initialization routine for arithmetic entropy encoding.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_LJPEG_arith_encoder (LJPEG_j_compress_ptr cinfo)
 {
   LJPEG_arith_entropy_ptr entropy;

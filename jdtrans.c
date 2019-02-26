@@ -41,7 +41,7 @@ LOCAL(void) LJPEG_transdecode_master_selection LJPEG_JPP((LJPEG_j_decompress_ptr
  * Returns NULL if suspended.  This case need be checked only if
  * a suspending data source is used.
  */
-LJPEG_GLOBAL(LJPEG_jvirt_barray_ptr *)
+GLOBAL(LJPEG_jvirt_barray_ptr *)
 LJPEG_jpeg_read_coefficients (LJPEG_j_decompress_ptr cinfo)
 {
   if (cinfo->global_state == DSTATE_READY) {

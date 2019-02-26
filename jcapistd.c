@@ -34,7 +34,7 @@
  * wrong thing.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_start_compress (LJPEG_j_compress_ptr cinfo, boolean write_all_tables)
 {
   if (cinfo->global_state != CSTATE_START)
@@ -73,7 +73,7 @@ LJPEG_jpeg_start_compress (LJPEG_j_compress_ptr cinfo, boolean write_all_tables)
  * when using a multiple-scanline buffer.
  */
 
-LJPEG_GLOBAL(LJPEG_JDIMENSION)
+GLOBAL(LJPEG_JDIMENSION)
 LJPEG_jpeg_write_scanlines (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPARRAY scanlines,
 		      LJPEG_JDIMENSION num_lines)
 {
@@ -116,7 +116,7 @@ LJPEG_jpeg_write_scanlines (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPARRAY scanlin
  * Processes exactly one iMCU row per call, unless suspended.
  */
 
-LJPEG_GLOBAL(LJPEG_JDIMENSION)
+GLOBAL(LJPEG_JDIMENSION)
 LJPEG_jpeg_write_raw_data (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE data,
 		     LJPEG_JDIMENSION num_lines)
 {

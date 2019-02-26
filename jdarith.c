@@ -747,7 +747,7 @@ LJPEG_start_pass (LJPEG_j_decompress_ptr cinfo)
  * Module initialization routine for arithmetic entropy decoding.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_arith_decoder (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_arith_entropy_ptr entropy;

@@ -55,7 +55,7 @@
 /*
  * Perform the forward DCT on one block of samples.
  */
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_fdct_float (FAST_FLOAT * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION start_col)
 {
   FAST_FLOAT tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;

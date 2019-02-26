@@ -134,20 +134,20 @@ typedef union {
 #endif /* USE_MAC_MEMMGR */
 
 
-typedef struct LJPEG_backing_store_struct * LJPEG_LJPEG_backing_store_ptr;
+typedef struct LJPEG_backing_store_struct * LJPEG_backing_store_ptr;
 
 typedef struct LJPEG_backing_store_struct {
   /* Methods for reading/writing/closing this backing-store object */
   LJPEG_JMETHOD(void, LJPEG_read_backing_store, (LJPEG_j_common_ptr cinfo,
-				     LJPEG_LJPEG_backing_store_ptr info,
+				     LJPEG_backing_store_ptr info,
 				     void FAR * buffer_address,
 				     long file_offset, long byte_count));
   LJPEG_JMETHOD(void, LJPEG_write_backing_store, (LJPEG_j_common_ptr cinfo,
-				      LJPEG_LJPEG_backing_store_ptr info,
+				      LJPEG_backing_store_ptr info,
 				      void FAR * buffer_address,
 				      long file_offset, long byte_count));
   LJPEG_JMETHOD(void, LJPEG_close_backing_store, (LJPEG_j_common_ptr cinfo,
-				      LJPEG_LJPEG_backing_store_ptr info));
+				      LJPEG_backing_store_ptr info));
 
   /* Private fields for system-dependent backing-store management */
 #ifdef USE_MSDOS_MEMMGR
@@ -178,7 +178,7 @@ typedef struct LJPEG_backing_store_struct {
  */
 
 EXTERN(void) LJPEG_jpeg_open_backing_store LJPEG_JPP((LJPEG_j_common_ptr cinfo,
-					  LJPEG_LJPEG_backing_store_ptr info,
+					  LJPEG_backing_store_ptr info,
 					  long total_bytes_needed));
 
 

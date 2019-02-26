@@ -244,7 +244,7 @@ LJPEG_process_data_buffer_main (LJPEG_j_compress_ptr cinfo,
  * Initialize main buffer controller.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_c_main_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buffer)
 {
   LJPEG_my_main_ptr mainp;

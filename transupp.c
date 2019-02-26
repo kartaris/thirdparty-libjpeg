@@ -780,7 +780,7 @@ LJPEG_jt_read_integer (const char ** strptr, LJPEG_JDIMENSION * result)
  * This code is loosely based on XParseGeometry from the X11 distribution.
  */
 
-LJPEG_GLOBAL(boolean)
+GLOBAL(boolean)
 LJPEG_jtransform_parse_crop_spec (LJPEG_jpeg_transform_info *info, const char *spec)
 {
   info->crop = FALSE;
@@ -874,7 +874,7 @@ LJPEG_trim_bottom_edge (LJPEG_jpeg_transform_info *info, LJPEG_JDIMENSION full_h
  * and transformation is not perfect.  Otherwise returns TRUE.
  */
 
-LJPEG_GLOBAL(boolean)
+GLOBAL(boolean)
 LJPEG_jtransform_request_workspace (LJPEG_j_decompress_ptr srcinfo,
 			      LJPEG_jpeg_transform_info *info)
 {
@@ -1319,7 +1319,7 @@ LJPEG_adjust_exif_parameters (JOCTET FAR * data, unsigned int length,
  * to LJPEG_jpeg_write_coefficients().
  */
 
-LJPEG_GLOBAL(LJPEG_jvirt_barray_ptr *)
+GLOBAL(LJPEG_jvirt_barray_ptr *)
 LJPEG_jtransform_adjust_parameters (LJPEG_j_decompress_ptr srcinfo,
 			      LJPEG_j_compress_ptr dstinfo,
 			      LJPEG_jvirt_barray_ptr *src_coef_arrays,
@@ -1414,7 +1414,7 @@ LJPEG_jtransform_adjust_parameters (LJPEG_j_decompress_ptr srcinfo,
  * Note that some transformations will modify the source data arrays!
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jtransform_execute_transform (LJPEG_j_decompress_ptr srcinfo,
 			      LJPEG_j_compress_ptr dstinfo,
 			      LJPEG_jvirt_barray_ptr *src_coef_arrays,
@@ -1487,7 +1487,7 @@ LJPEG_jtransform_execute_transform (LJPEG_j_decompress_ptr srcinfo,
  *           (may use custom action then)
  */
 
-LJPEG_GLOBAL(boolean)
+GLOBAL(boolean)
 LJPEG_jtransform_perfect_transform(LJPEG_JDIMENSION image_width, LJPEG_JDIMENSION image_height,
 			     int MCU_width, int MCU_height,
 			     LJPEG_JXFORM_CODE transform)
@@ -1526,7 +1526,7 @@ LJPEG_jtransform_perfect_transform(LJPEG_JDIMENSION image_width, LJPEG_JDIMENSIO
  * This must be called before LJPEG_jpeg_read_header() to have the desired effect.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jcopy_markers_setup (LJPEG_j_decompress_ptr srcinfo, LJPEG_JCOPY_OPTION option)
 {
 #ifdef SAVE_MARKERS_SUPPORTED
@@ -1551,7 +1551,7 @@ LJPEG_jcopy_markers_setup (LJPEG_j_decompress_ptr srcinfo, LJPEG_JCOPY_OPTION op
  * JFIF APP0 or Adobe APP14 markers if selected.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jcopy_markers_execute (LJPEG_j_decompress_ptr srcinfo, LJPEG_j_compress_ptr dstinfo,
 		       LJPEG_JCOPY_OPTION option)
 {

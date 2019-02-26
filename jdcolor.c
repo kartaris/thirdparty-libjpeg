@@ -494,7 +494,7 @@ LJPEG_start_pass_dcolor (LJPEG_j_decompress_ptr cinfo)
 /*
  * Module initialization routine for output colorspace conversion.
  */
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_color_deconverter (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_cconvert_ptr cconvert;

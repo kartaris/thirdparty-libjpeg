@@ -472,7 +472,7 @@ LJPEG_process_data_crank_post (LJPEG_j_decompress_ptr cinfo,
 /*
  * Initialize main buffer controller.
  */
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_d_main_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
 {
   LJPEG_my_main_ptr mainp;

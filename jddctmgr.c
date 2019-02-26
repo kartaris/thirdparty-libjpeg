@@ -358,7 +358,7 @@ LJPEG_start_pass (LJPEG_j_decompress_ptr cinfo)
  * Initialize IDCT manager.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_inverse_dct (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_idct_ptr idct;

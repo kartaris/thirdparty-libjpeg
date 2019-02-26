@@ -34,7 +34,7 @@ LOCAL(void) LJPEG_transencode_coef_controller
  * were requested from this compression object's memory manager, they
  * typically will be realized during this routine and filled afterwards.
  */
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_write_coefficients (LJPEG_j_compress_ptr cinfo, LJPEG_jvirt_barray_ptr * coef_arrays)
 {
   if (cinfo->global_state != CSTATE_START)
@@ -58,7 +58,7 @@ LJPEG_jpeg_write_coefficients (LJPEG_j_compress_ptr cinfo, LJPEG_jvirt_barray_pt
  * transcoding.  Parameters that can be varied without loss (such as
  * scan script and Huffman optimization) are left in their default states.
  */
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_copy_critical_parameters (LJPEG_j_decompress_ptr srcinfo,
 			       LJPEG_j_compress_ptr dstinfo)
 {

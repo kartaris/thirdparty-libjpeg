@@ -83,7 +83,7 @@ LJPEG_use_merged_upsample (LJPEG_j_decompress_ptr cinfo)
  * Hence it mustn't do anything that can't be done twice.
  * Also note that it may be called before the master module is initialized!
  */
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_calc_output_dimensions (LJPEG_j_decompress_ptr cinfo)
 /* Do computations that are needed before master selection phase.
  * This function is used for full decompression.
@@ -483,7 +483,7 @@ LJPEG_finish_output_pass (LJPEG_j_decompress_ptr cinfo)
 /*
  * Switch to a new external colormap between output passes.
  */
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_new_colormap (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_master_ptr master = (LJPEG_my_master_ptr) cinfo->master;
@@ -510,7 +510,7 @@ LJPEG_jpeg_new_colormap (LJPEG_j_decompress_ptr cinfo)
  * Initialize master decompression control and select active modules.
  * This is performed at the start of LJPEG_jpeg_start_decompress.
  */
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_master_decompress (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_master_ptr master;

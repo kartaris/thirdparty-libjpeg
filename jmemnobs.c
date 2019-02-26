@@ -31,12 +31,12 @@ extern void free LJPEG_JPP((void *ptr));
  * routines malloc() and free().
  */
 
-LJPEG_GLOBAL(void *)
+GLOBAL(void *)
 LJPEG_jpeg_get_small (LJPEG_j_common_ptr cinfo, size_t sizeofobject)
 {
   return (void *) malloc(sizeofobject);
 }
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_free_small (LJPEG_j_common_ptr cinfo, void * object, size_t sizeofobject)
 {
   free(object);
@@ -49,12 +49,12 @@ LJPEG_jpeg_free_small (LJPEG_j_common_ptr cinfo, void * object, size_t sizeofobj
  * this file won't actually work in 80x86 small/medium model; at least,
  * you probably won't be able to process useful-size images in only 64KB.
  */
-LJPEG_GLOBAL(void FAR *)
+GLOBAL(void FAR *)
 LJPEG_jpeg_get_large (LJPEG_j_common_ptr cinfo, size_t sizeofobject)
 {
   return (void FAR *) malloc(sizeofobject);
 }
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_free_large (LJPEG_j_common_ptr cinfo, void FAR * object, size_t sizeofobject)
 {
   free(object);
@@ -65,7 +65,7 @@ LJPEG_jpeg_free_large (LJPEG_j_common_ptr cinfo, void FAR * object, size_t sizeo
  * This routine computes the total memory space available for allocation.
  * Here we always say, "we got all you want bud!"
  */
-LJPEG_GLOBAL(long)
+GLOBAL(long)
 LJPEG_jpeg_mem_available (LJPEG_j_common_ptr cinfo, long min_bytes_needed,
 		    long max_bytes_needed, long already_allocated)
 {
@@ -78,8 +78,8 @@ LJPEG_jpeg_mem_available (LJPEG_j_common_ptr cinfo, long min_bytes_needed,
  * Since LJPEG_jpeg_mem_available always promised the moon,
  * this should never be called and we can just error out.
  */
-LJPEG_GLOBAL(void)
-LJPEG_jpeg_open_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
+GLOBAL(void)
+LJPEG_jpeg_open_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info,
 			 long total_bytes_needed)
 {
   ERREXIT(cinfo, JERR_NO_BACKING_STORE);
@@ -90,12 +90,12 @@ LJPEG_jpeg_open_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_sto
  * These routines take care of any system-dependent initialization and
  * cleanup required.  Here, there isn't any.
  */
-LJPEG_GLOBAL(long)
+GLOBAL(long)
 LJPEG_jpeg_mem_init (LJPEG_j_common_ptr cinfo)
 {
   return 0;			/* just set max_memory_to_use to 0 */
 }
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_mem_term (LJPEG_j_common_ptr cinfo)
 {
   /* no work */

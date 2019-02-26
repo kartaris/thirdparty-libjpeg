@@ -217,7 +217,7 @@ LJPEG_get_soi (LJPEG_j_decompress_ptr cinfo)
 
   /* Set initial assumptions for colorspace etc */
 
-  cinfo->jpeg_color_space = LJPEG_JCS_YCCK;
+  cinfo->jpeg_color_space = LJPEG_JCS_UNKNOWN;
   cinfo->color_transform = JCT_NONE;
   cinfo->CCIR601_sampling = FALSE; /* Assume non-CCIR sampling??? */
 
@@ -1333,7 +1333,7 @@ LJPEG_read_restart_marker (LJPEG_j_decompress_ptr cinfo)
  * any other marker would have to be bogus data in that case.
  */
 
-LJPEG_GLOBAL(boolean)
+GLOBAL(boolean)
 LJPEG_jpeg_resync_to_restart (LJPEG_j_decompress_ptr cinfo, int desired)
 {
   int marker = cinfo->unread_marker;
@@ -1403,7 +1403,7 @@ LJPEG_reset_marker_reader (LJPEG_j_decompress_ptr cinfo)
  * This is called only once, when the decompression object is created.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_marker_reader (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_marker_ptr marker;
@@ -1441,7 +1441,7 @@ LJPEG_jinit_marker_reader (LJPEG_j_decompress_ptr cinfo)
 
 #ifdef SAVE_MARKERS_SUPPORTED
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_save_markers (LJPEG_j_decompress_ptr cinfo, int marker_code,
 		   unsigned int length_limit)
 {
@@ -1490,7 +1490,7 @@ LJPEG_jpeg_save_markers (LJPEG_j_decompress_ptr cinfo, int marker_code,
  * Install a special processing method for COM or APPn markers.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_set_marker_processor (LJPEG_j_decompress_ptr cinfo, int marker_code,
 			   LJPEG_jpeg_marker_parser_method routine)
 {

@@ -27,7 +27,7 @@
  * The error manager must already be set up (in case memory manager fails).
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_CreateDecompress (LJPEG_j_decompress_ptr cinfo, int version, size_t structsize)
 {
   int i;
@@ -88,7 +88,7 @@ LJPEG_jpeg_CreateDecompress (LJPEG_j_decompress_ptr cinfo, int version, size_t s
  * Destruction of a JPEG decompression object
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_destroy_decompress (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_jpeg_destroy((LJPEG_j_common_ptr) cinfo); /* use common routine */
@@ -100,7 +100,7 @@ LJPEG_jpeg_destroy_decompress (LJPEG_j_decompress_ptr cinfo)
  * but don't destroy the object itself.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_abort_decompress (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_jpeg_abort((LJPEG_j_common_ptr) cinfo); /* use common routine */
@@ -180,8 +180,8 @@ LJPEG_default_decompress_parms (LJPEG_j_decompress_ptr cinfo)
     break;
     
   default:
-    cinfo->jpeg_color_space = LJPEG_JCS_YCCK;
-    cinfo->out_color_space = LJPEG_JCS_YCCK;
+    cinfo->jpeg_color_space = LJPEG_JCS_UNKNOWN;
+    cinfo->out_color_space = LJPEG_JCS_UNKNOWN;
     break;
   }
 
@@ -238,7 +238,7 @@ LJPEG_default_decompress_parms (LJPEG_j_decompress_ptr cinfo)
  * extra error checking.
  */
 
-LJPEG_GLOBAL(int)
+GLOBAL(int)
 LJPEG_jpeg_read_header (LJPEG_j_decompress_ptr cinfo, boolean require_image)
 {
   int retcode;
@@ -284,7 +284,7 @@ LJPEG_jpeg_read_header (LJPEG_j_decompress_ptr cinfo, boolean require_image)
  * method.
  */
 
-LJPEG_GLOBAL(int)
+GLOBAL(int)
 LJPEG_jpeg_consume_input (LJPEG_j_decompress_ptr cinfo)
 {
   int retcode = JPEG_SUSPENDED;
@@ -331,7 +331,7 @@ LJPEG_jpeg_consume_input (LJPEG_j_decompress_ptr cinfo)
  * Have we finished reading the input file?
  */
 
-LJPEG_GLOBAL(boolean)
+GLOBAL(boolean)
 LJPEG_jpeg_input_complete (LJPEG_j_decompress_ptr cinfo)
 {
   /* Check for valid jpeg object */
@@ -346,7 +346,7 @@ LJPEG_jpeg_input_complete (LJPEG_j_decompress_ptr cinfo)
  * Is there more than one scan?
  */
 
-LJPEG_GLOBAL(boolean)
+GLOBAL(boolean)
 LJPEG_jpeg_has_multiple_scans (LJPEG_j_decompress_ptr cinfo)
 {
   /* Only valid after LJPEG_jpeg_read_header completes */
@@ -366,7 +366,7 @@ LJPEG_jpeg_has_multiple_scans (LJPEG_j_decompress_ptr cinfo)
  * a suspending data source is used.
  */
 
-LJPEG_GLOBAL(boolean)
+GLOBAL(boolean)
 LJPEG_jpeg_finish_decompress (LJPEG_j_decompress_ptr cinfo)
 {
   if ((cinfo->global_state == DSTATE_SCANNING ||

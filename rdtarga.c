@@ -480,7 +480,7 @@ LJPEG_finish_input_tga (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo
  * The module selection routine for Targa format input.
  */
 
-LJPEG_GLOBAL(LJPEG_cjpeg_source_ptr)
+GLOBAL(LJPEG_cjpeg_source_ptr)
 LJPEG_jinit_read_targa (LJPEG_j_compress_ptr cinfo)
 {
   LJPEG_tga_source_ptr source;

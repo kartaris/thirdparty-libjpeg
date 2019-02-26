@@ -192,7 +192,7 @@ LJPEG_term_mem_destination (LJPEG_j_compress_ptr cinfo)
  * for closing it after finishing compression.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_stdio_dest (LJPEG_j_compress_ptr cinfo, FILE * outfile)
 {
   LJPEG_my_dest_ptr dest;
@@ -231,7 +231,7 @@ LJPEG_jpeg_stdio_dest (LJPEG_j_compress_ptr cinfo, FILE * outfile)
  * when allocating a larger buffer.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_mem_dest (LJPEG_j_compress_ptr cinfo,
 	       unsigned char ** outbuffer, unsigned long * outsize)
 {

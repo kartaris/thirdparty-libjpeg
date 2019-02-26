@@ -460,7 +460,7 @@ LJPEG_finish_input_bmp (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo
  * The module selection routine for BMP format input.
  */
 
-LJPEG_GLOBAL(LJPEG_cjpeg_source_ptr)
+GLOBAL(LJPEG_cjpeg_source_ptr)
 LJPEG_jinit_read_bmp (LJPEG_j_compress_ptr cinfo)
 {
   LJPEG_bmp_source_ptr source;

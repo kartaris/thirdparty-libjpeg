@@ -216,7 +216,7 @@ LJPEG_finish_output_ppm (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinf
  * The module selection routine for PPM format output.
  */
 
-LJPEG_GLOBAL(LJPEG_djpeg_dest_ptr)
+GLOBAL(LJPEG_djpeg_dest_ptr)
 LJPEG_jinit_write_ppm (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_ppm_dest_ptr dest;

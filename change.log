@@ -239,8 +239,8 @@ and struct field packing mismatches between library and calling application.
 This change requires applications to be recompiled, but does not require
 any application source code change.
 
-All routine declarations changed to the style "LJPEG_GLOBAL(type) name ...",
-that is, LJPEG_GLOBAL, LOCAL, LJPEG_METHODDEF, EXTERN are now macros taking the
+All routine declarations changed to the style "GLOBAL(type) name ...",
+that is, GLOBAL, LOCAL, LJPEG_METHODDEF, EXTERN are now macros taking the
 routine's return type as an argument.  This makes it possible to add
 Microsoft-style linkage keywords to all the routines by changing just
 these macros.  Note that any application code that was using these macros

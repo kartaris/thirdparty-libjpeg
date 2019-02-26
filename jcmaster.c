@@ -49,7 +49,7 @@ typedef LJPEG_my_comp_master * LJPEG_my_master_ptr;
  * Hence it mustn't do anything that can't be done twice.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_calc_jpeg_dimensions (LJPEG_j_compress_ptr cinfo)
 /* Do computations that are needed before master selection phase */
 {
@@ -803,7 +803,7 @@ LJPEG_finish_pass_master (LJPEG_j_compress_ptr cinfo)
  * Initialize master compression control.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_c_master_control (LJPEG_j_compress_ptr cinfo, boolean transcode_only)
 {
   LJPEG_my_master_ptr master;

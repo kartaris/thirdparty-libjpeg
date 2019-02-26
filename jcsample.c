@@ -474,7 +474,7 @@ LJPEG_fullsize_smooth_downsample (LJPEG_j_compress_ptr cinfo, LJPEG_jpeg_compone
  * Note that we must select a routine for each component.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_downsampler (LJPEG_j_compress_ptr cinfo)
 {
   LJPEG_my_downsample_ptr downsample;

@@ -246,7 +246,7 @@ LJPEG_post_process_2pass (LJPEG_j_decompress_ptr cinfo,
  * Initialize postprocessing controller.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_d_post_controller (LJPEG_j_decompress_ptr cinfo, boolean need_full_buffer)
 {
   LJPEG_my_post_ptr post;

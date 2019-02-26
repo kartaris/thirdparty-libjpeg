@@ -162,13 +162,13 @@ LJPEG_select_file_name (char * fname)
  * routines malloc() and free().
  */
 
-LJPEG_GLOBAL(void *)
+GLOBAL(void *)
 LJPEG_jpeg_get_small (LJPEG_j_common_ptr cinfo, size_t sizeofobject)
 {
   return (void *) malloc(sizeofobject);
 }
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_free_small (LJPEG_j_common_ptr cinfo, void * object, size_t sizeofobject)
 {
   free(object);
@@ -179,13 +179,13 @@ LJPEG_jpeg_free_small (LJPEG_j_common_ptr cinfo, void * object, size_t sizeofobj
  * "Large" objects are allocated in far memory, if possible
  */
 
-LJPEG_GLOBAL(void FAR *)
+GLOBAL(void FAR *)
 LJPEG_jpeg_get_large (LJPEG_j_common_ptr cinfo, size_t sizeofobject)
 {
   return (void FAR *) far_malloc(sizeofobject);
 }
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_free_large (LJPEG_j_common_ptr cinfo, void FAR * object, size_t sizeofobject)
 {
   far_free(object);
@@ -204,7 +204,7 @@ LJPEG_jpeg_free_large (LJPEG_j_common_ptr cinfo, void FAR * object, size_t sizeo
 #define DEFAULT_MAX_MEM		300000L /* for total usage about 450K */
 #endif
 
-LJPEG_GLOBAL(long)
+GLOBAL(long)
 LJPEG_jpeg_mem_available (LJPEG_j_common_ptr cinfo, long min_bytes_needed,
 		    long max_bytes_needed, long already_allocated)
 {
@@ -240,7 +240,7 @@ LJPEG_jpeg_mem_available (LJPEG_j_common_ptr cinfo, long min_bytes_needed,
 
 
 LJPEG_METHODDEF(void)
-LJPEG_read_file_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
+LJPEG_read_file_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info,
 		 void FAR * buffer_address,
 		 long file_offset, long byte_count)
 {
@@ -256,7 +256,7 @@ LJPEG_read_file_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr i
 
 
 LJPEG_METHODDEF(void)
-LJPEG_write_file_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
+LJPEG_write_file_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info,
 		  void FAR * buffer_address,
 		  long file_offset, long byte_count)
 {
@@ -272,7 +272,7 @@ LJPEG_write_file_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr 
 
 
 LJPEG_METHODDEF(void)
-LJPEG_close_file_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info)
+LJPEG_close_file_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info)
 {
   LJPEG_jdos_close(info->handle.file_handle);	/* close the file */
   remove(info->temp_name);	/* delete the file */
@@ -285,7 +285,7 @@ LJPEG_close_file_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr 
 
 
 LOCAL(boolean)
-LJPEG_open_file_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
+LJPEG_open_file_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info,
 		 long total_bytes_needed)
 {
   short handle;
@@ -330,7 +330,7 @@ typedef struct {		/* XMS move specification structure */
 
 
 LJPEG_METHODDEF(void)
-LJPEG_read_xms_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
+LJPEG_read_xms_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info,
 		void FAR * buffer_address,
 		long file_offset, long byte_count)
 {
@@ -363,7 +363,7 @@ LJPEG_read_xms_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr in
 
 
 LJPEG_METHODDEF(void)
-LJPEG_write_xms_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
+LJPEG_write_xms_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info,
 		 void FAR * buffer_address,
 		 long file_offset, long byte_count)
 {
@@ -398,7 +398,7 @@ LJPEG_write_xms_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr i
 
 
 LJPEG_METHODDEF(void)
-LJPEG_close_xms_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info)
+LJPEG_close_xms_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info)
 {
   XMScontext ctx;
 
@@ -411,7 +411,7 @@ LJPEG_close_xms_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr i
 
 
 LOCAL(boolean)
-open_xms_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
+open_xms_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info,
 		long total_bytes_needed)
 {
   XMScontext ctx;
@@ -488,7 +488,7 @@ typedef union {			/* EMS move specification structure */
 
 
 LJPEG_METHODDEF(void)
-LJPEG_read_ems_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
+LJPEG_read_ems_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info,
 		void FAR * buffer_address,
 		long file_offset, long byte_count)
 {
@@ -513,7 +513,7 @@ LJPEG_read_ems_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr in
 
 
 LJPEG_METHODDEF(void)
-LJPEG_write_ems_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
+LJPEG_write_ems_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info,
 		 void FAR * buffer_address,
 		 long file_offset, long byte_count)
 {
@@ -538,7 +538,7 @@ LJPEG_write_ems_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr i
 
 
 LJPEG_METHODDEF(void)
-LJPEG_close_ems_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info)
+LJPEG_close_ems_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info)
 {
   EMScontext ctx;
 
@@ -551,7 +551,7 @@ LJPEG_close_ems_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr i
 
 
 LOCAL(boolean)
-LJPEG_open_ems_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
+LJPEG_open_ems_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info,
 		long total_bytes_needed)
 {
   EMScontext ctx;
@@ -595,8 +595,8 @@ LJPEG_open_ems_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr in
  * Initial opening of a backing-store object.
  */
 
-LJPEG_GLOBAL(void)
-LJPEG_jpeg_open_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_store_ptr info,
+GLOBAL(void)
+LJPEG_jpeg_open_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_backing_store_ptr info,
 			 long total_bytes_needed)
 {
   /* Try extended memory, then expanded memory, then regular file. */
@@ -619,14 +619,14 @@ LJPEG_jpeg_open_backing_store (LJPEG_j_common_ptr cinfo, LJPEG_LJPEG_backing_sto
  * cleanup required.
  */
 
-LJPEG_GLOBAL(long)
+GLOBAL(long)
 LJPEG_jpeg_mem_init (LJPEG_j_common_ptr cinfo)
 {
   next_file_num = 0;		/* initialize temp file name generator */
   return DEFAULT_MAX_MEM;	/* default for max_memory_to_use */
 }
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_mem_term (LJPEG_j_common_ptr cinfo)
 {
   /* Microsoft C, at least in v6.00A, will not successfully reclaim freed

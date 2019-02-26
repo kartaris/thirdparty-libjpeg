@@ -70,7 +70,7 @@ LJPEG_read_text_integer (FILE * file, long * result, int * termchar)
 }
 
 
-LJPEG_GLOBAL(boolean)
+GLOBAL(boolean)
 LJPEG_read_quant_tables (LJPEG_j_compress_ptr cinfo, char * filename, boolean force_baseline)
 /* Read a set of quantization tables from the specified file.
  * The file is plain ASCII text: decimal numbers with whitespace between.
@@ -155,7 +155,7 @@ LJPEG_read_scan_integer (FILE * file, long * result, int * termchar)
 }
 
 
-LJPEG_GLOBAL(boolean)
+GLOBAL(boolean)
 LJPEG_read_scan_script (LJPEG_j_compress_ptr cinfo, char * filename)
 /* Read a scan script from the specified text file.
  * Each entry in the file defines one scan to be emitted.
@@ -263,7 +263,7 @@ bogus:
 #endif /* C_MULTISCAN_FILES_SUPPORTED */
 
 
-LJPEG_GLOBAL(boolean)
+GLOBAL(boolean)
 LJPEG_set_quality_ratings (LJPEG_j_compress_ptr cinfo, char *arg, boolean force_baseline)
 /* Process a quality-ratings parameter string, of the form
  *     N[,N,...]
@@ -295,7 +295,7 @@ LJPEG_set_quality_ratings (LJPEG_j_compress_ptr cinfo, char *arg, boolean force_
 }
 
 
-LJPEG_GLOBAL(boolean)
+GLOBAL(boolean)
 LJPEG_set_quant_slots (LJPEG_j_compress_ptr cinfo, char *arg)
 /* Process a quantization-table-selectors parameter string, of the form
  *     N[,N,...]
@@ -330,7 +330,7 @@ LJPEG_set_quant_slots (LJPEG_j_compress_ptr cinfo, char *arg)
 }
 
 
-LJPEG_GLOBAL(boolean)
+GLOBAL(boolean)
 LJPEG_set_sample_factors (LJPEG_j_compress_ptr cinfo, char *arg)
 /* Process a sample-factors parameter string, of the form
  *     HxV[,HxV,...]

@@ -213,7 +213,7 @@ struct LJPEG_jpeg_marker_struct {
 /* Known color spaces. */
 
 typedef enum {
-	LJPEG_JCS_YCCK,		/* error/unspecified */
+    LJPEG_JCS_UNKNOWN,		/* error/unspecified */
 	LJPEG_JCS_GRAYSCALE,		/* monochrome */
 	LJPEG_JCS_RGB,		/* red/green/blue */
 	LJPEG_JCS_YCbCr,		/* Y/Cb/Cr (also known as YUV) */

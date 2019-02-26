@@ -19,7 +19,7 @@
 /*
  * Quantization table setup routines
  */
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_add_quant_table (LJPEG_j_compress_ptr cinfo, int which_tbl,
 		      const unsigned int *basic_table,
 		      int scale_factor, boolean force_baseline)
@@ -85,7 +85,7 @@ static const unsigned int LJPEG_std_chrominance_quant_tbl[DCTSIZE2] = {
   99,  99,  99,  99,  99,  99,  99,  99
 };
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_default_qtables (LJPEG_j_compress_ptr cinfo, boolean force_baseline)
 /* Set or change the 'quality' (quantization) setting, using default tables
  * and straight percentage-scaling quality scales.
@@ -99,7 +99,7 @@ LJPEG_jpeg_default_qtables (LJPEG_j_compress_ptr cinfo, boolean force_baseline)
 		       cinfo->q_scale_factor[1], force_baseline);
 }
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_set_linear_quality (LJPEG_j_compress_ptr cinfo, int scale_factor,
 			 boolean force_baseline)
 /* Set or change the 'quality' (quantization) setting, using default tables
@@ -115,7 +115,7 @@ LJPEG_jpeg_set_linear_quality (LJPEG_j_compress_ptr cinfo, int scale_factor,
 		       scale_factor, force_baseline);
 }
 
-LJPEG_GLOBAL(int)
+GLOBAL(int)
 LJPEG_jpeg_quality_scaling (int quality)
 /* Convert a user-specified quality rating to a percentage scaling factor
  * for an underlying quantization table, using our recommended scaling curve.
@@ -140,7 +140,7 @@ LJPEG_jpeg_quality_scaling (int quality)
   return quality;
 }
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_set_quality (LJPEG_j_compress_ptr cinfo, int quality, boolean force_baseline)
 /* Set or change the 'quality' (quantization) setting, using default tables.
  * This is the standard quality-adjusting entry point for typical user
@@ -275,7 +275,7 @@ LJPEG_std_huff_tables (LJPEG_j_compress_ptr cinfo)
  * is the recommended approach since, if we add any new parameters,
  * your code will still work (they'll be set to reasonable defaults).
  */
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_set_defaults (LJPEG_j_compress_ptr cinfo)
 {
   int i;
@@ -373,7 +373,7 @@ LJPEG_jpeg_set_defaults (LJPEG_j_compress_ptr cinfo)
 /*
  * Select an appropriate JPEG colorspace for in_color_space.
  */
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_default_colorspace (LJPEG_j_compress_ptr cinfo)
 {
   switch (cinfo->in_color_space) {
@@ -392,8 +392,8 @@ LJPEG_jpeg_default_colorspace (LJPEG_j_compress_ptr cinfo)
   case LJPEG_JCS_YCCK:
     LJPEG_jpeg_set_colorspace(cinfo, LJPEG_JCS_YCCK);
     break;
-  case LJPEG_JCS_YCCK:
-    LJPEG_jpeg_set_colorspace(cinfo, LJPEG_JCS_YCCK);
+  case LJPEG_JCS_UNKNOWN:
+    LJPEG_jpeg_set_colorspace(cinfo, LJPEG_JCS_UNKNOWN);
     break;
   default:
     ERREXIT(cinfo, JERR_BAD_IN_COLORSPACE);
@@ -404,7 +404,7 @@ LJPEG_jpeg_default_colorspace (LJPEG_j_compress_ptr cinfo)
 /*
  * Set the JPEG colorspace, and choose colorspace-dependent default values.
  */
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, LJPEG_J_COLOR_SPACE colorspace)
 {
   LJPEG_jpeg_component_info * compptr;
@@ -473,7 +473,7 @@ LJPEG_jpeg_set_colorspace (LJPEG_j_compress_ptr cinfo, LJPEG_J_COLOR_SPACE color
     SET_COMP(2, 3, 1,1, 1, 1,1);
     SET_COMP(3, 4, 2,2, 0, 0,0);
     break;
-  case LJPEG_JCS_YCCK:
+  case LJPEG_JCS_UNKNOWN:
     cinfo->num_components = cinfo->input_components;
     if (cinfo->num_components < 1 || cinfo->num_components > MAX_COMPONENTS)
       ERREXIT2(cinfo, JERR_COMPONENT_COUNT, cinfo->num_components,
@@ -551,7 +551,7 @@ LJPEG_fill_dc_scans (LJPEG_jpeg_scan_info * scanptr, int ncomps, int Ah, int Al)
  * Create a recommended progressive-JPEG script.
  * cinfo->num_components and cinfo->jpeg_color_space must be correct.
  */
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_simple_progression (LJPEG_j_compress_ptr cinfo)
 {
   int ncomps = cinfo->num_components;

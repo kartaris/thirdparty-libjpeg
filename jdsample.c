@@ -290,7 +290,7 @@ LJPEG_h2v1_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
  * Module initialization routine for upsampling.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_upsampler (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_my_upsample_ptr upsample;

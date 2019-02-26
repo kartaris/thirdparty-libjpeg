@@ -42,7 +42,7 @@ LJPEG_signal_catcher (int signum)
   exit(EXIT_FAILURE);
 }
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_enable_signal_catcher (LJPEG_j_common_ptr cinfo)
 {
   LJPEG_sig_cinfo = cinfo;
@@ -83,7 +83,7 @@ LJPEG_progress_monitor (LJPEG_j_common_ptr cinfo)
   }
 }
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_start_progress_monitor (LJPEG_j_common_ptr cinfo, cd_progress_ptr progress)
 {
   /* Enable progress display, unless trace output is on */
@@ -96,7 +96,7 @@ LJPEG_start_progress_monitor (LJPEG_j_common_ptr cinfo, cd_progress_ptr progress
   }
 }
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_end_progress_monitor (LJPEG_j_common_ptr cinfo)
 {
   /* Clear away progress display */
@@ -114,7 +114,7 @@ LJPEG_end_progress_monitor (LJPEG_j_common_ptr cinfo)
  * keyword is the constant keyword (must be lower case already),
  * minchars is length of minimum legal abbreviation.
  */
-LJPEG_GLOBAL(boolean)
+GLOBAL(boolean)
 LJPEG_end_progress_monitor (char * arg, const char * keyword, int minchars)
 {
   register int ca, ck;
@@ -140,7 +140,7 @@ LJPEG_end_progress_monitor (char * arg, const char * keyword, int minchars)
  * Routines to establish binary I/O mode for stdin and stdout.
  * Non-Unix systems often require some hacking to get out of text mode.
  */
-LJPEG_GLOBAL(FILE *)
+GLOBAL(FILE *)
 LJPEG_read_stdin (void)
 {
   FILE * input_file = stdin;
@@ -157,7 +157,7 @@ LJPEG_read_stdin (void)
   return input_file;
 }
 
-LJPEG_GLOBAL(FILE *)
+GLOBAL(FILE *)
 LJPEG_write_stdout (void)
 {
   FILE * output_file = stdout;

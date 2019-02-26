@@ -314,7 +314,7 @@ LJPEG_create_context_buffer (LJPEG_j_compress_ptr cinfo)
  * Initialize preprocessing controller.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_c_prep_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buffer)
 {
   LJPEG_my_prep_ptr prep;

@@ -111,7 +111,7 @@
  * Perform the forward DCT on one block of samples.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_fdct_ifast (DCTELEM * data, LJPEG_JSAMPARRAY sample_data, LJPEG_JDIMENSION start_col)
 {
   DCTELEM tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;

@@ -27,7 +27,7 @@
  * The error manager must already be set up (in case memory manager fails).
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_CreateCompress (LJPEG_j_compress_ptr cinfo, int version, size_t structsize)
 {
   int i;
@@ -92,7 +92,7 @@ LJPEG_jpeg_CreateCompress (LJPEG_j_compress_ptr cinfo, int version, size_t struc
  * Destruction of a JPEG compression object
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_destroy_compress (LJPEG_j_compress_ptr cinfo)
 {
   LJPEG_jpeg_destroy((LJPEG_j_common_ptr) cinfo); /* use common routine */
@@ -104,7 +104,7 @@ LJPEG_jpeg_destroy_compress (LJPEG_j_compress_ptr cinfo)
  * but don't destroy the object itself.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_LJPEG_jpeg_abort_compress (LJPEG_j_compress_ptr cinfo)
 {
   LJPEG_jpeg_abort((LJPEG_j_common_ptr) cinfo); /* use common routine */
@@ -123,7 +123,7 @@ LJPEG_LJPEG_jpeg_abort_compress (LJPEG_j_compress_ptr cinfo)
  * jcparam.o would be linked whether the application used it or not.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_suppress_tables (LJPEG_j_compress_ptr cinfo, boolean suppress)
 {
   int i;
@@ -151,7 +151,7 @@ LJPEG_jpeg_suppress_tables (LJPEG_j_compress_ptr cinfo, boolean suppress)
  * work including most of the actual output.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_finish_compress (LJPEG_j_compress_ptr cinfo)
 {
   LJPEG_JDIMENSION iMCU_row;
@@ -196,7 +196,7 @@ LJPEG_jpeg_finish_compress (LJPEG_j_compress_ptr cinfo)
  * first call to LJPEG_jpeg_write_scanlines() or LJPEG_jpeg_write_raw_data().
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_write_marker (LJPEG_j_compress_ptr cinfo, int marker,
 		   const JOCTET *dataptr, unsigned int datalen)
 {
@@ -218,7 +218,7 @@ LJPEG_jpeg_write_marker (LJPEG_j_compress_ptr cinfo, int marker,
 
 /* Same, but piecemeal. */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_write_m_header (LJPEG_j_compress_ptr cinfo, int marker, unsigned int datalen)
 {
   if (cinfo->next_scanline != 0 ||
@@ -230,7 +230,7 @@ LJPEG_jpeg_write_m_header (LJPEG_j_compress_ptr cinfo, int marker, unsigned int 
   (*cinfo->marker->LJPEG_write_marker_header) (cinfo, marker, datalen);
 }
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 jpeg_write_m_byte (LJPEG_j_compress_ptr cinfo, int val)
 {
   (*cinfo->marker->write_marker_byte) (cinfo, val);
@@ -258,7 +258,7 @@ jpeg_write_m_byte (LJPEG_j_compress_ptr cinfo, int val)
  * will not re-emit the tables unless it is passed write_all_tables=TRUE.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jpeg_write_tables (LJPEG_j_compress_ptr cinfo)
 {
   if (cinfo->global_state != CSTATE_START)

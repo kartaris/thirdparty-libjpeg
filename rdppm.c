@@ -440,7 +440,7 @@ LJPEG_finish_input_ppm (LJPEG_j_compress_ptr cinfo, LJPEG_cjpeg_source_ptr sinfo
  * The module selection routine for PPM format input.
  */
 
-LJPEG_GLOBAL(LJPEG_cjpeg_source_ptr)
+GLOBAL(LJPEG_cjpeg_source_ptr)
 LJPEG_jinit_read_ppm (LJPEG_j_compress_ptr cinfo)
 {
   LJPEG_ppm_source_ptr source;

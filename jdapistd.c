@@ -33,7 +33,7 @@ LOCAL(boolean) LJPEG_output_pass_setup LJPEG_JPP((LJPEG_j_decompress_ptr cinfo))
  * Returns FALSE if suspended.  The return value need be inspected only if
  * a suspending data source is used.
  */
-LJPEG_GLOBAL(boolean)
+GLOBAL(boolean)
 LJPEG_jpeg_start_decompress (LJPEG_j_decompress_ptr cinfo)
 {
   if (cinfo->global_state == DSTATE_READY) {
@@ -146,7 +146,7 @@ LJPEG_output_pass_setup (LJPEG_j_decompress_ptr cinfo)
  * this likely signals an application programmer error.  However,
  * an oversize buffer (max_lines > scanlines remaining) is not an error.
  */
-LJPEG_GLOBAL(LJPEG_JDIMENSION)
+GLOBAL(LJPEG_JDIMENSION)
 LJPEG_jpeg_read_scanlines (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY scanlines,
 		     LJPEG_JDIMENSION max_lines)
 {
@@ -178,7 +178,7 @@ LJPEG_jpeg_read_scanlines (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPARRAY scanli
  * Alternate entry point to read raw data.
  * Processes exactly one iMCU row per call, unless suspended.
  */
-LJPEG_GLOBAL(LJPEG_JDIMENSION)
+GLOBAL(LJPEG_JDIMENSION)
 LJPEG_jpeg_read_raw_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE data,
 		    LJPEG_JDIMENSION max_lines)
 {
@@ -220,7 +220,7 @@ LJPEG_jpeg_read_raw_data (LJPEG_j_decompress_ptr cinfo, LJPEG_JSAMPIMAGE data,
 /*
  * Initialize for an output pass in buffered-image mode.
  */
-LJPEG_GLOBAL(boolean)
+GLOBAL(boolean)
 LJPEG_jpeg_start_output (LJPEG_j_decompress_ptr cinfo, int scan_number)
 {
   if (cinfo->global_state != DSTATE_BUFIMAGE &&
@@ -244,7 +244,7 @@ LJPEG_jpeg_start_output (LJPEG_j_decompress_ptr cinfo, int scan_number)
  * Returns FALSE if suspended.  The return value need be inspected only if
  * a suspending data source is used.
  */
-LJPEG_GLOBAL(boolean)
+GLOBAL(boolean)
 LJPEG_jpeg_finish_output (LJPEG_j_decompress_ptr cinfo)
 {
   if ((cinfo->global_state == DSTATE_SCANNING ||

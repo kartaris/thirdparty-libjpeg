@@ -419,7 +419,7 @@ LJPEG_null_method (LJPEG_j_compress_ptr cinfo)
  * Module initialization routine for input colorspace conversion.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_color_converter (LJPEG_j_compress_ptr cinfo)
 {
   LJPEG_my_cconvert_ptr cconvert;
@@ -531,7 +531,7 @@ LJPEG_jinit_color_converter (LJPEG_j_compress_ptr cinfo)
       ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);
     break;
 
-  default:			/* allow null conversion of LJPEG_JCS_YCCK */
+  default:			/* allow null conversion of LJPEG_JCS_UNKNOWN */
     if (cinfo->jpeg_color_space != cinfo->in_color_space ||
 	cinfo->num_components != cinfo->input_components)
       ERREXIT(cinfo, JERR_CONVERSION_NOTIMPL);

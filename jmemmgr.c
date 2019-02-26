@@ -1024,7 +1024,7 @@ LJPEG_self_destruct (LJPEG_j_common_ptr cinfo)
  * Memory manager initialization.
  * When this is called, only the error manager pointer is valid in cinfo!
  */
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_memory_mgr (LJPEG_j_common_ptr cinfo)
 {
   LJPEG_my_mem_ptr mem;

@@ -27,7 +27,7 @@
  * The module selection routine for GIF format input.
  */
 
-LJPEG_GLOBAL(LJPEG_cjpeg_source_ptr)
+GLOBAL(LJPEG_cjpeg_source_ptr)
 LJPEG_jinit_read_gif (LJPEG_j_compress_ptr cinfo)
 {
   fprintf(stderr, "GIF input is unsupported for legal reasons.  Sorry.\n");

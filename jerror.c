@@ -227,7 +227,7 @@ LJPEG_reset_error_mgr (LJPEG_j_common_ptr cinfo)
  *	cinfo.err = LJPEG_jpeg_std_error(&err);
  * after which the application may override some of the methods.
  */
-LJPEG_GLOBAL(struct LJPEG_jpeg_error_mgr *)
+GLOBAL(struct LJPEG_jpeg_error_mgr *)
 LJPEG_jpeg_std_error (struct LJPEG_jpeg_error_mgr * err)
 {
   err->LJPEG_error_exit = LJPEG_error_exit;

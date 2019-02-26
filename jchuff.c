@@ -1553,7 +1553,7 @@ LJPEG_start_pass_huff (LJPEG_j_compress_ptr cinfo, boolean gather_statistics)
  * Module initialization routine for Huffman entropy encoding.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_huff_encoder (LJPEG_j_compress_ptr cinfo)
 {
   LJPEG_huff_entropy_ptr entropy;

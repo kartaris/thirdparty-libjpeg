@@ -356,7 +356,7 @@ LJPEG_finish_output_gif (LJPEG_j_decompress_ptr cinfo, LJPEG_djpeg_dest_ptr dinf
  * The module selection routine for GIF format output.
  */
 
-LJPEG_GLOBAL(LJPEG_djpeg_dest_ptr)
+GLOBAL(LJPEG_djpeg_dest_ptr)
 LJPEG_jinit_write_gif (LJPEG_j_decompress_ptr cinfo)
 {
   LJPEG_gif_dest_ptr dest;

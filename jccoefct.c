@@ -406,7 +406,7 @@ LJPEG_compress_output (LJPEG_j_compress_ptr cinfo, LJPEG_JSAMPIMAGE input_buf)
  * Initialize coefficient buffer controller.
  */
 
-LJPEG_GLOBAL(void)
+GLOBAL(void)
 LJPEG_jinit_c_coef_controller (LJPEG_j_compress_ptr cinfo, boolean need_full_buffer)
 {
   LJPEG_my_coef_ptr coef;
