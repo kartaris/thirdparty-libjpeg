@@ -259,7 +259,7 @@ LJPEG_h2v1_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * c
  */
 
 LJPEG_METHODDEF(void)
-LJPEG_h2v1_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
+LJPEG_h2v2_upsample (LJPEG_j_decompress_ptr cinfo, LJPEG_jpeg_component_info * compptr,
 	       LJPEG_JSAMPARRAY input_data, LJPEG_JSAMPARRAY * output_data_ptr)
 {
   LJPEG_JSAMPARRAY output_data = *output_data_ptr;
@@ -341,7 +341,7 @@ LJPEG_jinit_upsampler (LJPEG_j_decompress_ptr cinfo)
     } else if (h_in_group * 2 == h_out_group &&
 	       v_in_group * 2 == v_out_group) {
       /* Special case for 2h2v upsampling */
-      upsample->methods[ci] = h2v2_upsample;
+      upsample->methods[ci] = LJPEG_h2v2_upsample;
     } else if ((h_out_group % h_in_group) == 0 &&
 	       (v_out_group % v_in_group) == 0) {
       /* Generic integral-factors upsampling method */
